@@ -121,7 +121,7 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ## Learn More
 
-### Learn HTML, CSS, JavaScript, and TypeScript
+### Learn HTML, CSS, and JavaScript
 
 #### HTML
 
@@ -129,11 +129,9 @@ Websites are built using HTML, CSS, and JavaScript. HTML, or Hypertext Markup La
 
 [^1]: [What is HTML - Definition and Meaning of Hypertext Markup Language by freeCodeCamp](https://www.freecodecamp.org/news/what-is-html-definition-and-meaning/)
 
-#### CSS
+#### [CSS](https://www.freecodecamp.org/news/the-css-handbook-a-handy-guide-to-css-for-developers-b56695917d11/)
 
-#### JavaScript
-
-#### TypeScript
+#### [JavaScript](https://www.freecodecamp.org/news/the-complete-javascript-handbook-f26b2c71719c/)
 
 ### Learn Next.js
 
