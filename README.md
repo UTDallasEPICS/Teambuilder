@@ -55,6 +55,12 @@ Docker is a container framework. Containers allow us to standardize the environm
 
 You can install node from the [Node.js downloads page](https://nodejs.org/en/download). 
 
+### Installing React
+
+#### React for Windows/Mac/Linux
+
+Instructions to install react [here](https://kinsta.com/knowledgebase/install-react/).
+
 ### Installing Docker
 
 Docker Desktop is the recommended way to install Docker. If you choose to install Docker another way, there is no guarantee that you will have everything installed correctly. To install docker desktop download and run the installer from [Docker's Getting Started Page](https://www.docker.com/get-started/).
