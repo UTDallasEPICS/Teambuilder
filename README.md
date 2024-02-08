@@ -5,6 +5,7 @@ This project is the Spring 2024 EPICS Team formation project. The core technolog
 - [Next.js](https://nextjs.org): A full stack web development framework
 - [Prisma](https://prisma.io): A database ORM used to connect Next.js to a database
 - [PostgreSQL](https://www.postgresql.org): An open source SQL database
+- [ReactJS](https://www.react.dev): A front-end Javascript library for building UI based on components
 
 <!-- markdownlint-disable-next-line MD033 -->
 <details><summary><h2>Table of Contents</h2></summary>
@@ -31,10 +32,9 @@ This project is the Spring 2024 EPICS Team formation project. The core technolog
 
 ## Getting Started
 
-1. The first thing to do is edit this file. The title and description of the project should reflect your project, the organization it is for, and the target functionality.
-2. Setup your development environment to ensure you have everything installed to run the project (see the [prerequisites section](#prerequisites)).
-3. Run your project (see the [running the project section].(#running-your-project))
-4. Start coding!
+1. Setup your development environment to ensure you have everything installed to run the project (see the [prerequisites section](#prerequisites)).
+2. Run your project (see the [running the project section].(#running-your-project))
+3. Start coding!
 
 ## Prerequisites
 
@@ -51,31 +51,9 @@ Docker is a container framework. Containers allow us to standardize the environm
 
 ### Installing Node
 
-#### Node for Windows
+#### Node for Windows/Mac/Linux
 
-On windows, you can install node from the [Node.js downloads page](https://nodejs.org/en/download). Make sure you install the LTS (long-term support) version! Download and run the installer.
-
-:warning: If shown a check box to install "tools for native modules" make sure you check the box before clicking next :warning:
-
-Once the installation is finished (and you have restarted you computer if prompted), you can continue to [installing Docker](#installing-docker).
-
-#### Node for Mac/Linux
-
-It is recommended to use [node version manager (nvm)](https://github.com/nvm-sh/nvm) to install and run node on Mac/Linux. You can install is by using the command found [here](https://github.com/nvm-sh/nvm#installing-and-updating) in your terminal application. Alternatively, you can follow the installation instructions in the [windows instructions](#node-for-windows).
-
-Once you have installed node version manager installed, run the following commands in your terminal:
-
-```bash
-nvm install --lts # Install latest version of Node.js
-nvm install-latest-npm # Update npm to latest version
-```
-
-These commands do the following:
-
-1. Install the long-term support (LTS) version of Node. The LTS version is the version of Node that will receive security updates the longest.
-2. Update the node package manager (npm) to the latest version.
-
-This completes your installation of Node!
+You can install node from the [Node.js downloads page](https://nodejs.org/en/download). 
 
 ### Installing Docker
 
