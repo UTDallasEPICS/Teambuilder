@@ -105,19 +105,18 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ## Learn More
 
-### Learn HTML, CSS, JavaScript, and TypeScript
+### Learn HTML, CSS, and JavaScript
 
 #### HTML
 
 Websites are built using HTML, CSS, and JavaScript. HTML, or Hypertext Markup Language, is a markup language for the web that defines the structure of web pages[^1]. Examples of these structures include paragraphs, headings, headers, footers, lists, navigation, and images. Each one of these components is defined in an HTML file for every website you visit.
 
 [^1]: [What is HTML - Definition and Meaning of Hypertext Markup Language by freeCodeCamp](https://www.freecodecamp.org/news/what-is-html-definition-and-meaning/)
+#### [HTML](https://www.freecodecamp.org/news/the-html-handbook/)
 
-#### CSS
+#### [CSS](https://www.freecodecamp.org/news/the-css-handbook-a-handy-guide-to-css-for-developers-b56695917d11/)
 
-#### JavaScript
-
-#### TypeScript
+#### [JavaScript](https://www.freecodecamp.org/news/the-complete-javascript-handbook-f26b2c71719c/)
 
 ### Learn Next.js
 
