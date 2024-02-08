@@ -1,6 +1,6 @@
-# UTDesign EPICS [Next.js](https://nextjs.org) Template Project
+# UTDesign EPICS Teambuilder Project
 
-This project is the template used for all EPICS CS projects. The core technologies used are:
+This project is the Spring 2024 EPICS Team formation project. The core technologies used are:
 
 - [Next.js](https://nextjs.org): A full stack web development framework
 - [Prisma](https://prisma.io): A database ORM used to connect Next.js to a database
