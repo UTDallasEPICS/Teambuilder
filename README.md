@@ -12,11 +12,9 @@ This project is the Spring 2024 EPICS Team formation project. The core technolog
 
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
+  - [Installing React](#installing-react)
   - [Installing Node](#installing-node)
-    - [Node for Windows](#node-for-windows)
-    - [Node for Mac/Linux](#node-for-maclinux)
   - [Installing Docker](#installing-docker)
-  - [Installing pnpm (recommended/optional)](#installing-pnpm-recommendedoptional)
 - [Running This Project](#running-this-project)
 - [Learn More](#learn-more)
   - [Learn HTML, CSS, JavaScript, and TypeScript](#learn-html-css-javascript-and-typescript)
@@ -37,12 +35,12 @@ This project is the Spring 2024 EPICS Team formation project. The core technolog
 3. Start coding!
 
 ## Requirements from Taz in Discord
-projects should be their own entities in the database, with associated descriptions, links to external resources such as the github repo, etc. projects need a status too, something like 'in progress', 'delivered', etc. can also think about putting seniority requirements, major requirements, etc in this database table as well.
-generated teams must be associated with a semester. conceptually, this may be representred as 'create new semester roster', where the semester must be specified (year, spring/summer/fall) BEFORE we get into the weeds of things
-with projects living in the database, we can select which projects need teams for the current roster we are making via a dropdown select instead of relying on a CSV upload which eliminates a whole class of possible bugs.
-after teams have been generated, we can save the roster to the database - probably a join table between students table and projects table, where the join table is labeled with semester information (project_id, student_id, year, spring/fall/summer)
-we will want to be integrating various other useful automations like auto-assigning teams to discord channels/github repos, generating PDFs of teams, etc. we dont need to get into the weeds of that just yet but keep the concept of integrating with external services in mind as we design and build this thing
-when loading students from an uploaded CSV, we should make sure that we check which ones are returning and already have entries in the database we can reuse - key by netid/email
+1. projects should be their own entities in the database, with associated descriptions, links to external resources such as the github repo, etc. projects need a status too, something like 'in progress', 'delivered', etc. can also think about putting seniority requirements, major requirements, etc in this database table as well. 
+2. generated teams must be associated with a semester. conceptually, this may be representred as 'create new semester roster', where the semester must be specified (year, spring/summer/fall) BEFORE we get into the weeds of things
+3. with projects living in the database, we can select which projects need teams for the current roster we are making via a dropdown select instead of relying on a CSV upload which eliminates a whole class of possible bugs.
+4. after teams have been generated, we can save the roster to the database - probably a join table between students table and projects table, where the join table is labeled with semester information (project_id, student_id, year, spring/fall/summer)
+5. we will want to be integrating various other useful automations like auto-assigning teams to discord channels/github repos, generating PDFs of teams, etc. we dont need to get into the weeds of that just yet but keep the concept of integrating with external services in mind as we design and build this thing
+6. when loading students from an uploaded CSV, we should make sure that we check which ones are returning and already have entries in the database we can reuse - key by netid/email
 
 all of the above should be chewed over by the team and converted into requirements for the readme.md in the repo as well as broken out into issues on the repo 
 
