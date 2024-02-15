@@ -35,12 +35,14 @@ This project is the Spring 2024 EPICS Team formation project. The core technolog
 3. Start coding!
 
 ## Requirements from Taz in Discord
-1. Projects should be their own entities in the database, with associated descriptions and links to external resources such as the GitHub repository and more. Projects need a status too, like a note stating whether it is 'in progress', 'delivered', or something else. It should also include seniority requirements, major requirements, and more in this database table. 
-2. Generated teams must be associated with a semester. Conceptually, this may be represented as 'create new semester roster', where the semester must be specified ( by year, spring/summer/fall).
-3. With projects living in the database, we can select which projects need teams for the current roster we are making via a dropdown select.
-4. After teams have been generated, we can save the roster to the database with a join table between the students table and the projects table, where the join table is labeled with semester information such as project ID, student ID, year, and spring/fall/summer).
-5. We will integrate various other  automation like auto-assigning teams to Discord channels/GitHub repositories, generating PDFs of teams, and more. Keep the concept of integrating with external services in mind as we design and build this 
-6. When loading students from an uploaded CSV, we will check which students are returning and already have entries in the database that can be reused by sifting through NetID and emails.
+
+1. Projects should be their own entities in the database, with associated descriptions, and links to external resources such as the GitHub repo, etc. Projects need a status too, something like 'in progress', 'delivered', etc. can also think about putting seniority requirements, major requirements, etc in this database table as well. 
+2. Generated teams must be associated with a semester. Conceptually, this may be represented as 'create new semester roster', where the semester must be specified (year, spring/summer/fall) BEFORE we get into specifics.
+3. With projects living in the database, we can select which projects need teams for the current roster we are making via a dropdown select instead of relying on a CSV upload which eliminates a whole class of possible bugs.
+4. After teams have been generated, we can save the roster to the database - probably a join table between the students table and the projects table, where the join table is labeled with semester information (project_id, student_id, year, spring/fall/summer).
+5. We will want to integrate various other useful automation like auto-assigning teams to discord channels/GitHub repos, generating PDFs of teams, etc. We don't need to get into specifics yet but keep the concept of integrating with external services in mind as we design and build this thing
+6. When loading students from an uploaded CSV, we should make sure that we check which ones are returning and already have entries in the database we can reuse - key by netID/email
+
 
 
 ## Prerequisites
@@ -115,3 +117,4 @@ To learn more about Prisma, take a look at the following resources:
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [Learn Prisma](https://www.prisma.io/learn)
 - [Official Prisma Examples](https://github.com/prisma/prisma-examples)
+
