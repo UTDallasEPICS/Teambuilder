@@ -2,8 +2,6 @@
 # UTDesign EPICS [Next.js](https://nextjs.org) Template Project
 test from shraddha
 
-lolslsl
-lol
 
 
 This project is the Spring 2024 EPICS Team formation project. The core technologies used are:
