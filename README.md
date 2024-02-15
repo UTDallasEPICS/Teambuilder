@@ -2,7 +2,12 @@
 # UTDesign EPICS [Next.js](https://nextjs.org) Template Project
 test from shraddha
 
+
+lol
+
+
 This project is the Spring 2024 EPICS Team formation project. The core technologies used are:
+
 
 - [ReactJS](https://www.react.dev): A front-end Javascript library for building UI based on components
 - [Next.js](https://nextjs.org): A full stack web development framework
