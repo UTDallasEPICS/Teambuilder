@@ -1,5 +1,7 @@
 # UTDesign EPICS [Next.js](https://nextjs.org) Template Project
 
+lol
+
 This project is the template used for all EPICS CS projects. The core technologies used are:
 
 - [Next.js](https://nextjs.org): A full stack web development framework
