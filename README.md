@@ -2,7 +2,6 @@
 # UTDesign EPICS [Next.js](https://nextjs.org) Template Project
 test from shraddha
 
-
 lol
 
 
