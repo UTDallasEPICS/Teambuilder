@@ -1,8 +1,10 @@
+
 # UTDesign EPICS [Next.js](https://nextjs.org) Template Project
 test from shraddha
 
-This project is the template used for all EPICS CS projects. The core technologies used are:
+This project is the Spring 2024 EPICS Team formation project. The core technologies used are:
 
+- [ReactJS](https://www.react.dev): A front-end Javascript library for building UI based on components
 - [Next.js](https://nextjs.org): A full stack web development framework
 - [Prisma](https://prisma.io): A database ORM used to connect Next.js to a database
 - [PostgreSQL](https://www.postgresql.org): An open source SQL database
@@ -12,11 +14,9 @@ This project is the template used for all EPICS CS projects. The core technologi
 
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
+  - [Installing React](#installing-react)
   - [Installing Node](#installing-node)
-    - [Node for Windows](#node-for-windows)
-    - [Node for Mac/Linux](#node-for-maclinux)
   - [Installing Docker](#installing-docker)
-  - [Installing pnpm (recommended/optional)](#installing-pnpm-recommendedoptional)
 - [Running This Project](#running-this-project)
 - [Learn More](#learn-more)
   - [Learn HTML, CSS, JavaScript, and TypeScript](#learn-html-css-javascript-and-typescript)
@@ -32,109 +32,74 @@ This project is the template used for all EPICS CS projects. The core technologi
 
 ## Getting Started
 
-1. The first thing to do is edit this file. The title and description of the project should reflect your project, the organization it is for, and the target functionality.
-2. Setup your development environment to ensure you have everything installed to run the project (see the [prerequisites section](#prerequisites)).
-3. Run your project (see the [running the project section].(#running-your-project))
-4. Start coding!
+1. Setup your development environment to ensure you have everything installed to run the project (see the [prerequisites section](#prerequisites)).
+2. Run your project (see the [running the project section](#running-this-project)).
+3. Start coding!
+
+## Requirements from Taz in Discord
+
+1. Projects should be their own entities in the database, with associated descriptions, and links to external resources such as the GitHub repo, etc. Projects need a status too, something like 'in progress', 'delivered', etc. can also think about putting seniority requirements, major requirements, etc in this database table as well. 
+2. Generated teams must be associated with a semester. Conceptually, this may be represented as 'create new semester roster', where the semester must be specified (year, spring/summer/fall) BEFORE we get into specifics.
+3. With projects living in the database, we can select which projects need teams for the current roster we are making via a dropdown select instead of relying on a CSV upload which eliminates a whole class of possible bugs.
+4. After teams have been generated, we can save the roster to the database - probably a join table between the students table and the projects table, where the join table is labeled with semester information (project_id, student_id, year, spring/fall/summer).
+5. We will want to integrate various other useful automation like auto-assigning teams to discord channels/GitHub repos, generating PDFs of teams, etc. We don't need to get into specifics yet but keep the concept of integrating with external services in mind as we design and build this thing
+6. When loading students from an uploaded CSV, we should make sure that we check which ones are returning and already have entries in the database we can reuse - key by netID/email
+
+
 
 ## Prerequisites
 
 In order to run this project, a few technologies are required:
 
+- [ReactJS](https://www.react.dev)
 - [Node.js](https://nodejs.org)
 - [Docker](https://www.docker.com)
 
 If you have these installed already, you can skip to [running this project](#running-this-project).
 
+React.js transforms web development by extending JavaScript to create dynamic and responsive user interfaces. It simplifies the development process with a declarative syntax and a component-based architecture, enabling easier maintenance and scalability. With React.js, developers seamlessly integrate front-end and back-end functionality for simpler, more secure application development.
+
 Node.js is what allows us to write all our applications in JavaScript. Usually, JavaScript is run only in a web browser. By building on top of Node.js, we can write code that is executed on the server, simpler to write, and/or more secure.
 
 Docker is a container framework. Containers allow us to standardize the environment that software runs on. In the case of this project, we use Docker to run the PostgreSQL database. By running the database in a container, the database of every person on the team will be configured exactly the same way. Since databases are quite complex applications, this greatly reduces the likelihood of experiencing issues with the database.
 
+### Installing React
+
+Instructions to install react [here](https://kinsta.com/knowledgebase/install-react/).
+
 ### Installing Node
 
-#### Node for Windows
-
-On windows, you can install node from the [Node.js downloads page](https://nodejs.org/en/download). Make sure you install the LTS (long-term support) version! Download and run the installer.
-
-:warning: If shown a check box to install "tools for native modules" make sure you check the box before clicking next :warning:
-
-Once the installation is finished (and you have restarted you computer if prompted), you can continue to [installing Docker](#installing-docker).
-
-#### Node for Mac/Linux
-
-It is recommended to use [node version manager (nvm)](https://github.com/nvm-sh/nvm) to install and run node on Mac/Linux. You can install is by using the command found [here](https://github.com/nvm-sh/nvm#installing-and-updating) in your terminal application. Alternatively, you can follow the installation instructions in the [windows instructions](#node-for-windows).
-
-Once you have installed node version manager installed, run the following commands in your terminal:
-
-```bash
-nvm install --lts # Install latest version of Node.js
-nvm install-latest-npm # Update npm to latest version
-```
-
-These commands do the following:
-
-1. Install the long-term support (LTS) version of Node. The LTS version is the version of Node that will receive security updates the longest.
-2. Update the node package manager (npm) to the latest version.
-
-This completes your installation of Node!
+You can install node from the [Node.js downloads page](https://nodejs.org/en/download). 
 
 ### Installing Docker
 
 Docker Desktop is the recommended way to install Docker. If you choose to install Docker another way, there is no guarantee that you will have everything installed correctly. To install docker desktop download and run the installer from [Docker's Getting Started Page](https://www.docker.com/get-started/).
 
-### Installing pnpm (recommended/optional)
-
-pnpm is an improved version of the Node Package Manager (npm). Though not required, it is highly recommended that you install it. You can install it using the following command in your terminal/powershell after node has been installed
-
-```bash
-npm install -g pnpm
-```
-
-If you choose to install pnpm, then you can substitute all usage of 'npm' with 'pnpm' and all usage of 'npx' with 'pnpx'. Additionally, you can create an alias in your `.bashrc` (Linux) or `.zshrc` (Mac) files. This will mean that when you type in npm or npx, pnpm and pnpx will be substituted. Use the following commands to add the aliases to the corresponding file:
-
-```bash
-# Linux
-echo 'alias npm="pnpm"' >> .bashrc
-
-# Mac
-echo 'alias npm="pnpm"' >> .zshrc
-```
 
 ## Running This Project
 
 First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Deploying This Project
 
 ## Learn More
 
-### Learn HTML, CSS, JavaScript, and TypeScript
+### Learn HTML, CSS, and JavaScript
 
-#### HTML
+#### [HTML](https://www.freecodecamp.org/news/the-html-handbook/)
 
 Websites are built using HTML, CSS, and JavaScript. HTML, or Hypertext Markup Language, is a markup language for the web that defines the structure of web pages[^1]. Examples of these structures include paragraphs, headings, headers, footers, lists, navigation, and images. Each one of these components is defined in an HTML file for every website you visit.
 
 [^1]: [What is HTML - Definition and Meaning of Hypertext Markup Language by freeCodeCamp](https://www.freecodecamp.org/news/what-is-html-definition-and-meaning/)
 
-#### CSS
+#### [CSS](https://www.freecodecamp.org/news/the-css-handbook-a-handy-guide-to-css-for-developers-b56695917d11/)
 
-#### JavaScript
+CSS, or Cascading Style Sheets, enhances the visual presentation of HTML elements. It allows developers to define styles such as colors, fonts, and layouts, ensuring a polished and cohesive appearance across web pages.
 
-#### TypeScript
+#### [JavaScript](https://www.freecodecamp.org/news/the-complete-javascript-handbook-f26b2c71719c/)
+
+JavaScript, a versatile scripting language, adds interactivity to web pages. It enables dynamic content updates, user interactions, and responsive behavior, enhancing the overall user experience on websites.
 
 ### Learn Next.js
 
@@ -155,4 +120,3 @@ To learn more about Prisma, take a look at the following resources:
 - [Learn Prisma](https://www.prisma.io/learn)
 - [Official Prisma Examples](https://github.com/prisma/prisma-examples)
 
-## Deploying This Project
