@@ -1,5 +1,6 @@
 import styles from './page.module.css';
 import Head from 'next/head';
+import '../globals.css';
 
 export default function Dashboard() {
   return (
@@ -8,18 +9,17 @@ export default function Dashboard() {
         <Head>
           <title>Dashboard</title>
         </Head>
-        
-        <img src="logo.png" alt="EPICS Logo" width="100"/>
-        <br></br>
-        <br></br>
-        <div>
-          <h1>EPICS Team Builder</h1>
+
+        <div className="flex justify-between">
+          <img src="logo.png" alt="EPICS Logo" width="100"/>
+          <div>
+            <h1>EPICS Team Builder</h1>
+          </div>
+          <div>
+            <h2>Dashboard</h2>
+          </div>
+
         </div>
-        <br></br>
-        <div>
-          <h2>Dashboard</h2>
-        </div>
-      
       </div>
      </div>
   );
