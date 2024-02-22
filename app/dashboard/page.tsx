@@ -3,7 +3,7 @@ import Head from 'next/head';
 import '../globals.css';
 
 export default function Dashboard() {
-  return (
+  return ( 
     <div>
       <div className={styles.background}>
         <Head>
@@ -13,7 +13,7 @@ export default function Dashboard() {
         <div className="flex justify-between">
           <img src="logo1.png" alt="EPICS Logo" width="100"/>
           <div>
-            <h1>EPICS Team Builder</h1>
+          <img src="team-formation-text.png" alt="Team FOrmation Logo" width="100"/>
           </div>
           <div>
             <h2>Dashboard</h2>
@@ -31,5 +31,6 @@ export default function Dashboard() {
             <button>Form Teams &gt;&gt;</button>
           </div>
      </div>
+      
   );
 }
