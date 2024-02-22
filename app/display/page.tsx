@@ -11,6 +11,7 @@ export default function Display() {
       <div>
         <h2>Results Display</h2>
       </div>
+      
     </div>
   );
 }

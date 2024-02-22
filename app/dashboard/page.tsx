@@ -21,6 +21,16 @@ export default function Dashboard() {
 
         </div>
       </div>
+      <br></br>
+      <div>
+          <button>Student List Upload</button>
+        </div>
+
+        <br></br>
+      <div>
+          <button>Form Teams</button>
+        </div>
+        
      </div>
   );
 }
