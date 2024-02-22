@@ -11,7 +11,7 @@ export default function Dashboard() {
         </Head>
 
         <div className="flex justify-between">
-          <img src="logo.png" alt="EPICS Logo" width="100"/>
+          <img src="logo1.png" alt="EPICS Logo" width="100"/>
           <div>
             <h1>EPICS Team Builder</h1>
           </div>
