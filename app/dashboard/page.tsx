@@ -19,18 +19,17 @@ export default function Dashboard() {
             <h2>Dashboard</h2>
           </div>
 
+          </div>
         </div>
-      </div>
-      <br></br>
-      <div>
+          <br></br>
+          <div>
           <button>Student List Upload</button>
-        </div>
+          </div>
 
-        <br></br>
-      <div>
-          <button>Form Teams</button>
-        </div>
-        
+          <br></br>
+          <div>
+            <button>Form Teams &gt;&gt;</button>
+          </div>
      </div>
   );
 }
