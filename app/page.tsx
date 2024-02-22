@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from 'logo.png'
 import styles from './page.module.css'
 import './globals.css';
 

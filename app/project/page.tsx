@@ -1,7 +1,7 @@
 import styles from './page.module.css';
 
 
-export default function Display() {
+export default function Project() {
   return (
     <div className={styles.background}>
       <div>
