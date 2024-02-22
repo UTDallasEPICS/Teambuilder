@@ -6,7 +6,7 @@
     'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 34, 139, 34;
+  --background-start-rgb: 250, 109, 34;
   --background-end-rgb: 0, 128, 0;
 
   --primary-glow: conic-gradient(
@@ -88,12 +88,13 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb)); /*color of the font*/
-  background: linear-gradient(
+  /*background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb)); */
+    background-color: rgb(51, 144, 51);
 }
 
 a {
