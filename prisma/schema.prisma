@@ -11,22 +11,33 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  netid         @id @default(autoincrement())
+  user_role     String @default("epics")
+  email         String  @unique
+  name          String  @default("")
+  //posts Post[]
 
 }
 
 model Projects{
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
+  title        String @default("")
+  major        String @default("")
+  content      String @default("")
+  partner      String @default("")
+  partnerInfo  String @default("")
 }
 
-model{
+model Student {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique
+  team      Team?    // This establishes a relation between Student and Team
+}
 
+// Define the schema for the Teams model
+model Team {
+  id       Int       @id @default(autoincrement())
+  name     String
+  students Student[] // This establishes a relation between Team and Student
 }
