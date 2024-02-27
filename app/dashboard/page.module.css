@@ -1,3 +1,6 @@
+/*imports Jura font api*/
+@import url('https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Jura:wght@300..700&family=Open+Sans&display=swap');
+
 .main {
   display: flex;
   flex-direction: column;
@@ -7,9 +10,10 @@
   min-height: 100vh;
 }
 
-/* background */
-.background {
-  background-color: rgb(174, 98, 32);
+/* background and font - reuseable for all pages*/
+.backgroundFont {
+  background-color: rgba(96, 241, 135, 0.9);
+  font-family: 'Jura', Arial, sans-serif; /* Ensure all text uses Jura */
 }
 
 .description {

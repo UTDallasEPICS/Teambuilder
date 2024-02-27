@@ -4,16 +4,16 @@ import '../globals.css';
 
 export default function Dashboard() {
   return ( 
-    <div>
-      <div className={styles.background}>
+    <div className={styles.backgroundFont}>
+      <div>
         <Head>
           <title>Dashboard</title>
         </Head>
 
-        <div className="flex justify-between">
-          <img src="logo1.png" alt="EPICS Logo" width="100"/>
+        <div className="flex">
+          <img className='object-left-top object-contain h-32 w-64' src="logo1.png" alt="EPICS Logo" width="100"/>
           <div>
-          <img src="team-formation-text.png" alt="Team FOrmation Logo" width="100"/>
+          <img className='object-left object-contain h-32 w-64' src="team-formation-text.png" alt="Team FOrmation Logo" width="100"/>
           </div>
           <div>
             <h2>Dashboard</h2>
@@ -22,8 +22,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className='border-solid border-2 border-sky-500 rounded-3xl bg-cyan-500 min-h-44 mt-1 mr-3 ml-3 mb-3'>
-          <h1>Instruction</h1>
+        <div className='border-solid rounded-3xl min-h-44 mt-1 mr-3 ml-5 mb-3 bg-[rgba(48,100,162,0.29)]  flex flex-col'>
+          <h1 className='ml-5 mt-3 text-xl'>Instruction</h1>
+          <h2 className='ml-5 mt-2'>Upload your student list here as an excel sheet. make sure you have these columns: blah blah blah. Thxxxx</h2>
         </div>
 
           <br></br>
@@ -35,7 +36,7 @@ export default function Dashboard() {
           <div>
             <button>Form Teams &gt;&gt;</button>
           </div>
-     </div>
+    </div>
       
   );
 }
