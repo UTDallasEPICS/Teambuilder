@@ -28,22 +28,22 @@ export default function Display() {
             <div className = "text-lg text-white font-medium">
               <h1>Attribute Importance: </h1>  
               <form className = "max-w-sm">
-                <label htmlFor = "state" className = "block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
-                <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <label htmlFor = "state" className = "block mt-1 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
+                <select id="state" className=" bg-[rgba(255,255,255,0.96)]  border-300 text-900 text-sm rounded-lg block w-full p-2.5 border-gray-600 placeholder-gray-400  text-[#2c4090]">
                 <option selected>Choose your state</option>
                 <option value="Skill Match">Skill Match</option>
                 <option value="Project Preference">Project Preference</option>
                 <option value="Classification">Classification</option>
                 </select>
-                <label htmlFor = "state" className = "block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
-                <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <label htmlFor = "state" className = "block mt-1 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
+                <select id="state" className="bg-[rgba(255,255,255,0.96)]  border-300 text-900 text-sm rounded-lg block w-full p-2.5 border-gray-600 placeholder-gray-400  text-[#2c4090]">
                 <option selected>Choose your state</option>
                 <option value="Skill Match">Skill Match</option>
                 <option value="Project Preference">Project Preference</option>
                 <option value="Classification">Classification</option>
                 </select>
-                <label htmlFor = "state" className = "block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
-                <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <label htmlFor = "state" className = "block mt-1 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
+                <select id="state" className="bg-[rgba(255,255,255,0.96)]  border-300 text-900 text-sm rounded-lg block w-full p-2.5 border-gray-600 placeholder-gray-400  text-[#2c4090]">
                 <option selected>Choose your state</option>
                 <option value="Skill Match">Skill Match</option>
                 <option value="Project Preference">Project Preference</option>
@@ -51,10 +51,13 @@ export default function Display() {
                 </select>
               </form>
             </div>
-            <div className = " mt-6 text-lg text-white font-medium">
-              <h1>Maximum Team Number: </h1> 
-              
+            <form> 
+              <div className = " mt-6 text-lg text-white font-medium">
+                <h1>Maximum Team Number: </h1> 
+              <label htmlFor = "max Number" className = "block mb-1 text-sm font-medium text-black"></label>
+              <input type="text" id="max_number" className = " bg-[rgba(255,255,255,0.96)] mt-0 bg-white-100 border border-white-0 text-black-900 text-sm rounded-lg w-full p-2.5 bg-white-500 placeholder-black-400 dark:text-black" placeholder = "Enter number here" required />
             </div>
+            </form>
         </div>
       </div>
 
