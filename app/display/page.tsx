@@ -57,10 +57,14 @@ export default function Display() {
               <label htmlFor = "max Number" className = "block mb-1 text-sm font-medium text-black"></label>
               <input type="text" id="max_number" className = " bg-[rgba(255,255,255,0.96)] mt-0 bg-white-100 border border-white-0 text-black-900 text-sm rounded-lg w-full p-2.5 bg-white-500 placeholder-black-400 dark:text-black" placeholder = "Enter number here" required />
             </div>
-            </form>
-        </div>
+            </form>     
+            <div className = "ml-0 mt-2 mb-0">
+          <button type="button" className="text-white bg-[rgba(#2c4090)] hover:bg-[rgba(#5f7ef9)] font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Generate Teams</button>
+          </div>
+          </div>
+          
       </div>
-
+      
     </div>
   );
 }
