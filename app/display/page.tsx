@@ -31,21 +31,21 @@ export default function Display() {
                 <label htmlFor = "state" className = "block mt-1 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
                 <select id="state" className=" bg-[rgba(255,255,255,0.96)]  border-300 text-900 text-sm rounded-lg block w-full p-2.5 border-gray-600 placeholder-gray-400  text-[#2c4090]">
                 <option selected>Choose your state</option>
-                <option value="Skill Match">Skill Match</option>
+                <option value="Major">Major</option>
                 <option value="Project Preference">Project Preference</option>
                 <option value="Classification">Classification</option>
                 </select>
                 <label htmlFor = "state" className = "block mt-1 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
                 <select id="state" className="bg-[rgba(255,255,255,0.96)]  border-300 text-900 text-sm rounded-lg block w-full p-2.5 border-gray-600 placeholder-gray-400  text-[#2c4090]">
                 <option selected>Choose your state</option>
-                <option value="Seniority">Seniority</option>
+                <option value="Major">Major</option>
                 <option value="Project Preference">Project Preference</option>
                 <option value="Major">Major</option>
                 </select>
                 <label htmlFor = "state" className = "block mt-1 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
                 <select id="state" className="bg-[rgba(255,255,255,0.96)]  border-300 text-900 text-sm rounded-lg block w-full p-2.5 border-gray-600 placeholder-gray-400  text-[#2c4090]">
                 <option selected>Choose your state</option>
-                <option value="Skill Match">Skill Match</option>
+                <option value="Major">Major</option>
                 <option value="Project Preference">Project Preference</option>
                 <option value="Classification">Classification</option>
                 </select>
