@@ -93,13 +93,20 @@ body {  /*rules applied to html and body*/
 
 body {
   color: rgb(var(--foreground-rgb)); /*color of the font*/
-  /*background: linear-gradient(
+  /* background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-    background-color: rgb(51, 144, 51);
+
+  /* Gradient Background */
+
+  background: linear-gradient(to bottom, #42F84E, #A0DAE7);
+  height: 100vh; 
+
+
+    background-color: rgb(84, 167, 84);
 }
 
 a {
