@@ -7,27 +7,33 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("PRISMA_DB_URL") //one youtube vide put "file:./dev/db"
+  //url      = env("PRISMA_DB_URL") //one youtube vide put "file:./dev/db"
+  url      = env("PRISMA_DB_URL")
 } 
 //get url from .env file?
 
 //to run migration, run npx prisma migrate dev, and apply to database
 
 model User {
-  netid         @id @default(cuid())  //@id makes it the primary key. cuid makes random id. uuid is unversial unique id
+  netid         String  @id @default(cuid())  //@id makes it the primary key. cuid makes random id. uuid is unversial unique id
   name          String  @default("")
   email         String  @unique
-  na            String
-
-  //posts Post[]
-
 }
 
 model Projects{
   title         String @id @default("")
-  description        String @default("")
-  partner       String @default("")
+  description   String @default("")
   partnerInfo   String @default("")
+  team          Team?
+}
+
+model Team {
+  id       Int       @id @default(autoincrement())
+  name     String
+  students Student[] //implicit many to many relationship
+
+  projectId Int       @unique
+  project   Projects  @relation(fields: [projectId], references [id])
 }
 
 model Student {
@@ -36,12 +42,7 @@ model Student {
   lastName  String
   major     String
   email     String   @unique
-  team      Team?    // This establishes a relation between Student and Team
-}
 
-// Define the schema for the Teams model
-model Team {
-  id       Int       @id @default(autoincrement())
-  name     String
-  students Student[] // This the array of students in each project team
+  teamId    Int      @unique
+  team      Team    @relation(fields: [teamId], references: [id])    // This establishes a relation between Student and Team
 }
