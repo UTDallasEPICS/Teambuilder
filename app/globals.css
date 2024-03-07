@@ -109,6 +109,11 @@ body {
     background-color: rgb(84, 167, 84);
 }
 
+.greyTransparentBackground {
+  background-color: rgba(90, 91, 88, 0.5); /* Adjust the alpha value to control transparency */
+}
+
+
 a {
   color: inherit;
   text-decoration: none;
