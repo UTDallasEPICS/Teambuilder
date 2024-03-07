@@ -1,48 +1,69 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+//start generating prisma clients. start building api routes, server network request to perform databse operations (this is how ui interacts with database)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   //url      = env("PRISMA_DB_URL") //one youtube vide put "file:./dev/db"
   url      = env("PRISMA_DB_URL")
-} 
+}
+
 //get url from .env file?
 
 //to run migration, run npx prisma migrate dev, and apply to database
 
 model User {
-  netid         String  @id @default(cuid())  //@id makes it the primary key. cuid makes random id. uuid is unversial unique id
-  name          String  @default("")
-  email         String  @unique
+  id    String @id @default(uuid()) //@id makes it the primary key. cuid makes random id. uuid is unversial unique id
+  email String @unique
+
+  @@map("users")
 }
 
-model Projects{
-  title         String @id @default("")
-  description   String @default("")
-  partnerInfo   String @default("")
-  team          Team?
+model Project {
+  id          String @id @default(uuid())
+  title       String @default("")
+  description String @default("")
+  partnerInfo String @default("") @map("partner_info") //in the future support partner info being tracked, maybe separate database
+  Team        Team[] //one to many relationship. the array means many multiple teams can hae same project id. projects don't need to keep track
+
+  @@map("projects") //this is the name of the table in the database ig
 }
 
 model Team {
-  id       Int       @id @default(autoincrement())
-  name     String
-  students Student[] //implicit many to many relationship
+  id   String @id @default(uuid())
+  name String
 
-  projectId Int       @unique
-  project   Projects  @relation(fields: [projectId], references: [id])
+  projectId     String          @unique @map("project_id")
+  Projects      Project         @relation(fields: [projectId], references: [id]) //thie establishes that every team HAS to have a corresponding project
+  TeamToStudent TeamToStudent[]
+
+  @@map("teams")
+}
+
+model TeamToStudent {
+  id        String @id @default(uuid()) //learn about at map and at/at map. for different names of models 
+  teamId    String @map("team_id")
+  studentId String @map("student_id")
+
+  team    Team    @relation(fields: [teamId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("team_to_students")
 }
 
 model Student {
-  id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
-  major     String
-  email     String   @unique
+  id                String @id @default(uuid())
+  firstName         String @map("first_name")
+  lastName          String @map("last_name")
+  major             String
+  yearsOfExperience Int    @default(0) @map("years_of_experience")
+  email             String @unique
 
-  teamId    Int      @unique
-  team      Team    @relation(fields: [teamId], references: [id])    // This establishes a relation between Student and Team
+  TeamToStudent TeamToStudent[]
+
+  @@map("students")
 }
