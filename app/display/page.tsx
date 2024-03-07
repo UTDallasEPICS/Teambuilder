@@ -18,24 +18,27 @@ export default function Display() {
         </div>
       </div>
 
-      <div className='border-solid rounded-t-3xl box-border ml-3 mr-3 bg-[rgba(90,91,88,0.49)] pl-4 pt-7 pb-11 w-full h-full'>
+      <div className='border-solid rounded-t-3xl box-border ml-3 mr-3 bg-[rgba(90,91,88,0.49)] pl-4 pt-7 pb-11'>
 
         <div className="p-8 ml-4 mt-3 mr-7 bg-[rgba(90,91,88,0.49)] rounded-xl flex flex-col">
-          <div className="text-lg text-white font-medium flex items-center">
+          <div className="text-lg text-white font-medium flex flex-row items-center ">
             <h1>Attribute Importance: </h1>  
-            <form className="max-w-sm flex flex-row"> {/* Changed flex direction */}
+            <form className="max-w-sm flex flex-row justify-between"> {/* Changed flex direction */}
+              <h1 className='text-lg text-white font-medium flex items-center pl-20'> 1 </h1>
               <select id="state1" className="inline-block bg-[rgba(255,255,255,0.96)] border-300 text-900 text-sm rounded-lg p-2.5 border-gray-600 placeholder-gray-400 text-[#2c4090]">
                 <option selected>Choose your state</option>
                 <option value="Major">Major</option>
                 <option value="Project Preference">Project Preference</option>
                 <option value="Classification">Classification</option>
               </select>
+              <h1 className='text-lg text-white font-medium flex items-center p-1'> 2 </h1>
               <select id="state2" className="inline-block bg-[rgba(255,255,255,0.96)] border-300 text-900 text-sm rounded-lg p-2.5 border-gray-600 placeholder-gray-400 text-[#2c4090]">
                 <option selected>Choose your state</option>
                 <option value="Major">Major</option>
                 <option value="Project Preference">Project Preference</option>
                 <option value="Major">Major</option>
               </select>
+              <h1 className='text-lg text-white font-medium flex items-center p-1'> 3 </h1>
               <select id="state3" className="inline-block bg-[rgba(255,255,255,0.96)] border-300 text-900 text-sm rounded-lg p-2.5 border-gray-600 placeholder-gray-400 text-[#2c4090]">
                 <option selected>Choose your state</option>
                 <option value="Major">Major</option>
