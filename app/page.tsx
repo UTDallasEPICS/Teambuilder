@@ -9,6 +9,7 @@ export default function Home() {
         <a href="dashboard">Go to Dashboard</a>
         <a href="display">Go to Display</a>
         <a href="project">Go to Project</a>
+        <a href="sign in">Go to Sign In</a>
       </div>
     </main>
   )
