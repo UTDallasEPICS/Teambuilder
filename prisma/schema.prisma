@@ -33,7 +33,7 @@ model Team {
   students Student[] //implicit many to many relationship
 
   projectId Int       @unique
-  project   Projects  @relation(fields: [projectId], references [id])
+  project   Projects  @relation(fields: [projectId], references: [id])
 }
 
 model Student {
