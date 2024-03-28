@@ -1,16 +1,22 @@
-import Image from 'logo.png'
-import styles from './page.module.css'
+
+import Layout from './layout';
 import './globals.css';
+import Navbar from  './components/Navbar'
+import Dashboard from './dashboard/page';
+import Link from 'next/link'
+
+import styles from './page.module.css'
 
 export default function Home() {
+
   return (
+
     <main className={styles.main}>
-      <div className={styles.description}>
-        <a href="dashboard">Go to Dashboard</a>
-        <a href="display">Go to Display</a>
-        <a href="project">Go to Project</a>
-        <a href="sign-in">Go to Sign In</a>
+      <Navbar/>
+      <Dashboard/>
+      <div>
+
       </div>
     </main>
-  )
+  );
 }

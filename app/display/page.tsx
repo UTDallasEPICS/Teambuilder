@@ -10,12 +10,7 @@ export default function Display() {
           <title>Display</title>
         </Head>
         
-        <div className="flex">
-          <img className='object-left-top object-contain h-32 w-64' src="logo1.png" alt="EPICS Logo" width="100"/>
-          <div>
-            <img className='object-left object-contain h-32 w-64' src="team-formation-text.png" alt="Team Formation Logo" width="100"/>
-          </div>
-        </div>
+      
       </div>
 
       <div className='border-solid rounded-t-3xl box-border ml-3 mr-3 bg-[rgba(90,91,88,0.49)] pl-4 pt-7 pb-11'>

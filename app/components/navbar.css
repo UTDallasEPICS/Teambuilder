@@ -1,0 +1,86 @@
+/*imports Jura font api*/
+@import url('https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Jura:wght@300..700&family=Open+Sans&display=swap');
+
+  
+  /* Reset default styles */
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Main navigation styling */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #2e1f31;
+    padding: 40px;
+  }
+  
+  /* Navbar list styles */
+  #navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #navbar li {
+    list-style: none;
+    padding: 0 20px;
+    position: relative;
+  }
+  
+  /* Navbar link styles */
+  #navbar li a {
+    text-decoration: none;
+    font-size: 1.3rem;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  /* Change link color on hover */
+  #navbar li a:hover {
+    color: #bf81ef;
+  }
+  
+  
+  
+  /* Brightness effect for images */
+  #navbar li a:hover img {
+    filter: brightness(100%);
+    transition: filter 0.3s ;
+  }
+  
+  
+  
+  
+  /* Container for navbar */
+  .navbar {
+    border-radius: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  
+  
+  /* Text link styles */
+  a {
+    text-decoration: none;
+  }
+  
+  /* Larger text styles */
+  .larger-text {
+    font-size: 30px; /* Adjust the size as needed */
+  }
+  
+  /* Specific link styles */
+  .chat-link,
+  .degreeplan-link {
+    margin-left: 3px;
+    margin-right: 15px;
+    font-size: 40px; /* Adjusted font size for specific links */
+  }
+  
+  
+  
+  
