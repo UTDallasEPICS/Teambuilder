@@ -12,11 +12,7 @@ export default function Home() {
   return (
 
     <main className={styles.main}>
-      <Navbar/>
-      <Dashboard/>
-      <div>
-
-      </div>
+      
     </main>
   );
 }
