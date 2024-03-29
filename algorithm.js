@@ -13,17 +13,14 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
   });
 
   //First assign manually assigned students
-  for (let sid in manuallyAssignedStudents) {
-    //Change students to map from sid to their info
-    for (let i = 0; i < tempStudents.length; i++) {
-      if (parseInt(tempStudents[i].id) === parseInt(sid)) {
-        tempStudents[i].assigned = true;
-        teams[manuallyAssignedStudents[sid]].members.push(tempStudents[i]);
-        tempStudents.splice(i, 1);
-        break;
-      }
+  Object.keys(manuallyAssignedStudents).forEach(sid => {
+    const studentIndex = tempStudents.findIndex(student => parseInt(student.id) === parseInt(sid));
+    if (studentIndex !== -1) {
+      tempStudents[studentIndex].assigned = true;
+      teams[manuallyAssignedStudents[sid]].members.push(tempStudents[studentIndex]);
+      tempStudents.splice(studentIndex, 1);
     }
-  }
+  });
 
   //Pull out all students who did not respond
   let noResponseStudents = tempStudents.filter(student => !student.response);
