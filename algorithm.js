@@ -160,34 +160,6 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
     //Value is weight ranging from 0 to 1. The closer to 0, the better spread of students by grade
     let avgScoreClass = Math.abs(teamAverageClass / totalWeighedTeams) / 2;
 
-    let skillsMet = 0;
-    //For each team find how many skills are met by its members
-    for (let team in newTeams) {
-      newTeams[team].skillsMet = 0;
-      for (let skill of newTeams[team].project.skills) {
-        for (let member of newTeams[team].members) {
-          if (member.skills.includes(skill)) {
-            skillsMet++;
-            newTeams[team].skillsMet++;
-          }
-        }
-      }
-    }
-
-    //average skills met per team
-    let avgSkillsMet = skillsMet / Object.keys(newTeams).length;
-
-    let temp = 0;
-    for (let team in newTeams) {
-      temp += Math.exp(newTeams[team].skillsMet - avgSkillsMet, 2);
-    }
-
-    let staDevSkillsMet = Math.sqrt(temp / skillsMet);
-
-    //use normalized average and coefficient of variation as weights
-    let skillsMetWeight =
-      avgSkillsMet / newTeams[Object.keys(newTeams)[0]].project.skills.length + (staDevSkillsMet / avgSkillsMet) * -0.2;
-
     let totalMembers = 0;
     for (let team in newTeams) {
       totalMembers += newTeams[team].members.length;
