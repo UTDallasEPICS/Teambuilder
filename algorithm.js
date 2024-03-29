@@ -149,27 +149,6 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
       if (teamMembers.length === 0) {
         continue;
       }
-
-      //Calculate the average choice and spread of students by classsification
-      teamMembers.forEach(student => {
-        teamTotalChoice += student.choice_num_awarded;
-        switch (student.classification) {
-          case 'Freshman':
-            teamTotalClass += -2;
-            break;
-          case 'Sophomore':
-            teamTotalClass += -1;
-            break;
-          case 'Junior':
-            teamTotalClass += 1;
-            break;
-          case 'Senior':
-            teamTotalClass += 2;
-            break;
-          default:
-            break;
-        }
-      });
       teamAverageChoice += teamTotalChoice / teamMembers.length;
       teamAverageClass += teamTotalClass / teamMembers.length;
       totalWeighedTeams++;
