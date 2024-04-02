@@ -27,52 +27,80 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
   tempStudents = tempStudents.filter(student => student.response);
 
   //Let returning students get priority in project choice first
-  for (let i = 0; i < tempStudents.length; i++) {
-    if (tempStudents[i].returning) {
-      for (let j = 0; j < tempStudents[i].choices.length; j++) {
-        if (!teams[`${tempStudents[i]?.choices[j]}`]) {
-          console.error(`${tempStudents[i]}, ${tempStudents[i]?.choices[j]} does not exist in teams list`)
-          continue
+  tempStudents.forEach(student => {
+    if (student.returning) {
+      student.choices.forEach((choice, index) => {
+        if (!teams[choice]) {
+          console.error(`${student}, ${choice} does not exist in teams list`);
+          return;
         }
-        if (teams[`${tempStudents[i].choices[j]}`].members.length < maxTeamSize) {
-          tempStudents[i].choice_num_awarded = j + 1;
-          teams[`${tempStudents[i].choices[j]}`].members.push(tempStudents[i]);
-          tempStudents.splice(i, 1);
-          break;
+        if (teams[choice].members.length < maxTeamSize) {
+          student.choice_num_awarded = index + 1;
+          teams[choice].members.push(student);
+          const studentIndex = tempStudents.findIndex(s => s === student);
+          tempStudents.splice(studentIndex, 1);
+          return;
         }
-      }
+      });
     }
-  }
+  });
 
   let teamCombos = [];
   let wrongNames = []
-  //Loop through creation of teams
+  // Loop through creation of teams
   for (let i = 0; i < 100; i++) {
-    //Make copies to start off on
+    // Make copies to start off on
     let randomStudents = JSON.parse(JSON.stringify(tempStudents));
     let newTeams = JSON.parse(JSON.stringify(teams));
-    //Shuffle students to hopefully get different results
-    for (var k = randomStudents.length - 1; k > 0; k--) {
-      var j = Math.floor(Math.random() * (k + 1));
-      let temp = randomStudents[k];
-      randomStudents[k] = randomStudents[j];
-      randomStudents[j] = temp;
-    }
-    //Place normal students in their top choices if possible
-    for (let j = randomStudents.length - 1; j >= 0; j--) {
-      for (let k = 0; k < numOfPrefProjects; k++) {
-        if (randomStudents[j].choices[k]) {
-          if (!newTeams[`${randomStudents[j].choices[k]}`]) {
-            wrongNames.push(`${randomStudents[j].name}, choice ${k+1}`)
-          } else if (newTeams[`${randomStudents[j].choices[k]}`].members.length < 3) {
-            randomStudents[j].choice_num_awarded = k + 1;
-            newTeams[`${randomStudents[j].choices[k]}`].members.push(randomStudents[j]);
-            randomStudents.splice(j, 1);
+    // Shuffle students to hopefully get different results
+    randomStudents.forEach((student, index, array) => {
+      const j = Math.floor(Math.random() * (index + 1));
+      [array[index], array[j]] = [array[j], array[index]]; // Swap elements
+    });
+    // Place normal students in their top choices if possible
+    randomStudents.forEach((student, index) => {
+      for (let k = numOfPrefProjects - 1; k >= 0; k--) {
+        if (student.choices[k]) {
+          const choice = student.choices[k];
+          if (!newTeams[choice]) {
+            wrongNames.push(`${student.name}, choice ${k + 1}`);
+          } else if (newTeams[choice].members.length < 3) {
+            student.choice_num_awarded = k + 1;
+            newTeams[choice].members.push(student);
+            randomStudents.splice(index, 1);
             break;
           }
         }
       }
-    }
+    });
+  }
+  
+    for (let i = 0; i < 100; i++) {
+      // Make copies to start off on
+      let randomStudents = JSON.parse(JSON.stringify(tempStudents));
+      let newTeams = JSON.parse(JSON.stringify(teams));
+      // Shuffle students to hopefully get different results
+      randomStudents.forEach((student, index, array) => {
+        const j = Math.floor(Math.random() * (index + 1));
+        [array[index], array[j]] = [array[j], array[index]]; // Swap elements
+      });
+      // Place normal students in their top choices if possible
+      randomStudents.forEach((student, index) => {
+        for (let k = numOfPrefProjects - 1; k >= 0; k--) {
+          if (student.choices[k]) {
+            const choice = student.choices[k];
+            if (!newTeams[choice]) {
+              wrongNames.push(`${student.name}, choice ${k + 1}`);
+            } else if (newTeams[choice].members.length < 3) {
+              student.choice_num_awarded = k + 1;
+              newTeams[choice].members.push(student);
+              randomStudents.splice(index, 1);
+              break;
+            }
+          }
+        }
+      });
+    
 
     //Try to find teams for students who still have not been placed on a team
     for (let j = randomStudents.length - 1; j >= 0; j--) {
