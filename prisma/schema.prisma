@@ -23,14 +23,13 @@ model User {
   @@map("users")
 }
 
-model Project {
-  id          String @id @default(uuid())
-  title       String @default("")
-  description String @default("")
-  partnerInfo String @default("") @map("partner_info") //in the future support partner info being tracked, maybe separate database
-  Team        Team[] //one to many relationship. the array means many multiple teams can hae same project id. projects don't need to keep track
-
-  @@map("projects") //this is the name of the table in the database ig
+model Partner {
+  name           String
+  contact_name   String @default("")
+  contact_email  String @default("")
+  projects       Project[] @relation(name: "PartnerProjects")
+  teams          Team[] @relation(name: "PartnerTeams")
+  @@map("partners")
 }
 
 model Team {
@@ -38,7 +37,7 @@ model Team {
   name String
 
   projectId     String          @unique @map("project_id")
-  Projects      Project         @relation(fields: [projectId], references: [id]) //thie establishes that every team HAS to have a corresponding project
+  Project      Project         @relation(fields: [projectId], references: [id]) //thie establishes that every team HAS to have a corresponding project
   TeamToStudent TeamToStudent[]
 
   @@map("teams")
@@ -49,8 +48,8 @@ model TeamToStudent {
   teamId    String @map("team_id")
   studentId String @map("student_id")
 
-  team    Team    @relation(fields: [teamId], references: [id])
-  student Student @relation(fields: [studentId], references: [id])
+  Team    Team    @relation(fields: [teamId], references: [id])
+  Student Student @relation(fields: [studentId], references: [id])
 
   @@map("team_to_students")
 }
