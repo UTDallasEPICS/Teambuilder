@@ -224,7 +224,7 @@ function findTeamForStudent(student, teams, numOfPrefProjects, maxTeamSize) {
   for (let i = 0; i < numOfPrefProjects && i < student.choices.length; i++) {
     let team = teams[`${student.choices[i]}`];
     if (!team) {
-      console.log(`choice ${i} for ${student.id}`, student.choices[i]);
+      console.error(`choice ${i} for ${student.id}`, student.choices[i]);
     }
     //Check if member on team has another choice which they can switch to
     for (let j = team.members.length - 1; j >= 0; j--) {
