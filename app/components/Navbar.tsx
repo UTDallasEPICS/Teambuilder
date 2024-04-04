@@ -17,25 +17,28 @@ const Navbar = () => {
 
             <ul className="hidden md:flex gap-x-6 text-white">
               <li>
-                <Link href="/dashboard">
-                  <p>Dashboard</p>
-                </Link>
-              </li>
-              <li>
-                <Link href="/display">
-                  <p>Display</p>
-                </Link>
-              </li>
-              <li>
-                <Link href="/project">
-                  <p>Project</p>
-                </Link>
-              </li>
-              <li>
                 <Link href="/sign-in">
                   <p>Sign In</p>
                 </Link>
               </li>
+              <li>
+                <Link href="/project">
+                    <p>Project</p>
+                </Link>
+                
+              </li>
+              <li>
+                <Link href="/dashboard">
+                  <p>Student Upload</p>
+                </Link>
+                
+              </li>
+              <li>
+                <Link href="/display">
+                    <p>Generate</p>
+                </Link>
+              </li>
+              
             </ul>
           </div>
         </div>
