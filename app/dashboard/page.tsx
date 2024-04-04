@@ -10,6 +10,8 @@ import { Uploader } from "uploader"; // Installed by "react-uploader".
 import { UploadButton } from "@bytescale/upload-widget-react";
 import * as Bytescale from "@bytescale/upload-widget"
 
+import ProjectCardDisplay from '../components/ProjectCardDisplay';
+
 const options = {
   apiKey: "public_kW15c1FAk3cAMZz49Pg4WYhEYckX", // Get API key: https://www.bytescale.com/get-started
   maxFileCount: 1
@@ -69,8 +71,17 @@ export default function Dashboard() {
           
           <div style={{marginLeft: '100px' }} className='flex'>
             <div className='flex-col'>
-              <h1 className=' ml-8 mt-3 text-xl'>Projects</h1>
-              <div style={{ marginLeft: '25px' , width: '270px', minHeight: '400px'}} className='customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'></div>
+              <h1 style={{fontSize: '30px'}} className=' ml-8 mt-3 '>Projects</h1>
+              <div style={{ marginLeft: '25px' , width: '270px', height: '400px', overflowY: 'auto' }} className='customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
+
+                <ProjectCardDisplay/>
+                <ProjectCardDisplay/>
+                <ProjectCardDisplay/>
+                <ProjectCardDisplay/>
+
+                
+
+              </div>
             </div>
             
           
