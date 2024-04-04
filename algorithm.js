@@ -127,31 +127,6 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
       }
     }
 
-    //go through every small team and check if students from larger teams can be swapped over
-/*     smallTeams.forEach((sTeam) => {
-      largeTeams.forEach((lTeam) => {
-        for (let k = lTeam.members.length - 1; k >= 0; k--) {
-          let member = lTeam.members[k];
-          if (member.returning || member.assigned) {
-            continue;
-          }
-
-          member.choices.forEach((choice, ind) => {
-            if (choice === sTeam.project.name) {
-              member.choice_num_awarded = ind + 1;
-              newTeams[`${sTeam.project.name}`].members.push(member);
-              newTeams[`${lTeam.project.name}`].members.splice(k, 1);
-            }
-          });
-
-          if (newTeams[`${sTeam.project.name}`].members.length >= 3) {
-            break;
-          }
-        }
-      })
-
-    }) */
-
     let unassignedReturn = 0;
     let unassignedNormal = 0;
     randomStudents.forEach(student => {
