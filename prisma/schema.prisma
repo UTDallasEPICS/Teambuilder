@@ -24,11 +24,12 @@ model User {
 }
 
 model Partner {
-  name           String
-  contact_name   String @default("")
-  contact_email  String @default("")
-  projects       Project[] @relation(name: "PartnerProjects")
-  teams          Team[] @relation(name: "PartnerTeams")
+  name          String
+  contact_name  String    @default("")
+  contact_email String    @default("")
+  projects      Project[] @relation(name: "PartnerProjects")
+  teams         Team[]    @relation(name: "PartnerTeams")
+
   @@map("partners")
 }
 
@@ -37,14 +38,14 @@ model Team {
   name String
 
   projectId     String          @unique @map("project_id")
-  Project      Project         @relation(fields: [projectId], references: [id]) //thie establishes that every team HAS to have a corresponding project
+  Project       Project         @relation(fields: [projectId], references: [id]) //this establishes that every team HAS to have a corresponding project
   TeamToStudent TeamToStudent[]
 
   @@map("teams")
 }
 
 model TeamToStudent {
-  id        String @id @default(uuid()) //learn about at map and at/at map. for different names of models 
+  id        String @id @default(uuid()) // learn about at map and at/at map. for different names of models 
   teamId    String @map("team_id")
   studentId String @map("student_id")
 

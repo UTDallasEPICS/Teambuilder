@@ -22,9 +22,10 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
     }
   });
 
-  //Pull out all students who did not respond
+  // we should GET RID OF THESE LINES... must assume all data is valid upon file upload
   let noResponseStudents = tempStudents.filter(student => !student.response);
   tempStudents = tempStudents.filter(student => student.response);
+  // end ^
 
   //Let returning students get priority in project choice first
   tempStudents.forEach(student => {
@@ -177,11 +178,11 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
       teams: newTeams,
       avgScoreChoice,
       avgScoreClass,
-      skillsMetRatio: skillsMetWeight,
+      // skillsMetRatio: skillsMetWeight,
       coVarMembers,
       unassignedReturn,
       unassignedNormal,
-      noResponseStudents,
+      // noResponseStudents,
       unassignedStudents: randomStudents
     });
   }
