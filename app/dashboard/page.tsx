@@ -39,7 +39,7 @@ export default function Dashboard() {
         </Head>
       </div>
 
-      <div style={{minHeight: '800px'}} className=' pt-10 h-screen border-solid rounded-3xl box-border m-10 bg-[rgba(90,91,88,0.33)]'>
+      <div style={{minHeight: '820px'}} className=' pt-10 h-screen border-solid rounded-3xl box-border m-10 bg-[rgba(90,91,88,0.33)]'>
 
         <div className='box-border border-solid rounded-3xl min-h-44 mt-1 mr-9 ml-5 mb-3 bg-[rgba(48,100,162,0.29)]  flex flex-col'>
           <h1 className='ml-4 mt-3 text-xl'>Instruction</h1>
@@ -86,9 +86,10 @@ export default function Dashboard() {
             
           
             <div className='flex-col'>
-              <h1 className=' ml-16 mt-3 text-xl'>Student List Preview</h1>
-              <div style={{ marginLeft: '50px' , width: '600px', minHeight: '400px'}} className='customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
-            </div>
+              <h1 style={{fontSize: '30px'}} className=' ml-16 mt-3 mb-3 text-xl'>Student List Preview</h1>
+              <div style={{ marginLeft: '50px' , width: '600px', height: '400px'}} className='customMargin  border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
+                <ProjectCardDisplay/>
+              </div>
 
             </div>
           </div>
