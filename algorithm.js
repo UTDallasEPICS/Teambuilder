@@ -103,15 +103,15 @@ export const generateTeams = ({ projects, students, manuallyAssignedStudents, nu
     
 
     //Try to find teams for students who still have not been placed on a team
-    for (let j = randomStudents.length - 1; j >= 0; j--) {
-      if (findTeamForStudent(randomStudents[j], newTeams, numOfPrefProjects, maxTeamSize)) {
-        randomStudents.splice(j, 1);
+    randomStudents.slice().reverse().forEach((student, index) => {
+      if (findTeamForStudent(student, newTeams, numOfPrefProjects, maxTeamSize)) {
+          randomStudents.splice(randomStudents.length - 1 - index, 1);
       }
-    }
+  });
 
     //Check if a student couldn't be assigned to any of their choices
     if (randomStudents.length > 1) {
-      console.log(randomStudents)
+      console.log("Remaining students: ", randomStudents.length)
       console.log('Students who responded could not be placed on team based on choices');
     }
 
