@@ -12,3 +12,4 @@ const ProjectCardDisplay = () => {
 }
 
 export default ProjectCardDisplay
+
