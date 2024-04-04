@@ -12,8 +12,12 @@
 
 /* background and font - reuseable for all pages*/
 .backgroundFont {
-  background-color: rgba(96, 241, 135, 0.9);
+  
   font-family: 'Jura', Arial, sans-serif; /* Ensure all text uses Jura */
+}
+
+.customMargin {
+  margin-left: 100px;
 }
 
 .description {
