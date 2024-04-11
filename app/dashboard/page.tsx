@@ -73,13 +73,12 @@ export default function Dashboard() {
           
             <div className='flex-col'>
               <h1 style={{fontSize: '30px'}} className=' ml-16 mt-3 mb-3 text-xl'>Student List Preview</h1>
-              <div style={{ marginLeft: '50px' , width: '600px', height: '400px'}} className='customMargin  border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
+              <div style={{ marginLeft: '50px' , minidth: '600px', height: '400px' , overflowY: 'auto' }} className='customMargin  border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
                 <StudentCardDisplay/>
                 <StudentCardDisplay/>
                 <StudentCardDisplay/>
-
+                <StudentCardDisplay/>
               </div>
-
             </div>
           </div>
 
