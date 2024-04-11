@@ -1,3 +1,5 @@
+import type {Student} from "@prisma.client"
+
 type Student = {
     major: string
     choices: string[]
@@ -52,3 +54,8 @@ type Student = {
     // ends up being a while loop with 2 conditions
   
   }
+
+  /*
+  projects are iterable. .reduce (accumuulator (su, curr (current object)
+  ))
+  team
