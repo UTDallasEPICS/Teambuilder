@@ -9,8 +9,6 @@ type Project = {
   requiredMajors: string[]
 }
 
-
-
 function setup3200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
   // get only students of class '3200' that picked choices
   // assign each 3200 student to their first choice
