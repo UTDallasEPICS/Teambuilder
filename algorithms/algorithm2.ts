@@ -58,7 +58,25 @@ function passOne(teams: Record<string, Student[]>, students: Student[], projects
   setupNoChoiceStudents(teams, students, minimumStudents, maximumStudents);
 }
 
-function passTwo() { }
+function passTwo(teams: Record<string, Student[]>, minimumStudents: number, maximumStudents: number) {
+  // balancing pass - function that takes only the teams and min/max students
+  // sort teams by least students to most
+  const teamsArray = Object.entries(teams)
+  //Sort the array by the number of students in each team
+  teamsArray.sort((a, b) => a.length - b.length)
+  // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
+  teamsArray.forEach((team) => {
+    if(team.length < minimumStudents) {
+      // find team with most students
+      const teamWithMostStudents = teamsArray.sort((a, b) => a.length - b.length)[0]
+      // find least impactful student
+      const leastImpactfulStudent = teamWithMostStudents.sort((a, b) => calcStudentImpactOnTeam(a) - calcStudentImpactOnTeam(b))[0]
+      // move student to team
+      team.push(leastImpactfulStudent)
+      teamWithMostStudents.splice(teamWithMostStudents.indexOf(leastImpactfulStudent), 1)
+    }
+  })
+}
 
 function generateTeams(students: Student[], projects: Project[], minimumStudents: number, maximumStudents: number) {
   const teams: Record<string, Student[]> = projects.reduce((acc, current) => {
@@ -70,10 +88,8 @@ function generateTeams(students: Student[], projects: Project[], minimumStudents
   // pass 1
   passOne(teams, students, projects, minimumStudents, maximumStudents)
   // pass 2
-  passTwo()
-    // balancing pass - function that takes only the teams and min/max students
-    // order teams by least students to most
-    // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
+  passTwo(teams, minimumStudents, maximumStudents)
+    
 
   // pass 3
   // can be run multiple times to achieve best average team score within 100 iterations
