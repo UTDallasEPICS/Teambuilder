@@ -9,19 +9,49 @@ type Project = {
   requiredMajors: string[]
 }
 
-
-
-function setup3200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
-  // get only students of class '3200' that picked choices
-  // assign each 3200 student to their first choice
+type Teams = {
+  Record<string, Student[]>
 }
-function setup2200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
+
+/* teams: Record(string, Student[]) = projects.reduce( (acc, curr) => {
+  return {
+
+  }
+})
+
+team function is gonna return list of arrays that include project name and students involved.
+add students with : teams[student.choices[0]].push(student)
+
+to find smallest team: 
+const smallestSize = 1000;
+const smallestTeamName = "";
+object.keys(teams).find(key = )
+  if (teams[key].length(smallestSize))
+    smallestSize = length;
+    smallestTeamName = key;
+
+*/
+
+function setup3200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) 
+{ 
+  students.forEach(student, index)
+  {
+    // boolean foundTeam = false;
+    for(const choice of students[index].choices)
+    {
+      
+    }
+  }
+}
+function setup2200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) 
+{
   // get only students of class '2200' that picked choices
   // assign student to the first choice that has room
   // for each student, for each choice, check if that choice has less than the maximum, if so assign student
   // if no choice has less than maximum, assign to first
 }
-function setupNoChoiceStudents(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
+function setupNoChoiceStudents(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) 
+{
   // get only students that didnt pick anything
   // assign these students only to teams that have less than the required minimum of students
 }
