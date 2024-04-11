@@ -14,7 +14,7 @@ export default function SignIn () {
     </Head>
 
     <h2>Login</h2>
-
+    
 
     <form style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
       <input type="text" placeholder="Username" style={{ marginBottom: '10px', padding: '10px' }} />

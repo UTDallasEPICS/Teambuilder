@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth0/auth0-react" : "1.9.0",
     "@prisma/client": "^5.6.0",
     "@types/node": "20.6.5",
     "@types/react": "^18.2.57",
