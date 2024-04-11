@@ -43,6 +43,7 @@ function setup3200Students(teams: any, students: Student[], minimumStudents:numb
     }
   }
 }
+
 function setup2200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) 
 {
   // get only students of class '2200' that picked choices
