@@ -104,11 +104,11 @@ body {
 
   /* Gradient Background */
 
-  background: linear-gradient(to bottom, #42F84E, #A0DAE7);
+  background: linear-gradient(to bottom, rgba(94, 250, 91, 0.758), #A0DAE7);
   height: 100vh; 
 
 
-    background-color: rgb(84, 167, 84);
+    
 }
 
 .greyTransparentBackground {

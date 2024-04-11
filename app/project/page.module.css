@@ -10,9 +10,7 @@
   min-height: 100vh;
 }
 
-/* background */
 .backgroundFont {
-  background-color: rgba(35, 222, 66, 0.9);
   font-family: 'Jura', Arial, sans-serif; /* Ensure all text uses Jura */
 }
 
