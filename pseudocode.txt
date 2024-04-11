@@ -8,8 +8,6 @@ type Student = {
     name: string
     requiredMajors: string[]
   }
-
- 
   
   function setup3200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
     // get only students of class '3200' that picked choices
@@ -30,8 +28,8 @@ type Student = {
   
   function calcStudentImpactOnTeam() { }
   
-  function passOne(teams: Student[], students: Student[], projects: Project[], minimumStudents: number, maximumStudents: number) {
-    setup3200Students(teams, students, projects, minimumStudents, maximumStudents)
+  function passOne() {
+    setup3200Students(teams, students, minimumStudents, maximumStudents)
     setup2200Students(teams, students, minimumStudents, maximumStudents)
     setupNoChoiceStudents(teams, students, minimumStudents, maximumStudents);
   }
@@ -41,7 +39,7 @@ type Student = {
   function generateTeams(students: Student[], projects: Project[], minimumStudents: number, maximumStudents: number) {
     const teams = {}
     // pass 1
-    passOne(teams, students, projects, minimumStudents, maximumStudents)
+    passOne()
     // pass 2
     passTwo()
       // balancing pass - function that takes only the teams and min/max students
