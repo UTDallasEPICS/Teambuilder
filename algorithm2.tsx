@@ -15,14 +15,16 @@ function setup3200Students(teams: any, students: Student[], minimumStudents:numb
 }
 
 function setup2200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
-// get only students of class '2200' that picked choices
-// assign student to the first choice that has room
-// for each student, for each choice, check if that choice has less than the maximum, if so assign student
-// if no choice has less than maximum, assign to first
+    // get only students of class '2200' that picked choices
+    // assign student to the first choice that has room
+    // for each student, for each choice, check if that choice has less than the maximum, if so assign student
+    // if no choice has less than maximum, assign to first
+
 }
 function setupNoChoiceStudents(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
-// get only students that didnt pick anything
-// assign these students only to teams that have less than the required minimum of students
+    // get only students that didnt pick anything
+    // assign these students only to teams that have less than the required minimum of students
+
 }
 
 function calcTeamScore() { }
