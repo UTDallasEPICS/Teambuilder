@@ -6,9 +6,9 @@ import dynamic from 'next/dynamic'; // Import dynamic from next/dynamic
 import Link from 'next/link';
 import React, { useRef } from 'react'; // Import React and useRef
 
-import { Uploader } from "uploader"; // Installed by "react-uploader".
-import { UploadButton } from "@bytescale/upload-widget-react";
-import * as Bytescale from "@bytescale/upload-widget"
+//import { Uploader } from "uploader"; // Installed by "react-uploader".
+//import { UploadButton } from "@bytescale/upload-widget-react";
+//import * as Bytescale from "@bytescale/upload-widget"
 
 import ProjectCardDisplay from '../components/ProjectCardDisplay';
 
@@ -21,10 +21,10 @@ export default function Dashboard() {
 
   const fileInputRef = useRef(null); // Create a ref for file input
 
-  const handleButtonClick = () => {
+  //const handleButtonClick = () => {
     // Trigger file input click when the button is clicked
-    fileInputRef.current.click();
-  };
+    //fileInputRef.current.click();
+  //};
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -58,6 +58,7 @@ export default function Dashboard() {
               style={{ display: 'none' }}
               onChange={handleFileSelect}
             />
+            {/*
             <UploadButton options={options}
                   onComplete={files => alert(files.map(x => x.fileUrl).join("\n"))}>
             {({onClick}) =>
@@ -66,6 +67,7 @@ export default function Dashboard() {
               </button>
             }
           </UploadButton>
+          */}
           </div>
 
           
