@@ -11,8 +11,9 @@ requiredMajors: string[]
 
 function setup3200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) 
 {
-
+    
 }
+
 function setup2200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) {
 // get only students of class '2200' that picked choices
 // assign student to the first choice that has room
