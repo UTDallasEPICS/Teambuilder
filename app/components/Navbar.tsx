@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import './navbar.css'
 
 const Navbar = () => {
   return (
@@ -15,10 +16,9 @@ const Navbar = () => {
               </div>
             </div>
 
-            <ul className="hidden md:flex gap-x-6 text-white">
+            <ul className="hidden md:flex gap-x-6 text-white backgroundFont">
               <li>
-                <Link href="/sign-in">
-                  <p>Sign In</p>
+                <Link href="/sign-in"> Sign In
                 </Link>
               </li>
               <li>
