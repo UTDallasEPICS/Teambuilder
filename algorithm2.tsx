@@ -34,12 +34,14 @@ object.keys(teams).find(key = )
 
 function setup3200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) 
 { 
-  students.forEach(student, index)
-  {
+  students.forEach(student, index) => {
     // boolean foundTeam = false;
-    for(const choice of students[index].choices)
+    for(const choice of students.choices)
     {
-      
+      if(choice.class = "3200")
+      {
+        teams[students.choices[0]].push(student);
+      }
     }
   }
 }
