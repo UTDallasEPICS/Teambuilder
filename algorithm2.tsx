@@ -9,29 +9,6 @@ type Project = {
   requiredMajors: string[]
 }
 
-type Teams = {
-  Record<string, Student[]>
-}
-
-/* teams: Record(string, Student[]) = projects.reduce( (acc, curr) => {
-  return {
-
-  }
-})
-
-team function is gonna return list of arrays that include project name and students involved.
-add students with : teams[student.choices[0]].push(student)
-
-to find smallest team: 
-const smallestSize = 1000;
-const smallestTeamName = "";
-object.keys(teams).find(key = )
-  if (teams[key].length(smallestSize))
-    smallestSize = length;
-    smallestTeamName = key;
-
-*/
-
 function setup3200Students(teams: any, students: Student[], minimumStudents:number, maximumStudents:number) 
 { 
   students.forEach(student, index) => {
