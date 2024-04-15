@@ -70,7 +70,7 @@ function passTwo(teams: Record<string, Student[]>, minimumStudents: number, maxi
   // sort teams by least students to most
   const teamsArray = Object.entries(teams)
   //Sort the array by the number of students in each team
-  teamsArray.sort((a, b) => a.length - b.length)
+  teamsArray.sort((a, b) => a[1].length - b[1].length)
   // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
   teamsArray.forEach((team) => {
     if(team.length < minimumStudents) {
