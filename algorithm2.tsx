@@ -55,6 +55,22 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
   })
 }
 
+/* TEAM SCORING --
+priority:
+1. major
+2. year
+3. choice
+score = (team avg. - class avg) * (# of team members / avg. team members)
+student 1 = 1.0
+student 2 = 0.8
+student 3 = 0.6
+student 4 = 0.3
+student 5 = 0.2
+student 6 = 0.1
+student 7 = 0.05
+
+maxStudents = floor(# students / # projects) + 1
+*/
 function calcTeamScore() { }
 
 function calcStudentImpactOnTeam() { }
