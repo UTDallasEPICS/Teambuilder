@@ -2,7 +2,7 @@
 import Layout from './layout';
 import './globals.css';
 import Navbar from  './components/Navbar'
-import Dashboard from './dashboard/page';
+import SignIn from './sign-in/page';
 import Link from 'next/link'
 
 // dont know where to put this yet
@@ -16,7 +16,7 @@ export default function Home() {
   return (
 
     <main className={styles.main}>
-      
+      <SignIn/>
     </main>
   );
 }

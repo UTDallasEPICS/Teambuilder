@@ -1,12 +1,11 @@
 import React from "react";
 import Link from "next/link";
-
-
+import './navbar.css'
 
 const Navbar = () => {
   return (
     <>
-      <div className="w-full h-20 bg-[#505d74] sticky top-0">
+      <div className="w-full h-20 bg-[rgb(99,168,163)] sticky top-0">
         <div className="container mx-auto px-4 h-full">
           <div className="flex justify-between items-center h-full">
             
@@ -17,10 +16,9 @@ const Navbar = () => {
               </div>
             </div>
 
-            <ul className="hidden md:flex gap-x-6 text-white">
+            <ul className="hidden md:flex gap-x-6 text-white backgroundFont">
               <li>
-                <Link href="/sign-in">
-                  <p>Sign in</p>
+                <Link href="/sign-in"> Sign In
                 </Link>
               </li>
               <li>

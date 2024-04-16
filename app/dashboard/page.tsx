@@ -4,32 +4,23 @@ import styles from './page.module.css';
 import Head from 'next/head';
 import dynamic from 'next/dynamic'; // Import dynamic from next/dynamic
 import Link from 'next/link';
-import React, { useRef } from 'react'; // Import React and useRef
-
-//import { Uploader } from "uploader"; // Installed by "react-uploader".
-//import { UploadButton } from "@bytescale/upload-widget-react";
-//import * as Bytescale from "@bytescale/upload-widget"
+import React, { useState } from 'react'; // Import React and useRef
+import {FileUploader} from '../components/FileUploader';
 
 import ProjectCardDisplay from '../components/ProjectCardDisplay';
+import StudentCardDisplay from '../components/StudentCardDisplay';
 
-const options = {
-  apiKey: "public_kW15c1FAk3cAMZz49Pg4WYhEYckX", // Get API key: https://www.bytescale.com/get-started
-  maxFileCount: 1
-};
 
 export default function Dashboard() {
 
-  const fileInputRef = useRef(null); // Create a ref for file input
+  const [fileName, setFileName] = useState("");
 
-  //const handleButtonClick = () => {
-    // Trigger file input click when the button is clicked
-    //fileInputRef.current.click();
-  //};
-
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    // Perform any file handling logic here
+  const handleFile = (file) => {
+    //Trigger file input click when the button is clicked
+    setFileName(file.name);
   };
+
+
 
   return ( 
     <div className={styles.backgroundFont}> 
@@ -52,22 +43,15 @@ export default function Dashboard() {
           
           <div>
             <input
-              ref={fileInputRef}
               type="file"
               accept="text/csv"
               style={{ display: 'none' }}
-              onChange={handleFileSelect}
             />
-            {/*
-            <UploadButton options={options}
-                  onComplete={files => alert(files.map(x => x.fileUrl).join("\n"))}>
-            {({onClick}) =>
-              <button style={{marginLeft: '20px' , marginTop: '50px'}} className=' border-solid border-8 p-1 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl' onClick={onClick}>
-                Student List Upload
-              </button>
-            }
-          </UploadButton>
-          */}
+            <FileUploader handleFile={handleFile}/>
+            <div style={{maxWidth: "210px", minHeight: "30px", padding:'3px'}} className='bg-[rgb(102,103,104)] mt-3 ml-6 mb-3 rounded-md'>
+              {fileName ? <p style={{color: 'white', fontSize: '11px', margin: '3px', wordWrap: 'break-word', width: '100%'}}>{fileName}</p> : null}
+            </div>
+           
           </div>
 
           
@@ -89,10 +73,12 @@ export default function Dashboard() {
           
             <div className='flex-col'>
               <h1 style={{fontSize: '30px'}} className=' ml-16 mt-3 mb-3 text-xl'>Student List Preview</h1>
-              <div style={{ marginLeft: '50px' , width: '600px', height: '400px'}} className='customMargin  border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
-                <ProjectCardDisplay/>
+              <div style={{ marginLeft: '50px' , minidth: '600px', height: '400px' , overflowY: 'auto' }} className='customMargin  border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
+                <StudentCardDisplay/>
+                <StudentCardDisplay/>
+                <StudentCardDisplay/>
+                <StudentCardDisplay/>
               </div>
-
             </div>
           </div>
 
