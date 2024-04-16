@@ -1,4 +1,5 @@
 type Student = {
+  name: string
   major: string
   choices: string[]
   class: '2200' | '3200'
@@ -48,7 +49,9 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
   })
 }
 
-function calcTeamScore() { }
+function calcTeamScore() { 
+  //
+}
 
 function calcStudentImpactOnTeam() { }
 
