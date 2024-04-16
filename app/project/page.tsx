@@ -4,6 +4,7 @@ import '../globals.css';
 import Navbar from '../components/Navbar';
 import ProjectCardDisplay from '../components/ProjectCardDisplay';
 import { Table } from '../components/Table';
+import { Modal } from '../components/Modal';
 
 export default function Project() {
   return (
@@ -30,6 +31,7 @@ export default function Project() {
             <div className='flex-col'>
               <h1 style={{fontSize: '30px'}} className=' ml-16 mt-3 '>Edit Project</h1>
               <div style={{ marginLeft: '50px' , width: '625px', minHeight: '300px', marginRight: '25px'}} className='customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
+                <Modal />
               </div>
 
             </div>
