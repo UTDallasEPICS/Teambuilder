@@ -32,13 +32,19 @@ model Partner {
 
   @@map("partners")
 }
+model Project{
+
+  name        String
+  team        Team
+
+}
 
 model Team {
   id   String @id @default(uuid())
   name String
 
   projectId     String          @unique @map("project_id")
-  Project       Project         @relation(fields: [projectId], references: [id]) //this establishes that every team HAS to have a corresponding project
+  project       Project         @relation(fields: [projectId], references: [id]) //this establishes that every team HAS to have a corresponding project
   TeamToStudent TeamToStudent[]
 
   @@map("teams")
