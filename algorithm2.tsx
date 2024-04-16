@@ -55,7 +55,9 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
   })
 }
 
-/* TEAM SCORING --
+/* 
+-- TEAM SCORING --
+
 priority:
 1. major
 2. year
@@ -68,12 +70,18 @@ student 4 = 0.3
 student 5 = 0.2
 student 6 = 0.1
 student 7 = 0.05
-
 maxStudents = floor(# students / # projects) + 1
-*/
-function calcTeamScore() { }
 
-function calcStudentImpactOnTeam() { }
+-----------------
+*/
+
+function calcTeamScore() { 
+  
+}
+
+function calcStudentImpactOnTeam() { 
+
+}
 
 function passOne(teams: Record<string, Student[]>, students: Student[], projects: Project[], minimumStudents: number, maximumStudents: number) {
   setup3200Students(teams, students, minimumStudents, maximumStudents)
