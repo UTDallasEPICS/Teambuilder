@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 
+
+
 const Navbar = () => {
   return (
     <>
@@ -18,7 +20,7 @@ const Navbar = () => {
             <ul className="hidden md:flex gap-x-6 text-white">
               <li>
                 <Link href="/sign-in">
-                  <p>Sign In</p>
+                  <p>Sign in</p>
                 </Link>
               </li>
               <li>
