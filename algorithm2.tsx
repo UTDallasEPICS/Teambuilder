@@ -23,7 +23,7 @@ function setup3200Students(teams: Record<string, Student[]>, students: Student[]
 function setup2200Students(teams: Record<string, Student[]>, students: Student[], minimumStudents:number, maximumStudents:number) {
   // get only students of class '2200' that picked choices
   students.forEach((student) => {
-    if (student.class === '2200' && student.choices.length > 0) {
+    if (student.class == '2200' && student.choices.length > 0) {
       for (const choice of student.choices) {
         let check = false;
         // assign student to the first choice that has room
