@@ -64,9 +64,6 @@ export default function Dashboard() {
                 <ProjectCardDisplay/>
                 <ProjectCardDisplay/>
                 <ProjectCardDisplay/>
-
-                
-
               </div>
             </div>
             
