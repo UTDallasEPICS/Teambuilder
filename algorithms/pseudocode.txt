@@ -53,9 +53,11 @@ type Student = {
     // calculate average team score, if we have run less than 100 times AND avg team deviation is less than 1 std deviation then do a pass 
     // ends up being a while loop with 2 conditions
   
+
   }
 
   /*
   projects are iterable. .reduce (accumuulator (su, curr (current object)
   ))
   team
+
