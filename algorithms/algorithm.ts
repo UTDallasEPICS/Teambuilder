@@ -1,11 +1,11 @@
-type Student = {
+export type Student = {
   name: string
   major: string
   choices: string[]
   class: '2200' | '3200'
 }
 
-type Project = {
+export type Project = {
   name: string
   requiredMajors: string[]
 }
@@ -15,8 +15,8 @@ function setup3200Students(teams: Record<string, Student[]>, students: Student[]
   students.forEach((student) => {
     if (student.class === '3200' && student.choices.length > 0) {
       // assign 3200 students to their first choice, no matter what
-      const firstChoice = student.choices[0]
-      teams[firstChoice].push(student)
+      const firstChoice = student.choices[0];
+      teams[firstChoice].push(student);
     }
   });
 }
@@ -54,6 +54,7 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
   })
 }
 
+
 /* -- TEAM SCORING --
 
    priority:
@@ -81,6 +82,7 @@ function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) {
 }
 
 // not sure what this function does... is this just the individual weight score for each student? 
+
 function calcStudentImpactOnTeam() { 
 
 }
@@ -96,7 +98,7 @@ function passTwo(teams: Record<string, Student[]>, minimumStudents: number, maxi
   // sort teams by least students to most
   const teamsArray = Object.entries(teams)
   //Sort the array by the number of students in each team
-  teamsArray.sort((a, b) => a[1].length - b[1].length)
+  teamsArray.sort((a, b) => a[1].length - b[1].length) //teamsArray.sort((a, b) => a.length - b.length)
   // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
   teamsArray.forEach((team) => {
     if(team.length < minimumStudents) {
