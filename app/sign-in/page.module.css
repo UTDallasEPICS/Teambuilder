@@ -1,19 +1,25 @@
 .container {
+    
+    
     max-width: 360px;
-    margin: 0 auto;
+    margin: 200px auto 0 auto;
     padding: 2rem;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     border-radius: 8px;
-    background-color: white;
+    background-color: rgb(99 168 163); 
+
 }
 
+
 .form {
+
     display: flex;
     flex-direction: column;
 }
 
 .heading {
     text-align: center;
+
 }
 
 .inputGroup {
@@ -28,13 +34,13 @@
 .inputGroup input {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #1a0404;
     border-radius: 4px;
 }
 
 .button {
     background-color: #0070f3;
-    color: white;
+    color: rgb(255, 255, 255);
     border: none;
     padding: 10px;
     border-radius: 4px;
@@ -59,3 +65,5 @@
 .link:hover {
     text-decoration: underline;
 }
+
+

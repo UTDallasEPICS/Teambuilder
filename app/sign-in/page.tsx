@@ -1,5 +1,7 @@
 
 "use client";
+
+
 import styles from './page.module.css';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -8,6 +10,7 @@ import React, { useRef } from 'react';
 export default function Signin() {
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -16,6 +19,17 @@ export default function Signin() {
     const password = passwordRef.current!.value;
     console.log('Login attempted with username:', username, 'and password:', password);
     // Here you might want to call an API to authenticate the user
+
+    if(username == 'epics' && password == 'epicsrocks')
+    {
+        window.location.href = '/project';
+    }
+    else
+    {
+        alert('Invalid username or password');
+    }
+
+
   };
 
   return (
@@ -26,7 +40,6 @@ export default function Signin() {
       </Head>
       
       <form onSubmit={handleSubmit} className={styles.form}>
-        <h2>Sign In</h2>
         <div className={styles.inputGroup}>
           <label htmlFor="username">Username:</label>
           <input type="text" id="username" ref={usernameRef} required />
@@ -37,9 +50,9 @@ export default function Signin() {
         </div>
         <button type="submit" className={styles.button}>Login</button>
         <p className={styles.signupPrompt}>
-          Don't have an account? <Link href="/signup">Sign up</Link>
         </p>
       </form>
     </div>
+
   );
 }
