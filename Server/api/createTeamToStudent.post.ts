@@ -1,9 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-async function createTeamToStudent(data) 
+async function createTeamToStudent(teamId, studentId) 
 {
     return prisma.teamToStudent.create({
-      data: data,
+      data: {
+        teamId: teamId,
+        studentId: studentId,
+      },
     });
   }
   
