@@ -4,12 +4,13 @@ import "./table.css"
 import {BsFillTrashFill, BsFillPencilFill} from "react-icons/bs";
 
 export const Table = () => {
-    return <div className=" m-0 pl-7 pt-2  bg-[rgba(48,100,162,0.29)] w-full"> 
-        <table style={{display: 'block', overflow: 'hidden', tableLayout: 'auto', borderCollapse: 'collapse', borderRadius: '10px', whiteSpace: 'nowrap', maxWidth: '100%', margin: 'auto', overflowX: 'auto' }}>
-            <thead style={{backgroundColor: '#ccc', color: '#222'}}>
+    return <div style={{borderRadius: '10px'}} className=" m-0  bg-[rgba(48,100,162,0.29)] w-full "> 
+        <table className="table" style={{padding: '10px', marginLeft: '15px', marginRight: '10px', display: 'block', overflow: 'hidden', tableLayout: 'auto', borderCollapse: 'collapse', whiteSpace: 'nowrap', maxWidth: '100%', margin: 'auto', overflowX: 'auto' }}>
+            <thead style={{backgroundColor: 'rgb(136, 120, 120)', color: 'white', borderRadius: '10px'}}>
                 <tr>
                     <th>Project Number</th>
                     <th className="expand">Description</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>

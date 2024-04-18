@@ -20,11 +20,11 @@ export default function Project() {
         <div style={{marginLeft: '0px' }} className='flex'>
             <div className='flex-col'>
               <h1 style={{fontSize: '30px'}} className=' ml-8 mt-3 '>Projects</h1>
-              <div style={{ marginLeft: '25px' , width: '500px', height: '300px', overflowY: 'auto' }} className='customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100vh'}}>
+              
+                
                   <Table/>
-                </div>
-              </div>
+                
+              
             </div>
             
           
