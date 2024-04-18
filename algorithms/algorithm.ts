@@ -1,11 +1,11 @@
-type Student = {
+export type Student = {
   name: string
   major: string
   choices: string[]
   class: '2200' | '3200'
 }
 
-type Project = {
+export type Project = {
   name: string
   requiredMajors: string[]
 }

@@ -1,6 +1,8 @@
 //dummy student nad project data to test with
+import { Student, Project } from './algorithm';
 
- const studentData = [
+
+ const studentData: Student[] = [
     {
         name: 'Michael Johnson',
         major: 'Electrical Engineering',
