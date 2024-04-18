@@ -26,12 +26,10 @@ function setup2200Students(teams: Record<string, Student[]>, students: Student[]
   students.forEach((student) => {
     if (student.class == '2200' && student.choices.length > 0) {
       for (const choice of student.choices) {
-        let check = false;
         // assign student to the first choice that has room
         // for each student, for each choice, check if that choice has less than the maximum, if so assign student
         if (teams[choice].length < maximumStudents) {
           teams[choice].push(student)
-          let isTeacher = true;
           break;
         }
       }
@@ -56,37 +54,42 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
   })
 }
 
-/* 
--- TEAM SCORING --
 
-priority:
-1. major
-2. year
-3. choice
-score = (team avg. - class avg) * (# of team members / avg. team members)
-student 1 = 1.0
-student 2 = 0.8
-student 3 = 0.6
-student 4 = 0.3
-student 5 = 0.2
-student 6 = 0.1
-student 7 = 0.05
-maxStudents = floor(# students / # projects) + 1
+/* -- TEAM SCORING --
 
------------------
-*/
+   priority:
+   1. major
+   2. year
+   3. choice
+   score = (team avg. - class avg) * (# of team members / avg. team members)
+   student 1 = 1.0
+   student 2 = 0.8
+   student 3 = 0.6
+   student 4 = 0.3
+   student 5 = 0.2
+   student 6 = 0.1
+   student 7 = 0.05
+   maxStudents = floor(# students / # projects) + 1
 
-function calcTeamScore() { 
+----------------- */
+
+// need to figure out what the weight for major, year, and choice is for each student (are freshman/sophomore and junior/senior a category)
+// add scores of all students together on a team and divide by scores of all teams? (does it change depending on # of students on a team?)
+// what score should we be aiming for for each team? what do we do in the case where the score is too far from our optimal score?
+function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) { 
+  let teamScore = 0;
   
 }
+
+// not sure what this function does... is this just the individual weight score for each student? 
 
 function calcStudentImpactOnTeam() { 
 
 }
 
 function passOne(teams: Record<string, Student[]>, students: Student[], projects: Project[], minimumStudents: number, maximumStudents: number) {
-  setup3200Students(teams, students, minimumStudents, maximumStudents)
-  setup2200Students(teams, students, minimumStudents, maximumStudents)
+  setup3200Students(teams, students, minimumStudents, maximumStudents);
+  setup2200Students(teams, students, minimumStudents, maximumStudents);
   setupNoChoiceStudents(teams, students, minimumStudents, maximumStudents);
 }
 
@@ -117,6 +120,7 @@ function generateTeams(students: Student[], projects: Project[], minimumStudents
       [current.name]: []
     }
   }, {})
+
   // pass 1
   passOne(teams, students, projects, minimumStudents, maximumStudents)
   // pass 2
