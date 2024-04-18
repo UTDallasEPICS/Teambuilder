@@ -1,23 +1,23 @@
 .container {
-    
-    
     max-width: 360px;
     margin: 200px auto 0 auto;
     padding: 2rem;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     border-radius: 8px;
-    background-color: rgb(99 168 163); 
+    background-color: rgba(131, 131, 131, 0.49); 
+
+    font-family: 'Jura', Arial, sans-serif;
 
 }
 
 
 .form {
-
     display: flex;
     flex-direction: column;
 }
 
 .heading {
+    
     text-align: center;
 
 }
@@ -39,7 +39,7 @@
 }
 
 .button {
-    background-color: #0070f3;
+    background-color: #e29746;
     color: rgb(255, 255, 255);
     border: none;
     padding: 10px;
@@ -49,7 +49,7 @@
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: rgba(48,100,162,0.29);
 }
 
 .text {
@@ -58,7 +58,7 @@
 }
 
 .link {
-    color: #0070f3;
+    color: #087bfd;
     text-decoration: none;
 }
 

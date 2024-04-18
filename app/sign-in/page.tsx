@@ -41,7 +41,7 @@ export default function Signin() {
       
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.inputGroup}>
-          <label htmlFor="username">Username:</label>
+          <label htmlFor="username"> Username:</label>
           <input type="text" id="username" ref={usernameRef} required />
         </div>
         <div className={styles.inputGroup}>
