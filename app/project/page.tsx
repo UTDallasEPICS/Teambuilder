@@ -1,12 +1,19 @@
+"use client";
+
 import styles from './page.module.css';
 import Head from 'next/head';
 import '../globals.css';
 import Navbar from '../components/Navbar';
 import ProjectCardDisplay from '../components/ProjectCardDisplay';
+import { useState } from 'react';
 import { Table } from '../components/Table';
 import { Modal } from '../components/Modal';
+import Display from '../display/page';
 
 export default function Project() {
+
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <div >
       
@@ -24,14 +31,20 @@ export default function Project() {
                 
                   <Table/>
                 
-              
+            <button style={{display: 'block', margin: 'auto', marginTop: '1rem', border: 'none', backgroundColor: 'aqua', color: 'white', padding: '0.5rem 1rem', borderRadius: '10px', cursor: 'pointer', boxShadow: '0px 5px 5px #ccc' }} onClick={() => setModalOpen(true)}>Add</button>
             </div>
             
           
             <div className='flex-col'>
               <h1 style={{fontSize: '30px'}} className=' ml-16 mt-3 '>Edit Project</h1>
               <div style={{ marginLeft: '50px' , width: '625px', minHeight: '300px', marginRight: '25px'}} className='customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
-                <Modal />
+                {modalOpen && (
+                  <Modal 
+                    closeModal ={() => {
+                      setModalOpen(false);
+                    }}
+                  />
+                )}
               </div>
 
             </div>

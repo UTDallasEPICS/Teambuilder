@@ -18,3 +18,33 @@
     width: 100%;
     color: black;
 }
+
+.modal .submit-btn {
+    display: block;
+    margin: auto;
+    margin-top: 1rem;
+    border: none;
+    background-color: aqua;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0px 5px 5px #ccc;
+}
+
+.project-inputs {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.project-inputs input, textarea, select {
+    border: 1px solid black;
+    border-radius: 0.3rem;
+    padding: 0.3rem;
+    font-size: 1rem;
+}
+
+.project-inputs label {
+    margin-bottom: 0.2rem;
+}

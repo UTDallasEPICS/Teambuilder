@@ -1,18 +1,26 @@
 import React from 'react';
 import "./modal.css";
 
-export const Modal = () => {
-  return ( <div className='modal-container'>
+export const Modal = ({ closeModal }) => {
+  return ( <div className='modal-container' onClick={closeModal}>
     <div className='modal'>
         <form>
-          <div>
-            <label htmlFor="project-num">Project Number</label>
-            <input name="project-num" />
+          <div className="project-inputs">
+            <label htmlFor="project-id">Project ID</label>
+            <input name="project-id" />
           </div>
-          <div>
-            <label htmlFor="project-num">Project Number</label>
-            <input name="project-num" />
+          <div className="project-inputs">
+            <label htmlFor="description">Description</label>
+            <textarea name="description" />
           </div>
+          <div className="project-inputs">
+            <label htmlFor="status">Status</label>
+            <select name="status">
+              <option value="complete">Complete</option>
+              <option value="incomplete">Incomplete</option>
+            </select>
+          </div>
+          <button type="submit" className="submit-btn">Submit</button>
         </form>
     </div>
   </div>
