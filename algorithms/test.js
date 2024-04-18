@@ -133,8 +133,10 @@ var projectData = [
         requiredMajors: ['Civil Engineering', 'Industrial Design', 'Architecture'],
     },
 ];
+
 // Output the dummy data
 console.log('Dummy Student Data:');
-console.log(studentData);
+//console.log(studentData);
 console.log('\nDummy Project Data:');
-console.log(projectData);
+//console.log(projectData);
+
