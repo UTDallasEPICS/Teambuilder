@@ -11,12 +11,22 @@ export type Project = {
 }
 
 function setup3200Students(teams: Record<string, Student[]>, students: Student[], minimumStudents:number, maximumStudents:number) {
-  // get only students of class '3200' that picked choices
+  // get only students of class '2200' that picked choices
   students.forEach((student) => {
-    if (student.class === '3200' && student.choices.length > 0) {
-      // assign 3200 students to their first choice, no matter what
-      const firstChoice = student.choices[0];
-      teams[firstChoice].push(student);
+    if (student.class == '2200' && student.choices.length > 0) {
+      let found = false
+      for (const choice of student.choices) {
+        // assign student to the first choice that has room
+        // for each student, for each choice, check if that choice has less than the maximum, if so assign student
+        if (teams[choice].length < maximumStudents) {
+          teams[choice].push(student)
+          found = true
+          break;
+        }
+      }
+      // if no choice has less than maximum, assign to smallest team among choices
+      if(!found)  
+        teams[student.choices.sort((a, b) => teams[a].length - teams[b].length)[0]].push(student)
     }
   });
 }
