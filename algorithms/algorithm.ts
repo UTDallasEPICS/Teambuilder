@@ -93,15 +93,14 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
 
 ----------------- */
 
-// need to figure out what the weight for major, year, and choice is for each student (are freshman/sophomore and junior/senior a category)
-// add scores of all students together on a team and divide by scores of all teams? (does it change depending on # of students on a team?)
-// what score should we be aiming for for each team? what do we do in the case where the score is too far from our optimal score?
+
 function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) { 
+  // (#upper/#on team) - (#upperinclass/#totalinclass)
+  // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
+  // average the above to get team score  
   let teamScore = 0;
   return teamScore;
 }
-
-// not sure what this function does... is this just the individual weight score for each student? 
 
 function calcStudentImpactOnTeam(student: Student, team: Student[]) { 
   //todo, get real algoirthm from max someday
