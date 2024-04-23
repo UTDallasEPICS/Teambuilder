@@ -102,20 +102,23 @@ function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) {
   let num1 = 0;
   let num2 = 0;
   let totalUpper = 0;
+  let totalStudents = 0;
+  let upperOnTeam = 0;
 
-  // get total number of 3200 students
+  // get total number of 3200 students and total students
   students.forEach((student) =>
   {
     if(student.class == '3200')
     {
       totalUpper++;
     }
+    totalStudents++;
   })
 
-
+  // need to find number of upper on just one team, but how to access specific team
   // how do we know which team we're finding the length of?? is that given in the parameter?
-  num1 = ((totalUpper/))
-
+  num1 = ((upperOnTeam/teams[choice].length) - (totalUpper/totalStudents));
+  num2 = 
   teamScore = (num1 + num2) / 2;
   return teamScore;
 }
