@@ -91,16 +91,18 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
    student 7 = 0.05
    maxStudents = floor(# students / # projects) + 1
 
------------------ */
+-------------------- */
 
 
 function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) { 
+  // FROM PIC (below)
   // (#upper/#on team) - (#upperinclass/#totalinclass)
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
-  // average the above to get team score  
+  // average the above to get team score
+
   let teamScore = 0;
-  let num1 = 0;
-  let num2 = 0;
+  let classScore = 0;
+  let majorScore = 0;
   let totalUpper = 0;
   let totalStudents = 0;
   let upperOnTeam = 0;
@@ -117,9 +119,9 @@ function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) {
 
   // need to find number of upper on just one team, but how to access specific team
   // how do we know which team we're finding the length of?? is that given in the parameter?
-  num1 = ((upperOnTeam/teams[choice].length) - (totalUpper/totalStudents));
-  num2 = 
-  teamScore = (num1 + num2) / 2;
+  classScore = ((upperOnTeam/teams[choice].length) - (totalUpper/totalStudents));
+  majorScore = 
+  teamScore = (classScore + majorScore) / 2;
   return teamScore;
 }
 
