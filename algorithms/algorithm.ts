@@ -13,7 +13,7 @@ export type Project = {
 function setup3200Students(teams: Record<string, Student[]>, students: Student[], minimumStudents:number, maximumStudents:number) {
   // get only students of class '2200' that picked choices
   students.forEach((student) => {
-    if (student.class == '2200' && student.choices.length > 0) {
+    if (student.class == '3200' && student.choices.length > 0) {
       let found = false
       for (const choice of student.choices) {
         // assign student to the first choice that has room
@@ -99,6 +99,22 @@ function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) {
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
   // average the above to get team score  
   let teamScore = 0;
+  let num1 = 0;
+  let num2 = 0;
+  let totalUpper = 0;
+
+  // get total number of 3200 students
+  students.forEach((student) =>
+  {
+    if(student.class == '3200')
+    {
+      totalUpper++;
+    }
+  })
+
+
+
+  teamScore = (num1 + num2) / 2;
   return teamScore;
 }
 
