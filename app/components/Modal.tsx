@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "./modal.css";
 
 export const Modal = ({ closeModal }) => {
-  return ( <div className='modal-container' onClick={closeModal}>
+  
+  return ( <div className="modal-container">
+  
+  
     <div className='modal'>
+    <button className="exit-btn" onClick={(e) => {
+    if (e.target.className === "exit-btn") closeModal();
+  }}>Exit</button>
         <form>
           <div className="project-inputs">
             <label htmlFor="project-id">Project ID</label>

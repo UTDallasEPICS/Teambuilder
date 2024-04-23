@@ -11,6 +11,16 @@
     background-color: rgb(136, 120, 120);
 }
 
+.exit-btn {
+    display: flex;
+    flex-direction: row;
+    color: red;
+    background-color: gray;
+    border: black;
+    border-radius: 4px;
+    padding: 4px;
+}
+
 .modal {
     border-radius: 5px;
     padding: 2rem;

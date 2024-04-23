@@ -14,6 +14,16 @@ export default function Project() {
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [rows, setRows] = useState([
+    {Project_name: "Project 1", description: "This is the first project", status: "complete"},
+    {Project_name: "Project 2", description: "This is the second project", status: "incomplete"},
+    {Project_name: "Project 3", description: "This is the third project", status: "incomplete"},
+  ]);
+
+  const handleDeleteRow = (targetIndex) => {
+    setRows(rows.filter((_, idx) => idx !== targetIndex))
+  };
+
   return (
     <div >
       
@@ -29,7 +39,7 @@ export default function Project() {
               <h1 style={{fontSize: '30px'}} className=' ml-8 mt-3 '>Projects</h1>
               
                 
-                  <Table/>
+                  <Table rows={rows} deleteRow={handleDeleteRow}/>
                 
             <button style={{display: 'block', margin: 'auto', marginTop: '1rem', border: 'none', backgroundColor: 'aqua', color: 'white', padding: '0.5rem 1rem', borderRadius: '10px', cursor: 'pointer', boxShadow: '0px 5px 5px #ccc' }} onClick={() => setModalOpen(true)}>Add</button>
             </div>
