@@ -1,6 +1,7 @@
 export type Student = {
   name: string;
   major: "CS" | "Other";
+  seniority: "Freshman" | "Sophomore" | "Junior" | "Senior"
   choices: string[];
   class: '2200' | '3200';
 }
@@ -11,9 +12,13 @@ export type Project = {
   requiredMajors: string[];
 }
 
+let numUpperclassmen = 0;
+let totalNumInClass = 0;
+
 function setup3200Students(teams: Record<string, Student[]>, students: Student[], minimumStudents:number, maximumStudents:number) {
   // get only students of class '2200' that picked choices
   students.forEach((student) => {
+    totalNumInClass++;
     if (student.class == '3200' && student.choices.length > 0) {
       let found = false
       for (const choice of student.choices) {
@@ -28,6 +33,10 @@ function setup3200Students(teams: Record<string, Student[]>, students: Student[]
       // if no choice has less than maximum, assign to smallest team among choices
       if(!found)  
         teams[student.choices.sort((a, b) => teams[a].length - teams[b].length)[0]].push(student)
+    }
+    if(student.seniority == "Junior" || student.seniority == "Senior")
+    {
+      numUpperclassmen++;
     }
   });
 }
@@ -95,7 +104,7 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
 -------------------- */
 
 
-function classScore(teams: Student[], students: Student[])
+function classScore(teams: Student[], students: Student[], )
 {
   let upperOnTeam = 0;
   let totalStudents = 0;
@@ -107,16 +116,15 @@ function classScore(teams: Student[], students: Student[])
     {
       upperOnTeam++;
     }
-    
   })
 
-  // find totalStudents ****
-  return ((upperOnTeam/teams.length) - (totalUpper/totalStudents));
+  return ((upperOnTeam/teams.length) - (numUpperclassmen/totalStudents));
 }
 
 function majorScore(teams: Student[], students: Student[])
 {
   let csOnTeam = 0;
+  let teamTotal = 0;
 
   students.forEach((student) =>
   {
@@ -124,7 +132,20 @@ function majorScore(teams: Student[], students: Student[])
     {
       csOnTeam++;
     }
+    teamTotal++;
   })
+
+  /* Calculate target number on team by taking total students 
+  (3200 + 2200) / total number of projects… if number is 5.6, 
+  floor it for target number, round up for the max (in passTwo function). */
+
+  let teamTarget = 0;
+
+  //find num of projects
+  teamTarget = floor(totalNumInClass / /*NUM OF PROJECTS*/);
+
+  // HOW TO FIND TARGET CS??
+  return ((csOnTeam/teamTotal) - (TARGETCS - ))
 }
 
 function calcTeamScore(teams: Student[], students: Student[]) { 
