@@ -113,6 +113,8 @@ function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) {
   })
 
 
+  // how do we know which team we're finding the length of?? is that given in the parameter?
+  num1 = ((totalUpper/))
 
   teamScore = (num1 + num2) / 2;
   return teamScore;
