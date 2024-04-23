@@ -148,7 +148,7 @@ export function generateTeams(students: Student[], projects: Project[], minimumS
     }
   }, {})
 
-  // pass 1
+  // pass 1ts
   passOne(teams, students, projects, minimumStudents, maximumStudents)
   // pass 2
   //passTwo(teams, minimumStudents, maximumStudents)
