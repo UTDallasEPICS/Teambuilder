@@ -1,13 +1,14 @@
 export type Student = {
-  name: string
-  major: string
-  choices: string[]
-  class: '2200' | '3200'
+  name: string;
+  major: "CS" | "Other";
+  choices: string[];
+  class: '2200' | '3200';
 }
 
 export type Project = {
-  name: string
-  requiredMajors: string[]
+  name: string;
+  targetCS: number;
+  requiredMajors: string[];
 }
 
 function setup3200Students(teams: Record<string, Student[]>, students: Student[], minimumStudents:number, maximumStudents:number) {
@@ -94,34 +95,46 @@ function setupNoChoiceStudents(teams: Record<string, Student[]>, students: Stude
 -------------------- */
 
 
-function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) { 
-  // FROM PIC (below)
-  // (#upper/#on team) - (#upperinclass/#totalinclass)
-  // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
-  // average the above to get team score
-
-  let teamScore = 0;
-  let classScore = 0;
-  let majorScore = 0;
-  let totalUpper = 0;
-  let totalStudents = 0;
+function classScore(teams: Student[], students: Student[])
+{
   let upperOnTeam = 0;
+  let totalStudents = 0;
 
   // get total number of 3200 students and total students
   students.forEach((student) =>
   {
     if(student.class == '3200')
     {
-      totalUpper++;
+      upperOnTeam++;
     }
-    totalStudents++;
+    
   })
 
-  // need to find number of upper on just one team, but how to access specific team
-  // how do we know which team we're finding the length of?? is that given in the parameter?
-  classScore = ((upperOnTeam/teams[choice].length) - (totalUpper/totalStudents));
-  majorScore = 
-  teamScore = (classScore + majorScore) / 2;
+  // find totalStudents ****
+  return ((upperOnTeam/teams.length) - (totalUpper/totalStudents));
+}
+
+function majorScore(teams: Student[], students: Student[])
+{
+  let csOnTeam = 0;
+
+  students.forEach((student) =>
+  {
+    if(student.major == "CS")
+    {
+      csOnTeam++;
+    }
+  })
+}
+
+function calcTeamScore(teams: Student[], students: Student[]) { 
+  // FROM PIC (below)
+  // (#upper/#on team) - (#upperinclass/#totalinclass)
+  // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
+  // average the above to get team score
+  let teamScore = 0;
+
+  teamScore = (classScore() + majorScore()) / 2;
   return teamScore;
 }
 
