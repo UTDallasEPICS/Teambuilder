@@ -24,6 +24,10 @@ export default function Project() {
     setRows(rows.filter((_, idx) => idx !== targetIndex))
   };
 
+  const handleSubmit = (newRow) => {
+    setRows([...rows, newRow])
+  }
+
   return (
     <div >
       
@@ -53,6 +57,7 @@ export default function Project() {
                     closeModal ={() => {
                       setModalOpen(false);
                     }}
+                    onSubmit={handleSubmit}
                   />
                 )}
               </div>
