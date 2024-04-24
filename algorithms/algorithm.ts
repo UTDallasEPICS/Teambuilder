@@ -191,22 +191,16 @@ function calcTeamScore(student: Student, team: Student[], teams: Record<string, 
   // (#upper/#on team) - (#upperinclass/#totalinclass)
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
   // average the above to get team score
-  let teamScore = 0;
-  teamScore = (classScore(student, team) + majorScore(student, team) + preferenceScore(student, team, teams)) / 3;
+  let teamScore = (classScore(student, team) + majorScore(student, team) + preferenceScore(student, team, teams)) / 3;
   return teamScore;
 }
 
 
-// not sure what this function does... is this just the individual weight score for each student?
+//calculates the impact of removing the student from the team
 function calcStudentImpactOnTeam(student: Student, team: Student[], teams: Record<string, Student[]>) {
-  //todo, get real algoirthm from max someday
-  let impact = 0;
-  if (student.class === "3200") {
-    impact += 1.0;
-  } else {
-    impact += 0.5;
-  }
-  return impact;
+  //filter function will create new Student[], with only the students that are not equal to student paramater
+  let teamWithoutStudent = team.filter(students => students !== student);
+  return Math.abs(calcTeamScore(student, teamWithoutStudent, teams) - calcTeamScore(student, team, teams))
 }
 
 function passOne(
