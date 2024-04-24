@@ -1,25 +1,26 @@
 export type Student = {
   name: string;
-  major: string;
+  major: "CS" | "Other";
+  seniority: "Freshman" | "Sophomore" | "Junior" | "Senior"
   choices: string[];
-  class: "2200" | "3200";
-};
+  class: '2200' | '3200';
+}
 
 export type Project = {
   name: string;
+  targetCS: number;
   requiredMajors: string[];
-};
+}
 
-function setup3200Students(
-  teams: Record<string, Student[]>,
-  students: Student[],
-  minimumStudents: number,
-  maximumStudents: number
-) {
+let numUpperclassmen = 0;
+let totalNumInClass = 0;
+
+function setup3200Students(teams: Record<string, Student[]>, students: Student[], minimumStudents:number, maximumStudents:number) {
   // get only students of class '2200' that picked choices
   students.forEach((student) => {
-    if (student.class == "3200" && student.choices.length > 0) {
-      let found = false;
+    totalNumInClass++;
+    if (student.class == '3200' && student.choices.length > 0) {
+      let found = false
       for (const choice of student.choices) {
         // assign student to the first choice that has room
         // for each student, for each choice, check if that choice has less than the maximum, if so assign student
@@ -34,6 +35,10 @@ function setup3200Students(
         teams[
           student.choices.sort((a, b) => teams[a].length - teams[b].length)[0]
         ].push(student);
+    }
+    if(student.seniority == "Junior" || student.seniority == "Senior")
+    {
+      numUpperclassmen++;
     }
   });
 }
@@ -112,18 +117,68 @@ function setupNoChoiceStudents(
    student 7 = 0.05
    maxStudents = floor(# students / # projects) + 1
 
------------------ */
+-------------------- */
+
+
+function classScore(teams: Student[], students: Student[], )
+{
+  let upperOnTeam = 0;
+  let totalStudents = 0;
+
+  // get total number of 3200 students and total students
+  students.forEach((student) =>
+  {
+    if(student.class == '3200')
+    {
+      upperOnTeam++;
+    }
+  })
+
+  return ((upperOnTeam/teams.length) - (numUpperclassmen/totalStudents));
+}
+
+function majorScore(teams: Student[], students: Student[])
+{
+  let csOnTeam = 0;
+  let teamTotal = 0;
+
+  students.forEach((student) =>
+  {
+    if(student.major == "CS")
+    {
+      csOnTeam++;
+    }
+    teamTotal++;
+  })
+
+  /* Calculate target number on team by taking total students 
+  (3200 + 2200) / total number of projects… if number is 5.6, 
+  floor it for target number, round up for the max (in passTwo function). */
+
+  let teamTarget = 0;
+
+  //find num of projects
+  teamTarget = floor(totalNumInClass / /*NUM OF PROJECTS*/);
+
+  // HOW TO FIND TARGET CS??
+  return ((csOnTeam/teamTotal) - (TARGETCS - ))
+}
 
 // need to figure out what the weight for major, year, and choice is for each student (are freshman/sophomore and junior/senior a category)
 // add scores of all students together on a team and divide by scores of all teams? (does it change depending on # of students on a team?)
 // what score should we be aiming for for each team? what do we do in the case where the score is too far from our optimal score?
-function calcTeamScore(teams: Record<string, Student[]>, students: Student[]) {
+function calcTeamScore(teams: Student[], students: Student[]) { 
+  // FROM PIC (below)
+  // (#upper/#on team) - (#upperinclass/#totalinclass)
+  // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
+  // average the above to get team score
   let teamScore = 0;
+
+  teamScore = (classScore() + majorScore()) / 2;
   return teamScore;
 }
 
 // not sure what this function does... is this just the individual weight score for each student?
-
 function calcStudentImpactOnTeam(student: Student, team: Student[]) {
   //todo, get real algoirthm from max someday
   let impact = 0;
@@ -191,7 +246,7 @@ export function generateTeams(
       [current.name]: [],
     };
   }, {});
-
+  
   // pass 1
   passOne(teams, students, projects, minimumStudents, maximumStudents);
   // pass 2
