@@ -12,7 +12,7 @@ export type Project = {
   requiredMajors: string[];
 }
 
-let numUpperclassmen = 0;
+let numUpperClassmen = 0;
 let totalNumInClass = 0;
 
 function setup3200Students(teams: Record<string, Student[]>, students: Student[], minimumStudents:number, maximumStudents:number) {
@@ -38,7 +38,7 @@ function setup3200Students(teams: Record<string, Student[]>, students: Student[]
     }
     if(student.seniority == "Junior" || student.seniority == "Senior")
     {
-      numUpperclassmen++;
+      numUpperClassmen++;
     }
   });
 }
@@ -116,38 +116,31 @@ function setupNoChoiceStudents(
    student 6 = 0.1
    student 7 = 0.05
    maxStudents = floor(# students / # projects) + 1
-
 -------------------- */
-
-
-function classScore(teams: Student[], students: Student[], )
+function classScore(student: Student, team: Student[])
 {
   let upperOnTeam = 0;
   let totalStudents = 0;
 
   // get total number of 3200 students and total students
-  students.forEach((student) =>
+  team.forEach((student) =>
   {
     if(student.class == '3200')
-    {
       upperOnTeam++;
-    }
   })
 
-  return ((upperOnTeam/teams.length) - (numUpperclassmen/totalStudents));
+  return ((upperOnTeam/team.length) - (numUpperClassmen/totalStudents));
 }
 
-function majorScore(teams: Student[], students: Student[])
+function majorScore(student: Student, team: Student[])
 {
   let csOnTeam = 0;
   let teamTotal = 0;
 
-  students.forEach((student) =>
+  team.forEach((student) =>
   {
     if(student.major == "CS")
-    {
       csOnTeam++;
-    }
     teamTotal++;
   })
 
@@ -164,30 +157,50 @@ function majorScore(teams: Student[], students: Student[])
   return ((csOnTeam/teamTotal) - (TARGETCS - ))
 }
 
+//function which calculates a score based on preference of student choices
+function preferenceScore(student: Student, team: Student[], teams: Record<string, Student[]>) { 
+  //looping through the teams record, looking for a team (Student []) that mataches with team parameter
+  Object.values(teams).forEach((currentTeam, index) => {
+    //if the team is equal to team we're looking for
+    if(JSON.stringify(team) === JSON.stringify(currentTeam)) {
+      //go through each of student choices, if is equal to teamName, then return the preferenceScore based on order of Preference
+      student.choices.forEach((teamName, i) => {
+        //if the name of team of student choice matches with name of paramter team, return the preference score 
+        if(teamName === Object.keys(teams)[index]){
+          switch(i+1) {
+            case 1: return 1.0;
+            case 2: return 0.8;
+            case 3: return 0.6;
+            case 4: return 0.3;
+            case 5: return 0.2;
+            case 6: return 0.1;
+            case 7: return 0.05;
+          }
+        }
+      })
+    }
+  })
+  return 0;
+}
+
 // need to figure out what the weight for major, year, and choice is for each student (are freshman/sophomore and junior/senior a category)
 // add scores of all students together on a team and divide by scores of all teams? (does it change depending on # of students on a team?)
 // what score should we be aiming for for each team? what do we do in the case where the score is too far from our optimal score?
-function calcTeamScore(teams: Student[], students: Student[]) { 
+function calcTeamScore(student: Student, team: Student[], teams: Record<string, Student[]>) { 
   // FROM PIC (below)
   // (#upper/#on team) - (#upperinclass/#totalinclass)
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
   // average the above to get team score
-  let teamScore = 0;
-
-  teamScore = (classScore() + majorScore()) / 2;
+  let teamScore = (classScore(student, team) + majorScore(student, team) + preferenceScore(student, team, teams)) / 3;
   return teamScore;
 }
 
-// not sure what this function does... is this just the individual weight score for each student?
-function calcStudentImpactOnTeam(student: Student, team: Student[]) {
-  //todo, get real algoirthm from max someday
-  let impact = 0;
-  if (student.class === "3200") {
-    impact += 1.0;
-  } else {
-    impact += 0.5;
-  }
-  return impact;
+
+//calculates the impact of removing the student from the team
+function calcStudentImpactOnTeam(student: Student, team: Student[], teams: Record<string, Student[]>) {
+  //filter function will create new Student[], with only the students that are not equal to student paramater
+  let teamWithoutStudent = team.filter(students => students !== student);
+  return Math.abs(calcTeamScore(student, teamWithoutStudent, teams) - calcTeamScore(student, team, teams))
 }
 
 function passOne(
@@ -210,21 +223,16 @@ function passTwo(
   // balancing pass - function that takes only the teams and min/max students
   // sort teams by least students to most
   const teamsArray = Object.values(teams);
-  //Sort the array by the number of students in each team
+  //Sort the array by the number of students in each team by low to high
   teamsArray.sort((a, b) => a.length - b.length);
   // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
   teamsArray.forEach((team) => {
     if (team.length < minimumStudents) {
       // find team with most students
-      const teamWithMostStudents = teamsArray.sort(
-        (a, b) => a.length - b.length
-      )[0];
+      const teamWithMostStudents = teamsArray.sort((a, b) => b.length - a.length)[0];
       // find least impactful student
-      const leastImpactfulStudent = teamWithMostStudents.sort(
-        (a, b) =>
-          calcStudentImpactOnTeam(a, team) - calcStudentImpactOnTeam(b, team)
-      )[0];
-      // move student to team
+      const leastImpactfulStudent = teamWithMostStudents.sort((a, b) => calcStudentImpactOnTeam(a, teamWithMostStudents, teams) - calcStudentImpactOnTeam(b, teamWithMostStudents, teams))[0];
+      // move student to team, remove student from previous big team
       team.push(leastImpactfulStudent);
       teamWithMostStudents.splice(
         teamWithMostStudents.indexOf(leastImpactfulStudent),
