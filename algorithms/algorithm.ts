@@ -132,7 +132,7 @@ function classScore(student: Student, team: Student[])
   return ((upperOnTeam/team.length) - (numUpperClassmen/totalStudents));
 }
 
-function majorScore(student: Student, team: Student[])
+function majorScore(student: Student, team: Student[], projects: Project[], targetCS: number)
 {
   let csOnTeam = 0;
   let teamTotal = 0;
@@ -151,10 +151,10 @@ function majorScore(student: Student, team: Student[])
   let teamTarget = 0;
 
   //find num of projects
-  teamTarget = floor(totalNumInClass / /*NUM OF PROJECTS*/);
+  teamTarget = Math.floor(totalNumInClass / projects.length);
 
   // HOW TO FIND TARGET CS??
-  return ((csOnTeam/teamTotal) - (TARGETCS - ))
+  return (((csOnTeam/teamTotal) - (targetCS - teamTarget)) * (teamTotal/teamTarget));
 }
 
 //function which calculates a score based on preference of student choices
