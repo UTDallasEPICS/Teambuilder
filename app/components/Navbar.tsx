@@ -5,8 +5,8 @@ import './navbar.css'
 const Navbar = () => {
   return (
     <>
-      <div className= "w-full h-20 bg-[rgba(99,168,163,0)] sticky top-0">
-        <div className="container mx-auto px-4 h-full">
+      <div className= "w-full h-20 bg-[rgba(99,168,163,0)] sticky top-0 ">
+        <div className="container mx-auto px-4 h-full bg-[#629e91]">
           <div className="flex justify-between items-center h-full">
             
             <div className="flex">
