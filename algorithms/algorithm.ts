@@ -9,7 +9,6 @@ export type Student = {
 export type Project = {
   name: string;
   targetCS: number;
-  requiredMajors: string[];
 };
 
 let numUpperClassmen = 0;

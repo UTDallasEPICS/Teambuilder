@@ -249,17 +249,14 @@ const projectData: Project[] = [
   {
     name: "Carson's Village: Automated Family Page",
     targetCS: 4,
-    requiredMajors: ["CS"],
   },
   {
     name: "ATC: Patient Data Collection App",
     targetCS: 5,
-    requiredMajors: ["CS"],
   },
   {
     name: "ATC: Sensory Devices",
     targetCS: 3,
-    requiredMajors: ["CS"],
   },
 ];
 
