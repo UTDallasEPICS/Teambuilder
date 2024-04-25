@@ -154,7 +154,7 @@ function majorScore(
 
   // HOW TO FIND TARGET CS??
   return (
-    (csOnTeam / teamTotal - (targetCS - teamTarget)) * (teamTotal / teamTarget)
+    (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) * (teamTotal / teamTarget)
   );
 }
 
