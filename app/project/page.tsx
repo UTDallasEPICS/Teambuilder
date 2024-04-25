@@ -20,13 +20,27 @@ export default function Project() {
     {Project_name: "Project 3", description: "This is the third project", status: "incomplete"},
   ]);
 
+  const [rowToEdit, setRowToEdit] = useState(null);
+
   const handleDeleteRow = (targetIndex) => {
     setRows(rows.filter((_, idx) => idx !== targetIndex))
   };
 
+  const handleEditRow = (idx) => {
+    setRowToEdit(idx);
+
+    setModalOpen(true);
+  };
+
   const handleSubmit = (newRow) => {
-    setRows([...rows, newRow])
-  }
+    rowToEdit === null ?
+    setRows([...rows, newRow]) :
+    setRows(...rows.map((currRow, idx) => {
+      if(idx !== rowToEdit) 
+        return currRow;
+      return newRow;
+    }))
+  };
 
   return (
     <div >
@@ -43,7 +57,7 @@ export default function Project() {
               <h1 style={{fontSize: '30px'}} className=' ml-8 mt-3 '>Projects</h1>
               
                 
-                  <Table rows={rows} deleteRow={handleDeleteRow}/>
+                  <Table rows={rows} deleteRow={handleDeleteRow} editRow={handleEditRow}/>
                 
             <button style={{display: 'block', margin: 'auto', marginTop: '1rem', border: 'none', backgroundColor: 'aqua', color: 'white', padding: '0.5rem 1rem', borderRadius: '10px', cursor: 'pointer', boxShadow: '0px 5px 5px #ccc' }} onClick={() => setModalOpen(true)}>Add</button>
             </div>
@@ -56,8 +70,10 @@ export default function Project() {
                   <Modal 
                     closeModal ={() => {
                       setModalOpen(false);
+                      setRowToEdit(null);
                     }}
                     onSubmit={handleSubmit}
+                    defaultValue={rowToEdit !== null && rows[rowToEdit]}
                   />
                 )}
               </div>

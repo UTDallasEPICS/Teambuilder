@@ -1,24 +1,44 @@
 import React, { useState } from 'react';
 import "./modal.css";
 
-export const Modal = ({ closeModal }) => {
-  const [formState, setFormState] = useState({
+export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
+  const [formState, setFormState] = useState(defaultValue || {
     Project_name: "",
     description: "",
     status: "complete",
   });
 
+  const [errors, setErrors] = useState("");
+
+  const validateForm = () => {
+    if(formState.Project_name && formState.description && formState.status) {
+      setErrors("");
+      return true;
+    } else {
+      let errorFields = [];
+      for(const [key, value] of Object.entries(formState)) {
+        if(!value) {
+          errorFields.push(key);
+        }
+      }
+      setErrors(errorFields.join(", "));
+      return false;
+    }
+  }
+
   const handleChange = (e) => {
     setFormState({
       ...formState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(formState);
+    if(!validateForm()) return;
+
+    onSubmit(formState)
   }
 
   return ( <div className="modal-container">
@@ -30,8 +50,8 @@ export const Modal = ({ closeModal }) => {
   }}>Exit</button>
         <form>
           <div className="project-inputs">
-            <label htmlFor="project-id">Project ID</label>
-            <input name="project-id" value={formState.Project_name} onChange={handleChange}/>
+            <label htmlFor="project-name">Project Name</label>
+            <input name="project-name" value={formState.Project_name} onChange={handleChange}/>
           </div>
           <div className="project-inputs">
             <label htmlFor="description">Description</label>
@@ -44,6 +64,7 @@ export const Modal = ({ closeModal }) => {
               <option value="incomplete">Incomplete</option>
             </select>
           </div>
+          {errors && <div className="error">{`Please include: ${errors}`}</div>}
           <button type="submit" className="submit-btn" onClick={handleSubmit}>Submit</button>
         </form>
     </div>
