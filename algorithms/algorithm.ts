@@ -15,6 +15,40 @@ export type Project = {
 let numUpperClassmen = 0;
 let totalNumInClass = 0;
 
+export function generateTeams(
+  students: Student[],
+  projects: Project[],
+  minimumStudents: number,
+  maximumStudents: number
+) {
+  const teams: Record<string, Student[]> = projects.reduce((acc, current) => {
+    return {
+      ...acc,
+      [current.name]: [],
+    };
+  }, {});
+
+  // pass 1
+  passOne(teams, students, projects, minimumStudents, maximumStudents);
+  // pass 2
+  passTwo(teams, projects, minimumStudents, maximumStudents);
+  // pass 3
+  passThree(teams, students, projects, minimumStudents, maximumStudents);
+  return teams;
+}
+
+function passOne(
+  teams: Record<string, Student[]>,
+  students: Student[],
+  projects: Project[],
+  minimumStudents: number,
+  maximumStudents: number
+) {
+  setup3200Students(teams, students, minimumStudents, maximumStudents);
+  setup2200Students(teams, students, minimumStudents, maximumStudents);
+  setupNoChoiceStudents(teams, students, minimumStudents, maximumStudents);
+}
+
 function setup3200Students(
   teams: Record<string, Student[]>,
   students: Student[],
@@ -105,8 +139,69 @@ function setupNoChoiceStudents(
   });
 }
 
-/* -- TEAM SCORING --
+function passTwo(
+  teams: Record<string, Student[]>,
+  projects: Project[],
+  minimumStudents: number,
+  maximumStudents: number
+) {
+  // balancing pass - function that takes only the teams and min/max students
+  // sort teams by least students to most
+  const teamsArray = Object.values(teams);
+  //Sort the array by the number of students in each team by low to high
+  teamsArray.sort((a, b) => a.length - b.length);
+  // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
+  teamsArray.forEach((team, index) => {
+    if (team.length < minimumStudents) {
+      // find team with most students
+      const teamWithMostStudents = teamsArray.sort(
+        (a, b) => b.length - a.length
+      )[0];
+      // find least impactful student
+      const leastImpactfulStudent = teamWithMostStudents.sort(
+        (a, b) =>
+          calcStudentImpactOnTeam(
+            a,
+            teamWithMostStudents,
+            teams,
+            projects,
+            index
+          ) -
+          calcStudentImpactOnTeam(
+            b,
+            teamWithMostStudents,
+            teams,
+            projects,
+            index
+          )
+      )[0];
+      // move student to team, remove student from previous big team
+      team.push(leastImpactfulStudent);
+      teamWithMostStudents.splice(
+        teamWithMostStudents.indexOf(leastImpactfulStudent),
+        1
+      );
+    }
+  });
+}
 
+//calculates the impact of removing the student from the team
+function calcStudentImpactOnTeam(
+  student: Student,
+  team: Student[],
+  teams: Record<string, Student[]>,
+  projects: Project[],
+  index: number
+) {
+  //filter function will create new Student[], with only the students that are not equal to student paramater
+  let teamWithoutStudent = team.filter((students) => students !== student);
+  return Math.abs(
+    calcTeamScore(student, teamWithoutStudent, teams, projects, index) -
+      calcTeamScore(student, team, teams, projects, index)
+  );
+}
+
+/* -- TEAM SCORING --
    priority:
    1. major
    2. year
@@ -114,6 +209,28 @@ function setupNoChoiceStudents(
    score = (team avg. - class avg) * (# of team members / avg. team members)
    maxStudents = floor(# students / # projects) + 1
 -------------------- */
+// need to figure out what the weight for major, year, and choice is for each student (are freshman/sophomore and junior/senior a category)
+// add scores of all students together on a team and divide by scores of all teams? (does it change depending on # of students on a team?)
+// what score should we be aiming for for each team? what do we do in the case where the score is too far from our optimal score?
+function calcTeamScore(
+  student: Student,
+  team: Student[],
+  teams: Record<string, Student[]>,
+  projects: Project[],
+  index: number
+) {
+  // FROM PIC (below)
+  // (#upper/#on team) - (#upperinclass/#totalinclass)
+  // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
+  // average the above to get team score
+  let teamScore =
+    (classScore(student, team) +
+      majorScore(student, team, projects, index) +
+      preferenceScore(student, team, teams)) /
+    3;
+  return teamScore;
+}
+
 function classScore(student: Student, team: Student[]) {
   let upperOnTeam = 0;
   let teamTotal = 0;
@@ -194,102 +311,6 @@ function preferenceScore(
   return 0;
 }
 
-// need to figure out what the weight for major, year, and choice is for each student (are freshman/sophomore and junior/senior a category)
-// add scores of all students together on a team and divide by scores of all teams? (does it change depending on # of students on a team?)
-// what score should we be aiming for for each team? what do we do in the case where the score is too far from our optimal score?
-function calcTeamScore(
-  student: Student,
-  team: Student[],
-  teams: Record<string, Student[]>,
-  projects: Project[],
-  index: number
-) {
-  // FROM PIC (below)
-  // (#upper/#on team) - (#upperinclass/#totalinclass)
-  // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
-  // average the above to get team score
-  let teamScore =
-    (classScore(student, team) +
-      majorScore(student, team, projects, index) +
-      preferenceScore(student, team, teams)) /
-    3;
-  return teamScore;
-}
-
-//calculates the impact of removing the student from the team
-function calcStudentImpactOnTeam(
-  student: Student,
-  team: Student[],
-  teams: Record<string, Student[]>,
-  projects: Project[],
-  index: number
-) {
-  //filter function will create new Student[], with only the students that are not equal to student paramater
-  let teamWithoutStudent = team.filter((students) => students !== student);
-  return Math.abs(
-    calcTeamScore(student, teamWithoutStudent, teams, projects, index) -
-      calcTeamScore(student, team, teams, projects, index)
-  );
-}
-
-function passOne(
-  teams: Record<string, Student[]>,
-  students: Student[],
-  projects: Project[],
-  minimumStudents: number,
-  maximumStudents: number
-) {
-  setup3200Students(teams, students, minimumStudents, maximumStudents);
-  setup2200Students(teams, students, minimumStudents, maximumStudents);
-  setupNoChoiceStudents(teams, students, minimumStudents, maximumStudents);
-}
-
-function passTwo(
-  teams: Record<string, Student[]>,
-  projects: Project[],
-  minimumStudents: number,
-  maximumStudents: number
-) {
-  // balancing pass - function that takes only the teams and min/max students
-  // sort teams by least students to most
-  const teamsArray = Object.values(teams);
-  //Sort the array by the number of students in each team by low to high
-  teamsArray.sort((a, b) => a.length - b.length);
-  // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
-  teamsArray.forEach((team, index) => {
-    if (team.length < minimumStudents) {
-      // find team with most students
-      const teamWithMostStudents = teamsArray.sort(
-        (a, b) => b.length - a.length
-      )[0];
-      // find least impactful student
-      const leastImpactfulStudent = teamWithMostStudents.sort(
-        (a, b) =>
-          calcStudentImpactOnTeam(
-            a,
-            teamWithMostStudents,
-            teams,
-            projects,
-            index
-          ) -
-          calcStudentImpactOnTeam(
-            b,
-            teamWithMostStudents,
-            teams,
-            projects,
-            index
-          )
-      )[0];
-      // move student to team, remove student from previous big team
-      team.push(leastImpactfulStudent);
-      teamWithMostStudents.splice(
-        teamWithMostStudents.indexOf(leastImpactfulStudent),
-        1
-      );
-    }
-  });
-}
-
 // can be run multiple times to achieve best average team score within 1000 iterations
 // calculate average team score, if we have run less than 1000 times AND avg team deviation is less than 1 std deviation then do a pass
 // ends up being a while loop with 2 conditions
@@ -327,29 +348,4 @@ function passThree(
     //run passTwo
     passTwo(teams, projects, minimumStudents, maximumStudents);
   }
-}
-
-export function generateTeams(
-  students: Student[],
-  projects: Project[],
-  minimumStudents: number,
-  maximumStudents: number
-) {
-  const teams: Record<string, Student[]> = projects.reduce((acc, current) => {
-    return {
-      ...acc,
-      [current.name]: [],
-    };
-  }, {});
-
-  // pass 1
-  passOne(teams, students, projects, minimumStudents, maximumStudents);
-
-  // pass 2
-  passTwo(teams, projects, minimumStudents, maximumStudents);
-
-  // pass 3
-  passThree(teams, students, projects, minimumStudents, maximumStudents);
-
-  return teams;
 }
