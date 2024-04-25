@@ -3,228 +3,160 @@ import { Student, Project } from "./algorithm";
 import { generateTeams } from "./algorithm";
 
 const studentData: Student[] = [
+  // Student 1
   {
     name: "Michael Johnson",
-    major: "Electrical Engineering",
+    major: "Other",
+    seniority: "Senior",
     choices: [
       "ATC: Patient Data Collection App",
       "ATC: Sensory Devices",
       "Carson's Village: Automated Family Page",
     ],
     class: "3200",
+    choicesString:
+      "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
   },
+  // Student 2
   {
     name: "Jessica Davis",
-    major: "Software Engineering",
-    choices: [
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "2200",
-  },
-  {
-    name: "David Martinez",
-    major: "Industrial Design",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-      "ATC: Sensory Devices",
-    ],
-    class: "3200",
-  },
-  {
-    name: "Emily Rodriguez",
-    major: "Graphic Design",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "3200",
-  },
-  {
-    name: "Daniel Brown",
-    major: "Computer Science",
-    choices: [
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Sarah Garcia",
-    major: "Renewable Energy",
-    choices: [
-      "ATC: Sensory Devices",
-      "ATC: Patient Data Collection App",
-      "Carson's Village: Automated Family Page",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Christopher Smith",
-    major: "Civil Engineering",
-    choices: [
-      "ATC: Patient Data Collection App",
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
-    ],
-    class: "3200",
-  },
-  {
-    name: "Jane Jones",
-    major: "Healthcare Administration",
-    choices: [
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Ashley Miller",
-    major: "Information Technology",
-    choices: [
-      "ATC: Patient Data Collection App",
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
-    ],
-    class: "2200",
-  },
-  {
-    name: "John Rodriguez",
-    major: "Human-Computer Interaction",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-      "ATC: Sensory Devices",
-    ],
-    class: "3200",
-  },
-  {
-    name: "Jessica Davis",
-    major: "Biomedical Engineering",
-    choices: [
-      "ATC: Patient Data Collection App",
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Daniel Smith",
-    major: "Nonprofit Management",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-      "ATC: Sensory Devices",
-    ],
-    class: "3200",
-  },
-  {
-    name: "Jessica Williams",
-    major: "Data Science",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Michelle Lee",
-    major: "Chemical Engineering",
-    choices: [
-      "ATC: Patient Data Collection App",
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
-    ],
-    class: "3200",
-  },
-  {
-    name: "Ryan Brown",
-    major: "Mechanical Engineering",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-      "ATC: Sensory Devices",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Sophia Garcia",
-    major: "Physics",
-    choices: [
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Brian Martinez",
-    major: "Aerospace Engineering",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "3200",
-  },
-  {
-    name: "Emma Rodriguez",
-    major: "Biomedical Sciences",
-    choices: [
-      "ATC: Patient Data Collection App",
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
-    ],
-    class: "2200",
-  },
-  {
-    name: "Matthew Nguyen",
-    major: "Mathematics",
+    major: "CS",
+    seniority: "Junior",
     choices: [
       "ATC: Sensory Devices",
       "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
     class: "3200",
+    choicesString:
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
+  // Student 3
   {
-    name: "Olivia Taylor",
-    major: "Environmental Science",
+    name: "Emily Wilson",
+    major: "CS",
+    seniority: "Senior",
+    choices: [
+      "Carson's Village: Automated Family Page",
+      "ATC: Sensory Devices",
+      "ATC: Patient Data Collection App",
+    ],
+    class: "3200",
+    choicesString:
+      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+  },
+  // Student 4
+  {
+    name: "Daniel Martinez",
+    major: "CS",
+    seniority: "Freshman",
+    choices: [
+      "Carson's Village: Automated Family Page",
+      "ATC: Patient Data Collection App",
+      "ATC: Sensory Devices",
+    ],
+    class: "3200",
+    choicesString:
+      "Carson's Village: Automated Family Page, ATC: Patient Data Collection App, ATC: Sensory Devices",
+  },
+  // Student 5
+  {
+    name: "Sarah Brown",
+    major: "CS",
+    seniority: "Sophomore",
+    choices: [
+      "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
+      "ATC: Patient Data Collection App",
+    ],
+    class: "3200",
+    choicesString:
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
+  },
+  // Student 6
+  {
+    name: "David Miller",
+    major: "Other",
+    seniority: "Senior",
     choices: [
       "ATC: Patient Data Collection App",
       "ATC: Sensory Devices",
       "Carson's Village: Automated Family Page",
     ],
-    class: "2200",
+    class: "3200",
+    choicesString:
+      "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
+  },
+  // Student 7
+  {
+    name: "Jennifer Lee",
+    major: "CS",
+    seniority: "Junior",
+    choices: [
+      "Carson's Village: Automated Family Page",
+      "ATC: Sensory Devices",
+      "ATC: Patient Data Collection App",
+    ],
+    class: "3200",
+    choicesString:
+      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+  },
+  // Student 8
+  {
+    name: "Matthew Clark",
+    major: "CS",
+    seniority: "Sophomore",
+    choices: [
+      "ATC: Patient Data Collection App",
+      "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
+    ],
+    class: "3200",
+    choicesString:
+      "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
+  },
+  // Student 9
+  {
+    name: "Olivia Rodriguez",
+    major: "Other",
+    seniority: "Senior",
+    choices: [
+      "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
+      "ATC: Patient Data Collection App",
+    ],
+    class: "3200",
+    choicesString:
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
+  },
+  // Student 10
+  {
+    name: "Ryan Taylor",
+    major: "CS",
+    seniority: "Freshman",
+    choices: [
+      "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
+      "ATC: Patient Data Collection App",
+    ],
+    class: "3200",
+    choicesString:
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
 ];
 
 const projectData: Project[] = [
   {
+    name: "Carson's Village: Automated Family Page",
+    targetCS: 4,
+  },
+  {
     name: "ATC: Patient Data Collection App",
-    requiredMajors: [
-      "Computer Science",
-      "Software Engineering",
-      "Information Technology",
-    ],
+    targetCS: 5,
   },
   {
     name: "ATC: Sensory Devices",
-    requiredMajors: [
-      "Electrical Engineering",
-      "Mechanical Engineering",
-      "Biomedical Engineering",
-    ],
-  },
-  {
-    name: "Carson's Village: Automated Family Page",
-    requiredMajors: ["Computer Science", "Web Development", "Graphic Design"],
+    targetCS: 3,
   },
 ];
 
@@ -234,4 +166,4 @@ console.log("Dummy Student Data:");
 console.log("\nDummy Project Data:");
 //console.log(projectData);
 console.log("\nTeams:");
-console.log(generateTeams(studentData, projectData, 6, 7));
+console.log(generateTeams(studentData, projectData, 6, 3));
