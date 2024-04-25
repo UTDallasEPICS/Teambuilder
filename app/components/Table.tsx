@@ -15,16 +15,17 @@ export const Table = ({ rows, deleteRow, editRow }) => {
                 </tr>
             </thead>
             <tbody>
+                {console.log("Is rows an array?", Array.isArray(rows))}
                 {
                     rows.map((row, idx) => {
                         const statusText = 
-                            row.status.charAt(0).toUpperCase() + row.status.slice(1)
+                            row.status.charAt(0).toUpperCase() + row.status.slice(1);
 
-                        return <tr key={idx}>
+                        return (<tr key={idx}>
                             <td>{row.Project_name}</td>
                             <td className="expand">{row.description}</td>
                             <td>
-                                <span className={`label label-${row.status}`}>{statusText}</span>
+                                <span className={`label label-${row.status}`}>{row.status}</span>
                             </td>
                             <td>
                                 <span className="actions">
@@ -33,6 +34,7 @@ export const Table = ({ rows, deleteRow, editRow }) => {
                                 </span>
                             </td>
                         </tr>
+                        );
                     })
                 }
             </tbody>

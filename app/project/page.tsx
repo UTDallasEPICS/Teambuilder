@@ -33,13 +33,18 @@ export default function Project() {
   };
 
   const handleSubmit = (newRow) => {
-    rowToEdit === null ?
-    setRows([...rows, newRow]) :
-    setRows(...rows.map((currRow, idx) => {
-      if(idx !== rowToEdit) 
-        return currRow;
-      return newRow;
-    }))
+    if (rowToEdit === null) {
+      setRows([...rows, newRow]); // Add a new row
+    } else {
+      // Update the specific row
+      setRows(
+        rows.map((currRow, idx) => (idx === rowToEdit ? newRow : currRow))
+      );
+    }
+    // Reset rowToEdit state after submission
+    setRowToEdit(null);
+
+    
   };
 
   return (

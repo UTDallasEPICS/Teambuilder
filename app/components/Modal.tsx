@@ -38,7 +38,9 @@ export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
 
     if(!validateForm()) return;
 
-    onSubmit(formState)
+    onSubmit(formState);
+
+    closeModal();
   }
 
   return ( <div className="modal-container">
@@ -50,8 +52,8 @@ export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
   }}>Exit</button>
         <form>
           <div className="project-inputs">
-            <label htmlFor="project-name">Project Name</label>
-            <input name="project-name" value={formState.Project_name} onChange={handleChange}/>
+            <label htmlFor="Project_name">Project Name</label>
+            <input name="Project_name" value={formState.Project_name} onChange={handleChange}/>
           </div>
           <div className="project-inputs">
             <label htmlFor="description">Description</label>
