@@ -120,15 +120,17 @@ function setupNoChoiceStudents(
 function classScore(student: Student, team: Student[])
 {
   let upperOnTeam = 0;
+  let teamTotal = 0;
 
   // get total number of 3200 students and total students
   team.forEach((student) =>
   {
     if(student.class == '3200')
       upperOnTeam++;
+    teamTotal++;
   })
 
-  return ((upperOnTeam/team.length) - (numUpperClassmen/totalNumInClass));
+  return ((upperOnTeam/teamTotal) - (numUpperClassmen/totalNumInClass));
 }
 
 function majorScore(student: Student, team: Student[], projects: Project[], targetCS: number)
