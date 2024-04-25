@@ -35,6 +35,7 @@ model Partner {
 model Project{
 
   name        String
+  targetCS    Int @map("target_cs")
   team        Team
 
 }
@@ -66,7 +67,8 @@ model Student {
   firstName         String @map("first_name")
   lastName          String @map("last_name")
   major             String
-  yearsOfExperience Int    @default(0) @map("years_of_experience")
+  seniority         String @default("") @map("years_of_experience")
+  class             String 
   email             String @unique
 
   TeamToStudent TeamToStudent[]
