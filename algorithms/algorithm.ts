@@ -242,12 +242,41 @@ function passTwo(
   });
 }
 
-export function generateTeams(
-  students: Student[],
-  projects: Project[],
-  minimumStudents: number,
-  maximumStudents: number
-) {
+// can be run multiple times to achieve best average team score within 1000 iterations
+// calculate average team score, if we have run less than 1000 times AND avg team deviation is less than 1 std deviation then do a pass
+// ends up being a while loop with 2 conditions
+function passThree(teams: Record<string, Student[]>,  students: Student[],  projects: Project[],  minimumStudents: number,  maximumStudents: number) {
+  for(let i = 0; i < 1000; i++) {
+    let avgTeamScore = 0;
+    let totalTeams = 0;
+    Object.values(teams).forEach((team) => {
+      let teamScore = 0;
+      team.forEach((student) => {
+        teamScore += calcTeamScore(student, team, teams);
+      });
+      avgTeamScore += teamScore / team.length;
+      totalTeams++;
+    });
+    avgTeamScore = avgTeamScore / totalTeams;
+    //calculate standard deviation
+    let stdDev = 0;
+    Object.values(teams).forEach((team) => {
+      let teamScore = 0;
+      team.forEach((student) => {
+        teamScore += calcTeamScore(student, team, teams);
+      });
+      stdDev += Math.pow((teamScore / team.length) - avgTeamScore, 2);
+    });
+    stdDev = Math.sqrt(stdDev / totalTeams);
+    //if the standard deviation is less than 1, break out of the loop
+    if(stdDev < 1)
+      break;
+    //run passTwo
+    passTwo(teams, minimumStudents, maximumStudents);
+  }
+}
+
+export function generateTeams(students: Student[],  projects: Project[],  minimumStudents: number,  maximumStudents: number) {
   const teams: Record<string, Student[]> = projects.reduce((acc, current) => {
     return {
       ...acc,
@@ -257,13 +286,12 @@ export function generateTeams(
   
   // pass 1
   passOne(teams, students, projects, minimumStudents, maximumStudents);
+
   // pass 2
   //passTwo(teams, minimumStudents, maximumStudents)
 
   // pass 3
-  // can be run multiple times to achieve best average team score within 100 iterations
-  // calculate average team score, if we have run less than 100 times AND avg team deviation is less than 1 std deviation then do a pass
-  // ends up being a while loop with 2 conditions
+  passThree(teams, students, projects, minimumStudents, maximumStudents);
 
   return teams;
 }
