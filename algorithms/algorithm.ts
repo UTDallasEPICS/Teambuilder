@@ -209,9 +209,7 @@ function calcStudentImpactOnTeam(
    score = (team avg. - class avg) * (# of team members / avg. team members)
    maxStudents = floor(# students / # projects) + 1
 -------------------- */
-// need to figure out what the weight for major, year, and choice is for each student (are freshman/sophomore and junior/senior a category)
-// add scores of all students together on a team and divide by scores of all teams? (does it change depending on # of students on a team?)
-// what score should we be aiming for for each team? what do we do in the case where the score is too far from our optimal score?
+
 function calcTeamScore(
   student: Student,
   team: Student[],
@@ -219,10 +217,11 @@ function calcTeamScore(
   projects: Project[],
   index: number
 ) {
-  // FROM PIC (below)
+
   // (#upper/#on team) - (#upperinclass/#totalinclass)
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
   // average the above to get team score
+
   let teamScore =
     (classScore(student, team) +
       majorScore(student, team, projects, index) +
@@ -267,7 +266,6 @@ function majorScore(
   //find num of projects
   teamTarget = Math.floor(totalNumInClass / projects.length);
 
-  // HOW TO FIND TARGET CS??
   return (
     (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
     (teamTotal / teamTarget)
