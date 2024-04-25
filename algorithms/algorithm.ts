@@ -152,7 +152,8 @@ function majorScore(
 
   // HOW TO FIND TARGET CS??
   return (
-    (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) * (teamTotal / teamTarget)
+    (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
+    (teamTotal / teamTarget)
   );
 }
 
@@ -324,7 +325,7 @@ function passThree(
     //if the standard deviation is less than 1, break out of the loop
     if (stdDev < 1) break;
     //run passTwo
-    passTwo(teams, minimumStudents, maximumStudents);
+    passTwo(teams, projects, minimumStudents, maximumStudents);
   }
 }
 
