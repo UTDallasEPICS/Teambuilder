@@ -13,7 +13,7 @@ const studentData: Student[] = [
       "ATC: Sensory Devices",
       "Carson's Village: Automated Family Page",
     ],
-    class: "3200",
+    class: "2200",
     choicesString:
       "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
   },
@@ -27,7 +27,7 @@ const studentData: Student[] = [
       "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
-    class: "3200",
+    class: "2200",
     choicesString:
       "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
@@ -55,7 +55,7 @@ const studentData: Student[] = [
       "ATC: Patient Data Collection App",
       "ATC: Sensory Devices",
     ],
-    class: "3200",
+    class: "2200",
     choicesString:
       "Carson's Village: Automated Family Page, ATC: Patient Data Collection App, ATC: Sensory Devices",
   },
@@ -69,7 +69,7 @@ const studentData: Student[] = [
       "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
-    class: "3200",
+    class: "2200",
     choicesString:
       "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
@@ -111,7 +111,7 @@ const studentData: Student[] = [
       "ATC: Sensory Devices",
       "Carson's Village: Automated Family Page",
     ],
-    class: "3200",
+    class: "2200",
     choicesString:
       "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
   },
@@ -139,7 +139,7 @@ const studentData: Student[] = [
       "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
-    class: "3200",
+    class: "2200",
     choicesString:
       "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
@@ -148,11 +148,11 @@ const studentData: Student[] = [
 const projectData: Project[] = [
   {
     name: "Carson's Village: Automated Family Page",
-    targetCS: 4,
+    targetCS: 2,
   },
   {
     name: "ATC: Patient Data Collection App",
-    targetCS: 5,
+    targetCS: 2,
   },
   {
     name: "ATC: Sensory Devices",
@@ -166,4 +166,4 @@ console.log("Dummy Student Data:");
 console.log("\nDummy Project Data:");
 //console.log(projectData);
 console.log("\nTeams:");
-console.log(generateTeams(studentData, projectData, 6, 3));
+console.log(generateTeams(studentData, projectData, 3, 4));
