@@ -119,14 +119,12 @@ function classScore(student: Student, team: Student[]) {
   let teamTotal = 0;
 
   // get total number of 3200 students and total students
-  team.forEach((student) =>
-  {
-    if(student.class == '3200')
-      upperOnTeam++;
+  team.forEach((student) => {
+    if (student.class == "3200") upperOnTeam++;
     teamTotal++;
-  })
+  });
 
-  return ((upperOnTeam/teamTotal) - (numUpperClassmen/totalNumInClass));
+  return upperOnTeam / teamTotal - numUpperClassmen / totalNumInClass;
 }
 
 function majorScore(
@@ -304,10 +302,10 @@ function passThree(
   for (let i = 0; i < 1000; i++) {
     let avgTeamScore = 0;
     let totalTeams = 0;
-    Object.values(teams).forEach((team) => {
+    Object.values(teams).forEach((team, index) => {
       let teamScore = 0;
       team.forEach((student) => {
-        teamScore += calcTeamScore(student, team, teams);
+        teamScore += calcTeamScore(student, team, teams, projects, index);
       });
       avgTeamScore += teamScore / team.length;
       totalTeams++;
@@ -315,10 +313,10 @@ function passThree(
     avgTeamScore = avgTeamScore / totalTeams;
     //calculate standard deviation
     let stdDev = 0;
-    Object.values(teams).forEach((team) => {
+    Object.values(teams).forEach((team, index) => {
       let teamScore = 0;
       team.forEach((student) => {
-        teamScore += calcTeamScore(student, team, teams);
+        teamScore += calcTeamScore(student, team, teams, projects, index);
       });
       stdDev += Math.pow(teamScore / team.length - avgTeamScore, 2);
     });
