@@ -3,6 +3,7 @@ export type Student = {
   major: "CS" | "Other";
   seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
   choices: string[];
+  choicesString: string;
   class: "2200" | "3200";
 };
 
@@ -28,30 +29,28 @@ export function generateTeams(
   }, {});
 
   // pass 1
-  passOne(teams, students, projects, minimumStudents, maximumStudents);
+  passOne(teams, students, minimumStudents, maximumStudents);
   // pass 2
   passTwo(teams, projects, minimumStudents, maximumStudents);
   // pass 3
-  passThree(teams, students, projects, minimumStudents, maximumStudents);
+  //passThree(teams, students, projects, minimumStudents, maximumStudents);
   return teams;
 }
 
 function passOne(
   teams: Record<string, Student[]>,
   students: Student[],
-  projects: Project[],
   minimumStudents: number,
   maximumStudents: number
 ) {
-  setup3200Students(teams, students, minimumStudents, maximumStudents);
-  setup2200Students(teams, students, minimumStudents, maximumStudents);
-  setupNoChoiceStudents(teams, students, minimumStudents, maximumStudents);
+  setup3200Students(teams, students, maximumStudents);
+  setup2200Students(teams, students, maximumStudents);
+  setupNoChoiceStudents(teams, students, minimumStudents);
 }
 
 function setup3200Students(
   teams: Record<string, Student[]>,
   students: Student[],
-  minimumStudents: number,
   maximumStudents: number
 ) {
   // get only students of class '2200' that picked choices
@@ -74,16 +73,14 @@ function setup3200Students(
           student.choices.sort((a, b) => teams[a].length - teams[b].length)[0]
         ].push(student);
     }
-    if (student.seniority == "Junior" || student.seniority == "Senior") {
+    if (student.seniority == "Junior" || student.seniority == "Senior")
       numUpperClassmen++;
-    }
   });
 }
 
 function setup2200Students(
   teams: Record<string, Student[]>,
   students: Student[],
-  minimumStudents: number,
   maximumStudents: number
 ) {
   // get only students of class '2200' that picked choices
@@ -111,8 +108,7 @@ function setup2200Students(
 function setupNoChoiceStudents(
   teams: Record<string, Student[]>,
   students: Student[],
-  minimumStudents: number,
-  maximumStudents: number
+  minimumStudents: number
 ) {
   // get only students that didnt pick anything
   students.forEach((student) => {
@@ -144,6 +140,7 @@ function passTwo(
   minimumStudents: number,
   maximumStudents: number
 ) {
+  console.log("passTwo");
   // balancing pass - function that takes only the teams and min/max students
   // sort teams by least students to most
   const teamsArray = Object.values(teams);
@@ -192,6 +189,7 @@ function calcStudentImpactOnTeam(
   projects: Project[],
   index: number
 ) {
+  console.log("calcStudentImpactOnTeam");
   //filter function will create new Student[], with only the students that are not equal to student paramater
   let teamWithoutStudent = team.filter((students) => students !== student);
   return Math.abs(
@@ -208,7 +206,6 @@ function calcStudentImpactOnTeam(
    score = (team avg. - class avg) * (# of team members / avg. team members)
    maxStudents = floor(# students / # projects) + 1
 -------------------- */
-
 function calcTeamScore(
   student: Student,
   team: Student[],
@@ -216,11 +213,10 @@ function calcTeamScore(
   projects: Project[],
   index: number
 ) {
-
-  // (#upper/#on team) - (#upperinclass/#totalinclass)
+  console.log("calcTeamScore");
+ // (#upper/#on team) - (#upperinclass/#totalinclass)
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
   // average the above to get team score
-
   let teamScore =
     (classScore(student, team) +
       majorScore(student, team, projects, index) +
@@ -232,7 +228,7 @@ function calcTeamScore(
 function classScore(student: Student, team: Student[]) {
   let upperOnTeam = 0;
   let teamTotal = 0;
-
+  console.log("classScore");
   // get total number of 3200 students and total students
   team.forEach((student) => {
     if (student.class == "3200") upperOnTeam++;
@@ -248,23 +244,19 @@ function majorScore(
   projects: Project[],
   index: number
 ) {
+  console.log("majorScore");
   let csOnTeam = 0;
   let teamTotal = 0;
-
   team.forEach((student) => {
     if (student.major == "CS") csOnTeam++;
     teamTotal++;
   });
-
   /* Calculate target number on team by taking total students 
   (3200 + 2200) / total number of projects… if number is 5.6, 
   floor it for target number, round up for the max (in passTwo function). */
-
   let teamTarget = 0;
-
   //find num of projects
   teamTarget = Math.floor(totalNumInClass / projects.length);
-
   return (
     (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
     (teamTotal / teamTarget)
@@ -277,6 +269,7 @@ function preferenceScore(
   team: Student[],
   teams: Record<string, Student[]>
 ) {
+  console.log("preferenceScore");
   //looping through the teams record, looking for a team (Student []) that mataches with team parameter
   Object.values(teams).forEach((currentTeam, index) => {
     //if the team is equal to team we're looking for
