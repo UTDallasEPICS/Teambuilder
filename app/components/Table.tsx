@@ -9,8 +9,9 @@ export const Table = ({ rows, deleteRow, editRow }) => {
             <thead style={{backgroundColor: 'rgb(136, 120, 120)', color: 'white', borderRadius: '10px'}}>
                 <tr>
                     <th>Project Name</th>
-                    <th className="expand">Description</th>
-                    <th>Status</th>
+                    <th className="expand">Project Partner</th>
+                    <th>CS Target #</th>
+                    <th>Archived</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -19,13 +20,14 @@ export const Table = ({ rows, deleteRow, editRow }) => {
                 {
                     rows.map((row, idx) => {
                         const statusText = 
-                            row.status.charAt(0).toUpperCase() + row.status.slice(1);
+                            row.archive.charAt(0).toUpperCase() + row.archive.slice(1);
 
                         return (<tr key={idx}>
                             <td>{row.Project_name}</td>
-                            <td className="expand">{row.description}</td>
+                            <td className="expand">{row.Project_partner}</td>
+                            <td>{row.CS_target_number}</td>
                             <td>
-                                <span className={`label label-${row.status}`}>{row.status}</span>
+                                <span className={`label label-${row.archive}`}>{row.archive}</span>
                             </td>
                             <td>
                                 <span className="actions">

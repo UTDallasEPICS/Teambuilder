@@ -4,14 +4,15 @@ import "./modal.css";
 export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
   const [formState, setFormState] = useState(defaultValue || {
     Project_name: "",
-    description: "",
-    status: "complete",
+    Project_partner: "",
+    CS_target_number: 0,
+    archive: "No",
   });
 
   const [errors, setErrors] = useState("");
 
   const validateForm = () => {
-    if(formState.Project_name && formState.description && formState.status) {
+    if(formState.Project_name && formState.Project_partner && formState.CS_target_number && formState.archive) {
       setErrors("");
       return true;
     } else {
@@ -56,12 +57,16 @@ export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
             <input name="Project_name" value={formState.Project_name} onChange={handleChange}/>
           </div>
           <div className="project-inputs">
-            <label htmlFor="description">Description</label>
-            <textarea name="description" value={formState.description} onChange={handleChange}/>
+            <label htmlFor="Project_partner">Project Partner</label>
+            <textarea name="Project_partner" value={formState.Project_partner} onChange={handleChange}/>
           </div>
           <div className="project-inputs">
-            <label htmlFor="status">Status</label>
-            <select name="status" value={formState.status} onChange={handleChange}>
+            <label htmlFor="CS_target_number">CS Target #</label>
+            <textarea name="CS_target_number" value={formState.CS_target_number} onChange={handleChange}/>
+          </div>
+          <div className="project-inputs">
+            <label htmlFor="archive">Archived</label>
+            <select name="archive" value={formState.archive} onChange={handleChange}>
               <option value="complete">Complete</option>
               <option value="incomplete">Incomplete</option>
             </select>
