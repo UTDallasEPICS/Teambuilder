@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function Display() {
   return (
-    <div className='border-solid rounded-3xl box-border m-10 bg-[rgba(48,100,162,0.29)]' style={{minHeight:'900px', minWidth:'500px'}}>
+    <div className='border-solid rounded-3xl box-border m-10 ' style={{minHeight:'900px', minWidth:'500px'}}>
       <div>
         <Head>
           <title>Display</title>
