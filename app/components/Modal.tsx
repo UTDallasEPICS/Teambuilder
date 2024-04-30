@@ -67,8 +67,8 @@ export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
           <div className="project-inputs">
             <label htmlFor="archive">Archived</label>
             <select name="archive" value={formState.archive} onChange={handleChange}>
-              <option value="complete">Complete</option>
-              <option value="incomplete">Incomplete</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
             </select>
           </div>
           {errors && <div className="error">{`Please include: ${errors}`}</div>}

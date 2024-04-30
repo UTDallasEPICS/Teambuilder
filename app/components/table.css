@@ -22,11 +22,11 @@
     color: white;
 }
 
-.label-complete {
+.label-Yes {
     background-color: green;
 }
 
-.label-incomplete {
+.label-No {
     background-color: rgb(226, 45, 45);
 }
 
