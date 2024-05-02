@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 
+
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -93,14 +95,26 @@ body {  /*rules applied to html and body*/
 
 body {
   color: rgb(var(--foreground-rgb)); /*color of the font*/
-  /*background: linear-gradient(
+  /* background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-    background-color: rgb(51, 144, 51);
+
+  /* Gradient Background */
+
+  background: linear-gradient(to bottom, rgba(94, 250, 91, 0.758), #A0DAE7);
+  height: 100vh; 
+
+
+    
 }
+
+.greyTransparentBackground {
+  background-color: rgba(90, 91, 88, 0.5); /* Adjust the alpha value to control transparency */
+}
+
 
 a {
   color: inherit;
