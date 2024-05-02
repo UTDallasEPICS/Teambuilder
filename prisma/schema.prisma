@@ -1,6 +1,5 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-//start generating prisma clients. start building api routes, server network request to perform databse operations (this is how ui interacts with database)
 
 generator client {
   provider = "prisma-client-js"
@@ -8,13 +7,8 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  //url      = env("PRISMA_DB_URL") //one youtube vide put "file:./dev/db"
   url      = env("PRISMA_DB_URL")
 }
-
-//get url from .env file?
-
-//to run migration, run npx prisma migrate dev, and apply to database
 
 model User {
   id    String @id @default(uuid()) //@id makes it the primary key. cuid makes random id. uuid is unversial unique id
@@ -24,30 +18,35 @@ model User {
 }
 
 model Partner {
+  id           String @id @default(uuid())
   name          String
   contact_name  String    @default("")
   contact_email String    @default("")
-  projects      Project[] @relation(name: "PartnerProjects")
-  teams         Team[]    @relation(name: "PartnerTeams")
+  Projects      Project[]
+  Teams         Team[]    
 
   @@map("partners")
 }
-model Project{
 
-  name        String
-  targetCS    Int @map("target_cs")
-  team        Team
+model Project {
+  id           String @id @default(uuid())
+  name         String
+  targetCS     Int    @map("target_cs")
+  Teams        Team[]
+  partnerId  String         @map("partner_id")
+  Partner  Partner @relation(fields: [partnerId], references: [id]) 
 
+  @@map("projects")
 }
 
 model Team {
-  id   String @id @default(uuid())
-  name String
-
-  projectId     String          @unique @map("project_id")
-  project       Project         @relation(fields: [projectId], references: [id]) //this establishes that every team HAS to have a corresponding project
-  TeamToStudent TeamToStudent[]
-
+  id         String         @id @default(uuid())
+  name       String
+  projectId  String         @map("project_id")
+  Project    Project        @relation(fields: [projectId], references: [id]) 
+  Students TeamToStudent[]
+  partnerId  String         @map("partner_id")
+  Partner  Partner @relation(fields: [partnerId], references: [id]) 
   @@map("teams")
 }
 
@@ -63,13 +62,13 @@ model TeamToStudent {
 }
 
 model Student {
-  id                String @id @default(uuid())
-  firstName         String @map("first_name")
-  lastName          String @map("last_name")
-  major             String
-  seniority         String @default("") @map("years_of_experience")
-  class             String 
-  email             String @unique
+  id          String   @id @default(uuid())
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  major       String
+  seniority   String   @default("") @map("years_of_experience")
+  class       String 
+  email       String   @unique
 
   TeamToStudent TeamToStudent[]
 

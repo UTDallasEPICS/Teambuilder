@@ -11,6 +11,7 @@ import ProjectCardDisplay from '../components/ProjectCardDisplay';
 import StudentCardDisplay from '../components/StudentCardDisplay';
 
 
+
 export default function Dashboard() {
 
   const [fileName, setFileName] = useState("");
@@ -34,9 +35,9 @@ export default function Dashboard() {
 
       <div style={{minHeight: '820px'}} className=' pt-10 h-screen border-solid rounded-3xl box-border m-10 bg-[rgba(90,91,88,0.33)]'>
 
-        <div className='box-border border-solid rounded-3xl min-h-44 mt-1 mr-9 ml-5 mb-3 bg-[rgba(48,100,162,0.29)]  flex flex-col'>
+        <div className='box-border border-solid rounded-3xl min-h-28 mt-1 mr-9 ml-5 mb-3 bg-[rgba(48,100,162,0.29)]  flex flex-col'>
           <h1 className='ml-4 mt-3 text-xl'>Instruction</h1>
-          <h2 className='ml-4 mt-2 mr-3'>Upload your student list here as an excel sheet. make sure you have these columns: blah blah blah. Thxxxx</h2>
+          <h2 className='ml-4 mt-2 mr-3'>Upload your student list here as an excel sheet. Make sure you have these columns in your CSV file: Student ID, First Name, Last Name, Major, Seniority, and Project Preferences. </h2>
         </div>
 
         
