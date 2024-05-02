@@ -15,9 +15,7 @@ export default function Project() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [rows, setRows] = useState([
-    {Project_name: "Project 1", Project_partner: "This is the first project", CS_target_number: 0, archive: "complete"},
-    {Project_name: "Project 2", Project_partner: "This is the second project", CS_target_number: 0, archive: "incomplete"},
-    {Project_name: "Project 3", Project_partner: "This is the third project", CS_target_number: 0, archive: "incomplete"},
+    
   ]);
 
   const [rowToEdit, setRowToEdit] = useState(null);
