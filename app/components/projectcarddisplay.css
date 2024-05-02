@@ -7,11 +7,16 @@
 .isNew{
   background: hsl(136, 84%, 66%);
   height: 8px;
-  width: 8px;
 }
 
 .semester{
   background: hsl(300, 87%, 73%);
   height: 20px;
   width: 50px;
+}
+
+.student{
+  background: hsl(41, 91%, 69%);
+  height: 20px;
+  min-width: 50px;
 }
