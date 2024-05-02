@@ -37,3 +37,5 @@ next-env.d.ts
 
 # Postgres database
 postgres-data
+
+dev.db
