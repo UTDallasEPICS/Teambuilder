@@ -10,8 +10,8 @@
 }
 
 /* background */
-.backgroundFont {
-  background-color: rgba(163, 173, 165, 0.9);
+.backgroundFont, ::placeholder {
+  
   font-family: 'Jura', Arial, sans-serif; /* Ensure all text uses Jura */
 }
 
