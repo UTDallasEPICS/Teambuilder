@@ -51,8 +51,8 @@ export default function Project() {
           <h1 className="ml-4 mt-3 text-xl">Instruction</h1>
           <h2 className="ml-4 mt-2 mr-3">
             Upload your project information here. Be sure to enter project name,
-            project partner, target # of CS majors, and whether it is an
-            archived project. Once you are ready, click Submit.
+            project partner, target # of CS majors, and whether it is an archived project.
+            Once you are ready, click Submit.
           </h2>
         </div>
         <br></br>
