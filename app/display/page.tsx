@@ -14,11 +14,10 @@ export default function Display() {
 
   const handleGenerateTeams = () => {
     const input = document.getElementById('max_number');
-    const maxTeamSize = input.value.trim();
-    if (maxTeamSize) {
-      setMaxTeamSize(parseInt(maxTeamSize)); // Convert input to integer and set state
+    const enteredValue = input.value.trim();
+    if (enteredValue > 0) {
+      setMaxTeamSize(parseInt(enteredValue));
     } else {
-      // Handle error if input is empty
       alert('Please enter a valid maximum team size');
     }
   };
@@ -38,7 +37,7 @@ export default function Display() {
             <input type="text" id="max_number" className="w-55 bg-[rgba(255,255,255,0.96)] ml-10 bg-white-100 border border-white-0 text-black-900 text-sm rounded-lg p-2.5 bg-white-500 placeholder-black-400 dark:text-black mt-5" placeholder="Enter number here" required />
           </div>
           <div className="ml-0 mt-2 mb-0">
-            <button type="button" className="ml-3 text-white bg-[rgba(96,241,135,0.9)] dark:hover:bg-[rgba(128,172,108,0.9)] font-medium rounded-xl text-lg px-5 py-2.5 me-2 mb-2 focus:outline-none backgroundFont">Generate Teams</button>
+          <button type="button" onClick={handleGenerateTeams} className="ml-3 text-white bg-[rgba(96,241,135,0.9)] dark:hover:bg-[rgba(128,172,108,0.9)] font-medium rounded-xl text-lg px-5 py-2.5 me-2 mb-2 focus:outline-none backgroundFont">Generate Teams</button>
           </div>
         </form>     
       </div>
@@ -65,13 +64,17 @@ export default function Display() {
           <p className='backgroundFont' style={{marginLeft:'80px', fontSize:'20px'}}>Unassigned Students</p>
           <p className='backgroundFont' style={{marginLeft:'80px', marginBottom:'5px'}}>Count: X</p>
           <div className='border-solid rounded-3xl box-border bg-[rgba(48,100,162,0.29)]' style={{height:'450px', width:'350px', margin:'20px', marginLeft:'80px' , marginTop:'0px', overflowY:'scroll'}}>
-            <UnassignedStudents/>
-            <UnassignedStudents/>
-            <UnassignedStudents/>
-            <UnassignedStudents/>
-            <UnassignedStudents/>
-            <UnassignedStudents/>
-
+          {maxTeamSize && ( 
+            <>
+              <UnassignedStudents/>
+              <UnassignedStudents/>
+              <UnassignedStudents/>
+              <UnassignedStudents/>
+              <UnassignedStudents/>
+              <UnassignedStudents/>
+            </>
+            
+          )}
           </div>
           
         </div>
@@ -79,10 +82,14 @@ export default function Display() {
           <p className='backgroundFont' style={{marginLeft:'80px', fontSize:'20px'}}>Project Status</p>
           <p className='backgroundFont' style={{marginLeft:'80px', marginBottom:'5px'}}>Incomplete: X</p>
           <div className='border-solid rounded-3xl box-border bg-[rgba(48,100,162,0.29)]' style={{height:'450px', width:'350px', margin:'20px', marginLeft:'80px' , marginTop:'0px', overflowY:'scroll'}}>
-            <ProjectMatch/>
-            <ProjectMatch/>
-            <ProjectMatch/>
-            <ProjectMatch/>
+            {maxTeamSize && ( 
+                <>
+                  <ProjectMatch/>
+                  <ProjectMatch/>
+                  <ProjectMatch/>
+                  <ProjectMatch/>
+                </>
+              )}
           </div>
         </div>
       </div>
