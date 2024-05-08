@@ -8,7 +8,9 @@ This project is the Spring 2024 EPICS Team formation project. The core technolog
 - [ReactJS](https://www.react.dev): A front-end Javascript library for building UI based on components
 - [Next.js](https://nextjs.org): A full stack web development framework
 - [Prisma](https://prisma.io): A database ORM used to connect Next.js to a database
-- [SQLite](https://www.sqlite.org/){:target="_blank"}: An open source SQL database
+[SQLite](https://www.sqlite.org/){:target="_blank"}: An open source SQL database
+
+
 
 Figma Wireframe: [Click Here!](https://www.figma.com/file/pQIawhFYojSBtXk5qAHGEz/Wireframe?type=design&node-id=0%3A1&mode=design&t=zdtVvztLlWfwChsV-1)
 
