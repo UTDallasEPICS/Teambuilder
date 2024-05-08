@@ -1,0 +1,58 @@
+# Sample workflow for building and deploying a Next.js site to GitHub Pages
+#
+# To get started with Next.js see: https://nextjs.org/docs/getting-started
+#
+name: Test Next.js build
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Runs on any open or reopened pull request
+  pull_request:
+    types: [opened, reopened]
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  POSTGRES_PORT: 5432
+  POSTGRES_PASSWORD: postgres
+  PRISMA_DB_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/Hydrogen"
+          cache: npm
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            .next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Install dependencies
+        run: npm ci
+      - name: Create Prisma Generator
+        run: |
+          if [ grep -q '^model*' ${{ github.workspace }}/prisma/schema.prisma ]; then
+            npm prisma generate
+          else
+            echo "No models defined in 'prisma.schema'. Prisma Client NOT generated"
+          fi
+          exit 0
+      - name: Build with Next.js
+        run: npm run build

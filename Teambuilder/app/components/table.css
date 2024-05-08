@@ -1,0 +1,44 @@
+.table th, .table td {
+    padding: 0.8rem;
+}
+
+.table td {
+    border-top: 0.5px solid #ddd;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table tbody tr:hover {
+    background-color: #ff0000;
+}
+
+.expand {
+    width: 100%;
+}
+
+.label {
+    border-radius: 3px;
+    padding: 0.3rem;
+    color: white;
+}
+
+.label-Yes {
+    background-color: green;
+}
+
+.label-No {
+    background-color: rgb(226, 45, 45);
+}
+
+.actions {
+    display: flex;
+    justify-content: space-around;
+}
+
+.actions svg {
+    cursor: pointer;
+}
+
+.delete-btn {
+    color: rgb(214, 13, 13);
+}

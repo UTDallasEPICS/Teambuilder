@@ -1,0 +1,20 @@
+/* background and font - reuseable for all pages*/
+.backgroundFont {
+  
+  font-family: 'Jura', Arial, sans-serif; /* Ensure all text uses Jura */
+}
+
+.container {
+  max-width: 100%; /* Adjust according to your layout */
+  padding-left: 0; /* Remove padding on the left */
+}
+
+.flex {
+  justify-content: flex-start; /* Aligns children (logos) to the start (left) */
+}
+
+/* Ensure no left padding or margin that can push content away from the edge */
+.pb-5, .pt-4 {
+  padding-bottom: 0;
+  padding-top: 0;
+}
