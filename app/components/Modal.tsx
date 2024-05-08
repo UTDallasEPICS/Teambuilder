@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import "./modal.css";
 
+//Takes in parameters for checking if Modal is closed, submission handling, and default value of projects
 export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
-  const [formState, setFormState] = useState(defaultValue || {
+  const [formState, setFormState] = useState(defaultValue || {  //This is the default value for new projects
     Project_name: "",
     Project_partner: "",
     CS_target_number: 0,
@@ -11,6 +12,9 @@ export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
 
   const [errors, setErrors] = useState("");
 
+  //validateForm checks if certain fields have values inputted and sends an error if one is missing
+  //It gives an error stating which fields are missing
+  //it returns true if all fields are valid and not empty
   const validateForm = () => {
     if(formState.Project_name && formState.Project_partner && formState.CS_target_number && formState.archive) {
       setErrors("");
@@ -27,6 +31,7 @@ export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
     }
   }
 
+  //handles the change in fields by updating them using formState
   const handleChange = (e) => {
     setFormState({
       ...formState,
@@ -34,6 +39,8 @@ export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
     });
   };
 
+  //handles the submission of a Project and checks for any errors
+  //Closes modal if everything is fine
   const handleSubmit = (e) => {
     e.preventDefault();
 

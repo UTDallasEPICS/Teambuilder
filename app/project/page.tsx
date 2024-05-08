@@ -11,18 +11,19 @@ import { Modal } from "../components/Modal";
 import Display from "../display/page";
 
 export default function Project() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);  //set state of Modal to be closed
 
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState([]); //set state of Rows of Projects to be empty
 
-  const [rowToEdit, setRowToEdit] = useState(null);
+  const [rowToEdit, setRowToEdit] = useState(null); //set state of editing a project to null as you aren't editing a project
 
   const handleDeleteRow = (targetIndex) => {
-    setRows(rows.filter((_, idx) => idx !== targetIndex));
+    setRows(rows.filter((_, idx) => idx !== targetIndex));  //filters throw the Projects to find the Project to delete based on index
   };
 
-  const handleEditRow = (idx) => {
-    setRowToEdit(idx);
+  //handles project editing and opens Modal
+  const handleEditRow = (idx) => {  
+    setRowToEdit(idx);  
 
     setModalOpen(true);
   };
@@ -43,10 +44,7 @@ export default function Project() {
   return (
     <div>
       <br></br>
-      <div
-        style={{ minHeight: "780px", borderRadius: "24px" }}
-        className="h-screen border-solid rounded-t-3xl box-border m-10 bg-[rgba(90,91,88,0.49)] pl-4 pt-7 "
-      >
+      <div style={{ minHeight: "780px", borderRadius: "24px" }} className="h-screen border-solid rounded-t-3xl box-border m-10 bg-[rgba(90,91,88,0.49)] pl-4 pt-7 ">
         <div className="box-border border-solid rounded-3xl min-h-28 mt-1 mr-9 ml-5 mb-3 bg-[rgba(48,100,162,0.29)]  flex flex-col">
           <h1 className="ml-4 mt-3 text-xl">Instruction</h1>
           <h2 className="ml-4 mt-2 mr-3">
@@ -68,21 +66,9 @@ export default function Project() {
               editRow={handleEditRow}
             />
 
-            <button
-              style={{
-                display: "block",
-                margin: "auto",
-                marginTop: "1rem",
-                border: "none",
-                backgroundColor: "aqua",
-                color: "white",
-                padding: "0.5rem 1rem",
-                borderRadius: "10px",
-                cursor: "pointer",
-                boxShadow: "0px 5px 5px #ccc",
-              }}
-              onClick={() => setModalOpen(true)}
-            >
+            <button style={{ display: "block", margin: "auto", marginTop: "1rem", border: "none", backgroundColor: "aqua", color: "white", padding: "0.5rem 1rem", borderRadius: "10px", cursor: "pointer", boxShadow: "0px 5px 5px #ccc",
+              }} //opens Modal when clicked
+              onClick={() => setModalOpen(true)}  > 
               Add
             </button>
           </div>
@@ -97,17 +83,15 @@ export default function Project() {
                 width: "475px",
                 minHeight: "300px",
                 marginRight: "25px",
-              }}
-              className="customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col"
-            >
+              }} className="customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col">
               {modalOpen && (
-                <Modal
-                  closeModal={() => {
+                <Modal  //closes Modal
+                  closeModal={() => { 
                     setModalOpen(false);
                     setRowToEdit(null);
                   }}
-                  onSubmit={handleSubmit}
-                  defaultValue={rowToEdit !== null && rows[rowToEdit]}
+                  onSubmit={handleSubmit} //handles submission
+                  defaultValue={rowToEdit !== null && rows[rowToEdit]}  //checks if a Project should be edited
                 />
               )}
             </div>

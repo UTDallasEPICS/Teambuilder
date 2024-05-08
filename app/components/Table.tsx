@@ -3,11 +3,15 @@ import "./table.css"
 
 import {BsFillTrashFill, BsFillPencilFill} from "react-icons/bs";
 
+//This is the table for projects
+//thead contains all the attributes that make up a project
+//tbody renders each project into the table and makes it visible on the webpage
+
 export const Table = ({ rows, deleteRow, editRow }) => {
     return <div style={{borderRadius: '10px'}} className=" m-0  bg-[rgba(48,100,162,0.29)] w-full "> 
         <table className="table" style={{padding: '10px', marginLeft: '15px', marginRight: '10px', display: 'block', overflow: 'hidden', tableLayout: 'auto', borderCollapse: 'collapse', whiteSpace: 'nowrap', maxWidth: '100%', margin: 'auto', overflowX: 'auto' }}>
             <thead style={{backgroundColor: 'rgb(136, 120, 120)', color: 'white', borderRadius: '10px'}}>
-                <tr>
+                <tr> 
                     <th>Project Name</th>
                     <th className="expand">Project Partner</th>
                     <th>CS Target #</th>
