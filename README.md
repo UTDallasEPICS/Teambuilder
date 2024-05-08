@@ -11,7 +11,7 @@ Figma Wireframe: [Click Here!](https://www.figma.com/file/pQIawhFYojSBtXk5qAHGEz
 
 ## Conceptual Overview
 
-The EPICS Team Builder project aims to streamline the team formation process for UTDesign EPICS staff at the University of Texas at Dallas. It provides a user-friendly interface for uploading student data and inputting project details. The project uses an optimized algorithm for the selection of project teams based on criteria such as major, project preference, and seniority. The intended users are EPICS staff, who will upload student data, input project details, and generate project teams.
+The EPICS Team Builder project aims to streamline the team formation process for UTDesign EPICS staff at the University of Texas at Dallas. The project emphasizes a simple, easy-to-navigate user interface in which UTDesign staff can easily upload student data and input the semester’s projects and desired majors for each team and an output containing the most efficient combination of team members for the projects for the semester. The project uses an optimized algorithm for the selection of project teams based on criteria such as major, project preference, and seniority. The intended users are EPICS staff, who will upload student data, input project details, and generate project teams.
 
 ## Functional Requirements
 - Sign-In Page: EPICS staff access this page to authenticate themselves before gaining access to student data and project details. It ensures security by requiring users to sign in with their credentials, allowing only authorized staff to proceed.
@@ -35,23 +35,6 @@ As this project is just intended for UTDesign staff and contains sensitive stude
 ## Migration
 Does not require any data to be migrated from existing systems. 
 
-<!-- markdownlint-disable-next-line MD033 -->
-<details><summary><h2>Resources for Reference</h2></summary>
-
-- [Getting Started](#getting-started)
-
-- [Running This Project](#running-this-project)
-- [Learn More](#learn-more)
-  - [Learn HTML, CSS, JavaScript, and TypeScript](#learn-html-css-javascript-and-typescript)
-    - [HTML](#html)
-    - [CSS](#css)
-    - [JavaScript](#javascript)
-    - [TypeScript](#typescript)
-  - [Learn Next.js](#learn-nextjs)
-  - [Learn Prisma](#learn-prisma)
-
-</details>
-
 ## Getting Started
 
 1. Setup your development environment to ensure you have everything installed to run the project (see the [prerequisites section](#prerequisites)).
@@ -61,10 +44,42 @@ Does not require any data to be migrated from existing systems.
 
 
 ## Running This Project
+You will need to install software such as Node.js and React.js. Once you have these: 
+1. Clone this GitHub repository.
+2. Enter `npm install` in the terminal
+3. To run frontend, enter `npm run dev` in the terminal
+4. To test out the algorithm using the dummy data in the test file, in terminal run:
 
-First, run the development server:
+      `npm install -g tsx`
+
+      `cd algorithms`
+  
+      `tsx test.ts`
+  
+5. To run the database, enter `npx prisma studio`, which will take you to the uninitialized database.
+
+As of now, we do not have the database or algorithm connected to the frontend. The algorithms works but runs separately in the terminal, and the database using Prisma and SQLite has not been connected to the frontend, primarily due to time constraints and the plans of future migration of the project from Next.js to Nuxt.js.
 
 
+
+## Installing Prerequisites
+
+In order to run this project, a few technologies are required:
+
+- [React.js](https://www.react.dev)
+- [Node.js](https://nodejs.org)
+
+React.js transforms web development by extending JavaScript to create dynamic and responsive user interfaces. It simplifies the development process with a declarative syntax and a component-based architecture, enabling easier maintenance and scalability. With React.js, developers seamlessly integrate front-end and back-end functionality for simpler, more secure application development.
+
+Node.js is what allows us to write all our applications in JavaScript. Usually, JavaScript is run only in a web browser. By building on top of Node.js, we can write code that is executed on the server, simpler to write, and/or more secure.
+
+### Installing React
+
+Instructions to install react [here](https://kinsta.com/knowledgebase/install-react/).
+
+### Installing Node
+
+You can install node from the [Node.js downloads page](https://nodejs.org/en/download). 
 
 ## Learn More
 
