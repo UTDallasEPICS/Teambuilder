@@ -5,7 +5,9 @@
 /*imports Jura font api*/
 @import url('https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Jura:wght@300..700&family=Open+Sans&display=swap');
 
-
+*{
+  font-family: 'Jura', Arial, sans-serif; /* Ensure all text uses Jura */
+}
 
 :root {
   --max-width: 1100px;

@@ -80,7 +80,7 @@ export default function Project() {
             <div
               style={{
                 marginLeft: "50px",
-                width: "475px",
+                minWidth: "395px",
                 minHeight: "300px",
                 marginRight: "25px",
               }} className="customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col">

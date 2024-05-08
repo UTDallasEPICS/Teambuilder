@@ -50,10 +50,10 @@ export default function Display() {
           <div className='border-solid rounded-3xl box-border bg-[rgba(48,100,162,0.29)]' style={{height:'450px', width:'350px', margin:'20px', marginLeft:'20px' , marginTop:'0px', overflowY:'scroll'}}>
             {maxTeamSize && ( 
               <>
-                <ProjectMatch/>
-                <ProjectMatch/>
-                <ProjectMatch/>
-                <ProjectMatch/>
+                <ProjectMatch myString="Patient Data Collection App"/>
+                <ProjectMatch myString="Automated Family Page"/>
+                <ProjectMatch myString="Communication App"/>
+                <ProjectMatch myString="EPICS TeamBuilder"/>
               </>
             )}
           </div>
@@ -84,10 +84,10 @@ export default function Display() {
           <div className='border-solid rounded-3xl box-border bg-[rgba(48,100,162,0.29)]' style={{height:'450px', width:'350px', margin:'20px', marginLeft:'80px' , marginTop:'0px', overflowY:'scroll'}}>
             {maxTeamSize && ( 
                 <>
-                  <ProjectMatch/>
-                  <ProjectMatch/>
-                  <ProjectMatch/>
-                  <ProjectMatch/>
+                  <ProjectMatch myString="Patient Data Collection App"/>
+                  <ProjectMatch myString="Automated Family Page"/>
+                  <ProjectMatch myString="Communication App"/>
+                  <ProjectMatch myString="EPICS TeamBuilder"/>
                 </>
               )}
           </div>

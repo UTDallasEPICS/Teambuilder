@@ -18,8 +18,58 @@ export const Table = ({ rows, deleteRow, editRow }) => {
                     <th>Archived</th>
                     <th>Actions</th>
                 </tr>
+                
             </thead>
             <tbody>
+                <tr>
+                        <td className="expand">Patient Data Collection App</td>
+                            
+                            <td>ATC</td>
+                            <td>6</td>
+                            <td>
+                                <span className={`label label-No`}>No</span>
+                            </td>
+                            <td>
+                                <span className="actions">
+                                    <BsFillTrashFill className="delete-btn" onClick={() => deleteRow(0)}/>
+                                    <BsFillPencilFill onClick={() => editRow(0)}/>
+                                </span>
+                        </td>
+                        
+
+                </tr>
+                <tr>
+                    <td className="expand">Automated Family Page</td>
+                            
+                            <td>Carson's Village</td>
+                            <td>6</td>
+                            <td>
+                                <span className={`label label-No`}>No</span>
+                            </td>
+                            <td>
+                                <span className="actions">
+                                    <BsFillTrashFill className="delete-btn" onClick={() => deleteRow(0)}/>
+                                    <BsFillPencilFill onClick={() => editRow(0)}/>
+                                </span>
+                        </td>
+                </tr>
+                <tr>
+                    <td className="expand">Communication App</td>
+                            
+                            <td>Greater Dallas Youth Orchestra</td>
+                            <td>6</td>
+                            <td>
+                                <span className={`label label-No`}>No</span>
+                            </td>
+                            <td>
+                                <span className="actions">
+                                    <BsFillTrashFill className="delete-btn" onClick={() => deleteRow(0)}/>
+                                    <BsFillPencilFill onClick={() => editRow(0)}/>
+                                </span>
+                        </td>
+                </tr>    
+
+
                 {console.log("Is rows an array?", Array.isArray(rows))}
                 {
                     rows.map((row, idx) => {

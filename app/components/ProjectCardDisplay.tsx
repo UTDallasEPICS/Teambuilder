@@ -1,11 +1,11 @@
 import  './projectcarddisplay.css'
 import React from 'react'
 
-const ProjectCardDisplay = () => {
+const ProjectCardDisplay = (props) => {
   return (
     <div>
       <div style={{width: "220px", minHeight: "100px", display:'flex', flexDirection:'column'}} className='bg-[rgb(233,235,238)] mt-3 ml-6 mb-3 rounded-md'>
-        <p style={{color: "#76A5C0"}} className='mt-2 ml-2 font-bold'>Proj Name</p>
+        <p style={{color: "#76A5C0"}} className='mt-2 ml-2 font-bold'>{props.myString}</p>
 
         <div style={{display:'inline-flex',}}>
           <div className='isNew' style={{justifyContent:'center', marginTop:"5px", marginLeft:'8px', borderRadius:'5px'}}>

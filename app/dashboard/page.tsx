@@ -63,10 +63,10 @@ export default function Dashboard() {
               <h1 style={{fontSize: '30px'}} className=' ml-8 mt-3 '>Projects</h1>
               <div style={{ marginLeft: '25px' , width: '270px', height: '400px', overflowY: 'auto' }} className='customMargin box-border border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col'>
 
-                <ProjectCardDisplay/>
-                <ProjectCardDisplay/>
-                <ProjectCardDisplay/>
-                <ProjectCardDisplay/>
+                <ProjectCardDisplay myString="Patient Data Collection App"/>
+                <ProjectCardDisplay myString="Automated Family Page"/>
+                <ProjectCardDisplay myString="Communication App"/>
+                <ProjectCardDisplay myString="EPICS TeamBuilder"/>
               </div>
             </div>
             
