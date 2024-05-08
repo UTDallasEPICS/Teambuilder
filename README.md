@@ -8,7 +8,7 @@ This project is the Spring 2024 EPICS Team formation project. The core technolog
 - [ReactJS](https://www.react.dev): A front-end Javascript library for building UI based on components
 - [Next.js](https://nextjs.org): A full stack web development framework
 - [Prisma](https://prisma.io): A database ORM used to connect Next.js to a database
-- [PostgreSQL](https://www.postgresql.org): An open source SQL database
+- [SQLite](https://www.sqlite.org/){:target="_blank"}: An open source SQL database
 
 Figma Wireframe: [Click Here!](https://www.figma.com/file/pQIawhFYojSBtXk5qAHGEz/Wireframe?type=design&node-id=0%3A1&mode=design&t=zdtVvztLlWfwChsV-1)
 
@@ -63,7 +63,7 @@ React.js transforms web development by extending JavaScript to create dynamic an
 
 Node.js is what allows us to write all our applications in JavaScript. Usually, JavaScript is run only in a web browser. By building on top of Node.js, we can write code that is executed on the server, simpler to write, and/or more secure.
 
-Docker is a container framework. Containers allow us to standardize the environment that software runs on. In the case of this project, we use Docker to run the PostgreSQL database. By running the database in a container, the database of every person on the team will be configured exactly the same way. Since databases are quite complex applications, this greatly reduces the likelihood of experiencing issues with the database.
+Docker is a container framework. Containers allow us to standardize the environment that software runs on. In the case of this project, we use Docker to run the SQLite database. By running the database in a container, the database of every person on the team will be configured exactly the same way. Since databases are quite complex applications, this greatly reduces the likelihood of experiencing issues with the database.
 
 ### Installing React
 
