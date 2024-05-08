@@ -2,36 +2,44 @@
 # UTDesign EPICS Team Formation Project
 
 
-This project is the Spring 2024 EPICS Team formation project. The core technologies used are:
-
-
-- [ReactJS](https://www.react.dev): A front-end Javascript library for building UI based on components
-- [Next.js](https://nextjs.org): A full stack web development framework
-- [Prisma](https://prisma.io): A database ORM used to connect Next.js to a database
-[SQLite](https://www.sqlite.org/){:target="_blank"}: An open source SQL database
+This project is the Spring 2024 EPICS Teambuilder project. 
 
 
 
 Figma Wireframe: [Click Here!](https://www.figma.com/file/pQIawhFYojSBtXk5qAHGEz/Wireframe?type=design&node-id=0%3A1&mode=design&t=zdtVvztLlWfwChsV-1)
 
 
-## Requirements from Taz in Discord
+## Conceptual Overview
 
-1. Projects should be their own entities in the database, with associated descriptions, and links to external resources such as the GitHub repo, etc. Projects need a status too, something like 'in progress', 'delivered', etc. can also think about putting seniority requirements, major requirements, etc in this database table as well. 
-2. Generated teams must be associated with a semester. Conceptually, this may be represented as 'create new semester roster', where the semester must be specified (year, spring/summer/fall) BEFORE we get into specifics.
-3. With projects living in the database, we can select which projects need teams for the current roster we are making via a dropdown select instead of relying on a CSV upload which eliminates a whole class of possible bugs.
-4. After teams have been generated, we can save the roster to the database - probably a join table between the students table and the projects table, where the join table is labeled with semester information (project_id, student_id, year, spring/fall/summer).
-5. We will want to integrate various other useful automation like auto-assigning teams to discord channels/GitHub repos, generating PDFs of teams, etc. We don't need to get into specifics yet but keep the concept of integrating with external services in mind as we design and build this thing
-6. When loading students from an uploaded CSV, we should make sure that we check which ones are returning and already have entries in the database we can reuse - key by netID/email
+The EPICS Team Builder project aims to streamline the team formation process for UTDesign EPICS staff at the University of Texas at Dallas. It provides a user-friendly interface for uploading student data and inputting project details. The project uses an optimized algorithm for the selection of project teams based on criteria such as major, project preference, and seniority. The intended users are EPICS staff, who will upload student data, input project details, and generate project teams.
+
+## Functional Requirements
+- Sign-In Page: EPICS staff access this page to authenticate themselves before gaining access to student data and project details. It ensures security by requiring users to sign in with their credentials, allowing only authorized staff to proceed.
+- Student Upload Page: This page facilitates the uploading of student data into the application's database. EPICS staff can upload data in bulk using file upload functionality. The system validates the uploaded data to maintain accuracy and consistency.
+- Project Page: EPICS staff utilize this page to manage project details effectively. They can input new project information such as project name, target CS, and partner details. Additionally, staff can delete projects that are no longer active or relevant.
+- Generate Button: The generate button triggers an algorithm that analyzes student data and project requirements to form efficient teams. It assigns students to project teams based on factors like major, project preference, and seniority. Clear indication and progress updates keep users informed during the team formation process.
+
+## Tech Stack
+The core technologies used for frontend are:
+- [React.js](https://www.react.dev): A front-end Javascript library for building UI based on components
+- [Next.js](https://nextjs.org): A full stack web development meta framework which combines frontend and backend
+- [Tailwind CSS](https://tailwindcss.com/): A utility-first CSS framework for quickly building custom designs without writing any CSS.
+
+The core technologies used for backend are:
+- [Prisma](https://prisma.io): A database ORM used to connect Next.js to a database
+- [SQLite](https://www.sqlite.org/): An open source SQL database
+
+## Deployment
+As this project is just intended for UTDesign staff and contains sensitive student data, it will not be deployed. 
+
+## Migration
+Does not require any data to be migrated from existing systems. 
 
 <!-- markdownlint-disable-next-line MD033 -->
 <details><summary><h2>Resources for Reference</h2></summary>
 
 - [Getting Started](#getting-started)
-- [Prerequisites](#prerequisites)
-  - [Installing React](#installing-react)
-  - [Installing Node](#installing-node)
-  - [Installing Docker](#installing-docker)
+
 - [Running This Project](#running-this-project)
 - [Learn More](#learn-more)
   - [Learn HTML, CSS, JavaScript, and TypeScript](#learn-html-css-javascript-and-typescript)
@@ -41,7 +49,6 @@ Figma Wireframe: [Click Here!](https://www.figma.com/file/pQIawhFYojSBtXk5qAHGEz
     - [TypeScript](#typescript)
   - [Learn Next.js](#learn-nextjs)
   - [Learn Prisma](#learn-prisma)
-- [Deploying This Project](#deploying-this-project)
 
 </details>
 
@@ -51,33 +58,6 @@ Figma Wireframe: [Click Here!](https://www.figma.com/file/pQIawhFYojSBtXk5qAHGEz
 2. Run your project (see the [running the project section](#running-this-project)).
 3. Start coding!
    
-## Prerequisites
-
-In order to run this project, a few technologies are required:
-
-- [ReactJS](https://www.react.dev)
-- [Node.js](https://nodejs.org)
-- [Docker](https://www.docker.com)
-
-If you have these installed already, you can skip to [running this project](#running-this-project).
-
-React.js transforms web development by extending JavaScript to create dynamic and responsive user interfaces. It simplifies the development process with a declarative syntax and a component-based architecture, enabling easier maintenance and scalability. With React.js, developers seamlessly integrate front-end and back-end functionality for simpler, more secure application development.
-
-Node.js is what allows us to write all our applications in JavaScript. Usually, JavaScript is run only in a web browser. By building on top of Node.js, we can write code that is executed on the server, simpler to write, and/or more secure.
-
-Docker is a container framework. Containers allow us to standardize the environment that software runs on. In the case of this project, we use Docker to run the SQLite database. By running the database in a container, the database of every person on the team will be configured exactly the same way. Since databases are quite complex applications, this greatly reduces the likelihood of experiencing issues with the database.
-
-### Installing React
-
-Instructions to install react [here](https://kinsta.com/knowledgebase/install-react/).
-
-### Installing Node
-
-You can install node from the [Node.js downloads page](https://nodejs.org/en/download). 
-
-### Installing Docker
-
-Docker Desktop is the recommended way to install Docker. If you choose to install Docker another way, there is no guarantee that you will have everything installed correctly. To install docker desktop download and run the installer from [Docker's Getting Started Page](https://www.docker.com/get-started/).
 
 
 ## Running This Project
@@ -85,7 +65,6 @@ Docker Desktop is the recommended way to install Docker. If you choose to instal
 First, run the development server:
 
 
-## Deploying This Project
 
 ## Learn More
 
