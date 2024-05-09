@@ -48,6 +48,7 @@ export default function Display() {
           <p className='backgroundFont' style={{marginLeft:'25px', fontSize:'20px'}}>Team Combos</p>
           <p className='backgroundFont' style={{marginLeft:'25px', marginBottom:'5px'}}>Count: X</p>
           <div className='border-solid rounded-3xl box-border bg-[rgba(48,100,162,0.29)]' style={{height:'450px', width:'350px', margin:'20px', marginLeft:'20px' , marginTop:'0px', overflowY:'scroll'}}>
+            {/* Display project matches if maximum team size is set */}
             {maxTeamSize && ( 
               <>
                 <ProjectMatch myString="Patient Data Collection App"/>
@@ -64,6 +65,7 @@ export default function Display() {
           <p className='backgroundFont' style={{marginLeft:'80px', fontSize:'20px'}}>Unassigned Students</p>
           <p className='backgroundFont' style={{marginLeft:'80px', marginBottom:'5px'}}>Count: X</p>
           <div className='border-solid rounded-3xl box-border bg-[rgba(48,100,162,0.29)]' style={{height:'450px', width:'350px', margin:'20px', marginLeft:'80px' , marginTop:'0px', overflowY:'scroll'}}>
+          {/* Display project matches if maximum team size is set */}
           {maxTeamSize && ( 
             <>
               <UnassignedStudents/>
@@ -82,7 +84,8 @@ export default function Display() {
           <p className='backgroundFont' style={{marginLeft:'80px', fontSize:'20px'}}>Project Status</p>
           <p className='backgroundFont' style={{marginLeft:'80px', marginBottom:'5px'}}>Incomplete: X</p>
           <div className='border-solid rounded-3xl box-border bg-[rgba(48,100,162,0.29)]' style={{height:'450px', width:'350px', margin:'20px', marginLeft:'80px' , marginTop:'0px', overflowY:'scroll'}}>
-            {maxTeamSize && ( 
+            {/* Display project matches if maximum team size is set */}
+            {maxTeamSize && (  
                 <>
                   <ProjectMatch myString="Patient Data Collection App"/>
                   <ProjectMatch myString="Automated Family Page"/>

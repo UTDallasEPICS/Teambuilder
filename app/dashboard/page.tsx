@@ -50,8 +50,10 @@ export default function Dashboard() {
               accept="text/csv"
               style={{ display: 'none' }}
             />
-            <FileUploader handleFile={handleFile}/>
-            <div style={{maxWidth: "210px", minHeight: "30px", padding:'3px'}} className='bg-[rgb(102,103,104)] mt-3 ml-6 mb-3 rounded-md'>
+            
+            
+            <FileUploader handleFile={handleFile}/> {/* Render FileUploader component */}
+            <div style={{maxWidth: "210px", minHeight: "30px", padding:'3px'}} className='bg-[rgb(102,103,104)] mt-3 ml-6 mb-3 rounded-md'> 
               {fileName ? <p style={{color: 'white', fontSize: '11px', margin: '3px', wordWrap: 'break-word', width: '100%'}}>{fileName}</p> : null}
             </div>
            
