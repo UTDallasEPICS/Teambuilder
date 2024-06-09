@@ -1,8 +1,0 @@
-/*imports Jura font api*/
-@import url('https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Jura:wght@300..700&family=Open+Sans&display=swap');
-
-.isNew{
-    background: hsl(136, 84%, 66%);
-    height: 20px;
-    width: 40px;
-}
