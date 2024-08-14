@@ -1,4 +1,5 @@
 <template lang="pug">
+// TODO: this needs to be redone in tailwind
 .m-0.w-full(style="borderRadius: '10px'" class='bg-[rgba(48,100,162,0.29)]')
   table.table(style="padding: '10px', marginLeft: '15px', marginRight: '10px', display: 'block', overflow: 'hidden', tableLayout: 'auto', borderCollapse: 'collapse', whiteSpace: 'nowrap', maxWidth: '100%', margin: 'auto', overflowX: 'auto' ")
     thead(style="backgroundColor: 'rgb(136, 120, 120)', color: 'white', borderRadius: '10px'")

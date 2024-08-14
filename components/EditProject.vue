@@ -1,4 +1,5 @@
 <template lang="pug">
+// TODO: this needs to be redone in tailwind
 .modal-container
   .modal
     button.exit-btn(@click="closeModal") Exit
@@ -24,7 +25,6 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from 'vue';
-
 const defaultValue = {
   Project_name: '',
   Project_partner: '',
