@@ -13,7 +13,8 @@
 
 <script setup lang="ts">
 import { BsFillTrashFill, BsFillPencilFill } from "react-icons/bs";
-
+// TODO: should use slots to provide custom content, e.g. header and body
+// https://vuejs.org/guide/components/slots.html
 </script>
 
 <style scoped>

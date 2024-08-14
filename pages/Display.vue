@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const maxTeamSize = ref(5); // State to store maximum team size
 // TODO: componentize inpout & button & text, fix layout
+// TODO: needs tailwind, should be renamed to Generate.vue
 </script>
 <style></style>
 

@@ -1,4 +1,5 @@
 <template lang="pug">
+// TODO: this needs to be redone in tailwind
 div
   button(style={marginLeft: '20px', marginTop: '50px'} class='border-solid border-8 p-1 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl' @click="handleClick")
     | Student List Upload

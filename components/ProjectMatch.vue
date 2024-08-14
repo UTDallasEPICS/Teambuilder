@@ -1,4 +1,5 @@
 <template lang="pug">
+// TODO: this needs to be redone in tailwind
 div
   div(bg-color='rgb(233,235,238)' class='mt-3 ml-6 mb-3 rounded-md' style='{ width: "300px", minHeight: "100px", display: "flex", flexDirection: "column" }')
     p(backgroundFont class='mt-2 ml-2 font-bold', style='{ color: "#76A5C0" }') {{ props.myString }}
