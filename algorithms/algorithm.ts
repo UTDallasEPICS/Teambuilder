@@ -33,7 +33,7 @@ export function generateTeams(
   // pass 2
   passTwo(teams, projects, minimumStudents, maximumStudents);
   // pass 3
-  //passThree(teams, students, projects, minimumStudents, maximumStudents);
+  passThree(teams, students, projects, minimumStudents, maximumStudents);
   return teams;
 }
 
@@ -334,8 +334,12 @@ function passThree(
     });
     stdDev = Math.sqrt(stdDev / totalTeams);
     //if the standard deviation is less than 1, break out of the loop
-    if (stdDev < 1) break;
+    if (stdDev < 1){
+      break;
+    } 
     //run passTwo
-    passTwo(teams, projects, minimumStudents, maximumStudents);
+    else {
+      passTwo(teams, projects, minimumStudents, maximumStudents);
+    }
   }
 }
