@@ -30,8 +30,10 @@ export function generateTeams(
 
   // pass 1
   passOne(teams, students, minimumStudents, maximumStudents);
+  //console.log("\n", teams);
   // pass 2
   passTwo(teams, projects, minimumStudents, maximumStudents);
+  //console.log("\n", teams);
   // pass 3
   passThree(teams, students, projects, minimumStudents, maximumStudents);
   return teams;
@@ -214,7 +216,6 @@ function calcTeamScore(
   projects: Project[],
   index: number
 ) {
-  console.log("calcTeamScore");
  // (#upper/#on team) - (#upperinclass/#totalinclass)
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
   // average the above to get team score
@@ -223,18 +224,20 @@ function calcTeamScore(
       majorScore(student, team, projects, index) +
       preferenceScore(student, team, teams)) /
     3;
+  console.log("teamScore: ", teamScore);
   return teamScore;
 }
 
 function classScore(student: Student, team: Student[]) {
   let upperOnTeam = 0;
   let teamTotal = 0;
-  console.log("classScore");
   // get total number of 3200 students and total students
   team.forEach((student) => {
     if (student.class == "3200") upperOnTeam++;
     teamTotal++;
   });
+  let classScore = upperOnTeam / teamTotal - numUpperClassmen / totalNumInClass;
+  //console.log("classScore: ", classScore);
   return upperOnTeam / teamTotal - numUpperClassmen / totalNumInClass;
 }
 
@@ -244,7 +247,6 @@ function majorScore(
   projects: Project[],
   index: number
 ) {
-  console.log("majorScore");
   let csOnTeam = 0;
   let teamTotal = 0;
   team.forEach((student) => {
@@ -257,6 +259,9 @@ function majorScore(
   let teamTarget = 0;
   //find num of projects
   teamTarget = Math.floor(totalNumInClass / projects.length);
+  let majorScore = (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
+  (teamTotal / teamTarget);
+  //console.log("majorScore: ", majorScore);
   return (
     (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
     (teamTotal / teamTarget)
@@ -269,7 +274,7 @@ function preferenceScore(
   team: Student[],
   teams: Record<string, Student[]>
 ) {
-  console.log("preferenceScore");
+  let preferenceScore = 0;
   //looping through the teams record, looking for a team (Student []) that mataches with team parameter
   Object.values(teams).forEach((currentTeam, index) => {
     //if the team is equal to team we're looking for
@@ -280,25 +285,26 @@ function preferenceScore(
         if (teamName === Object.keys(teams)[index]) {
           switch (i + 1) {
             case 1:
-              return 1.0;
+              return preferenceScore = 1.0;
             case 2:
-              return 0.8;
+              return preferenceScore = 0.8;
             case 3:
-              return 0.6;
+              return preferenceScore = 0.6;
             case 4:
-              return 0.3;
+              return preferenceScore = 0.3;
             case 5:
-              return 0.2;
+              return preferenceScore = 0.2;
             case 6:
-              return 0.1;
+              return preferenceScore = 0.1;
             case 7:
-              return 0.05;
+              return preferenceScore = 0.05;
           }
         }
       });
     }
   });
-  return 0;
+  console.log(preferenceScore);
+  return preferenceScore;
 }
 
 // can be run multiple times to achieve best average team score within 1000 iterations
@@ -311,6 +317,7 @@ function passThree(
   minimumStudents: number,
   maximumStudents: number
 ) {
+  console.log("passThree");
   for (let i = 0; i < 1000; i++) {
     let avgTeamScore = 0;
     let totalTeams = 0;
@@ -323,6 +330,7 @@ function passThree(
       totalTeams++;
     });
     avgTeamScore = avgTeamScore / totalTeams;
+    console.log("avgTeamScore: ",avgTeamScore);
     //calculate standard deviation
     let stdDev = 0;
     Object.values(teams).forEach((team, index) => {
@@ -333,6 +341,7 @@ function passThree(
       stdDev += Math.pow(teamScore / team.length - avgTeamScore, 2);
     });
     stdDev = Math.sqrt(stdDev / totalTeams);
+    console.log("stdDev: ", stdDev);
     //if the standard deviation is less than 1, break out of the loop
     if (stdDev < 1) break;
     //run passTwo
