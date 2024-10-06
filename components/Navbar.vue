@@ -15,11 +15,11 @@ div(class="w-full sticky top-0  mx-auto p-4 h-full flex justify-between items-ce
       )
   ul(class="hidden md:flex gap-x-6 text-white backgroundFont")
     li
-      NuxtLink(to="/sign-in") Sign In
+      NuxtLink(to="/") Sign In
     li
       NuxtLink(to="/project") Project
     li
-      NuxtLink(to="/") Student Upload
+      NuxtLink(to="/Upload") Student Upload
     li
       NuxtLink(to="/display") Generate
 </template>

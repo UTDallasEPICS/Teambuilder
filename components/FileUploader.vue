@@ -22,6 +22,7 @@ const handleChange = (event: Event) => {
 
 const handleFile = (file: File | null) => {
   // handle the file
+  
 };
 </script>
 
