@@ -259,11 +259,11 @@ function majorScore(
   let teamTarget = 0;
   //find num of projects
   teamTarget = Math.floor(totalNumInClass / projects.length);
-  let majorScore = (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
-  (teamTotal / teamTarget);
-  //console.log("majorScore: ", majorScore);
+  let majorScore = (csOnTeam / teamTotal - (projects[index].targetCS / teamTarget)) *
+  7(teamTotal / teamTarget);
+  console.log("majorScore: ", majorScore);
   return (
-    (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
+    (csOnTeam / teamTotal - (projects[index].targetCS / teamTarget)) *
     (teamTotal / teamTarget)
   );
 }
