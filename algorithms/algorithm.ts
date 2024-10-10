@@ -260,8 +260,8 @@ function majorScore(
   //find num of projects
   teamTarget = Math.floor(totalNumInClass / projects.length);
   let majorScore = (csOnTeam / teamTotal - (projects[index].targetCS / teamTarget)) *
-  7(teamTotal / teamTarget);
-  console.log("majorScore: ", majorScore);
+  (teamTotal / teamTarget);
+  //console.log("majorScore: ", majorScore);
   return (
     (csOnTeam / teamTotal - (projects[index].targetCS / teamTarget)) *
     (teamTotal / teamTarget)
@@ -286,24 +286,31 @@ function preferenceScore(
           switch (i + 1) {
             case 1:
               return preferenceScore = 1.0;
+              break
             case 2:
               return preferenceScore = 0.8;
+              break;
             case 3:
               return preferenceScore = 0.6;
+              break;
             case 4:
               return preferenceScore = 0.3;
+              break;
             case 5:
               return preferenceScore = 0.2;
+              break;
             case 6:
               return preferenceScore = 0.1;
+              break;
             case 7:
               return preferenceScore = 0.05;
+              break;
           }
         }
       });
     }
   });
-  console.log(preferenceScore);
+  //console.log("preferenceScore: "preferenceScore);
   return preferenceScore;
 }
 
@@ -317,8 +324,8 @@ function passThree(
   minimumStudents: number,
   maximumStudents: number
 ) {
-  console.log("passThree");
   for (let i = 0; i < 1000; i++) {
+    console.log("passThree");
     let avgTeamScore = 0;
     let totalTeams = 0;
     Object.values(teams).forEach((team, index) => {
@@ -343,8 +350,56 @@ function passThree(
     stdDev = Math.sqrt(stdDev / totalTeams);
     console.log("stdDev: ", stdDev);
     //if the standard deviation is less than 1, break out of the loop
-    if (stdDev < 1) break;
-    //run passTwo
-    passTwo(teams, projects, minimumStudents, maximumStudents);
+    if (stdDev < 0.1) break;
+    //run passFour
+    passFour(teams, projects, minimumStudents, maximumStudents, avgTeamScore);
   }
+}
+
+function passFour(
+  teams: Record<string, Student[]>,
+  projects: Project[],
+  minimumStudents: number,
+  maximumStudents: number,
+  avgTeamScore: number
+) {
+  console.log("passFour");
+  // balancing pass - function that takes only the teams and min/max students
+  // sort teams by least students to most
+  const teamsArray = Object.values(teams);
+  //Sort the array by the number of students in each team by low to high
+  teamsArray.sort((a, b) => a.length - b.length);
+  // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
+  teamsArray.forEach((team, index) => {
+    if (team.length < minimumStudents) {
+      // find team with most students
+      const teamWithMostStudents = teamsArray.sort(
+        (a, b) => b.length - a.length
+      )[0];
+      // find least impactful student
+      const leastImpactfulStudent = teamWithMostStudents.sort(
+        (a, b) =>
+          calcStudentImpactOnTeam(
+            a,
+            teamWithMostStudents,
+            teams,
+            projects,
+            index
+          ) -
+          calcStudentImpactOnTeam(
+            b,
+            teamWithMostStudents,
+            teams,
+            projects,
+            index
+          )
+      )[0];
+      // move student to team, remove student from previous big team
+      team.push(leastImpactfulStudent);
+      teamWithMostStudents.splice(
+        teamWithMostStudents.indexOf(leastImpactfulStudent),
+        1
+      );
+    }
+  });
 }

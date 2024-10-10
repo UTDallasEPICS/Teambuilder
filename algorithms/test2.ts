@@ -1,14 +1,13 @@
 //dummy student nad project data to test with
 //dummy student nad project data to test with
-import type { Student, Project } from "./algorithm";
-import { generateTeams } from "./algorithm";
+import type { Student, Project } from "./newAlgorithm";
+import { generateTeams } from "./newAlgorithm";
 
 const studentData: Student[] = [
   // Student 1
   {
     name: "Michael Johnson",
     major: "Other",
-    seniority: "Senior",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -22,7 +21,6 @@ const studentData: Student[] = [
   {
     name: "Jessica Davis",
     major: "CS",
-    seniority: "Junior",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -36,7 +34,6 @@ const studentData: Student[] = [
   {
     name: "Emily Wilson",
     major: "CS",
-    seniority: "Senior",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -50,7 +47,6 @@ const studentData: Student[] = [
   {
     name: "Daniel Martinez",
     major: "CS",
-    seniority: "Freshman",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -64,7 +60,6 @@ const studentData: Student[] = [
   {
     name: "Sarah Brown",
     major: "CS",
-    seniority: "Sophomore",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -78,7 +73,6 @@ const studentData: Student[] = [
   {
     name: "David Miller",
     major: "Other",
-    seniority: "Senior",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -92,7 +86,6 @@ const studentData: Student[] = [
   {
     name: "Jennifer Lee",
     major: "CS",
-    seniority: "Junior",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -106,7 +99,6 @@ const studentData: Student[] = [
   {
     name: "Matthew Clark",
     major: "CS",
-    seniority: "Sophomore",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -120,7 +112,6 @@ const studentData: Student[] = [
   {
     name: "Olivia Rodriguez",
     major: "Other",
-    seniority: "Senior",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
@@ -134,7 +125,6 @@ const studentData: Student[] = [
   {
     name: "Ryan Taylor",
     major: "CS",
-    seniority: "Freshman",
     choices: [
       "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
