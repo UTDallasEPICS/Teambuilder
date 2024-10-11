@@ -32,6 +32,20 @@
           button(style='marginLeft: "20px"' class='border-solid border-8 p-2 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl') Form Teams &gt;&gt;
 </template>
 
+//Impement API handler calls in index later
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.delete.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.get.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.post.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.put.ts')
+</script>
+
 <script setup lang="ts">
 const fileName = ref("");
 const uploaded = ref(false);
