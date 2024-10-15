@@ -1,6 +1,7 @@
 export type Student = {
     name: string;
     major: "CS" | "Other";
+    seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
     choices: string[];
     choicesString: string;
     class: "2200" | "3200";
@@ -40,20 +41,15 @@ export type Student = {
     students.forEach((student) => {
         totalNumInClass++;
         if (student.class == "3200") {
-          numUpperClassmen++;
-          if(student.choices.length > 0) {
-            let found = false;
-            for (const choice of student.choices) {
-              // assign student to the first choice
-              teams[choice].push(student);
-              found = true;
-              break;
-            }
-          }
-          else {
-            //TODO: Determine what to do with students with no choices.
-          }
+          numUpperClassmen++; //if a student is a part of 3200, they are an "upperclassman"
         }
-      });
-    }
-    //TODO: Algorithm still limits each team to 4 students. Strange...
+        if(student.choices.length > 0) {
+          teams[student.choices[0]].push(student); //assign each student to their top choice
+        }
+        else {
+          //TODO: Determine what to do with students with no choices.
+        }
+    });
+  }
+
+  

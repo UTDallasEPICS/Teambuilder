@@ -1,7 +1,7 @@
 //dummy student nad project data to test with
 //dummy student nad project data to test with
-import type { Student, Project } from "./algorithm";
-import { generateTeams } from "./algorithm";
+import type { Student, Project } from "./newAlgorithm";
+import { generateTeams } from "./newAlgorithm";
 
 const studentData: Student[] = [
   // Student 1
