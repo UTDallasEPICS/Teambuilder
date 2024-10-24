@@ -7,7 +7,7 @@ const studentData: Student[] = [
   // Student 1
   {
     name: "Michael Johnson",
-    major: "Other",
+    major: "ME",
     seniority: "Senior",
     choices: [
       "Carson's Village: Automated Family Page",
@@ -77,7 +77,7 @@ const studentData: Student[] = [
   // Student 6
   {
     name: "David Miller",
-    major: "Other",
+    major: "EE",
     seniority: "Senior",
     choices: [
       "Carson's Village: Automated Family Page",
@@ -119,7 +119,7 @@ const studentData: Student[] = [
   // Student 9
   {
     name: "Olivia Rodriguez",
-    major: "Other",
+    major: "BME",
     seniority: "Senior",
     choices: [
       "Carson's Village: Automated Family Page",
@@ -157,7 +157,7 @@ const projectData: Project[] = [
   },
   {
     name: "ATC: Sensory Devices",
-    type: "HW",
+    type: "Both",
   },
 ];
 
