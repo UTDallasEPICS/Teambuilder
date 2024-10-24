@@ -2,7 +2,7 @@
 //Changed Majors to include more than just CS
 export type Student = {
     name: string;
-    major: "CS" | "EE"| "ME"| "BME"| "DS"|"Other";
+    major: "CS" | "SE" | "EE" | "ME" | "BME" | "DS" | "CE" | "Systems" | "Other";
     seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
     choices: string[];
     choicesString: string;
@@ -92,7 +92,7 @@ export type Student = {
     Object.keys(students).forEach((preference) => {
     grouped[preference] = { HW: [], SW: [], Other: [] };
     students[preference].forEach((student) => {
-      if (["EE", "ME", "BME"].includes(student.major)) {
+      if (["EE", "ME", "BME", "CE"].includes(student.major)) {
         grouped[preference]["HW"].push(student);
       } else if (["CS", "SE", "DS"].includes(student.major)) {
         grouped[preference]["SW"].push(student);
@@ -203,7 +203,7 @@ function calculateImpact(student: Student, project: string): number {
   const preferenceScore = preferenceIndex !== -1 ? preferenceIndex + 1 : Infinity;
 
   // Major Fit Score: 0.5 for a good match, 1 for a poor match
-  const majorFitScore = (project === "HW" && ["EE", "ME", "BME"].includes(student.major)) ||
+  const majorFitScore = (project === "HW" && ["EE", "ME", "BME", "CE"].includes(student.major)) ||
     (project === "SW" && ["CS", "SE", "DS"].includes(student.major)) ? 0.5 : 1;
 
   // Class Score: 0.5 for 3200 students, 1 for 2200 students
