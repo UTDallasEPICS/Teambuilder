@@ -191,15 +191,28 @@ function findLeastImpactfulStudent(team: Student[],
   return sortedByImpact.length > 0 ? sortedByImpact[sortedByImpact.length - 1] : null;
 
 }
-//// Function to calculate a student's impact on a project (lower impact is better)
+
+
+// Function to calculate a student's impact on a project
+//Lower score is beter, since they will create a larger impact, and will be less likely to move
+//low score = not moved
 
 function calculateImpact(student: Student, project: string): number {
-  const preferenceScore = student.choices.indexOf(project) !== -1 ? 1 / (student.choices.indexOf(project) + 1) : 0;
+  // Corrected Preference Score: lower score for higher preference
+  const preferenceIndex = student.choices.indexOf(project);
+  const preferenceScore = preferenceIndex !== -1 ? preferenceIndex + 1 : Infinity;
+
+  // Major Fit Score: 0.5 for a good match, 1 for a poor match
   const majorFitScore = (project === "HW" && ["EE", "ME", "BME"].includes(student.major)) ||
     (project === "SW" && ["CS", "SE", "DS"].includes(student.major)) ? 0.5 : 1;
+
+  // Class Score: 0.5 for 3200 students, 1 for 2200 students
   const classScore = student.class === "3200" ? 0.5 : 1;
+
+  // Return the average score (lower score is better fit)
   return (preferenceScore + majorFitScore + classScore) / 3;
 }
+
 
   /*function passOne(
     teams: Record<string, Student[]>,
