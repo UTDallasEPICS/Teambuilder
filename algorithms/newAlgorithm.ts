@@ -1,20 +1,23 @@
+//Student Structure that includes Name, Major, Grade, choices, and EPICS level
+//Changed Majors to include more than just CS
 export type Student = {
     name: string;
-    major: "CS" | "Other";
+    major: "CS" | "EE"| "ME"| "BME"| "DS"|"Other";
     seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
     choices: string[];
     choicesString: string;
     class: "2200" | "3200";
   };
   
+  //Project sturcture that include if the project is a software, hardware, or both. 
   export type Project = {
     name: string;
-    targetCS: number;
+    type: "SW"|"HW"|"Both";
   };
 
   let numUpperClassmen = 0;
 
-  export function generateTeams(
+  /*export function generateTeams(
     students: Student[],
     projects: Project[],
   ) {
@@ -25,18 +28,180 @@ export type Student = {
       };
     }, {});
     
-    //Caluclate avg students per team. Floor it to find the ideal min. for a team.
-    let minimumStudents = Math.floor(students.length / projects.length);
+    */
+
+  //created a new team generate(initilaiztion) function, the old is commented above take a look at it. 
+  export function generateTeams(students: Student[], projects: Project[]) {
+    //Initialize Teams for each proejct
+    const teams: Record<string, Student[]> = projects.reduce((acc, current) => {
+    acc[current.name] = [];
+    return acc;
+  }, {} as Record<string, Student[]>);
+
+
+    //Calculate avg students per team. Floor it to find the ideal min. for a team.
+
+    //Sort students by preference
+    students.sort((a, b) => a.choices.length - b.choices.length);    
+
+    //Group Students by Preferences, degree, and class
+    const groupedByPreference = groupStudentsByPreference(students);
+    const groupedByDegree = groupStudentsByDegree(groupedByPreference);
+    const groupedByClass = groupStudentsByClass(groupedByDegree);
+
+
+    //Place the studenst in teams after the sorting
+    placeStudentsInTeams(groupedByClass, teams, projects);
+
+    //Check that each project has atleast one 3200 level student
+    check3200InEachProject(teams,students,projects);
+
+    //calculate minimum number of students
+    const minStudents = Math.floor(students.length / projects.length);
+
+    //balance teams based on minium students required
+    balanceTeams(teams, students, projects, minStudents);
+
+
 
     //adds each student to their top preference
-    passOne(teams, students);
+    //passOne(teams, students);
     //Optimize the teams
-    passTwo(teams, students, projects, minimumStudents);
+    //passTwo(teams, students, projects, minimumStudents);
 
     return teams;
   }
 
-  function passOne(
+
+  //function to group students by their top preference
+  function groupStudentsByPreference(students: Student[]): Record<string, Student[]> {
+    const grouped: Record<string, Student[]> = {};
+    students.forEach((student) => {
+      const preference = student.choices[0] || "No preference";
+      if (!grouped[preference]) {
+        grouped[preference] = [];
+      }
+      grouped[preference].push(student);
+    });
+    return grouped;
+  }
+
+  //function to group students by their degree(hardware, software, other)
+  function groupStudentsByDegree(students: Record<string, Student[]>): Record<string, Record<string, Student[]>> {
+    const grouped: Record<string, Record<string, Student[]>> = {};
+    Object.keys(students).forEach((preference) => {
+    grouped[preference] = { HW: [], SW: [], Other: [] };
+    students[preference].forEach((student) => {
+      if (["EE", "ME", "BME"].includes(student.major)) {
+        grouped[preference]["HW"].push(student);
+      } else if (["CS", "SE", "DS"].includes(student.major)) {
+        grouped[preference]["SW"].push(student);
+      } else {
+        grouped[preference]["Other"].push(student);
+      }
+    });
+  });
+  return grouped;
+  }
+
+  //function to group students based on their class
+  function groupStudentsByClass(students: Record<string, Record<string, Student[]>>): Record<string, Record<string, Student[]>> {
+    const grouped: Record<string, Record<string, Student[]>> = {};
+    Object.keys(students).forEach((preference) => {
+    grouped[preference] = { "2200": [], "3200": [] };
+    Object.values(students[preference]).forEach((studentList) => {
+      studentList.forEach((student) => {
+        grouped[preference][student.class].push(student);
+      });
+    });
+  });
+  return grouped;
+  }
+
+  //function to place students based on preference and class
+  function placeStudentsInTeams(
+    studentsByClass: Record<string, Record<string, Student[]>>,
+    teams: Record<string, Student[]>,
+    projects: Project[]
+  ) {
+    Object.keys(studentsByClass).forEach((preference) => {
+      const students2200 = studentsByClass[preference]["2200"];
+      const students3200 = studentsByClass[preference]["3200"];
+  
+      students2200.forEach((student) => {
+        teams[student.choices[0]].push(student);
+      });
+  
+      students3200.forEach((student) => {
+        teams[student.choices[0]].push(student);
+      });
+    });
+  }
+//function to make sure each student has atleast one 3200 student
+function check3200InEachProject(teams: Record<string, Student[]>,
+  students: Student[],
+  projects: Project[]
+) {
+  projects.forEach((project) => {
+    const has3200 = teams[project.name].some((student) => student.class === "3200");
+    if (!has3200) {
+      const studentToMove = students.find(
+        (student) => student.class === "3200" && student.choices.includes(project.name)
+      );
+      if (studentToMove) {
+        const currentTeam = Object.keys(teams).find((team) =>
+          teams[team].includes(studentToMove)
+        );
+        if (currentTeam) {
+          teams[currentTeam] = teams[currentTeam].filter((s) => s !== studentToMove);
+        }
+        teams[project.name].push(studentToMove);
+      }
+    }
+  });
+}
+//function to balance the teams
+function balanceTeams(teams: Record<string, Student[]>,
+  students: Student[],
+  projects: Project[],
+  minimumStudents: number
+) {
+  const teamsArray = Object.values(teams).sort((a, b) => a.length - b.length); // Sort by team size
+  teamsArray.forEach((smallTeam) => {
+    if (smallTeam.length < minimumStudents) {
+      const largeTeam = teamsArray.find((team) => team.length > smallTeam.length);
+      if (largeTeam) {
+        const studentToMove = findLeastImpactfulStudent(largeTeam, smallTeam[0]?.name);
+        if (studentToMove) {
+          smallTeam.push(studentToMove);
+          largeTeam.splice(largeTeam.indexOf(studentToMove), 1);
+        }
+      }
+    }
+  });
+
+}
+//function to calcuate the impact score of the student, which would mean that the lower is better
+function findLeastImpactfulStudent(team: Student[],
+  targetProject: string
+): Student | null {
+  const sortedByImpact = team.sort((a, b) => {
+    return calculateImpact(b, targetProject) - calculateImpact(a, targetProject);
+  });
+  return sortedByImpact.length > 0 ? sortedByImpact[sortedByImpact.length - 1] : null;
+
+}
+//// Function to calculate a student's impact on a project (lower impact is better)
+
+function calculateImpact(student: Student, project: string): number {
+  const preferenceScore = student.choices.indexOf(project) !== -1 ? 1 / (student.choices.indexOf(project) + 1) : 0;
+  const majorFitScore = (project === "HW" && ["EE", "ME", "BME"].includes(student.major)) ||
+    (project === "SW" && ["CS", "SE", "DS"].includes(student.major)) ? 0.5 : 1;
+  const classScore = student.class === "3200" ? 0.5 : 1;
+  return (preferenceScore + majorFitScore + classScore) / 3;
+}
+
+  /*function passOne(
     teams: Record<string, Student[]>,
     students: Student[],
   ) {
@@ -92,6 +257,7 @@ function passTwo(
           }
         });
       });
+      */
       /*// find team with most students
       const teamWithMostStudents = teamsArray.sort(
         (a, b) => b.length - a.length
@@ -120,7 +286,7 @@ function passTwo(
         teamWithMostStudents.indexOf(leastImpactfulStudent),
         1
       ); */
-      i--; //loops back through this team to make sure that it has reached minimum
-    }
-  }
-}
+      //i--; //loops back through this team to make sure that it has reached minimum
+    
+    
+  
