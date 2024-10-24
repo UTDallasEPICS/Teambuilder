@@ -149,15 +149,15 @@ const studentData: Student[] = [
 const projectData: Project[] = [
   {
     name: "Carson's Village: Automated Family Page",
-    targetCS: 2,
+    type: "SW",
   },
   {
     name: "ATC: Patient Data Collection App",
-    targetCS: 2,
+    type: "SW"
   },
   {
     name: "ATC: Sensory Devices",
-    targetCS: 3,
+    type: "HW",
   },
 ];
 
@@ -167,4 +167,4 @@ console.log("Dummy Student Data:");
 console.log("\nDummy Project Data:");
 //console.log(projectData);
 console.log("\nTeams:");
-console.log(generateTeams(studentData, projectData, 3, 4));
+console.log(generateTeams(studentData, projectData));
