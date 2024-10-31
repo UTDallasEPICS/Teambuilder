@@ -1,6 +1,7 @@
 //Student Structure that includes Name, Major, Grade, choices, and EPICS level
 //Changed Majors to include more than just CS
 export type Student = {
+    id: string
     name: string;
     major: "CS" | "SE" | "EE" | "ME" | "BME" | "DS" | "CE" | "Systems" | "Other";
     seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
@@ -11,6 +12,7 @@ export type Student = {
   
   //Project sturcture that include if the project is a software, hardware, or both. 
   export type Project = {
+    id: string;
     name: string;
     type: "SW"|"HW"|"Both";
   };
@@ -142,23 +144,43 @@ function check3200InEachProject(teams: Record<string, Student[]>,
   students: Student[],
   projects: Project[]
 ) {
-  projects.forEach((project) => {
-    const has3200 = teams[project.name].some((student) => student.class === "3200");
+  // Precompute which team each student is currently in
+  const studentTeamMap: Record<string, string> = {};
+  for (const teamName in teams) {
+    teams[teamName].forEach(student => {
+      studentTeamMap[student.name] = teamName;
+    });
+  }
+
+  for(let i = 0; i < projects.length; i++){
+    const has3200 = teams[projects[i].name].some((student) => student.class === "3200");
     if (!has3200) {
       const studentToMove = students.find(
-        (student) => student.class === "3200" && student.choices.includes(project.name)
+        (student) => 
+          student.class === "3200" && 
+          student.choices.includes(projects[i].name) &&
+          teams[studentTeamMap[student.name]].filter(s => s.class === "3200").length > 1
       );
       if (studentToMove) {
-        const currentTeam = Object.keys(teams).find((team) =>
+        //Get the team this student is currently on
+        const currentTeam = studentTeamMap[studentToMove.name];
+
+        //Remove student from currentTeam
+        teams[currentTeam] = teams[currentTeam].filter((s) => s !== studentToMove)
+      /*  const currentTeam = Object.keys(teams).find((team) =>
           teams[team].includes(studentToMove)
         );
         if (currentTeam) {
           teams[currentTeam] = teams[currentTeam].filter((s) => s !== studentToMove);
-        }
-        teams[project.name].push(studentToMove);
+        } */
+       
+        //Add the student to the new team
+        teams[projects[i].name].push(studentToMove);
+        //Update the student's team in the map
+        studentTeamMap[studentToMove.name] = projects[i].name;
       }
-    }
-  });
+    } 
+  }
 }
 //function to balance the teams
 function balanceTeams(teams: Record<string, Student[]>,

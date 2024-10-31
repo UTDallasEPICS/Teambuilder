@@ -6,6 +6,7 @@ import { generateTeams } from "./newAlgorithm";
 const studentData: Student[] = [
   // Student 1
   {
+    id: "1",
     name: "Michael Johnson",
     major: "ME",
     seniority: "Senior",
@@ -20,6 +21,7 @@ const studentData: Student[] = [
   },
   // Student 2
   {
+    id: "2",
     name: "Jessica Davis",
     major: "CS",
     seniority: "Junior",
@@ -34,6 +36,7 @@ const studentData: Student[] = [
   },
   // Student 3
   {
+    id: "3",
     name: "Emily Wilson",
     major: "CS",
     seniority: "Senior",
@@ -48,6 +51,7 @@ const studentData: Student[] = [
   },
   // Student 4
   {
+    id: "4",
     name: "Daniel Martinez",
     major: "CS",
     seniority: "Freshman",
@@ -62,6 +66,7 @@ const studentData: Student[] = [
   },
   // Student 5
   {
+    id: "5",
     name: "Sarah Brown",
     major: "CS",
     seniority: "Sophomore",
@@ -76,6 +81,7 @@ const studentData: Student[] = [
   },
   // Student 6
   {
+    id: "6",
     name: "David Miller",
     major: "EE",
     seniority: "Senior",
@@ -90,6 +96,7 @@ const studentData: Student[] = [
   },
   // Student 7
   {
+    id: "7",
     name: "Jennifer Lee",
     major: "CS",
     seniority: "Junior",
@@ -104,6 +111,7 @@ const studentData: Student[] = [
   },
   // Student 8
   {
+    id: "8",
     name: "Matthew Clark",
     major: "CS",
     seniority: "Sophomore",
@@ -118,6 +126,7 @@ const studentData: Student[] = [
   },
   // Student 9
   {
+    id: "9",
     name: "Olivia Rodriguez",
     major: "BME",
     seniority: "Senior",
@@ -132,6 +141,7 @@ const studentData: Student[] = [
   },
   // Student 10
   {
+    id: "10",
     name: "Ryan Taylor",
     major: "CS",
     seniority: "Freshman",
@@ -148,14 +158,17 @@ const studentData: Student[] = [
 
 const projectData: Project[] = [
   {
+    id: "1",
     name: "Carson's Village: Automated Family Page",
     type: "SW",
   },
   {
+    id: "2",
     name: "ATC: Patient Data Collection App",
     type: "SW"
   },
   {
+    id: "3",
     name: "ATC: Sensory Devices",
     type: "Both",
   },
