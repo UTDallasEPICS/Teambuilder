@@ -3,6 +3,9 @@ export default {
   content: [],
   theme: {
     extend: {
+      fontFamily: {
+        jura: ['Jura', 'sans-serif'], // Add Jura font here
+      },
       spacing: {
       '13': '3.25rem',
       '15': '3.75rem',
@@ -24,8 +27,12 @@ export default {
       colors: {
         aqua: '#00FFFF', // Add your desired aqua color here
       },
+      borderRadius: {
+        '10': '10px', 
+      },
     },
   },
+  
   plugins: [],
 }
 

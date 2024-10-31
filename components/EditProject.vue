@@ -5,7 +5,7 @@
     button.exit-btn(@click="closeModal") Exit
     form
       .project-inputs
-        label(for="Project_name") 
+        label(for="Project_name") Project Name
         input(name="Project_name" v-model="formState.Project_name")
       .project-inputs
         // TODO: needs to be a selection from partners that are in the db
@@ -34,10 +34,12 @@ const defaultValue = {
 
 const closeModal = () => {
   // close modal logic here
+
 };
 
 const onSubmit = (projectData: any) => {
   // submit logic here
+  
 };
 
 const formState = ref(defaultValue);

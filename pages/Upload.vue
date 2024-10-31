@@ -4,6 +4,7 @@
     .div(style='minHeight: "820px"' class='pt-10 h-screen border-solid rounded-3xl box-border m-10 bg-[rgba(90,91,88,0.33)]')
       .div(class='box-border border-solid rounded-3xl min-h-28 mt-1 mr-9 ml-5 mb-3 bg-[rgba(48,100,162,0.29)]  flex flex-col')
         h1.ml-4.mt-3.text-xl Instruction
+
         h2.ml-4.mt-2.mr-3 Upload your student list here as an excel sheet. Make sure you have these columns in your CSV file: Student ID, First Name, Last Name, Major, Seniority, and Project Preferences.
   
         .div(style='marginTop: "50px"' class='flex flex-inline')
