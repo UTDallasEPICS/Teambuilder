@@ -1,7 +1,7 @@
 // TODO: Test the function
 export default defineEventHandler(async event => {
   const { name, description, partnerId } = await readBody(event);
-  const Project = await event.context.client.project.create({
+  const postProject = await event.context.client.project.create({
     data: {
       name,
       description,
@@ -14,5 +14,5 @@ export default defineEventHandler(async event => {
       name: true
     }
   });
-  return Project;
+  return postProject;
 });
