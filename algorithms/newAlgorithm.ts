@@ -157,9 +157,9 @@ function check3200InEachProject(teams: Record<string, Student[]>,
     if (!has3200) {
       const studentToMove = students.find(
         (student) => 
-          student.class === "3200" && 
-          student.choices.includes(projects[i].name) &&
-          teams[studentTeamMap[student.name]].filter(s => s.class === "3200").length > 1
+          student.class === "3200" && //finds a student in 3200
+          student.choices.includes(projects[i].name) && //makes sure that student has the 3200-less project as a choice
+          teams[studentTeamMap[student.name]].filter(s => s.class === "3200").length > 1 //makes sure the student's current project has multiple 3200 students
       );
       if (studentToMove) {
         //Get the team this student is currently on
@@ -167,15 +167,10 @@ function check3200InEachProject(teams: Record<string, Student[]>,
 
         //Remove student from currentTeam
         teams[currentTeam] = teams[currentTeam].filter((s) => s !== studentToMove)
-      /*  const currentTeam = Object.keys(teams).find((team) =>
-          teams[team].includes(studentToMove)
-        );
-        if (currentTeam) {
-          teams[currentTeam] = teams[currentTeam].filter((s) => s !== studentToMove);
-        } */
-       
+
         //Add the student to the new team
         teams[projects[i].name].push(studentToMove);
+
         //Update the student's team in the map
         studentTeamMap[studentToMove.name] = projects[i].name;
       }
