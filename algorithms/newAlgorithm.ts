@@ -192,14 +192,14 @@ function balanceTeams(teams: Record<string, Student[]>,
   for(let i = 0; i < teamsArray.length; i++) {
   if (teamsArray[i].length < minimumStudents) {
       // Find the array with the most elements
-      const largeTeam = teamsArray.reduce((maxArray, currentArray) => {
+      const largestTeam = teamsArray.reduce((maxArray, currentArray) => {
           return currentArray.length > maxArray.length ? currentArray : maxArray;
       }, [] as Student[]);
-      if (largeTeam) {
-        const studentToMove = findLeastImpactfulStudent(largeTeam, teamsArray[i][0]?.name);
+      if (largestTeam) {
+        const studentToMove = findLeastImpactfulStudent(largestTeam, teamsArray[i][0]?.name);
         if (studentToMove) {
           teamsArray[i].push(studentToMove);
-          largeTeam.splice(largeTeam.indexOf(studentToMove), 1);
+          largestTeam.splice(largestTeam.indexOf(studentToMove), 1);
           teamsArray.sort((a, b) => a.length - b.length); //resort
         }
       }
