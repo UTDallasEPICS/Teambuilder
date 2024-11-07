@@ -55,16 +55,16 @@ export type Student = {
     //Place the studenst in teams after the sorting
     placeStudentsInTeams(groupedByClass, teams, projects);
 
-    //Check that each project has atleast one 3200 level student
-    check3200InEachProject(teams,students,projects);
-
     //calculate minimum number of students
     const minStudents = Math.floor(students.length / projects.length);
 
     //balance teams based on minium students required
     balanceTeams(teams, students, projects, minStudents);
 
+    //Check that each project has atleast one 3200 level student
+    check3200InEachProject(teams,students,projects);
 
+    //Calls for PREVIOUS FUNCTION:
 
     //adds each student to their top preference
     //passOne(teams, students);
@@ -161,18 +161,22 @@ function check3200InEachProject(teams: Record<string, Student[]>,
           student.choices.includes(projects[i].name) && //makes sure that student has the 3200-less project as a choice
           teams[studentTeamMap[student.name]].filter(s => s.class === "3200").length > 1 //makes sure the student's current project has multiple 3200 students
       );
-      if (studentToMove) {
-        //Get the team this student is currently on
+      const studentToRemove = findLeastImpactfulStudent(teams[projects[i].name], projects[i].name);
+      if (studentToMove && studentToRemove) {
+        //Get the team the students are currently on
         const currentTeam = studentTeamMap[studentToMove.name];
 
-        //Remove student from currentTeam
-        teams[currentTeam] = teams[currentTeam].filter((s) => s !== studentToMove)
+        //Remove students from teams
+        teams[currentTeam] = teams[currentTeam].filter((s) => s !== studentToMove);
+        teams[projects[i].name] = teams[projects[i].name].filter((s) => s !== studentToRemove);
 
-        //Add the student to the new team
+        //Add the students to their new teams
         teams[projects[i].name].push(studentToMove);
+        teams[currentTeam].push(studentToRemove);
 
-        //Update the student's team in the map
+        //Update the students' teams in the map
         studentTeamMap[studentToMove.name] = projects[i].name;
+        studentTeamMap[studentToRemove.name] = currentTeam;
       }
     } 
   }
@@ -195,10 +199,11 @@ function balanceTeams(teams: Record<string, Student[]>,
         if (studentToMove) {
           teamsArray[i].push(studentToMove);
           largestTeam.splice(largestTeam.indexOf(studentToMove), 1);
+
           teamsArray.sort((a, b) => a.length - b.length); //resort
+          i--;
         }
       }
-      i--;
     }
   }
 
@@ -235,6 +240,7 @@ function calculateImpact(student: Student, project: string): number {
   return (preferenceScore + majorFitScore + classScore) / 3;
 }
 
+// PREVIOUS FUNCTION:
 
   /*function passOne(
     teams: Record<string, Student[]>,
