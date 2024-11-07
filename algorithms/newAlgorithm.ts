@@ -189,18 +189,23 @@ function balanceTeams(teams: Record<string, Student[]>,
   minimumStudents: number
 ) {
   const teamsArray = Object.values(teams).sort((a, b) => a.length - b.length); // Sort by team size
-  teamsArray.forEach((smallTeam) => {
-    if (smallTeam.length < minimumStudents) {
-      const largeTeam = teamsArray.find((team) => team.length > smallTeam.length);
+  for(let i = 0; i < teamsArray.length; i++) {
+  if (teamsArray[i].length < minimumStudents) {
+      // Find the array with the most elements
+      const largeTeam = teamsArray.reduce((maxArray, currentArray) => {
+          return currentArray.length > maxArray.length ? currentArray : maxArray;
+      }, [] as Student[]);
       if (largeTeam) {
-        const studentToMove = findLeastImpactfulStudent(largeTeam, smallTeam[0]?.name);
+        const studentToMove = findLeastImpactfulStudent(largeTeam, teamsArray[i][0]?.name);
         if (studentToMove) {
-          smallTeam.push(studentToMove);
+          teamsArray[i].push(studentToMove);
           largeTeam.splice(largeTeam.indexOf(studentToMove), 1);
+          teamsArray.sort((a, b) => a.length - b.length); //resort
         }
       }
+      i--;
     }
-  });
+  }
 
 }
 //function to calcuate the impact score of the student, which would mean that the lower is better
