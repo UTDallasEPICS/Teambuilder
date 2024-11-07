@@ -42,13 +42,15 @@ model Project {
 }
 
 model Team {
-  id         String         @id @default(uuid())
-  name       String
-  projectId  String         @map("project_id")
-  Project    Project        @relation(fields: [projectId], references: [id]) 
-  Students TeamToStudent[]
-  partnerId  String         @map("partner_id")
-  Partner  Partner @relation(fields: [partnerId], references: [id]) 
+  id            String         @id @default(uuid())
+  name          String
+  projectId     String         @map("project_id")
+  Project       Project        @relation(fields: [projectId], references: [id]) 
+  Students      TeamToStudent[]
+  partnerId     String         @map("partner_id")
+  Partner       Partner @relation(fields: [partnerId], references: [id]) 
+  thursdayTeam  Boolean
+
   @@map("teams")
 }
 
