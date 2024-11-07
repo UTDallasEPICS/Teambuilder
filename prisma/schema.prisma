@@ -30,10 +30,12 @@ model Partner {
 
 model Project {
   id           String @id @default(uuid())
+  description  String
   name         String
-  targetCS     Int    @map("target_cs")
+  targetCS     Int    @map("target_cs") @default(0)
   Teams        Team[]
-  partnerId  String         @map("partner_id")
+  partnerId    String         @map("partner_id")
+  created_date DateTime @default(now())
   Partner  Partner @relation(fields: [partnerId], references: [id]) 
 
   @@map("projects")
