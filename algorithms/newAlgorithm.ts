@@ -182,6 +182,7 @@ function check3200InEachProject(teams: Record<string, Student[]>,
   }
 }
 //function to balance the teams
+//each team will have at least minimumStudents (total students / total projects [rounded down]) 
 function balanceTeams(teams: Record<string, Student[]>,
   students: Student[],
   projects: Project[],
