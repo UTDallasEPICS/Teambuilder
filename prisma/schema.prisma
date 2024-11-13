@@ -75,3 +75,19 @@ model Student {
 
   @@map("students")
 }
+
+model Semester {
+  Id               String   @id @default(uuid())
+  Name             String 
+  Course           String
+  African_American Int
+  Hispanic         Int
+  International    Int
+  Two_or_More      Int
+  Other            Int
+  Unknown          Int
+  White            Int
+  Male             Int
+  Female           Int
+  Total            Int
+}
