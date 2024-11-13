@@ -62,6 +62,25 @@ const openFileDialog = () => {
     console.error('fileInput ref is not defined');
   }
 };
+  
+interface FileUploaderInstance {
+  handleClick: () => void;
+}
+
+const fileName = ref("");
+const uploaded = ref(false);
+//const students = ref([]);
+const fileUploader = ref<FileUploaderInstance | null>(null);
+
+const handleFile = (file: File) => {
+    // Trigger file input click when the button is clicked
+  fileName.value = file.name;
+  uploaded.value = true;
+};
+const triggerFileUpload = () => {
+  // Call the handleClick method of the FileUploader
+  fileUploader.value?.handleClick(); // This will trigger the file input in FileUploader
+};
 
 
 </script>
@@ -82,15 +101,11 @@ const openFileDialog = () => {
         h1(class="text-3xl ml-8.mt-3") Projects  
         Table(:rows="rows", :deleteRow="handleDeleteRow", :editRow="handleEditRow") // This is the table, it calls the Vue table 
 
-        // Add button to trigger file upload
-        button(class="block mx-auto mt-4 border-none bg-aqua text-white py-2 px-4 rounded-lg cursor-pointer shadow-md", @click="openFileDialog") 
-          | Add  
-        // Hidden file input to be triggered by the button
-        input(type='file', accept='.csv', style={display: 'none'}, ref="hiddenFileInput")
+        FileUploader(title = "Upload Project List" @fileSelected = "handleFile")
         
 
       div.flex-col  
-        h1(class="text-3xl ml-16.mt-3") Edit Project  
-        div(class="ml-50 mr-25 min-w-395 min-h-300 customMargin box-border border-solid rounded-3xl bg-[rgba(48,100,162,0.29)].flex.flex-col")  
-        Modal(v-if="modalOpen", @closeModal="closeModal", @onSubmit="handleSubmit", :defaultValue="rowToEdit !== null && rows[rowToEdit]")
+      h1(class="text-3xl ml-32") Edit Project  
+      div(class="ml-50 mr-25 min-w-395 min-h-300 customMargin box-border border-solid rounded-3xl bg-[rgba(48,100,162,0.29)].flex.flex-col")  
+      Modal(v-if="modalOpen", @closeModal="closeModal", @onSubmit="handleSubmit", :defaultValue="rowToEdit !== null && rows[rowToEdit]")
 </template>

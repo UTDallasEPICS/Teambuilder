@@ -9,8 +9,17 @@
   
         .div(style='marginTop: "50px"' class='flex flex-inline')
           .div
-            input(type='file'.accept='text/csv' style='display: "none"') 
-            FileUploader(:handleFile='handleFile')
+             
+            
+            //button(style={marginLeft: '20px', marginTop: '50px'} class='border-solid border-8 p-1 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl' @click="triggerFileUpload")
+            //| Upload File
+
+            //button(style={marginLeft: '20px', marginTop: '50px'} class='border-solid border-8 p-1 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl' @click="triggerFileUpload") Upload File
+            //input(type='file'.accept='text/csv' style='display: "none"')
+            
+            FileUploader(title="Student List Upload" @fileSelected="handleFile" ref="fileUploader")
+            
+            
             .div(style='maxWidth: "210px", minHeight: "30px", padding:"3px"' class='bg-[rgb(102,103,104)] mt-3 ml-6 mb-3 rounded-md') 
               p(v-if='fileName' style='color: "white", fontSize: "11px", margin: "3px", wordWrap: "break-word", width: "100%"') {{ fileName }}
   
@@ -27,7 +36,9 @@
             h1(style='fontSize: "30px"' class='ml-16 mt-3 mb-3 text-xl') Student List Preview
             .div(v-if="uploaded" style='marginLeft: "50px" , minWidth: "600px", height: "400px" , overflowY: "auto"' class='customMargin  border-solid rounded-3xl  bg-[rgba(48,100,162,0.29)]  flex flex-col')
               StudentCardDisplay(v-for="student in students")
-  
+
+        .div
+          ListComponent(:items="itemsList")
         div
           NuxtLink(to='/display')
             button(style='marginLeft: "20px"' class='border-solid border-8 p-2 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl') Form Teams &gt;&gt;
@@ -37,11 +48,23 @@
   const fileName = ref("");
   const uploaded = ref(false);
   const students = ref([]);
+  const fileUploader = ref<FileUploaderInstance | null>(null);
+
+  interface FileUploaderInstance {
+    handleClick: () => void;
+  }
+
   const handleFile = (file: File) => {
     // Trigger file input click when the button is clicked
     fileName.value = file.name;
     uploaded.value = true;
   };
+  const triggerFileUpload = () => {
+  // Call the handleClick method of the FileUploader
+    fileUploader.value?.handleClick(); // This will trigger the file input in FileUploader
+  };
+  
+  
   
   </script>
 
