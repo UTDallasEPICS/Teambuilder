@@ -202,6 +202,7 @@ export default {
 
 .dropdown-options {
   background-color: #ffffff;
+  color: black;
   border-radius: 4px;
   margin-top: 4px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
