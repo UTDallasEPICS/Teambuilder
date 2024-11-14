@@ -1,8 +1,12 @@
-//TODO: Implement the Get functionality
+//TODO: Test the Get/Read functionality
 export default defineEventHandler(async (event) => {
-    const {id, description, name } = await $fetch('$POSTGRES_PORT:5432');
-    const getProject = await event.context.client.project.findFirst({
-        
+    //const {id} = await $fetch('$POSTGRES_PORT:5432');
+    //const { id } = await readBody(event);
+    const {id} = getQuery(event);
+    const getProject = await event.context.client.project.findUnique({
+        where: {
+            id: id,
+        }, 
     });
     return getProject;
 })
