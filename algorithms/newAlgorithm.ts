@@ -105,7 +105,8 @@ function groupStudentsByClass(
   return Object.entries(studentsByDegree).reduce((grouped, [preference, degreeGroups]) => {
       grouped[preference] = {
           "2200": [],
-          "3200": []
+          "3200": [],
+          null: [],
       };
       
       Object.values(degreeGroups).forEach(students => {

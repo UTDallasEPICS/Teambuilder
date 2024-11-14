@@ -114,6 +114,6 @@ const projectData: Project[] = [
 
   const parsedFileData = readCSVFile('Project_Bid_Response_W.csv');
   console.log(parsedFileData);
-  
+
 console.log("\nTeams:");
 console.log(generateTeams(parsedFileData, projectData));
