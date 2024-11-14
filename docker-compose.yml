@@ -1,14 +1,34 @@
 # Use postgres/example user/password credentials
+# version: '3.1'
+
+# services:
+
+#   db:
+#     image: s
+#     restart: unless-stopped
+#     env_file:
+#       - .env
+#     ports:
+#       - $POSTGRES_PORT:5432
+#       - "5432:5432"
+#     volumes:
+#       - ./postgres-data:/var/lib/postgresql/data
+#--------------------------------------------------
+
+#-- added 11/12/24
 version: '3.1'
 
 services:
-
   db:
     image: postgres
+    build: path
     restart: unless-stopped
     env_file:
       - .env
     ports:
       - $POSTGRES_PORT:5432
+      - "5432:5432"  # Directly map container port 5432 to host port 5432
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+
+ 
