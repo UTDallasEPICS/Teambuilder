@@ -291,8 +291,6 @@ export function generateTeams(students: Student[], projects: Project[]): TeamAss
       return acc;
   }, {} as TeamAssignments);
 
-  //Calculate avg students per team. Floor it to find the ideal min. for a team.
-
   //Sort students by preference count
   const sortedStudents = [...students].sort((a, b) => a.choices.length - b.choices.length);
 
