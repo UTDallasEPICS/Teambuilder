@@ -1,11 +1,14 @@
-export default defineEventHandler(async event => {
+//TODO: Test Delete Functionality
+export default defineEventHandler(async (event) => {
+  //const { name } = await readBody(event);
   const { id } = getQuery(event);
-  await event.context.client.partner.update({
-    where: {
-      id
-    },
-    data: {
-      removed:true,
-    },
+  const deletedPartner = await event.context.client.project.delete({
+      where: {
+          id: id,
+      },
+      data: {
+          removed:true,
+      },
   });
-});
+  return deletedPartner;
+})
