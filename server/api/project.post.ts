@@ -10,8 +10,8 @@ export default defineEventHandler(async event => {
       }
     },
     include: {
-      partner: true,
-      name: true
+      Teams: true,
+      Partner: true 
     }
   });
   return postProject;
