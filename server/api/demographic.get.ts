@@ -5,6 +5,7 @@ const prisma = new PrismaClient()
 
 interface Record {
     Name: string;
+    Course: string;
     African_American: number;
     Asian: number;
     Hispanic: number;
@@ -52,6 +53,7 @@ export default defineEventHandler(async (event) => {
             },
             select: {
                 Name: true,
+                Course: true,
                 African_American: true,
                 Asian: true,
                 Hispanic: true,
@@ -62,7 +64,8 @@ export default defineEventHandler(async (event) => {
         });
         const filteredRecords = records.map(r => 
             Object.fromEntries([
-              ['Name', r.Name], 
+              ['Name', r.Name],
+              ['Course', r.Course], 
               ...ethnicities.map(e => [e, r[e as keyof Record]])
             ] as [string, number][])
           );
