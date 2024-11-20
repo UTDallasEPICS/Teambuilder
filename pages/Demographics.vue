@@ -85,10 +85,10 @@
       </div>
     </div>
 
-    <!-- File Import Button -->
-    <div class="import-file">
-      <button class="import-button">
-        <span>📂</span> Import file
+    <!-- Submit Button -->
+    <div class="submit-query">
+      <button class="submit-button" @click="getRequest">
+        Submit
       </button>
     </div>
   </div>
@@ -99,13 +99,12 @@ export default {
   data() {
     return {
       filters: [
-        { name: "Course", options: ["EPCS 2100", "EPCS 2200", "EPCS 3100", "EPCS 3200"], selectedOptions: [] },
-        { name: "Enrollment Data", options: ["After Census Day", "After Last Final Exam Day"], selectedOptions: [] },
-        { name: "Ethnicity", options: ["African-American", "Asian", "Hispanic", "International", "Two or more", "Other", "Unknown", "White"], selectedOptions: [] },
-        { name: "Gender", options: ["Female", "Male", "Prefer not to say", "Other"], selectedOptions: [] },
+        { name: "Course", options: ["2200", "3200"], selectedOptions: [] },
+        { name: "Ethnicity", options: ["African_American", "Asian", "Hispanic", "International", "Other", "White"], selectedOptions: [] },
+        { name: "Gender", options: ["Female", "Male"], selectedOptions: [] },
         { name: "Year", options: [], selectedOptions: [] },
         { name: "Semester", options: ["Fall", "Spring", "Summer"], selectedOptions: [] },
-        { name: "Type of chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] }
+        { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] }
       ],
       openDropdown: null,
       customYearStart: "",
@@ -150,10 +149,39 @@ export default {
       
       return `Custom: ${yearRange}, ${semesterRange}`;
     },
-    toggleSidebar() {
-      // Functionality to close the sidebar if needed
+    async getRequest () {
+    const yearFilter = this.filters.find(filter => filter.name === 'Year');
+    if (this.customFilterYearStart && this.customFilterYearEnd) {
+      yearFilter.selectedOptions = [this.customFilterYearStart, this.customFilterYearEnd];
+    } else {
+      yearFilter.selectedOptions = [];
     }
-  }
+    const params = new URLSearchParams();
+
+    this.filters.forEach((filter) => {
+      if (filter.selectedOptions.length > 0 && filter.name != "Chart") {
+        params.append(filter.name, filter.selectedOptions.join(","));
+      } else if(filter.selectedOptions.length == 0 && filter.name != "Chart") {
+        params.append(filter.name, "Empty");
+      }
+    });
+
+    const queryString = params.toString()
+    console.log(queryString)
+    const apiUrl = `/api/demographic?${queryString}`
+
+    try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error("Response was not ok")
+    }
+    const data = await response.json()
+    console.log(data)
+    }catch(error) {
+      console.error(error)
+    }
+  },
+}
 };
 </script>
 
@@ -246,11 +274,11 @@ export default {
   font-size: 14px;
 }
 
-.import-file {
+.submit-query {
   margin-top: 20px;
 }
 
-.import-button {
+.submit-button {
   background-color: #ffffff;
   color: #006d48;
   padding: 10px;
@@ -266,7 +294,7 @@ export default {
   transition: background-color 0.3s ease;
 }
 
-.import-button:hover {
+.submit-button:hover {
   background-color: #e8f5e9;
 }
 </style>
