@@ -62,6 +62,8 @@ export default defineEventHandler(async (event) => {
                 White: true
             }
         });
+
+        console.log(records)
         const filteredRecords = records.map(r => 
             Object.fromEntries([
               ['Name', r.Name],
@@ -69,6 +71,8 @@ export default defineEventHandler(async (event) => {
               ...ethnicities.map(e => [e, r[e as keyof Record]])
             ] as [string, number][])
           );
+
+          console.log(filteredRecords)
         
         return {
             success: true,

@@ -1,4 +1,5 @@
 <template>  
+<div class="dashboard-container">
   <div class="sidebar">
     <!-- Close Button -->
     <button class="close-button" @click="toggleSidebar">&#x2715;</button>
@@ -92,10 +93,16 @@
       </button>
     </div>
   </div>
+
+  <div id="chartContainer" class="chart-container">
+  </div> 
+</div>
 </template>
 
 <script>
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   data() {
     return {
       filters: [
@@ -113,8 +120,7 @@ export default {
       customSemesterEnd: "",
       customFilterYearStart: "", 
       customFilterYearEnd: "",
-      barChartData: "",  
-      lineChartData: ""  
+      chartData: [], 
     };
   },
   methods: {
@@ -167,25 +173,87 @@ export default {
     });
 
     const queryString = params.toString()
-    console.log(queryString)
     const apiUrl = `/api/demographic?${queryString}`
-
     try {
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error("Response was not ok")
     }
     const data = await response.json()
-    console.log(data)
+    
+    this.chartData = data.data
+    this.plotChart()
     }catch(error) {
       console.error(error)
     }
   },
+  async plotChart() {
+    if (!this.chartData.length) {
+      return;
+    }
+    const Plotly = (await import('plotly.js-basic-dist')).default;
+
+    const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
+    if (!chartType) {
+      return;
+    }
+    const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
+
+
+    const xValues = this.chartData.map(item => `${item.Name}-${item.Course}`); 
+
+    const traces = [];
+
+    selectedEthnicities.forEach(ethnicity => {
+    const yValues = this.chartData.map(item => item[ethnicity]);
+
+    // Create trace based on chart type
+    if (chartType === "Bar") {
+      traces.push({
+        x: xValues,
+        y: yValues,
+        type: 'bar',
+        name: ethnicity // Use the ethnicity as the name of the trace
+      });
+    } else if (chartType === "Line") {
+      traces.push({
+        x: xValues,
+        y: yValues,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: ethnicity
+      });
+    } else if (chartType === "Pie") {
+      // Note: Pie charts typically represent one set of data. If multiple ethnicities are selected, Pie might not make sense.
+      traces.push({
+        labels: xValues,
+        values: yValues,
+        type: 'pie',
+        name: ethnicity
+      });
+    }
+  });
+
+  const layout = {
+    title: `Demographic Data for ${selectedEthnicities.join(', ')}`,
+    xaxis: { title: 'Year-Semester-Course' },
+    yaxis: { title: 'Count' },
+    barmode: 'group'
+  };
+
+
+  Plotly.newPlot('chartContainer', traces, layout);
+  }
 }
-};
+});
 </script>
 
 <style scoped>
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
 .sidebar {
   background-color: #006d48;
   padding: 16px;
@@ -193,6 +261,12 @@ export default {
   flex-direction: column;
   width: 250px;
   border-radius: 8px;
+}
+
+.chart-container {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
 }
 
 .close-button {
