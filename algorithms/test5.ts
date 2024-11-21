@@ -101,12 +101,12 @@ const projectData: Project[] = [
         type: "HW"
     },
     {
-        id: "11",
+        id: "12",
         name: " F24 - Kellermann: Water Pump Design Kitario Project",
         type: "HW"
     },
     {
-        id: "11",
+        id: "13",
         name: "F24 - TheLab.ms Makerspace: Kiosk/Calendar",
         type: "SW"
     },
