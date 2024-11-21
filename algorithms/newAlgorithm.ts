@@ -1,69 +1,61 @@
 // NEW (?) FUNCTION:
 
 //Student Structure that includes Name, Major, Grade, choices, and EPICS level
-//Changed Majors to include more than just CS
+// Student Structure that includes Name, Major, Grade, choices, and EPICS level
 export type Student = {
-    id: string;
-    name: string;
-    major: "CS" | "SE" | "EE" | "ME" | "BME" | "DS" | "CE" | "Systems" | "Other";
-    seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
-    choices: string[];
-    choicesString: string;
-    class: "2200" | "3200";
+  id: string;
+  name: string;
+  major: "CS" | "SE" | "EE" | "ME" | "BME" | "DS" | "CE" | "Systems" | "Other";
+  seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
+  choices: string[];
+  choicesString: string;
+  class: "2200" | "3200";
 };
 
-//Project structure that includes if the project is a software, hardware, or both
+// Project structure that includes if the project is a software, hardware, or both
 export type Project = {
-    id: string;
-    name: string;
-    type: "SW" | "HW" | "Both";
+  id: string;
+  name: string;
+  type: "SW" | "HW" | "Both";
 };
 
+// Type for Team Assignments
 export type TeamAssignments = Record<string, Student[]>;
 
 let numUpperClassmen = 0;
 
-
-  
-  
-
-//created a new team generate(initialization) function, the old is commented above take a look at it.
+// Main function to generate teams
 export function generateTeams(students: Student[], projects: Project[]): TeamAssignments {
-  //Initialize Teams for each project
+  // Initialize Teams for each project
   const teams: TeamAssignments = projects.reduce((acc, current) => {
       acc[current.name] = [];
       return acc;
   }, {} as TeamAssignments);
 
-  //Sort students by preference count
+  // Sort students by preference count
   const sortedStudents = [...students].sort((a, b) => a.choices.length - b.choices.length);
 
-  //Group Students by Preferences, degree, and class
+  // Group Students by Preferences, degree, and class
   const groupedByPreference = groupStudentsByPreference(sortedStudents);
   const groupedByDegree = groupStudentsByDegree(groupedByPreference);
   const groupedByClass = groupStudentsByClass(groupedByDegree);
 
-  //Place the students in teams after the sorting
+  // Place the students in teams after sorting
   placeStudentsInTeams(groupedByClass, teams, projects);
 
-  //Check that each project has at least one 3200 level student
-  ensureUpperClassmen(teams, students, projects);
-
-  //calculate minimum number of students
+  // Calculate minimum number of students per team
   const minStudents = Math.floor(students.length / projects.length);
 
-  //balance teams based on minimum students required
-  balanceTeamsFixed(teams, projects, minStudents);
+  // Ensure each project has at least one 3200-level student
+  ensureUpperClassmen(teams, students, projects);
 
-  //adds each student to their top preference
-  //passOne(teams, students);
-  //Optimize the teams
-  //passTwo(teams, students, projects, minimumStudents);
+  // Balance teams based on minimum students required
+  balanceTeamsFixed(teams, projects, minStudents);
 
   return teams;
 }
 
-//function to group students by their top preference
+// Group students by their top preference
 function groupStudentsByPreference(students: Student[]): Record<string, Student[]> {
   return students.reduce((grouped: Record<string, Student[]>, student) => {
       const preference = student.choices[0] || "No preference";
@@ -73,7 +65,7 @@ function groupStudentsByPreference(students: Student[]): Record<string, Student[
   }, {});
 }
 
-//function to group students by their degree(hardware, software, other)
+// Group students by their degree (hardware, software, other)
 function groupStudentsByDegree(
   studentsByPreference: Record<string, Student[]>
 ): Record<string, Record<string, Student[]>> {
@@ -91,14 +83,14 @@ function groupStudentsByDegree(
   }, {} as Record<string, Record<string, Student[]>>);
 }
 
-//Helper function to determine degree type
+// Helper function to determine degree type
 function getDegreeType(major: Student['major']): string {
   if (["EE", "ME", "BME", "CE"].includes(major)) return "HW";
   if (["CS", "SE", "DS"].includes(major)) return "SW";
   return "Other";
 }
 
-//function to group students based on their class
+// Group students based on their class
 function groupStudentsByClass(
   studentsByDegree: Record<string, Record<string, Student[]>>
 ): Record<string, Record<string, Student[]>> {
@@ -108,25 +100,40 @@ function groupStudentsByClass(
           "3200": [],
           null: [],
       };
-      
+
       Object.values(degreeGroups).forEach(students => {
           students.forEach(student => {
               grouped[preference][student.class].push(student);
           });
       });
-      
+
       return grouped;
   }, {} as Record<string, Record<string, Student[]>>);
 }
 
-//function to place students based on preference and class
 function placeStudentsInTeams(
   studentsByClass: Record<string, Record<string, Student[]>>,
   teams: TeamAssignments,
   projects: Project[]
 ): void {
   Object.entries(studentsByClass).forEach(([preference, classGroups]) => {
-      if (teams[preference]) {  // Check if preference is a valid project
+      if (preference === "No preference") {
+          // Assign students with no preferences to the smallest team
+          const smallestTeam = projects.reduce((smallest, project) => {
+              return teams[project.name].length < teams[smallest.name].length
+                  ? project
+                  : smallest;
+          }, projects[0]);
+
+          classGroups["2200"].forEach((student) => {
+              teams[smallestTeam.name].push(student);
+          });
+
+          classGroups["3200"].forEach((student) => {
+              teams[smallestTeam.name].push(student);
+          });
+      } else {
+          // Regular preference-based placement
           ["2200", "3200"].forEach(classLevel => {
               classGroups[classLevel].forEach(student => {
                   if (student.choices[0]) {
@@ -138,13 +145,12 @@ function placeStudentsInTeams(
   });
 }
 
-//function to make sure each student has at least one 3200 student
+// Ensure each project has at least one 3200-level student
 function ensureUpperClassmen(
   teams: TeamAssignments,
   students: Student[],
   projects: Project[]
 ): void {
-  // Create student location map for efficient lookups
   const studentLocations = new Map<string, string>();
   Object.entries(teams).forEach(([teamName, teamStudents]) => {
       teamStudents.forEach(student => {
@@ -160,17 +166,14 @@ function ensureUpperClassmen(
               studentLocations,
               project.name
           );
-          
+
           if (availableUpperClassman) {
               const currentTeam = studentLocations.get(availableUpperClassman.name);
               if (currentTeam) {
-                  // Remove from current team
                   teams[currentTeam] = teams[currentTeam].filter(
                       s => s.name !== availableUpperClassman.name
                   );
-                  // Add to new team
                   teams[project.name].push(availableUpperClassman);
-                  // Update location
                   studentLocations.set(availableUpperClassman.name, project.name);
               }
           }
@@ -178,7 +181,7 @@ function ensureUpperClassmen(
   });
 }
 
-//Helper function to find available upperclassman for team balancing
+// Find an available upperclassman for balancing
 function findAvailableUpperClassman(
   teams: TeamAssignments,
   studentLocations: Map<string, string>,
@@ -199,18 +202,7 @@ function findAvailableUpperClassman(
   return null;
 }
 
-// Function to calculate a student's impact on a project
-//Lower score is better, since they will create a larger impact, and will be less likely to move
-//low score = not moved
-function calculateImpactScore(student: Student, projectName: string): number {
-  const preferenceIndex = student.choices.indexOf(projectName);
-  const preferenceScore = preferenceIndex === -1 ? 100 : preferenceIndex + 1;
-  const classScore = student.class === "3200" ? 0.5 : 1;
-  
-  return (preferenceScore + classScore) / 2;
-}
-
-//function to balance the teams
+// Balance teams
 function balanceTeamsFixed(
   teams: TeamAssignments,
   projects: Project[],
@@ -233,7 +225,7 @@ function balanceTeamsFixed(
               teams[largestTeam.name],
               smallestTeam.name
           );
-          
+
           if (studentToMove) {
               teams[largestTeam.name] = teams[largestTeam.name].filter(
                   s => s.id !== studentToMove.id
@@ -244,7 +236,7 @@ function balanceTeamsFixed(
   }
 }
 
-//Helper function to find the best student to move during team balancing
+// Find the best student to move for balancing
 function findBestStudentToMove(
   team: Student[],
   targetProject: string
@@ -255,4 +247,13 @@ function findBestStudentToMove(
       const currentImpact = calculateImpactScore(current, targetProject);
       return currentImpact < bestImpact ? current : best;
   }, null as Student | null);
+}
+
+// Calculate a student's impact score
+function calculateImpactScore(student: Student, projectName: string): number {
+  const preferenceIndex = student.choices.indexOf(projectName);
+  const preferenceScore = preferenceIndex === -1 ? 100 : preferenceIndex + 1;
+  const classScore = student.class === "3200" ? 0.5 : 1;
+
+  return (preferenceScore + classScore) / 2;
 }
