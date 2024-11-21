@@ -5,7 +5,6 @@ export default defineEventHandler(async event => {
     data: {
       id: id,
       name: name,
-      // contact_name: contact_name,
       contact_email: contact_email,
     },
     include: {
