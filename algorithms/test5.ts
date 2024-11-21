@@ -62,7 +62,7 @@ const projectData: Project[] = [
     },
     {
         id: "4",
-        name: "F24 - UTDesign: EPICS Database/Discord",
+        name: "F24 - UTDesign: EPICS Database/Dashboard",
         type: "SW"
     },
     {
@@ -102,7 +102,7 @@ const projectData: Project[] = [
     },
     {
         id: "11",
-        name: "F24 - Kellermann: Water Pump Design Kitario Project",
+        name: " F24 - Kellermann: Water Pump Design Kitario Project",
         type: "HW"
     },
     {
