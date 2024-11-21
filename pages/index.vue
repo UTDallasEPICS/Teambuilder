@@ -34,19 +34,15 @@
 
 //Impement API handler calls in index later
 <script setup lang="ts">
-  const { data } = await useFetch('/api/partner.delete.ts')
-</script>
-<script setup lang="ts">
-  const { data } = await useFetch('/api/partner.get.ts')
-</script>
-<script setup lang="ts">
-  const { data } = await useFetch('/api/partner.post.ts')
-</script>
-<script setup lang="ts">
-  const { data } = await useFetch('/api/partner.put.ts')
-</script>
+  const { data : deleteData } = await useFetch('/api/partner.delete.ts')
 
-<script setup lang="ts">
+  const { data : getData} = await useFetch('/api/partner.get.ts')
+
+  const { data : postData } = await useFetch('/api/partner.post.ts')
+
+  const { data : putData} = await useFetch('/api/partner.put.ts')
+
+
 const fileName = ref("");
 const uploaded = ref(false);
 const students = ref([]);
@@ -57,3 +53,17 @@ const handleFile = (file: File) => {
 };
 
 </script>
+
+<!-- //Impement API handler calls in index later
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.delete.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.get.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.post.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.put.ts')
+</script> -->
