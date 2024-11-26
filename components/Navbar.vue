@@ -21,7 +21,7 @@ div(class="w-full sticky top-0  mx-auto p-4 h-full flex justify-between items-ce
     li
       NuxtLink(to="/Upload") Student Upload
     li
-      NuxtLink(to="/display") Generate
+      NuxtLink(to="/generate") Generate
 </template>
 
 <script setup lang="ts">

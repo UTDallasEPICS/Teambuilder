@@ -26,6 +26,8 @@ export default {
       },
       colors: {
         aqua: '#00FFFF', // Add your desired aqua color here
+        general: '#E560F1',
+        pillText: '#FDF5D9',
       },
       borderRadius: {
         '10': '10px', 

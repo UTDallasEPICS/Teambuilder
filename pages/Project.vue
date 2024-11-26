@@ -88,7 +88,7 @@ const triggerFileUpload = () => {
 
 <template lang="pug">
   div(class="font-jura h-screen min-h-[780px] rounded-[24px] border-solid rounded-t-3xl box-border m-10 bg-[rgba(90,91,88,0.49)] pl-4 pt-7")  
-    div.box-border.border-solid.rounded-3xl.min-h-28.mt-1.mr-9.ml-5.mb-3.flex.flex-col(class="bg-[rgba(48,100,162,0.29)]")
+    div.box-border.border-solid.rounded-3xl.min-h-28.mt-1.mr-9.ml-5.mb-3.flex.flex-col.text-pillText(class="bg-[rgba(48,100,162,0.29)]")
       h1.ml-4.mt-3.text-xl Instruction  
       h2.ml-4.mt-2.mr-3   
         | Upload your project information here.
