@@ -1,3 +1,4 @@
+// Demographics.get.ts
 import { PrismaClient } from "@prisma/client"
 import { access } from "fs";
 
@@ -32,7 +33,8 @@ export default defineEventHandler(async (event) => {
         throw new Error("You must pick atleast one Semester")
     } else if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
         throw new Error("You must pick atleast one Ethnicity or Gender")
-    } else if (ethnicities[0] != "Empty" && genders[0] != "Empty") {
+    } 
+    else if (ethnicities[0] != "Empty" && genders[0] != "Empty") {
         throw new Error("Both Ethnicity and Gender cannot be chosen")
     } 
 

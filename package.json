@@ -16,6 +16,7 @@
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.0.12",
     "@prisma/client": "5.22.0",
+    "chart.js": "^4.4.6",
     "jsonwebtoken": "^9.0.0",
     "nuxt": "^3.11.2",
     "plotly.js-basic-dist": "^2.35.2",

@@ -1,3 +1,4 @@
+<!-- Demographics.vue -->
 <template>  
 <div class="dashboard-container">
   <div class="sidebar">
@@ -95,6 +96,7 @@
   </div>
 
   <div id="chartContainer" class="chart-container">
+    <canvas id ="chartCanvas"></canvas>
   </div> 
 </div>
 </template>
@@ -261,12 +263,15 @@ export default defineComponent({
   flex-direction: column;
   width: 250px;
   border-radius: 8px;
+  height: fit-content;
 }
 
 .chart-container {
   flex: 1;
   padding: 20px;
   overflow: auto;
+  z-index: -2;
+  margin: 10px;
 }
 
 .close-button {
