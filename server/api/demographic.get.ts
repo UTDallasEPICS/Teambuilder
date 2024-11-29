@@ -1,95 +1,132 @@
-import { PrismaClient } from "@prisma/client"
-import { access } from "fs";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 interface Record {
-    Name: string;
-    Course: string;
-    African_American: number;
-    Asian: number;
-    Hispanic: number;
-    International: number;
-    Other: number;
-    White: number;
-  }
-export default defineEventHandler(async (event) => {
-    try {
-    const queryParams = getQuery(event)
-    const { Course, Ethnicity, Gender, Year, Semester} = queryParams
+  Name: string;
+  Course: string;
+  African_American: number;
+  Asian: number;
+  Hispanic: number;
+  International: number;
+  Other: number;
+  White: number;
+  Male: number;
+  Female: number;
+  Total: number;
+}
 
+// Helper function to convert `Year` and `Semester` to `Name` format
+const generateNameFilters = (years: string[], semesters: string[]): string[] => {
+  const semesterMap: { [key: string]: string } = { Fall: "F", Spring: "S", Summer: "U" };
+  const filters: string[] = [];
+  for (const year of years) {
+    const yearSuffix = year.slice(2); // Extract last two digits of the year
+    for (const semester of semesters) {
+      const semesterCode = semesterMap[semester];
+      if (semesterCode) {
+        filters.push(`${yearSuffix}${semesterCode}`);
+      }
+    }
+  }
+  return filters;
+};
+
+export default defineEventHandler(async (event) => {
+  try {
+    const queryParams = getQuery(event);
+    const { Course, Ethnicity, Gender, Year, Semester } = queryParams;
+
+    // Parse query parameters into arrays
     const courses = Course ? String(Course).split(",") : [];
     const ethnicities = Ethnicity ? String(Ethnicity).split(",") : [];
     const genders = Gender ? String(Gender).split(",") : [];
     const years = Year ? String(Year).split(",") : [];
     const semesters = Semester ? String(Semester).split(",") : [];
 
-    if (courses[0] == "Empty") {
-        throw new Error("You must pick atleast one Course")
-    } else if (years[0] == "Empty" || years.length < 2) {
-        throw new Error("Both Years must be chosen")
-    } else if(semesters[0] == "Empty") {
-        throw new Error("You must pick atleast one Semester")
-    } else if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
-        throw new Error("You must pick atleast one Ethnicity or Gender")
-    } else if (ethnicities[0] != "Empty" && genders[0] != "Empty") {
-        throw new Error("Both Ethnicity and Gender cannot be chosen")
-    } 
-
-
-    if (ethnicities[0] != "Empty") {
-        const records = await prisma.semester.findMany({
-            where: {
-                Course:  {
-                    in: courses
-                },
-                Year: {
-                    gte: Number(years[0]),
-                    lte: Number(years[1])
-                },
-                Sem: {
-                    in: semesters
-                }
-            },
-            select: {
-                Name: true,
-                Course: true,
-                African_American: true,
-                Asian: true,
-                Hispanic: true,
-                International: true,
-                Other: true,
-                White: true
-            }
-        });
-
-        console.log(records)
-        const filteredRecords = records.map(r => 
-            Object.fromEntries([
-              ['Name', r.Name],
-              ['Course', r.Course], 
-              ...ethnicities.map(e => [e, r[e as keyof Record]])
-            ] as [string, number][])
-          );
-
-          console.log(filteredRecords)
-        
-        return {
-            success: true,
-            data: filteredRecords
-        }
-
-    } else {
-        return {
-            message: "Gender not done yet"
-        }
+    // Validate input
+    if (courses[0] === "Empty") {
+      throw new Error("You must pick at least one Course");
+    } else if (years.length > 0 && years.length < 2) {
+      throw new Error("Both start and end Year must be chosen");
+    } else if (semesters[0] === "Empty") {
+      throw new Error("You must pick at least one Semester");
+    } else if (ethnicities[0] === "Empty" && genders[0] === "Empty") {
+      throw new Error("You must pick at least one Ethnicity or Gender");
+    } else if (ethnicities[0] !== "Empty" && genders[0] !== "Empty") {
+      throw new Error("Both Ethnicity and Gender cannot be chosen");
     }
-    } catch(error) {
-        console.error(error)
+
+    // Generate `Name` filters dynamically from `Year` and `Semester`
+    const nameFilters = generateNameFilters(years, semesters);
+
+    // Fetch records from the database
+    const records = await prisma.semester.findMany({
+      where: {
+        Course: {
+          in: courses,
+        },
+        ...(nameFilters.length > 0 && { Name: { in: nameFilters } }),
+      },
+      select: {
+        Name: true,
+        Course: true,
+        African_American: true,
+        Asian: true,
+        Hispanic: true,
+        International: true,
+        Other: true,
+        White: true,
+        Male: true,
+        Female: true,
+        Total: true,
+      },
+    });
+
+    console.log('Fetched records:', records); // Log the raw records
+
+    // Process results based on Ethnicity or Gender
+    let filteredRecords = [];
+    if (ethnicities[0] !== "Empty") {
+      // Filter by ethnicities
+      filteredRecords = records.map((record) =>
+        Object.fromEntries([
+          ["Name", record.Name],
+          ["Course", record.Course],
+          ...ethnicities.map((ethnicity) => [
+            ethnicity,
+            record[ethnicity as keyof Record],
+          ]),
+        ])
+      );
+    } else if (genders[0] !== "Empty") {
+      // Filter by genders, handle both Male and Female
+      filteredRecords = records.map((record) => {
+        const genderData = genders.reduce((acc: any, gender: string) => {
+          if (gender === "Male") acc[gender] = record.Male;
+          if (gender === "Female") acc[gender] = record.Female;
+          return acc;
+        }, {});
+
         return {
-            success: false,
-            message: error instanceof Error ? error.message : "Unknown Error"
-        }
+          Name: record.Name,
+          Course: record.Course,
+          ...genderData,
+        };
+      });
     }
-    
+
+    console.log('Filtered records:', filteredRecords); // Log filtered records
+
+    return {
+      success: true,
+      data: filteredRecords,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown Error",
+    };
+  }
 });

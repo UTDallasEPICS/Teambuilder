@@ -1,106 +1,89 @@
-<template>  
-<div class="dashboard-container">
-  <div class="sidebar">
-    <!-- Close Button -->
-    <button class="close-button" @click="toggleSidebar">&#x2715;</button>
-
-    <!-- Filter Buttons with Dropdown Options -->
-    <div v-for="filter in filters" :key="filter.name" class="field">
-      <button 
-        @click="toggleDropdown(filter.name)" 
-        class="field-button"
-      >
-        {{ getFilterDisplayText(filter) }}
-      </button>
-
-      <!-- Dropdown Options with Multi-Selection -->
-      <div v-if="isDropdownOpen(filter.name)" class="dropdown-options">
-        <div 
-          v-for="option in filter.options" 
-          :key="option" 
-          :class="{'dropdown-item': true, 'selected': filter.selectedOptions.includes(option)}"
-          @click="toggleOption(filter.name, option)"
+<template>
+  <div class="dashboard-container">
+    <div class="sidebar">
+      <!-- Close Button -->
+      <button class="close-button" @click="toggleSidebar">&#x2715;</button>
+  
+      <!-- Filter Buttons with Dropdown Options -->
+      <div v-for="filter in filters" :key="filter.name" class="field">
+        <button 
+          @click="toggleDropdown(filter.name)" 
+          class="field-button"
         >
-          {{ option }}
-        </div>
-
-        <!-- Custom Year Range for "Year" Filter -->
-        <div v-if="filter.name === 'Year'" class="custom-range">
-          <label>Enter Year Range:</label>
-          <input type="text" v-model="customFilterYearStart" placeholder="Start Year" class="custom-input"/>
-          <input type="text" v-model="customFilterYearEnd" placeholder="End Year" class="custom-input"/>
-        </div>
-
-        <!-- Additional Selections for Combined Chart -->
-        <div v-if="filter.name === 'Type of chart' && filter.selectedOptions.includes('Combined bar and line')" class="combined-chart-options">
-          <label>Select data for Bar Chart:</label>
-          <select v-model="barChartData" class="custom-dropdown">
-            <option disabled value="">Select Option</option>
-            <option>Gender</option>
-            <option>Ethnicity</option>
-          </select>
-          
-          <label>Select data for Line Chart:</label>
-          <select v-model="lineChartData" class="custom-dropdown">
-            <option disabled value="">Select Option</option>
-            <option>Gender</option>
-            <option>Ethnicity</option>
-          </select>
+          {{ getFilterDisplayText(filter) }}
+        </button>
+  
+        <!-- Dropdown Options with Multi-Selection -->
+        <div v-if="isDropdownOpen(filter.name)" class="dropdown-options">
+          <div 
+            v-for="option in filter.options" 
+            :key="option" 
+            :class="{'dropdown-item': true, 'selected': filter.selectedOptions.includes(option)}"
+            @click="toggleOption(filter.name, option)"
+          >
+            {{ option }}
+          </div>
+  
+          <!-- Custom Year Range for "Year" Filter -->
+          <div v-if="filter.name === 'Year'" class="custom-range">
+            <label>Enter Year Range:</label>
+            <input type="text" v-model="customFilterYearStart" placeholder="Start Year" class="custom-input"/>
+            <input type="text" v-model="customFilterYearEnd" placeholder="End Year" class="custom-input"/>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Custom Year and Semester Range -->
-    <div class="field">
-      <button 
-        @click="toggleDropdown('Custom')" 
-        class="field-button"
-      >
-        {{ getCustomFilterDisplayText() }}
-      </button>
-      
-      <div v-if="isDropdownOpen('Custom')" class="dropdown-options">
-        <!-- Custom Year Range -->
-        <div class="custom-range">
-          <label>Custom Year Range:</label>
-          <input type="text" v-model="customYearStart" placeholder="Start Year" class="custom-input"/>
-          <input type="text" v-model="customYearEnd" placeholder="End Year" class="custom-input"/>
-        </div>
+  
+      <!-- Custom Year and Semester Range -->
+      <div class="field">
+        <button 
+          @click="toggleDropdown('Custom')" 
+          class="field-button"
+        >
+          {{ getCustomFilterDisplayText() }}
+        </button>
         
-        <!-- Custom Semester Range -->
-        <div class="custom-range">
-          <label>Custom Semester Range:</label>
-          <select v-model="customSemesterStart" class="custom-dropdown">
-            <option disabled value="">Start Semester</option>
-            <option>Fall</option>
-            <option>Spring</option>
-            <option>Summer</option>
-          </select>
-          <select v-model="customSemesterEnd" class="custom-dropdown">
-            <option disabled value="">End Semester</option>
-            <option>Fall</option>
-            <option>Spring</option>
-            <option>Summer</option>
-          </select>
+        <div v-if="isDropdownOpen('Custom')" class="dropdown-options">
+          <!-- Custom Year Range -->
+          <div class="custom-range">
+            <label>Custom Year Range:</label>
+            <input type="text" v-model="customYearStart" placeholder="Start Year" class="custom-input"/>
+            <input type="text" v-model="customYearEnd" placeholder="End Year" class="custom-input"/>
+          </div>
+          
+          <!-- Custom Semester Range -->
+          <div class="custom-range">
+            <label>Custom Semester Range:</label>
+            <select v-model="customSemesterStart" class="custom-dropdown">
+              <option disabled value="">Start Semester</option>
+              <option>Fall</option>
+              <option>Spring</option>
+              <option>Summer</option>
+            </select>
+            <select v-model="customSemesterEnd" class="custom-dropdown">
+              <option disabled value="">End Semester</option>
+              <option>Fall</option>
+              <option>Spring</option>
+              <option>Summer</option>
+            </select>
+          </div>
         </div>
       </div>
+  
+      <!-- Submit Button -->
+      <div class="submit-query">
+        <button class="submit-button" @click="getRequest">
+          Submit
+        </button>
+      </div>
     </div>
-
-    <!-- Submit Button -->
-    <div class="submit-query">
-      <button class="submit-button" @click="getRequest">
-        Submit
-      </button>
-    </div>
+  
+    <div id="chartContainer" class="chart-container">
+    </div> 
   </div>
-
-  <div id="chartContainer" class="chart-container">
-  </div> 
-</div>
 </template>
-
+  
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
   data() {
@@ -111,16 +94,16 @@ export default defineComponent({
         { name: "Gender", options: ["Female", "Male"], selectedOptions: [] },
         { name: "Year", options: [], selectedOptions: [] },
         { name: "Semester", options: ["Fall", "Spring", "Summer"], selectedOptions: [] },
-        { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] }
+        { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] },
       ],
       openDropdown: null,
       customYearStart: "",
       customYearEnd: "",
       customSemesterStart: "",
       customSemesterEnd: "",
-      customFilterYearStart: "", 
+      customFilterYearStart: "",
       customFilterYearEnd: "",
-      chartData: [], 
+      chartData: [],
     };
   },
   methods: {
@@ -131,9 +114,9 @@ export default defineComponent({
       return this.openDropdown === filterName;
     },
     toggleOption(filterName, option) {
-      const filter = this.filters.find(f => f.name === filterName);
+      const filter = this.filters.find((f) => f.name === filterName);
       const optionIndex = filter.selectedOptions.indexOf(option);
-      
+
       if (optionIndex === -1) {
         filter.selectedOptions.push(option);
       } else {
@@ -145,106 +128,135 @@ export default defineComponent({
         return `Year: ${this.customFilterYearStart} - ${this.customFilterYearEnd}`;
       }
       if (filter.selectedOptions.length > 0) {
-        return `${filter.name}: ${filter.selectedOptions.join(', ')}`;
+        return `${filter.name}: ${filter.selectedOptions.join(", ")}`;
       }
       return filter.name;
     },
     getCustomFilterDisplayText() {
       let yearRange = this.customYearStart && this.customYearEnd ? `${this.customYearStart} - ${this.customYearEnd}` : "Year Range";
       let semesterRange = this.customSemesterStart && this.customSemesterEnd ? `${this.customSemesterStart} - ${this.customSemesterEnd}` : "Semester Range";
-      
+
       return `Custom: ${yearRange}, ${semesterRange}`;
     },
-    async getRequest () {
-    const yearFilter = this.filters.find(filter => filter.name === 'Year');
-    if (this.customFilterYearStart && this.customFilterYearEnd) {
-      yearFilter.selectedOptions = [this.customFilterYearStart, this.customFilterYearEnd];
-    } else {
-      yearFilter.selectedOptions = [];
-    }
-    const params = new URLSearchParams();
-
-    this.filters.forEach((filter) => {
-      if (filter.selectedOptions.length > 0 && filter.name != "Chart") {
-        params.append(filter.name, filter.selectedOptions.join(","));
-      } else if(filter.selectedOptions.length == 0 && filter.name != "Chart") {
-        params.append(filter.name, "Empty");
+    async getRequest() {
+      const yearFilter = this.filters.find((filter) => filter.name === "Year");
+      if (this.customFilterYearStart && this.customFilterYearEnd) {
+        yearFilter.selectedOptions = [this.customFilterYearStart, this.customFilterYearEnd];
+      } else {
+        yearFilter.selectedOptions = [];
       }
-    });
+      const params = new URLSearchParams();
 
-    const queryString = params.toString()
-    const apiUrl = `/api/demographic?${queryString}`
-    try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-      throw new Error("Response was not ok")
-    }
-    const data = await response.json()
-    
-    this.chartData = data.data
-    this.plotChart()
-    }catch(error) {
-      console.error(error)
-    }
+      this.filters.forEach((filter) => {
+        if (filter.selectedOptions.length > 0 && filter.name !== "Chart") {
+          params.append(filter.name, filter.selectedOptions.join(","));
+        } else if (filter.selectedOptions.length === 0 && filter.name !== "Chart") {
+          params.append(filter.name, "Empty");
+        }
+      });
+
+      const queryString = params.toString();
+      const apiUrl = `/api/demographic?${queryString}`;
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error("Response was not ok");
+        }
+        const data = await response.json();
+
+        this.chartData = data.data;
+        this.plotChart();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async plotChart() {
+      if (!this.chartData.length) {
+        return;
+      }
+
+      const Plotly = (await import("plotly.js-basic-dist")).default;
+
+      const chartType = this.filters.find((f) => f.name === "Chart")?.selectedOptions[0];
+      if (!chartType) {
+        return;
+      }
+
+      const selectedEthnicities = this.filters.find((f) => f.name === "Ethnicity")?.selectedOptions || [];
+      const selectedGenders = this.filters.find((f) => f.name === "Gender")?.selectedOptions || [];
+
+      const xValues = this.chartData.map((item) => item.Name);
+
+      const traces = [];
+
+      // Generate traces for Ethnicities
+      selectedEthnicities.forEach((ethnicity) => {
+        const yValues = this.chartData.map((item) => item[ethnicity]);
+
+        if (chartType === "Bar") {
+          traces.push({
+            x: xValues,
+            y: yValues,
+            type: "bar",
+            name: ethnicity,
+          });
+        } else if (chartType === "Line") {
+          traces.push({
+            x: xValues,
+            y: yValues,
+            type: "scatter",
+            mode: "lines+markers",
+            name: ethnicity,
+          });
+        } else if (chartType === "Pie") {
+          traces.push({
+            labels: xValues,
+            values: yValues,
+            type: "pie",
+            name: ethnicity,
+          });
+        }
+      });
+
+      // Generate traces for Genders
+      selectedGenders.forEach((gender) => {
+        const yValues = this.chartData.map((item) => item[gender]);
+
+        if (chartType === "Bar") {
+          traces.push({
+            x: xValues,
+            y: yValues,
+            type: "bar",
+            name: gender,
+          });
+        } else if (chartType === "Line") {
+          traces.push({
+            x: xValues,
+            y: yValues,
+            type: "scatter",
+            mode: "lines+markers",
+            name: gender,
+          });
+        } else if (chartType === "Pie") {
+          traces.push({
+            labels: xValues,
+            values: yValues,
+            type: "pie",
+            name: gender,
+          });
+        }
+      });
+
+      const layout = {
+        title: `Demographic Data for ${[...selectedEthnicities, ...selectedGenders].join(", ")}`,
+        xaxis: { title: "Semester (Name)" },
+        yaxis: { title: "Count" },
+        barmode: "group",
+      };
+
+      Plotly.newPlot("chartContainer", traces, layout);
+    },
   },
-  async plotChart() {
-    if (!this.chartData.length) {
-      return;
-    }
-    const Plotly = (await import('plotly.js-basic-dist')).default;
-
-    const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
-    if (!chartType) {
-      return;
-    }
-    const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
-
-
-    const xValues = this.chartData.map(item => `${item.Name}-${item.Course}`); 
-
-    const traces = [];
-
-    selectedEthnicities.forEach(ethnicity => {
-    const yValues = this.chartData.map(item => item[ethnicity]);
-
-    // Create trace based on chart type
-    if (chartType === "Bar") {
-      traces.push({
-        x: xValues,
-        y: yValues,
-        type: 'bar',
-        name: ethnicity // Use the ethnicity as the name of the trace
-      });
-    } else if (chartType === "Line") {
-      traces.push({
-        x: xValues,
-        y: yValues,
-        type: 'scatter',
-        mode: 'lines+markers',
-        name: ethnicity
-      });
-    } else if (chartType === "Pie") {
-      // Note: Pie charts typically represent one set of data. If multiple ethnicities are selected, Pie might not make sense.
-      traces.push({
-        labels: xValues,
-        values: yValues,
-        type: 'pie',
-        name: ethnicity
-      });
-    }
-  });
-
-  const layout = {
-    title: `Demographic Data for ${selectedEthnicities.join(', ')}`,
-    xaxis: { title: 'Year-Semester-Course' },
-    yaxis: { title: 'Count' },
-    barmode: 'group'
-  };
-
-
-  Plotly.newPlot('chartContainer', traces, layout);
-  }
-}
 });
 </script>
 

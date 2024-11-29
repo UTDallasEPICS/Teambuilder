@@ -81,8 +81,6 @@ model Semester {
   Id               String @id @default(uuid())
   Name             String
   Course           String
-  Year             Int
-  Sem              String
   African_American Int
   Asian            Int
   Hispanic         Int
