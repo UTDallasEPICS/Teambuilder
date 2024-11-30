@@ -1,4 +1,3 @@
-<!-- Demographics.vue -->
 <template>  
   <div class="dashboard-container">
     <div class="sidebar">
@@ -107,8 +106,12 @@
   
       <!-- Submit Button -->
       <div class="submit-query">
-        <button class="submit-button" @click="getRequest">
-          Submit
+        <button 
+          class="submit-button" 
+          @click="getRequest"
+          :disabled="isLoading"
+        >
+          {{ isLoading ? 'Loading...' : 'Submit' }}
         </button>
       </div>
     </div>
@@ -117,165 +120,185 @@
       <canvas ref="chartCanvas"></canvas>
     </div> 
   </div>
-  </template>
+</template>
   
-  <script>
-  import { defineComponent } from 'vue';
-  import Chart from 'chart.js/auto';
-  import ChartDataLabels from 'chartjs-plugin-datalabels';
-  
-  Chart.register(ChartDataLabels);
-  
-  export default defineComponent({
-    data() {
-      return {
-        filters: [
-          { name: "Course", options: ["2200", "3200"], selectedOptions: [] },
-          { name: "Ethnicity", options: ["African_American", "Asian", "Hispanic", "International", "Other", "White"], selectedOptions: [] },
-          { name: "Gender", options: ["Female", "Male"], selectedOptions: [] },
-          { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] }
-        ],
-        semesters: ["Fall", "Spring", "Summer"],
-        openDropdown: null,
-        timePeriodOption: "", // Continuous or Semester-based
-        customYearStart: "",
-        customYearEnd: "",
-        customSemesterStart: "",
-        customSemesterEnd: "",
-        selectedSemesters: [], // For Semester-based option
-        chartData: [],
-        chart: null,
-        barChartData: "",
-        lineChartData: ""
-      };
+<script>
+import { defineComponent } from 'vue';
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+Chart.register(ChartDataLabels);
+
+export default defineComponent({
+  data() {
+    return {
+      filters: [
+        { name: "Course", options: ["2200", "3200"], selectedOptions: [] },
+        { name: "Ethnicity", options: ["African_American", "Asian", "Hispanic", "International", "Other", "White"], selectedOptions: [] },
+        { name: "Gender", options: ["Female", "Male"], selectedOptions: [] },
+        { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] }
+      ],
+      semesters: ["Fall", "Spring", "Summer"],
+      openDropdown: null,
+      timePeriodOption: "",
+      customYearStart: "",
+      customYearEnd: "",
+      customSemesterStart: "",
+      customSemesterEnd: "",
+      selectedSemesters: [],
+      chartData: [],
+      chart: null,
+      barChartData: "",
+      lineChartData: "",
+      isLoading: false // New loading state
+    };
+  },
+  watch: {
+    timePeriodOption(newVal) {
+      if (newVal === "Continuous") {
+        this.selectedSemesters = [];
+      } else if (newVal === "Semester-based") {
+        this.customSemesterStart = "";
+        this.customSemesterEnd = "";
+      }
+    }
+  },
+  methods: {
+    toggleSidebar() {
+      // Implement if needed
     },
-    watch: {
-      timePeriodOption(newVal) {
-        if (newVal === "Continuous") {
-          this.selectedSemesters = [];
-        } else if (newVal === "Semester-based") {
-          this.customSemesterStart = "";
-          this.customSemesterEnd = "";
-        }
+    toggleDropdown(filterName) {
+      this.openDropdown = this.openDropdown === filterName ? null : filterName;
+    },
+    isDropdownOpen(filterName) {
+      return this.openDropdown === filterName;
+    },
+    toggleSemester(semester) {
+      const index = this.selectedSemesters.indexOf(semester);
+      if (index === -1) {
+        this.selectedSemesters.push(semester);
+      } else {
+        this.selectedSemesters.splice(index, 1);
       }
     },
-    methods: {
-      toggleSidebar() {
-        // Implement if needed
-      },
-      toggleDropdown(filterName) {
-        this.openDropdown = this.openDropdown === filterName ? null : filterName;
-      },
-      isDropdownOpen(filterName) {
-        return this.openDropdown === filterName;
-      },
-      toggleSemester(semester) {
-        const index = this.selectedSemesters.indexOf(semester);
-        if (index === -1) {
-          this.selectedSemesters.push(semester);
-        } else {
-          this.selectedSemesters.splice(index, 1);
+    toggleOption(filterName, option) {
+      const filter = this.filters.find(f => f.name === filterName);
+      const optionIndex = filter.selectedOptions.indexOf(option);
+      
+      if (optionIndex === -1) {
+        filter.selectedOptions.push(option);
+      } else {
+        filter.selectedOptions.splice(optionIndex, 1);
+      }
+    },
+    getFilterDisplayText(filter) {
+      if (filter.selectedOptions.length > 0) {
+        return `${filter.name}: ${filter.selectedOptions.join(', ')}`;
+      }
+      return filter.name;
+    },
+    getTimePeriodDisplayText() {
+      if (this.timePeriodOption === "Continuous") {
+        if (this.customYearStart && this.customYearEnd) {
+          return `Continuous: ${this.customYearStart}-${this.customYearEnd}, ${this.customSemesterStart || 'Start'} to ${this.customSemesterEnd || 'End'}`;
         }
-      },
-      toggleOption(filterName, option) {
-        const filter = this.filters.find(f => f.name === filterName);
-        const optionIndex = filter.selectedOptions.indexOf(option);
+      }
+      if (this.timePeriodOption === "Semester-based") {
+        if (this.customYearStart && this.customYearEnd) {
+          const semesters = this.selectedSemesters.length ? `(${this.selectedSemesters.join(", ")})` : "";
+          return `Semester-based: ${this.customYearStart}-${this.customYearEnd} ${semesters}`;
+        }
+      }
+      return "Time Period";
+    },
+    async getRequest() {
+      if (this.isLoading) return;
+      this.isLoading = true;
+
+      const params = new URLSearchParams();
+
+      // Add time period parameters
+      if (this.timePeriodOption === "Continuous") {
+        params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
+        if (this.customSemesterStart && this.customSemesterEnd) {
+          params.append("Semester", `${this.customSemesterStart},${this.customSemesterEnd}`);
+        }
+      } else if (this.timePeriodOption === "Semester-based") {
+        params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
+        if (this.selectedSemesters.length) {
+          params.append("Semester", this.selectedSemesters.join(","));
+        }
+      }
+
+      // Add other filters
+      this.filters.forEach((filter) => {
+        if (filter.selectedOptions.length > 0 && filter.name !== "Chart") {
+          params.append(filter.name, filter.selectedOptions.join(","));
+        } else if (filter.selectedOptions.length === 0 && filter.name !== "Chart") {
+          params.append(filter.name, "Empty");
+        }
+      });
+
+      const queryString = params.toString();
+      const apiUrl = `/api/demographic?${queryString}`;
+      
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error("Response was not ok");
+        }
+        const data = await response.json();
         
-        if (optionIndex === -1) {
-          filter.selectedOptions.push(option);
-        } else {
-          filter.selectedOptions.splice(optionIndex, 1);
-        }
-      },
-      getFilterDisplayText(filter) {
-        if (filter.selectedOptions.length > 0) {
-          return `${filter.name}: ${filter.selectedOptions.join(', ')}`;
-        }
-        return filter.name;
-      },
-      getTimePeriodDisplayText() {
-        if (this.timePeriodOption === "Continuous") {
-          if (this.customYearStart && this.customYearEnd) {
-            return `Continuous: ${this.customYearStart}-${this.customYearEnd}, ${this.customSemesterStart || 'Start'} to ${this.customSemesterEnd || 'End'}`;
-          }
-        }
-        if (this.timePeriodOption === "Semester-based") {
-          if (this.customYearStart && this.customYearEnd) {
-            const semesters = this.selectedSemesters.length ? `(${this.selectedSemesters.join(", ")})` : "";
-            return `Semester-based: ${this.customYearStart}-${this.customYearEnd} ${semesters}`;
-          }
-        }
-        return "Time Period";
-      },
-      async getRequest() {
-        const params = new URLSearchParams();
-  
-        // Add time period parameters
-        if (this.timePeriodOption === "Continuous") {
-          params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
-          if (this.customSemesterStart && this.customSemesterEnd) {
-            params.append("Semester", `${this.customSemesterStart},${this.customSemesterEnd}`);
-          }
-        } else if (this.timePeriodOption === "Semester-based") {
-          params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
-          if (this.selectedSemesters.length) {
-            params.append("Semester", this.selectedSemesters.join(","));
-          }
-        }
-  
-        // Add other filters
-        this.filters.forEach((filter) => {
-          if (filter.selectedOptions.length > 0 && filter.name !== "Chart") {
-            params.append(filter.name, filter.selectedOptions.join(","));
-          } else if (filter.selectedOptions.length === 0 && filter.name !== "Chart") {
-            params.append(filter.name, "Empty");
-          }
-        });
-  
-        const queryString = params.toString();
-        const apiUrl = `/api/demographic?${queryString}`;
-        
-        try {
-          const response = await fetch(apiUrl);
-          if (!response.ok) {
-            throw new Error("Response was not ok");
-          }
-          const data = await response.json();
+        if (data.success) {
+          console.log('Received data:', data.data);
           
-          if (data.success) {
-            this.chartData = data.data;
-            this.plotChart();
-          } else {
-            console.error(data.message);
-          }
-        } catch(error) {
-          console.error(error);
+          // Remove duplicates based on Name and Course
+          const uniqueData = Array.from(new Map(
+            data.data.map(item => [`${item.Name}-${item.Course}`, item])
+          ).values());
+          
+          console.log('Deduplicated data:', uniqueData);
+          this.chartData = uniqueData;
+          this.plotChart();
+        } else {
+          console.error(data.message);
         }
-      },
-      plotChart() {
-        if (!this.chartData.length) {
-          return;
-        }
+      } catch(error) {
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    plotChart() {
+  console.log('Plotting chart with data:', this.chartData);
+
+  // Destroy existing chart if it exists
+  if (this.chart) {
+    this.chart.destroy();
+    this.chart = null;
+  }
+
+  if (!this.chartData.length) {
+    return;
+  }
+
+  const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
+  if (!chartType) {
+    return;
+  }
+
+  const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
+  const selectedGenders = this.filters.find(f => f.name === "Gender")?.selectedOptions;
+  const isGenderMode = selectedGenders && selectedGenders.length > 0;
   
-        const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
-        if (!chartType) {
-          return;
-        }
-  
-        if (this.chart) {
-          this.chart.destroy();
-        }
-  
-        const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
-        const xValues = this.chartData.map(item => `${item.Name}-${item.Course}`);
-  
-        const colors = selectedEthnicities.map(() => 
-          `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)})`
-        );
-  
-        const totals = this.chartData.map(item => item.Total);
-  
-        let chartConfig = {
+  const selectedCategories = isGenderMode ? selectedGenders : selectedEthnicities;
+  const xValues = this.chartData.map(item => `${item.Name}-${item.Course}`);
+
+  const colors = selectedCategories.map(() => 
+    `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)})`
+  );
+
+  let chartConfig = {
     type: chartType.toLowerCase(),
     data: {
       labels: xValues,
@@ -289,25 +312,25 @@
       plugins: {
         title: {
           display: true,
-          text: `Demographic Data for ${selectedEthnicities.join(', ')}`
+          text: `Demographic Data by ${isGenderMode ? 'Gender' : 'Ethnicity'}`
         },
         legend: {
           display: true,
           position: 'top'
         },
         tooltip: {
-  callbacks: {
-    label: (context) => {
-      const value = context.raw;
-      const dataIndex = context.dataIndex;
-      const dataPoint = this.chartData[dataIndex];
-      const percentage = ((value / dataPoint.Total) * 100).toFixed(1);
-      return `${context.dataset.label}: ${value} (${percentage}%)`;
-    }
-  }
-},
+          callbacks: {
+            label: (context) => {
+              const value = context.raw;
+              const dataIndex = context.dataIndex;
+              const dataPoint = this.chartData[dataIndex];
+              const percentage = ((value / dataPoint.Total) * 100).toFixed(1);
+              return `${context.dataset.label}: ${value} (${percentage}%)`;
+            }
+          }
+        },
         datalabels: {
-          display: false  // This disables the permanent labels
+          display: false
         }
       },
       scales: {
@@ -333,8 +356,8 @@
   };
 
   if (chartType === "Pie") {
-    const firstEthnicity = selectedEthnicities[0];
-    const pieData = this.chartData.map(item => item[firstEthnicity]);
+    const firstCategory = selectedCategories[0];
+    const pieData = this.chartData.map(item => item[firstCategory]);
     const total = pieData.reduce((sum, value) => sum + value, 0);
     
     chartConfig.data.datasets = [{
@@ -343,7 +366,6 @@
       hoverOffset: 4
     }];
 
-    // For pie charts, we'll keep the tooltip showing percentages
     chartConfig.options.plugins.tooltip = {
       callbacks: {
         label: function(context) {
@@ -354,9 +376,9 @@
       }
     };
   } else {
-    chartConfig.data.datasets = selectedEthnicities.map((ethnicity, index) => ({
-      label: ethnicity,
-      data: this.chartData.map((item, i) => item[ethnicity]),
+    chartConfig.data.datasets = selectedCategories.map((category, index) => ({
+      label: category,
+      data: this.chartData.map((item, i) => item[category]),
       backgroundColor: colors[index],
       borderColor: colors[index],
       fill: false,
@@ -367,69 +389,69 @@
   const ctx = this.$refs.chartCanvas.getContext('2d');
   this.chart = new Chart(ctx, chartConfig);
   }
-    },
-    beforeUnmount() {
-      if (this.chart) {
-        this.chart.destroy();
-      }
+  },
+  beforeUnmount() {
+    if (this.chart) {
+      this.chart.destroy();
     }
-  });
-  </script>
-  
-  <style scoped>
-  .dashboard-container {
-    display: flex;
-    height: 100vh;
   }
+});
+</script>
   
-  .sidebar {
-    background-color: #006d48;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    width: 250px;
-    border-radius: 8px;
-    height: fit-content;
-  }
-  
-  .chart-container {
-    flex: 1;
-    padding: 20px;
-    overflow: auto;
-    height: 800px;
-    margin: 10px;
-  }
-  
-  .close-button {
-    color: white;
-    font-size: 20px;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 16px;
-  }
-  
-  .field {
-    margin-bottom: 12px;
-  }
-  
-  .field-button {
-    background-color: #ffffff;
-    color: #006d48;
-    border: none;
-    width: 100%;
-    padding: 12px;
-    border-radius: 4px;
-    text-align: left;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .field-button:hover {
+<style scoped>
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: #006d48;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.chart-container {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  height: 800px;
+  margin: 10px;
+}
+
+.close-button {
+  color: white;
+  font-size: 20px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.field-button {
+  background-color: #ffffff;
+  color: #006d48;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 4px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.field-button:hover {
     background-color: #e8f5e9;
   }
   
