@@ -32,8 +32,34 @@ export default defineEventHandler(async (event) => {
             throw new Error("Both Years must be chosen")
         } else if (semesters[0] == "Empty") {
             throw new Error("You must pick atleast one Semester")
-        } else if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
-            throw new Error("You must pick atleast one Ethnicity or Gender")
+        }
+
+        // If neither ethnicity nor gender is selected, return total only
+        if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
+            const records = await prisma.semester.findMany({
+                where: {
+                    Course: {
+                        in: courses
+                    },
+                    Year: {
+                        gte: Number(years[0]),
+                        lte: Number(years[1])
+                    },
+                    Sem: {
+                        in: semesters
+                    }
+                },
+                select: {
+                    Name: true,
+                    Course: true,
+                    Total: true
+                }
+            });
+
+            return {
+                success: true,
+                data: records
+            }
         } else if (ethnicities[0] != "Empty" && genders[0] != "Empty") {
             throw new Error("Both Ethnicity and Gender cannot be chosen")
         }
@@ -65,7 +91,6 @@ export default defineEventHandler(async (event) => {
                 }
             });
 
-            console.log(records)
             const filteredRecords = records.map(r =>
                 Object.fromEntries([
                     ['Name', r.Name],
@@ -75,13 +100,10 @@ export default defineEventHandler(async (event) => {
                 ] as [string, number][])
             );
 
-            console.log(filteredRecords)
-
             return {
                 success: true,
                 data: filteredRecords
             }
-
         } else {
             const records = await prisma.semester.findMany({
                 where: {

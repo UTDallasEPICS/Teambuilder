@@ -295,107 +295,117 @@ export default defineComponent({
       console.log('Is total view:', isOnlyTotalView);
 
       if (isOnlyTotalView) {
-        const xValues = this.chartData.map(item => item.Name);
-        const totalValues = this.chartData.map(item => item.Total);
+  const xValues = this.chartData.map(item => item.Name);
+  const totalValues = this.chartData.map(item => item.Total);
+  
+  // Separate data by course
+  const courses = [...new Set(this.chartData.map(item => item.Course))];
+  const datasets = courses.map(course => ({
+    label: `Course ${course}`,
+    data: this.chartData
+      .filter(item => item.Course === course)
+      .map(item => item.Total),
+    backgroundColor: course === "2200" ? 'rgba(0, 109, 72, 0.7)' : 'rgba(75, 192, 192, 0.7)',
+    borderColor: course === "2200" ? 'rgb(0, 109, 72)' : 'rgb(75, 192, 192)',
+    borderWidth: 1
+  }));
 
-        console.log('Total view values:', { xValues, totalValues });
-
-        let chartConfig = {
-          type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
-          data: {
-            labels: xValues,
-            datasets: [{
-              label: 'Total Students',
-              data: totalValues,
-              backgroundColor: 'rgba(0, 109, 72, 0.7)',
-              borderColor: 'rgb(0, 109, 72)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              title: {
-                display: true,
-                text: `Total Students per Semester - Course ${this.chartData[0]?.Course}`
-              },
-              tooltip: {
-                callbacks: {
-                  label: (context) => {
-                    return `Total Students: ${context.raw}`;
-                  }
-                }
-              },
-              datalabels: {
-                display: (context) => context.dataset.data[context.dataIndex] > 10,
-                color: 'black',
-                anchor: 'end',
-                align: 'top',
-                formatter: (value) => value
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grace: '5%',
-                title: {
-                  display: true,
-                  text: 'Number of Students'
-                }
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Semester'
-                },
-                ticks: {
-                  minRotation: 45,
-                  maxRotation: 45
-                }
-              }
+  let chartConfig = {
+    type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
+    data: {
+      labels: [...new Set(xValues)], // Remove duplicate semester names
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: `Total Students per Semester by Course`
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              return `${context.dataset.label}: ${context.raw} students`;
             }
           }
-        };
-
-        // Modify config based on chart type
-        if (chartType === "Pie") {
-          chartConfig.options.plugins.tooltip.callbacks.label = (context) => {
-            const percentage = ((context.raw / totalValues.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
-            return `${context.label}: ${context.raw} (${percentage}%)`;
-          };
-        } else if (chartType === "Line") {
-          chartConfig.data.datasets[0].fill = false;
-          chartConfig.data.datasets[0].tension = 0.4;
-        } else if (chartType === "Combined bar and line") {
-          chartConfig.type = 'bar';
-          chartConfig.data.datasets = [
-            {
-              label: 'Total Students (Bar)',
-              data: totalValues,
-              backgroundColor: 'rgba(0, 109, 72, 0.7)',
-              borderColor: 'rgb(0, 109, 72)',
-              borderWidth: 1,
-              order: 2
-            },
-            {
-              label: 'Total Students (Line)',
-              data: totalValues,
-              type: 'line',
-              borderColor: 'rgb(255, 99, 132)',
-              borderWidth: 2,
-              fill: false,
-              tension: 0.4,
-              order: 1
-            }
-          ];
+        },
+        datalabels: {
+          display: (context) => context.dataset.data[context.dataIndex] > 10,
+          color: 'black',
+          anchor: 'end',
+          align: 'top',
+          formatter: (value) => value
         }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grace: '5%',
+          title: {
+            display: true,
+            text: 'Number of Students'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Semester'
+          },
+          ticks: {
+            minRotation: 45,
+            maxRotation: 45
+          }
+        }
+      }
+    }
+  };
 
-        console.log('Creating chart with config:', chartConfig);
-        const ctx = this.$refs.chartCanvas.getContext('2d');
-        this.chart = new Chart(ctx, chartConfig);
+  // Modify config based on chart type
+  if (chartType === "Pie") {
+    // For pie chart, combine course and semester labels
+    const combinedLabels = this.chartData.map(item => `${item.Name} - Course ${item.Course}`);
+    chartConfig.data.labels = combinedLabels;
+    chartConfig.data = {
+      labels: combinedLabels,
+      datasets: [{
+        data: totalValues,
+        backgroundColor: this.chartData.map(item => 
+          item.Course === "2200" ? 'rgba(0, 109, 72, 0.7)' : 'rgba(75, 192, 192, 0.7)'
+        )
+      }]
+    };
+    chartConfig.options.plugins.tooltip.callbacks.label = (context) => {
+      const value = context.raw;
+      const total = totalValues.reduce((a, b) => a + b, 0);
+      const percentage = ((value / total) * 100).toFixed(1);
+      return `${context.label}: ${value} (${percentage}%)`;
+    };
+  } else if (chartType === "Line") {
+    datasets.forEach(dataset => {
+      dataset.fill = false;
+      dataset.tension = 0.4;
+    });
+  } else if (chartType === "Combined bar and line") {
+    chartConfig.type = 'bar';
+    chartConfig.data.datasets = [
+      ...datasets,  // Bar datasets
+      ...datasets.map(dataset => ({  // Line datasets
+        ...dataset,
+        type: 'line',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.4,
+        order: 1
+      }))
+    ];
+  }
 
-      } else {
+  console.log('Creating chart with config:', chartConfig);
+  const ctx = this.$refs.chartCanvas.getContext('2d');
+  this.chart = new Chart(ctx, chartConfig);
+} else {
         // Original ethnicity/gender visualization logic
         const isGenderMode = selectedGenders && selectedGenders.length > 0;
         const selectedCategories = isGenderMode ? selectedGenders : selectedEthnicities;
