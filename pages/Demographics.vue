@@ -298,6 +298,9 @@ export default defineComponent({
   const xValues = this.chartData.map(item => item.Name);
   const totalValues = this.chartData.map(item => item.Total);
   
+  // Calculate grand total for percentage calculations
+  const grandTotal = totalValues.reduce((sum, val) => sum + val, 0);
+  
   // Separate data by course
   const courses = [...new Set(this.chartData.map(item => item.Course))];
   const datasets = courses.map(course => ({
@@ -313,7 +316,7 @@ export default defineComponent({
   let chartConfig = {
     type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
     data: {
-      labels: [...new Set(xValues)], // Remove duplicate semester names
+      labels: [...new Set(xValues)],
       datasets: datasets
     },
     options: {
@@ -327,7 +330,9 @@ export default defineComponent({
         tooltip: {
           callbacks: {
             label: (context) => {
-              return `${context.dataset.label}: ${context.raw} students`;
+              const value = context.raw;
+              const percentage = ((value / grandTotal) * 100).toFixed(1);
+              return `${context.dataset.label}: ${value} students (${percentage}% of total)`;
             }
           }
         },
@@ -378,9 +383,8 @@ export default defineComponent({
     };
     chartConfig.options.plugins.tooltip.callbacks.label = (context) => {
       const value = context.raw;
-      const total = totalValues.reduce((a, b) => a + b, 0);
-      const percentage = ((value / total) * 100).toFixed(1);
-      return `${context.label}: ${value} (${percentage}%)`;
+      const percentage = ((value / grandTotal) * 100).toFixed(1);
+      return `${context.label}: ${value} students (${percentage}% of total)`;
     };
   } else if (chartType === "Line") {
     datasets.forEach(dataset => {
