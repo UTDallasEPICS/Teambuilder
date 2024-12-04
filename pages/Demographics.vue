@@ -49,13 +49,11 @@
   
             <!-- Continuous Option -->
             <div v-if="timePeriodOption === 'Continuous'" class="time-period-inputs">
-              <div v-if="filter.name === 'year'">
               <label>Start Year:</label>
               <input type="text" v-model="customYearStart" placeholder="Start Year" class="custom-input" />
   
               <label>End Year:</label>
               <input type="text" v-model="customYearEnd" placeholder="End Year" class="custom-input" />
-            </div>
               <label>Start Semester:</label>
               <select v-model="customSemesterStart" class="custom-dropdown">
                 <option disabled value="">Select Semester</option>
