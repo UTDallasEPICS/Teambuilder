@@ -83,7 +83,7 @@
         </div>
       </div>
   
-      <!-- Filter Buttons with Dropdown Options -->
+      <!-- Filter Buttons -->
       <div v-for="filter in filters" :key="filter.name" class="field">
         <button 
           @click="toggleDropdown(filter.name)" 
@@ -121,7 +121,7 @@
     </div> 
   </div>
 </template>
-  
+
 <script>
 import { defineComponent } from 'vue';
 import Chart from 'chart.js/auto';
@@ -148,9 +148,7 @@ export default defineComponent({
       selectedSemesters: [],
       chartData: [],
       chart: null,
-      barChartData: "",
-      lineChartData: "",
-      isLoading: false // New loading state
+      isLoading: false
     };
   },
   watch: {
@@ -165,7 +163,7 @@ export default defineComponent({
   },
   methods: {
     toggleSidebar() {
-      // Implement if needed
+      // Implementation can be added if needed
     },
     toggleDropdown(filterName) {
       this.openDropdown = this.openDropdown === filterName ? null : filterName;
@@ -217,7 +215,6 @@ export default defineComponent({
 
       const params = new URLSearchParams();
 
-      // Add time period parameters
       if (this.timePeriodOption === "Continuous") {
         params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
         if (this.customSemesterStart && this.customSemesterEnd) {
@@ -230,7 +227,6 @@ export default defineComponent({
         }
       }
 
-      // Add other filters
       this.filters.forEach((filter) => {
         if (filter.selectedOptions.length > 0 && filter.name !== "Chart") {
           params.append(filter.name, filter.selectedOptions.join(","));
@@ -252,7 +248,6 @@ export default defineComponent({
         if (data.success) {
           console.log('Received data:', data.data);
           
-          // Remove duplicates based on Name and Course
           const uniqueData = Array.from(new Map(
             data.data.map(item => [`${item.Name}-${item.Course}`, item])
           ).values());
@@ -270,134 +265,247 @@ export default defineComponent({
       }
     },
     plotChart() {
-  console.log('Plotting chart with data:', this.chartData);
+      console.log('Starting plotChart with data:', this.chartData);
+      console.log('Chart type:', this.filters.find(f => f.name === "Chart")?.selectedOptions[0]);
 
-  // Destroy existing chart if it exists
-  if (this.chart) {
-    this.chart.destroy();
-    this.chart = null;
-  }
+      // Destroy existing chart
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
 
-  if (!this.chartData.length) {
-    return;
-  }
+      // Basic validation
+      if (!this.chartData.length) {
+        console.log('No data to plot');
+        return;
+      }
 
-  const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
-  if (!chartType) {
-    return;
-  }
+      const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
+      if (!chartType) {
+        console.log('No chart type selected');
+        return;
+      }
 
-  const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
-  const selectedGenders = this.filters.find(f => f.name === "Gender")?.selectedOptions;
-  const isGenderMode = selectedGenders && selectedGenders.length > 0;
-  
-  const selectedCategories = isGenderMode ? selectedGenders : selectedEthnicities;
-  const xValues = this.chartData.map(item => `${item.Name}-${item.Course}`);
+      const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
+      const selectedGenders = this.filters.find(f => f.name === "Gender")?.selectedOptions;
+      
+      const isOnlyTotalView = (!selectedGenders?.length && !selectedEthnicities?.length) || 
+                           (selectedGenders?.[0] === "Empty" && selectedEthnicities?.[0] === "Empty");
 
-  const colors = selectedCategories.map(() => 
-    `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)})`
-  );
+      console.log('Is total view:', isOnlyTotalView);
 
-  let chartConfig = {
-    type: chartType.toLowerCase(),
-    data: {
-      labels: xValues,
-      datasets: []
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      barPercentage: 0.8,
-      categoryPercentage: 0.9,
-      plugins: {
-        title: {
-          display: true,
-          text: `Demographic Data by ${isGenderMode ? 'Gender' : 'Ethnicity'}`
-        },
-        legend: {
-          display: true,
-          position: 'top'
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => {
-              const value = context.raw;
-              const dataIndex = context.dataIndex;
-              const dataPoint = this.chartData[dataIndex];
-              const percentage = ((value / dataPoint.Total) * 100).toFixed(1);
-              return `${context.dataset.label}: ${value} (${percentage}%)`;
+      if (isOnlyTotalView) {
+        const xValues = this.chartData.map(item => item.Name);
+        const totalValues = this.chartData.map(item => item.Total);
+
+        console.log('Total view values:', { xValues, totalValues });
+
+        let chartConfig = {
+          type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
+          data: {
+            labels: xValues,
+            datasets: [{
+              label: 'Total Students',
+              data: totalValues,
+              backgroundColor: 'rgba(0, 109, 72, 0.7)',
+              borderColor: 'rgb(0, 109, 72)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: `Total Students per Semester - Course ${this.chartData[0]?.Course}`
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    return `Total Students: ${context.raw}`;
+                  }
+                }
+              },
+              datalabels: {
+                display: (context) => context.dataset.data[context.dataIndex] > 10,
+                color: 'black',
+                anchor: 'end',
+                align: 'top',
+                formatter: (value) => value
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grace: '5%',
+                title: {
+                  display: true,
+                  text: 'Number of Students'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Semester'
+                },
+                ticks: {
+                  minRotation: 45,
+                  maxRotation: 45
+                }
+              }
             }
           }
-        },
-        datalabels: {
-          display: false
+        };
+
+        // Modify config based on chart type
+        if (chartType === "Pie") {
+          chartConfig.options.plugins.tooltip.callbacks.label = (context) => {
+            const percentage = ((context.raw / totalValues.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+            return `${context.label}: ${context.raw} (${percentage}%)`;
+          };
+        } else if (chartType === "Line") {
+          chartConfig.data.datasets[0].fill = false;
+          chartConfig.data.datasets[0].tension = 0.4;
+        } else if (chartType === "Combined bar and line") {
+          chartConfig.type = 'bar';
+          chartConfig.data.datasets = [
+            {
+              label: 'Total Students (Bar)',
+              data: totalValues,
+              backgroundColor: 'rgba(0, 109, 72, 0.7)',
+              borderColor: 'rgb(0, 109, 72)',
+              borderWidth: 1,
+              order: 2
+            },
+            {
+              label: 'Total Students (Line)',
+              data: totalValues,
+              type: 'line',
+              borderColor: 'rgb(255, 99, 132)',
+              borderWidth: 2,
+              fill: false,
+              tension: 0.4,
+              order: 1
+            }
+          ];
         }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Count'
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: 'Year-Semester-Course'
+
+        console.log('Creating chart with config:', chartConfig);
+        const ctx = this.$refs.chartCanvas.getContext('2d');
+        this.chart = new Chart(ctx, chartConfig);
+
+      } else {
+        // Original ethnicity/gender visualization logic
+        const isGenderMode = selectedGenders && selectedGenders.length > 0;
+        const selectedCategories = isGenderMode ? selectedGenders : selectedEthnicities;
+        const xValues = this.chartData.map(item => `${item.Name}-${item.Course}`);
+
+        const colors = selectedCategories.map(() => 
+          `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)})`
+        );
+
+        let chartConfig = {
+          type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
+          data: {
+            labels: xValues,
+            datasets: []
           },
-          ticks: {
-            minRotation: 45,
-            maxRotation: 45
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: `Demographic Data by ${isGenderMode ? 'Gender' : 'Ethnicity'}`
+              },
+              legend: {
+                display: true,
+                position: 'top'
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const value = context.raw;
+                    const dataIndex = context.dataIndex;
+                    const dataPoint = this.chartData[dataIndex];
+                    const percentage = ((value / dataPoint.Total) * 100).toFixed(1);
+                    return `${context.dataset.label}: ${value} (${percentage}%)`;
+                  }
+                }
+              },
+              datalabels: {
+                display: false
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grace: '5%',
+                title: {
+                  display: true,
+                  text: 'Count'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Year-Semester-Course'
+                },
+                ticks: {
+                  minRotation: 45,
+                  maxRotation: 45
+                }
+              }
+            }
           }
+        };
+
+        if (chartType === "Pie") {
+          const firstCategory = selectedCategories[0];
+          const pieData = this.chartData.map(item => item[firstCategory]);
+          const total = pieData.reduce((sum, value) => sum + value, 0);
+          
+          chartConfig.data.datasets = [{
+            data: pieData,
+            backgroundColor: colors,
+            hoverOffset: 4
+          }];
+
+          chartConfig.options.plugins.tooltip = {
+            callbacks: {
+              label: function(context) {
+                const value = context.raw;
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${context.label}: ${value} (${percentage}%)`;
+              }
+            }
+          };
+        } else {
+          chartConfig.data.datasets = selectedCategories.map((category, index) => ({
+            label: category,
+            data: this.chartData.map((item, i) => item[category]),
+            backgroundColor: colors[index],
+            borderColor: colors[index],
+            fill: false,
+            tension: chartType === "Line" ? 0.4 : undefined
+          }));
         }
+
+        console.log('Creating demographic chart with config:', chartConfig);
+        const ctx = this.$refs.chartCanvas.getContext('2d');
+        this.chart = new Chart(ctx, chartConfig);
       }
-    }
-  };
-
-  if (chartType === "Pie") {
-    const firstCategory = selectedCategories[0];
-    const pieData = this.chartData.map(item => item[firstCategory]);
-    const total = pieData.reduce((sum, value) => sum + value, 0);
-    
-    chartConfig.data.datasets = [{
-      data: pieData,
-      backgroundColor: colors,
-      hoverOffset: 4
-    }];
-
-    chartConfig.options.plugins.tooltip = {
-      callbacks: {
-        label: function(context) {
-          const value = context.raw;
-          const percentage = ((value / total) * 100).toFixed(1);
-          return `${context.label}: ${value} (${percentage}%)`;
-        }
+    },
+    beforeUnmount() {
+      if (this.chart) {
+        this.chart.destroy();
       }
-    };
-  } else {
-    chartConfig.data.datasets = selectedCategories.map((category, index) => ({
-      label: category,
-      data: this.chartData.map((item, i) => item[category]),
-      backgroundColor: colors[index],
-      borderColor: colors[index],
-      fill: false,
-      tension: chartType === "Line" ? 0.4 : undefined
-    }));
-  }
-
-  const ctx = this.$refs.chartCanvas.getContext('2d');
-  this.chart = new Chart(ctx, chartConfig);
-  }
-  },
-  beforeUnmount() {
-    if (this.chart) {
-      this.chart.destroy();
     }
   }
 });
 </script>
-  
+
 <style scoped>
 .dashboard-container {
   display: flex;
@@ -452,76 +560,89 @@ export default defineComponent({
 }
 
 .field-button:hover {
-    background-color: #e8f5e9;
-  }
-  
-  .dropdown-options {
-    background-color: #ffffff;
-    color: black;
-    border-radius: 4px;
-    margin-top: 4px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dropdown-item {
-    padding: 8px 12px;
-    color: #006d48;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .dropdown-item:hover {
-    background-color: #e8f5e9;
-  }
-  
-  .dropdown-item.selected {
-    background-color: #e8f5e9;
-    font-weight: bold;
-  }
-  
-  .custom-range {
-    margin: 8px 0;
-  }
-  
-  .custom-input {
-    width: 48%;
-    padding: 6px;
-    margin: 4px 1%;
-    border: 1px solid #006d48;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .custom-dropdown {
-    width: 100%;
-    padding: 6px;
-    margin: 4px 0;
-    border: 1px solid #006d48;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .submit-query {
-    margin-top: 20px;
-  }
-  
-  .submit-button {
-    background-color: #ffffff;
-    color: #006d48;
-    padding: 10px;
-    width: 100%;
-    border: none;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .submit-button:hover {
-    background-color: #e8f5e9;
-  }
-  </style>
+  background-color: #e8f5e9;
+}
+
+.dropdown-options {
+  background-color: #ffffff;
+  color: black;
+  border-radius: 4px;
+  margin-top: 4px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  color: #006d48;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #e8f5e9;
+}
+
+.dropdown-item.selected {
+  background-color: #e8f5e9;
+  font-weight: bold;
+}
+
+.time-period-options {
+  padding: 8px;
+}
+
+.time-period-inputs {
+  padding: 8px;
+}
+
+.custom-range {
+  margin: 8px 0;
+}
+
+.custom-input {
+  width: 48%;
+  padding: 6px;
+  margin: 4px 1%;
+  border: 1px solid #006d48;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.custom-dropdown {
+  width: 100%;
+  padding: 6px;
+  margin: 4px 0;
+  border: 1px solid #006d48;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.submit-query {
+  margin-top: 20px;
+}
+
+.submit-button {
+  background-color: #ffffff;
+  color: #006d48;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #e8f5e9;
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+</style>
