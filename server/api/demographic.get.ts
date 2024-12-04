@@ -13,7 +13,7 @@ interface Record {
     Other: number;
     White: number;
   }
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event) =>
     try {
     const queryParams = getQuery(event)
     const { Course, Ethnicity, Gender, Year, Semester} = queryParams
