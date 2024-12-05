@@ -10,14 +10,42 @@ const maxTeamSize = ref(5); // State to store maximum team size
   div  
     Head  
       title Display  
-  .border-solid.rounded-3xl.box-border(style={ minHeight: '150px', minWidth: '500px', margin: '20px', padding: '20px' } class="bg-[rgba(48,100,162,0.29)]")  
-    form  
-      div.text-lg.text-white.font-medium.flex.items-center  
-        h1.backgroundFont.ml-3.mt-5 Maximum Team Size:  
-        label.block.mb-1.text-sm.font-medium.text-black.mt-5  
-        input(v-model="maxTeamSize" type="text" id="max_number" className="w-55 bg-[rgba(255,255,255,0.96)] ml-10 bg-white-100 border border-white-0 text-black-900 text-sm rounded-lg p-2.5 bg-white-500 placeholder-black-400 dark:text-black mt-5" placeholder="Enter number here" required)  
-      div.ml-0.mt-2.mb-0  
-        button(type="button" @click=handleGenerateTeams className="ml-3 text-white bg-[rgba(96,241,135,0.9)] dark:hover:bg-[rgba(128,172,108,0.9)] font-medium rounded-xl text-lg px-5 py-2.5 me-2 mb-2 focus:outline-none backgroundFont") Generate Teams  
+  
+  .border-solid.rounded-3xl.box-border(
+  style={ minHeight: '150px', minWidth: '500px', margin: '20px', padding: '20px' }
+  class="bg-[rgba(48,100,162,0.29)]")
+    form
+      div.text-lg.text-white.font-medium.flex.flex-col.items-start.space-y-4
+        // Row for Attribute Importance
+        div.flex.items-center
+          h1.backgroundFont.ml-3.mt-5.text-pillText Attribute Importance :
+          input(
+            v-model="attributeImportance"
+            type="text"
+            id="attribute_importance"
+            class="w-40 bg-[rgba(255,255,255,0.96)] ml-5 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
+            placeholder="Enter value"
+            required
+          )
+        // Row for Maximum Team Size
+        div.flex.items-center
+          h1.backgroundFont.ml-3.mt-5.text-pillText Maximum Team Size :
+          input(
+            v-model="maxTeamSize"
+            type="text"
+            id="max_team_size"
+            class="w-40 bg-[rgba(255,255,255,0.96)] ml-5 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
+            placeholder="Enter number"
+            required
+          )
+      div.ml-0.mt-2.mb-0.flex.justify-end
+        button(
+          type="button"
+          @click=handleGenerateTeams
+          class="ml-3 text-white bg-[rgba(96,241,135,0.9)] hover:bg-[rgba(128,172,108,0.9)] font-medium rounded-xl text-lg px-5 py-2.5 focus:outline-none backgroundFont"
+        ) Generate Teams
+    
+  
   div(style={ display: 'inline-flex' })  
     div(style={ display: 'flex', flexDirection: 'column', marginTop: '40px' })  
       p.backgroundFont(style={ marginLeft: '25px', fontSize: '20px' }) Team Combos  

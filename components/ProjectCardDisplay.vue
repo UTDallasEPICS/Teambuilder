@@ -1,43 +1,22 @@
 <template lang="pug">
-    mixin RectangleComponent(title, content, indicator, sem)
-      .curved-rectangle.bg-pillText-100.rounded-lg.p-6.shadow-lg.max-w-sm.mx-auto.mb-4
-        h2.text-xl.font-semibold.text-gray-800.mb-2 {{ title }}
-        // Add conditional indicators
-        .indicators.flex.gap-2.mt-2
-            if indicator.toLowerCase() == 'new'
-                .indicator.bg-green-200.rounded-full.px-2.py-1.text-xs.font-semibold.text-pillText {{ indicator }}
-            else if indicator.toLowerCase() == 'returning'
-                .indicator.bg-yellow-200.rounded-full.px-2.py-1.text-xs.font-semibold.text-pillText {{ indicator }}
-            else 
-            .indicator.bg-general.rounded-full.px-2.py-1.text-xs.font-semibold.text-pillText {{ indicator }}
-
-        .sem.bg-general.rounded-full.px-2.py-1.text-xs.font-semibold.text-pillText {{sem}}
-        p.text-gray-600.text-base.mb-4 {{ content }}
-        
-        
-    </template>
-    
-    <script>
-    export default {
-      props: {
-        title: {
-          type: String,
-          required: true,
-        },
-        content: {
-          type: String,
-          required: true,
-        },
-        indicator: {
-          type: String,
-          required: true,
-          default: '',  // default to an empty string if not provided
-        },
-        sem: {
-          type: String,
-          required: true,
-          default: '',  // default to an empty string if not provided
-        },
-      },
-    }
-    </script>
+  .project-card.rounded-2xl.p-4.mb-3.mx-2(class="bg-[#FFF8DC]")
+    h2.text-xl.font-light(class="text-[#7BA7A6]") {{ title }}
+    .indicators.flex.gap-2.mt-2
+      .indicator(
+        class="rounded-full px-3 py-1 text-xs font-light text-white"
+        :class="indicator.toLowerCase() === 'new' ? 'bg-[#90EE90]' : 'bg-[#FFA07A]'"
+      ) {{ indicator.toUpperCase() }}
+      .semester(class="bg-[#87CEEB] rounded-full px-3 py-1 text-xs font-light text-white") {{ sem }}
+    p.text-sm.mt-2.font-light(class="text-[#7BA7A6]") {{ content }}
+  </template>
+  
+  <script setup lang="ts">
+  interface Props {
+    title: string
+    content: string
+    indicator: string
+    sem: string
+  }
+  
+  defineProps<Props>()
+  </script>

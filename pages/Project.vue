@@ -1,3 +1,32 @@
+<template lang="pug">
+  div(class="font-jura h-screen min-h-[780px] rounded-[24px] border-solid rounded-t-3xl box-border m-10 bg-[rgba(90,91,88,0.49)] pl-4 pt-7")  
+    div.box-border.border-solid.rounded-3xl.min-h-28.mt-1.mr-9.ml-5.mb-3.flex.flex-col.text-pillText(class="bg-[rgba(48,100,162,0.29)]")
+      h1.ml-4.mt-3.text-xl Instruction  
+      h2.ml-4.mt-2.mr-3   
+        | Upload your project information here.
+        br
+        | Be sure to enter project name,  
+        | project partner, target # of CS majors, and whether it is an archived project.  
+        | Once you are ready, click Submit.  
+    .div(style={ display: 'flex', flexDirection: 'column', marginLeft: '100px' } class='flex') 
+    .div(style={ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' })  
+        h1(class="text-3xl ml-32") Projects  
+        h1(class="text-3xl ml-16") Edit Project 
+         
+        
+        //Table(:rows="rows", :deleteRow="handleDeleteRow", :editRow="handleEditRow") // This is the table, it calls the Vue table 
+
+        //FileUploader(title = "Upload Project List" @fileSelected = "handleFile")
+        
+
+       
+      
+        div.flex-col  
+           
+          //div(class="ml-50 mr-25 min-w-395 min-h-300 customMargin box-border border-solid rounded-3xl bg-[rgba(48,100,162,0.29)] flex flex-col")  
+          //Modal(v-if="modalOpen", @closeModal="closeModal", @onSubmit="handleSubmit", :defaultValue="rowToEdit !== null && rows[rowToEdit]")
+</template>
+
 <script lang="ts" setup>
 import { ref, getCurrentInstance } from 'vue';
 import Papa from 'papaparse';
@@ -86,26 +115,3 @@ const triggerFileUpload = () => {
 </script>
 
 
-<template lang="pug">
-  div(class="font-jura h-screen min-h-[780px] rounded-[24px] border-solid rounded-t-3xl box-border m-10 bg-[rgba(90,91,88,0.49)] pl-4 pt-7")  
-    div.box-border.border-solid.rounded-3xl.min-h-28.mt-1.mr-9.ml-5.mb-3.flex.flex-col.text-pillText(class="bg-[rgba(48,100,162,0.29)]")
-      h1.ml-4.mt-3.text-xl Instruction  
-      h2.ml-4.mt-2.mr-3   
-        | Upload your project information here.
-        br
-        | Be sure to enter project name,  
-        | project partner, target # of CS majors, and whether it is an archived project.  
-        | Once you are ready, click Submit.  
-    div(class="ml-0 flex")  
-      div.flex-col  
-        h1(class="text-3xl ml-8.mt-3") Projects  
-        Table(:rows="rows", :deleteRow="handleDeleteRow", :editRow="handleEditRow") // This is the table, it calls the Vue table 
-
-        FileUploader(title = "Upload Project List" @fileSelected = "handleFile")
-        
-
-      div.flex-col  
-      h1(class="text-3xl ml-32") Edit Project  
-      div(class="ml-50 mr-25 min-w-395 min-h-300 customMargin box-border border-solid rounded-3xl bg-[rgba(48,100,162,0.29)].flex.flex-col")  
-      Modal(v-if="modalOpen", @closeModal="closeModal", @onSubmit="handleSubmit", :defaultValue="rowToEdit !== null && rows[rowToEdit]")
-</template>
