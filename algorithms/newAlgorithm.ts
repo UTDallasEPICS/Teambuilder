@@ -1,6 +1,5 @@
 // NEW (?) FUNCTION:
 
-//Student Structure that includes Name, Major, Grade, choices, and EPICS level
 // Student Structure that includes Name, Major, Grade, choices, and EPICS level
 export type Student = {
   id: string;
@@ -21,8 +20,6 @@ export type Project = {
 
 // Type for Team Assignments
 export type TeamAssignments = Record<string, Student[]>;
-
-let numUpperClassmen = 0;
 
 // Main function to generate teams
 export function generateTeams(students: Student[], projects: Project[]): TeamAssignments {
@@ -47,7 +44,7 @@ export function generateTeams(students: Student[], projects: Project[]): TeamAss
   const minStudents = Math.floor(students.length / projects.length);
 
   // Ensure each project has at least one 3200-level student
-  ensureUpperClassmen(teams, students, projects);
+  ensureUpperClassmen(teams, projects);
 
   // Balance teams based on minimum students required
   balanceTeamsFixed(teams, projects, minStudents);
@@ -83,7 +80,7 @@ function groupStudentsByDegree(
   }, {} as Record<string, Record<string, Student[]>>);
 }
 
-// Helper function to determine degree type
+// Helper function to determine degree type as hardware (HW) or software (SW)
 function getDegreeType(major: Student['major']): string {
   if (["EE", "ME", "BME", "CE"].includes(major)) return "HW";
   if (["CS", "SE", "DS"].includes(major)) return "SW";
@@ -148,7 +145,6 @@ function placeStudentsInTeams(
 // Ensure each project has at least one 3200-level student
 function ensureUpperClassmen(
   teams: TeamAssignments,
-  students: Student[],
   projects: Project[]
 ): void {
   const studentLocations = new Map<string, string>();
@@ -163,7 +159,6 @@ function ensureUpperClassmen(
       if (!team.some(student => student.class === "3200")) {
           const availableUpperClassman = findAvailableUpperClassman(
               teams,
-              studentLocations,
               project.name
           );
 
@@ -184,7 +179,6 @@ function ensureUpperClassmen(
 // Find an available upperclassman for balancing
 function findAvailableUpperClassman(
   teams: TeamAssignments,
-  studentLocations: Map<string, string>,
   targetProject: string
 ): Student | null {
   for (const [teamName, teamStudents] of Object.entries(teams)) {
