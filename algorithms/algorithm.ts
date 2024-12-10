@@ -1,3 +1,9 @@
+// NOTE: 
+// This algorithm was created by the Spring 2024 team.
+// This file is outdated, and is here for documentation purposes.
+// The most recent version of the algorithm is in newAlgorithm.ts
+// ~~ Fall 2024 Teambuilder Team 12/10/2024
+
 export type Student = {
   name: string;
   major: "CS" | "Other";
