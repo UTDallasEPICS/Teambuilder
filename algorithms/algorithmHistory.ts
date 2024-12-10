@@ -1,3 +1,9 @@
+// NOTE: 
+// This algorithm was created by the Fall 2024.
+// This file is outdated, and is here for documentation purposes.
+// The most recent version of the algorithm is in newAlgorithm.ts
+// ~~ Fall 2024 Teambuilder Team 12/10/2024
+
 /*//Student Structure that includes Name, Major, Grade, choices, and EPICS level
 //Changed Majors to include more than just CS
 export type Student = {

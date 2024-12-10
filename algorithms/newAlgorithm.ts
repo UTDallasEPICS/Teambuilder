@@ -1,4 +1,14 @@
-// NEW (?) FUNCTION:
+// NOTE:
+// This is the most recent version of the algorithm created by Fall 2024.
+// The steps to test the algorithm are listed below.
+// ~~ Fall 2024 Teambuilder Team 12/10/2024
+
+// To test algorithm: 
+// 1. type "npm install -g tsx" into terminal
+// 2. change directories into the algorithms folder
+// 3. type "tsx test.ts" (or replace test.ts with whichever file you want to test)
+// whenever you want to test the algorithm in the future, you only need to repeat steps 2 and 3 and you should be good
+// ~~ Fall 2024 Teambuilder Team 12/10/2024
 
 // Student Structure that includes Name, Major, Grade, choices, and EPICS level
 export type Student = {
