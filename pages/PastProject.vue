@@ -16,7 +16,7 @@
           .div(style="display: flex; gap: 20px;")
             // Projects Scroll Component
             .div(
-              style="flex: 1; height: 450px; overflow-y: scroll; padding: 16px;"
+              style="flex: 1; height: 600px; overflow-y: scroll; padding: 16px;"
               class="border-solid rounded-3xl bg-[rgba(48,100,162,0.29)]"
             )
               .project-container.space-y-4
@@ -27,20 +27,7 @@
                   :indicator="project.indicator"
                   :sem="project.sem"
                 )
-            // Student List Scroll Component
-            .div(
-              v-if="maxTeamSize" 
-              style="flex: 2; height: 450px; overflow-y: scroll; padding: 16px;"
-              class="border-solid rounded-3xl bg-[rgba(48,100,162,0.29)]"
-            )
-              .student-container.space-y-4
-                StudentCardDisplay(
-                  v-for="student in students"
-                  :lname="student.lname"
-                  :fname="student.fname"
-                  :indicator="student.indicator"
-                  :netID="student.netID"
-                )
+            
     
         .div(style="flex: 1;")
           .div(
@@ -90,29 +77,58 @@
                 p.text-white.text-sm.font-bold.mt-2 RETURNING
     </template>
     
-    <script>
-    export default {
-      data() {
-        return {
-          selectedSemester: "Spring", 
-          selectedYear: new Date().getFullYear(), 
-          years: this.generateYears(), 
-          gitLink: "abc123456", 
-          docType: "pdf", 
-          student: {
-            lname: "Last",
-            fname: "First",
-            netID: "abc123456",
-            discord: "@blah",
-          },
-        };
+
+<script>
+import { ref } from "vue";
+
+export default {
+  data() {
+    return {
+      selectedSemester: "Spring",
+      selectedYear: new Date().getFullYear(),
+      years: this.generateYears(),
+      gitLink: "abc123456",
+      docType: "pdf",
+      student: {
+        lname: "Last",
+        fname: "First",
+        netID: "abc123456",
+        discord: "@blah",
       },
-      methods: {
-        generateYears() {
-          const currentYear = new Date().getFullYear();
-          const range = 10; 
-          return Array.from({ length: range }, (_, i) => currentYear - i);
+      projects: ref([
+        {
+          title: "Patient Data Collection App",
+          content: "A new app for collecting patient data.",
+          indicator: "New",
+          sem: "S2024",
         },
-      },
+        {
+          title: "Automated Family Page",
+          content: "A project to automate the generation of family pages.",
+          indicator: "returning",
+          sem: "S2024",
+        },
+        {
+          title: "Communication App",
+          content: "A real-time communication app for team collaboration.",
+          indicator: "new",
+          sem: "F2023",
+        },
+        {
+          title: "Data Collection App",
+          content: "A new app for collecting patient data.",
+          indicator: "New",
+          sem: "S2024",
+        },
+      ]),
     };
-    </script>
+  },
+  methods: {
+    generateYears() {
+      const currentYear = new Date().getFullYear();
+      const range = 10;
+      return Array.from({ length: range }, (_, i) => currentYear - i);
+    },
+  },
+};
+</script>
