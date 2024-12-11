@@ -2,6 +2,32 @@
 const maxTeamSize = ref(5); // State to store maximum team size
 // TODO: componentize inpout & button & text, fix layout
 // TODO: needs tailwind, should be renamed to Generate.vue
+import StudentCardDisplay from '~/components/StudentCardDisplay.vue';
+
+const students = ref([
+    {
+      lname: 'Dan',
+      fname: 'Martin',
+      indicator: 'new',
+      netID: 'dxm220546',
+      isAssigned: true
+    },
+    {
+      lname: 'Chris',
+      fname: 'Colman',
+      indicator: 'returning',
+      netID: 'cxc220546',
+      isAssigned: false
+    },
+    {
+      lname: 'Subrahmanya',
+      fname: 'Mohanasundar',
+      indicator: 'new',
+      netID: 'sxm220546',
+      isAssigned: false
+    }
+  ]);
+
 </script>
 <style></style>
 
@@ -16,25 +42,51 @@ const maxTeamSize = ref(5); // State to store maximum team size
   class="bg-[rgba(48,100,162,0.29)]")
     form
       div.text-lg.text-white.font-medium.flex.flex-col.items-start.space-y-4
-        // Row for Attribute Importance
-        div.flex.items-center
-          h1.backgroundFont.ml-3.mt-5.text-pillText Attribute Importance :
-          input(
-            v-model="attributeImportance"
-            type="text"
-            id="attribute_importance"
-            class="w-40 bg-[rgba(255,255,255,0.96)] ml-5 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
-            placeholder="Enter value"
-            required
-          )
+        div.text-lg.text-white.font-medium.flex.items-center 
+          // Row for Attribute Importance
+          h1.backgroundFont.ml-3.mt-5.text-3xl.text-pillText Attribute Importance :
+          div.flex.ml-5
+            // Dropdown 1
+            h1.backgroundFont.ml-3.mt-5.text-3xl.text-pillText 1
+            select(
+              v-model="dropdown1"
+              class="w-40 pillText ml-2 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
+              required
+            )
+              option(value="" disabled selected hidden) Skill Match
+              option(value="option1") Option 1
+              option(value="option2") Option 2
+            // Dropdown 2
+            h1.backgroundFont.ml-6.mt-5.text-3xl.text-pillText 2
+            select(
+              v-model="dropdown1"
+              id="dropdown_example"
+              class="w-40 pillText ml-2 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
+              required
+            )  
+              option(value="") Project Preference
+              option(value="option1") Option 1
+              option(value="option2") Option 2
+            // Dropdown 3
+            h1.backgroundFont.ml-6.mt-5.text-3xl.text-pillText 3
+            select(
+              v-model="dropdown1"
+              id="dropdown_example"
+              class="w-40 bg-[rgba(255,255,255,0.96)] ml-2 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
+              required
+            )  
+              option(value="") Classification
+              option(value="option1") Option 1
+              option(value="option2") Option 2
+
         // Row for Maximum Team Size
         div.flex.items-center
-          h1.backgroundFont.ml-3.mt-5.text-pillText Maximum Team Size :
+          h1.backgroundFont.ml-3.mt-5.text-pillText.text-3xl Maximum Team Size :
           input(
             v-model="maxTeamSize"
             type="text"
             id="max_team_size"
-            class="w-40 bg-[rgba(255,255,255,0.96)] ml-5 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
+            class="w-40 bg-[rgba(255,255,255,0.96)] ml-24 border border-gray-300 text-black text-sm rounded-lg p-2.5 placeholder-black-400 dark:text-black mt-5"
             placeholder="Enter number"
             required
           )
@@ -46,30 +98,59 @@ const maxTeamSize = ref(5); // State to store maximum team size
         ) Generate Teams
     
   
-  div(style={ display: 'inline-flex' })  
+  div(style={ display: 'inline-flex' } class="ml-4")  
     div(style={ display: 'flex', flexDirection: 'column', marginTop: '40px' })  
       p.backgroundFont(style={ marginLeft: '25px', fontSize: '20px' }) Team Combos  
       p.backgroundFont(style={ marginLeft: '25px', marginBottom: '5px' }) Count: X  
-      div.border-solid.rounded-3xl.box-border(v-if="maxTeamSize" style={ height: '450px', width: '350px', margin: '20px', marginLeft: '20px', marginTop: '0px', overflowY: 'scroll' } class="bg-[rgba(48,100,162,0.29)]")  
-        ProjectMatch(myString="Patient Data Collection App")  
-        ProjectMatch(myString="Automated Family Page")  
-        ProjectMatch(myString="Communication App")  
-        ProjectMatch(myString="EPICS TeamBuilder")  
+      .div.border-solid.rounded-3xl.box-border(
+          style="height: 450px; width: 350px; overflow-y: scroll;" 
+          class="bg-[rgba(48,100,162,0.29)] p-4 pt-6 ml-4"
+        ) 
+        .combination-container(class="space-y-4")  
+          CombinationCard(
+            :combination= 1
+            :sFactor= 8
+            :cFactor= 4
+            :pFactor= 7
+            :tWeight= 7
+            :unassignedStudents= 30 
+          )
+    
     div(style={ display: 'flex', flexDirection: 'column', marginTop: '40px' })  
       p.backgroundFont(style={ marginLeft: '80px', fontSize: '20px' }) Unassigned Students  
       p.backgroundFont(style={ marginLeft: '80px', marginBottom: '5px' }) Count: X  
-      div.border-solid.rounded-3xl.box-border(v-if="maxTeamSize" style={ height: '450px', width: '350px', margin: '20px', marginLeft: '80px', marginTop: '0px', overflowY: 'scroll' } class="bg-[rgba(48,100,162,0.29)]")  
-        UnassignedStudents  
-        UnassignedStudents  
-        UnassignedStudents  
-        UnassignedStudents  
-        UnassignedStudents  
-        UnassignedStudents  
+      .div.border-solid.rounded-3xl.box-border.ml-10(
+        v-if="maxTeamSize" 
+        style="height: 450px; width: 450px; overflow-y: scroll;"
+        class="bg-[rgba(48,100,162,0.29)] p-4 pt-6"
+        )
+          .student-container(class="space-y-4")
+            StudentCardDisplay(
+              v-for="student in students"
+              :lname="student.lname"
+              :fname="student.fname"
+              :indicator="student.indicator"
+              :netID="student.netID"
+              :isAssigned="student.isAssigned"
+            )
+        
+    
+    
     div(style={ display: 'flex', flexDirection: 'column', marginTop: '40px' })  
       p.backgroundFont(style={ marginLeft: '80px', fontSize: '20px' }) Project Status  
       p.backgroundFont(style={ marginLeft: '80px', marginBottom: '5px' }) Incomplete: X  
       div.border-solid.rounded-3xl.box-border(style={ height: '450px', width: '350px', margin: '20px', marginLeft: '80px', marginTop: '0px', overflowY: 'scroll' } class="bg-[rgba(48,100,162,0.29)]")  
-        Link(href="/display")  
-          button(style={ marginLeft: '20px' }, className='backgroundFont border-solid border-8 p-2 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl') Export as CSV >>  
+    
+  
+      button(
+        type="button"
+        style={
+          width: '250px',
+          bottom: '20px',
+          right: '10px',
+          zIndex: '999' 
+        },
+        className='mt-10 ml-64 font-bold backgroundFont border-solid border-8 p-1 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl text-pillText'
+      )  Export as CSV >>
 
 </template>

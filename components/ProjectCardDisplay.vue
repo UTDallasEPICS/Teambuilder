@@ -6,7 +6,7 @@
         class="rounded-full px-3 py-1 text-xs font-light text-white"
         :class="indicator.toLowerCase() === 'new' ? 'bg-[#90EE90]' : 'bg-[#FFA07A]'"
       ) {{ indicator.toUpperCase() }}
-      .semester(class="bg-[#87CEEB] rounded-full px-3 py-1 text-xs font-light text-white") {{ sem }}
+      .semester(class="bg-[#E560F1] rounded-full px-3 py-1 text-xs font-light text-white") {{ sem }}
     p.text-sm.mt-2.font-light(class="text-[#7BA7A6]") {{ content }}
   </template>
   

@@ -58,6 +58,7 @@
                   :fname="student.fname"
                   :indicator="student.indicator"
                   :netID="student.netID"
+                  :isAssigned="student.isAssigned"
                 )
 
             //.div
@@ -121,7 +122,43 @@
       lname: 'Dan',
       fname: 'Martin',
       indicator: 'new',
-      netID: 'sxc220546'
+      netID: 'dxm220546',
+      isAssigned: true
+    },
+    {
+      lname: 'Chris',
+      fname: 'Colman',
+      indicator: 'returning',
+      netID: 'cxc220546',
+      isAssigned: false
+    },
+    {
+      lname: 'Subrahmanya',
+      fname: 'Mohanasundar',
+      indicator: 'new',
+      netID: 'sxm220546',
+      isAssigned: false
+    },
+    {
+      lname: 'Subrahmanya',
+      fname: 'Mohanasundar',
+      indicator: 'new',
+      netID: 'sxm220546',
+      isAssigned: false
+    },
+    {
+      lname: 'Subrahmanya',
+      fname: 'Mohanasundar',
+      indicator: 'new',
+      netID: 'sxm220546',
+      isAssigned: false
+    },
+    {
+      lname: 'Subrahmanya',
+      fname: 'Mohanasundar',
+      indicator: 'new',
+      netID: 'sxm220546',
+      isAssigned: false
     }
   ]);
   const studentCount = computed(() => students.value.length);

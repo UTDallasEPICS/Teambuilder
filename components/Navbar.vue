@@ -15,8 +15,6 @@ div(class="w-full sticky top-0  mx-auto p-4 h-full flex justify-between items-ce
       )
   ul(class="hidden md:flex gap-x-6 text-white backgroundFont")
     li
-      NuxtLink(to="/") Sign In
-    li
       NuxtLink(to="/project") Project
     li
       NuxtLink(to="/Upload") Student Upload

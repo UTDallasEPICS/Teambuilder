@@ -8,28 +8,56 @@
         | Be sure to enter project name,  
         | project partner, target # of CS majors, and whether it is an archived project.  
         | Once you are ready, click Submit.  
+    
+    
+    
     .div(style={ display: 'flex', flexDirection: 'column', marginLeft: '100px' } class='flex') 
-    .div(style={ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' })  
-        h1(class="text-3xl ml-32") Projects  
-        h1(class="text-3xl ml-16") Edit Project 
-         
-        
-        //Table(:rows="rows", :deleteRow="handleDeleteRow", :editRow="handleEditRow") // This is the table, it calls the Vue table 
-
-        //FileUploader(title = "Upload Project List" @fileSelected = "handleFile")
-        
-
-       
+  
+      .div(
+        style={ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '20px', gap: '50px'}
+      ) 
+        FileUploader(title="Upload Project List" @fileSelected="handleFile") 
+        h1(class="text-5xl ml-52 text-pillText") Projects:  
+        h1(class="text-5xl ml-40 text-pillText") Edit Project:  
       
-        div.flex-col  
-           
-          //div(class="ml-50 mr-25 min-w-395 min-h-300 customMargin box-border border-solid rounded-3xl bg-[rgba(48,100,162,0.29)] flex flex-col")  
-          //Modal(v-if="modalOpen", @closeModal="closeModal", @onSubmit="handleSubmit", :defaultValue="rowToEdit !== null && rows[rowToEdit]")
+      .div(
+        style={ display: 'flex', gap: '20px' }
+      ) 
+        // Projects Scroll Component
+        .div.border-solid.rounded-3xl.box-border(
+          style="height: 450px; width: 350px; overflow-y: scroll;" 
+          class="bg-[rgba(48,100,162,0.29)] p-4 pt-6 ml-96"
+        )
+          .project-container(class="space-y-4")
+            ProjectCardDisplay(
+              v-for="project in projects" 
+              :title="project.title"
+              :content="project.content"
+              :indicator="project.indicator"
+              :sem="project.sem"
+            )
+          
+        .div.border-solid.rounded-3xl.box-border(
+          style="height: 450px; width: 350px; " 
+          class="bg-[rgba(48,100,162,0.29)] p-4 pt-6 ml-20"
+        )
+          
+
+
+          
+
+        
+        
+          div
+            
+            //div(class="ml-50 mr-25 min-w-395 min-h-300 customMargin box-border border-solid rounded-3xl bg-[rgba(48,100,162,0.29)] flex flex-col")  
+            //Modal(v-if="modalOpen", @closeModal="closeModal", @onSubmit="handleSubmit", :defaultValue="rowToEdit !== null && rows[rowToEdit]")
 </template>
 
 <script lang="ts" setup>
 import { ref, getCurrentInstance } from 'vue';
 import Papa from 'papaparse';
+import ProjectCardDisplay from '~/components/ProjectCardDisplay.vue';
 
 const modalOpen = ref(false); // Modal visibility state
 const rows = ref([]); // Rows of Projects
@@ -111,6 +139,32 @@ const triggerFileUpload = () => {
   fileUploader.value?.handleClick(); // This will trigger the file input in FileUploader
 };
 
+const projects = ref([
+{
+      title: 'Patient Data Collection App',
+      content: 'A new app for collecting patient data.',
+      indicator: 'New',
+      sem: 'S2024'
+  },
+    {
+      title: 'Automated Family Page',
+      content: 'A project to automate the generation of family pages.',
+      indicator: 'returning',
+      sem: 'S2024'
+    },
+    {
+      title: 'Communication App',
+      content: 'A real-time communication app for team collaboration.',
+      indicator: 'new',
+      sem: 'F2023'
+    },
+    {
+      title: 'Data Collection App',
+      content: 'A new app for collecting patient data.',
+      indicator: 'New',
+      sem: 'S2024'
+    }
+]);
 
 </script>
 

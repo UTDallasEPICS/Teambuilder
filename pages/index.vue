@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 const data = ref({
   userName: '',
   password: '',
@@ -6,6 +8,7 @@ const data = ref({
 
 const handleSubmit = () => {
   if (data.value.userName == 'epics' && data.value.password == 'epicsrocks') {
+    localStorage.setItem('isLoggedIn', 'true')
     window.location.href = '/project';
   }
   else {
