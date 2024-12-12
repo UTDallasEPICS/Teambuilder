@@ -7,7 +7,7 @@
     "@tailwindcss/typography": "^0.5.15",
     "axios": "^1.7.9",
     "jsonwebtoken": "^9.0.0",
-    "nuxt": "^3.11.2",
+    "nuxt": "^3.14.1592",
     "papaparse": "^5.4.1",
     "pinia": "^2.3.0",
     "pug": "^3.0.2",
