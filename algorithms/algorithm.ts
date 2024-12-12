@@ -1,9 +1,3 @@
-// NOTE: 
-// This algorithm was created by the Spring 2024 team.
-// This file is outdated, and is here for documentation purposes.
-// The most recent version of the algorithm is in newAlgorithm.ts
-// ~~ Fall 2024 Teambuilder Team 12/10/2024
-
 export type Student = {
   name: string;
   major: "CS" | "Other";
@@ -36,10 +30,8 @@ export function generateTeams(
 
   // pass 1
   passOne(teams, students, minimumStudents, maximumStudents);
-  //console.log("\n", teams);
   // pass 2
   passTwo(teams, projects, minimumStudents, maximumStudents);
-  //console.log("\n", teams);
   // pass 3
   passThree(teams, students, projects, minimumStudents, maximumStudents);
   return teams;
@@ -222,6 +214,7 @@ function calcTeamScore(
   projects: Project[],
   index: number
 ) {
+  console.log("calcTeamScore");
  // (#upper/#on team) - (#upperinclass/#totalinclass)
   // ((#cs/#team) - (target#cs/target#onteam)) * #onteam/target#onteam
   // average the above to get team score
@@ -230,20 +223,18 @@ function calcTeamScore(
       majorScore(student, team, projects, index) +
       preferenceScore(student, team, teams)) /
     3;
-  console.log("teamScore: ", teamScore);
   return teamScore;
 }
 
 function classScore(student: Student, team: Student[]) {
   let upperOnTeam = 0;
   let teamTotal = 0;
+  console.log("classScore");
   // get total number of 3200 students and total students
   team.forEach((student) => {
     if (student.class == "3200") upperOnTeam++;
     teamTotal++;
   });
-  let classScore = upperOnTeam / teamTotal - numUpperClassmen / totalNumInClass;
-  //console.log("classScore: ", classScore);
   return upperOnTeam / teamTotal - numUpperClassmen / totalNumInClass;
 }
 
@@ -253,6 +244,7 @@ function majorScore(
   projects: Project[],
   index: number
 ) {
+  console.log("majorScore");
   let csOnTeam = 0;
   let teamTotal = 0;
   team.forEach((student) => {
@@ -265,11 +257,8 @@ function majorScore(
   let teamTarget = 0;
   //find num of projects
   teamTarget = Math.floor(totalNumInClass / projects.length);
-  let majorScore = (csOnTeam / teamTotal - (projects[index].targetCS / teamTarget)) *
-  (teamTotal / teamTarget);
-  //console.log("majorScore: ", majorScore);
   return (
-    (csOnTeam / teamTotal - (projects[index].targetCS / teamTarget)) *
+    (csOnTeam / teamTotal - (projects[index].targetCS - teamTarget)) *
     (teamTotal / teamTarget)
   );
 }
@@ -280,7 +269,7 @@ function preferenceScore(
   team: Student[],
   teams: Record<string, Student[]>
 ) {
-  let preferenceScore = 0;
+  console.log("preferenceScore");
   //looping through the teams record, looking for a team (Student []) that mataches with team parameter
   Object.values(teams).forEach((currentTeam, index) => {
     //if the team is equal to team we're looking for
@@ -291,33 +280,25 @@ function preferenceScore(
         if (teamName === Object.keys(teams)[index]) {
           switch (i + 1) {
             case 1:
-              return preferenceScore = 1.0;
-              break
+              return 1.0;
             case 2:
-              return preferenceScore = 0.8;
-              break;
+              return 0.8;
             case 3:
-              return preferenceScore = 0.6;
-              break;
+              return 0.6;
             case 4:
-              return preferenceScore = 0.3;
-              break;
+              return 0.3;
             case 5:
-              return preferenceScore = 0.2;
-              break;
+              return 0.2;
             case 6:
-              return preferenceScore = 0.1;
-              break;
+              return 0.1;
             case 7:
-              return preferenceScore = 0.05;
-              break;
+              return 0.05;
           }
         }
       });
     }
   });
-  //console.log("preferenceScore: "preferenceScore);
-  return preferenceScore;
+  return 0;
 }
 
 // can be run multiple times to achieve best average team score within 1000 iterations
@@ -331,7 +312,6 @@ function passThree(
   maximumStudents: number
 ) {
   for (let i = 0; i < 1000; i++) {
-    console.log("passThree");
     let avgTeamScore = 0;
     let totalTeams = 0;
     Object.values(teams).forEach((team, index) => {
@@ -343,7 +323,6 @@ function passThree(
       totalTeams++;
     });
     avgTeamScore = avgTeamScore / totalTeams;
-    console.log("avgTeamScore: ",avgTeamScore);
     //calculate standard deviation
     let stdDev = 0;
     Object.values(teams).forEach((team, index) => {
@@ -354,58 +333,9 @@ function passThree(
       stdDev += Math.pow(teamScore / team.length - avgTeamScore, 2);
     });
     stdDev = Math.sqrt(stdDev / totalTeams);
-    console.log("stdDev: ", stdDev);
     //if the standard deviation is less than 1, break out of the loop
-    if (stdDev < 0.1) break;
-    //run passFour
-    passFour(teams, projects, minimumStudents, maximumStudents, avgTeamScore);
+    if (stdDev < 1) break;
+    //run passTwo
+    passTwo(teams, projects, minimumStudents, maximumStudents);
   }
-}
-
-function passFour(
-  teams: Record<string, Student[]>,
-  projects: Project[],
-  minimumStudents: number,
-  maximumStudents: number,
-  avgTeamScore: number
-) {
-  console.log("passFour");
-  // balancing pass - function that takes only the teams and min/max students
-  // sort teams by least students to most
-  const teamsArray = Object.values(teams);
-  //Sort the array by the number of students in each team by low to high
-  teamsArray.sort((a, b) => a.length - b.length);
-  // any team with less than minimum, find a student from a team that has the most students and move the least impactful student
-  teamsArray.forEach((team, index) => {
-    if (team.length < minimumStudents) {
-      // find team with most students
-      const teamWithMostStudents = teamsArray.sort(
-        (a, b) => b.length - a.length
-      )[0];
-      // find least impactful student
-      const leastImpactfulStudent = teamWithMostStudents.sort(
-        (a, b) =>
-          calcStudentImpactOnTeam(
-            a,
-            teamWithMostStudents,
-            teams,
-            projects,
-            index
-          ) -
-          calcStudentImpactOnTeam(
-            b,
-            teamWithMostStudents,
-            teams,
-            projects,
-            index
-          )
-      )[0];
-      // move student to team, remove student from previous big team
-      team.push(leastImpactfulStudent);
-      teamWithMostStudents.splice(
-        teamWithMostStudents.indexOf(leastImpactfulStudent),
-        1
-      );
-    }
-  });
 }

@@ -1,9 +1,3 @@
-// NOTE: 
-// This is the algorithm used prior to the creation of Teambuilder in the Spring of 2024.
-// This file is outdated, and is here for the sake of gathering ideas.
-// The most recent version of the algorithm is in newAlgorithm.ts.
-// ~~ Fall 2024 Teambuilder Team 12/10/2024
-
 import { INITIATE_TEAM_GENERATION } from './actionTypes/teamBuilderActionTypes';
 import { SELECT_TEAM_COMBINATION } from './actionTypes/teamBuilderActionTypes';
 
