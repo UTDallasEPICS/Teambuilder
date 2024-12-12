@@ -35,29 +35,27 @@ GUILD_ID = <Server ID>
 BOT_ID = <Bot ID>           
 ```
 
-3) **Initalize package.json** by opening the VS code terminal and run `npm init -y`. This will build the package.json file, open it and make sure it looks just like this: 
+3) **Create Discord application** Follow Step 1 only, according to
+[https://discord.com/developers/docs/quick-start/getting-started](https://discord.com/developers/docs/quick-start/getting-started) and add necessary env variables to .env
+Make sure to select all Privleged Gateway Intents under Bot tab 
 
-***[NOTE]**: _If you already have the package.json file in your local repository then you can skip this step_ 
-```
-   {
-     "name": "scipe",
-     "version": "1.0.0",
-     "description": "S.C.I.P.E.  Smart Computer Interface for Protocol Execution",
-     "main": "src/index.js",
-     "scripts": {
-       "test": "echo \"Error: no test specified\" && exit 1"
-     },
-     "keywords": [],
-     "author": "",
-     "license": "ISC",
-     "dependencies": {
-       "discord.js": "^14.16.2",
-       "dotenv": "^16.4.5"
-     }
-   }
-```
 4) Assuming everything is correct, the bot should startup when you run `npm run dev:bot` in the terminal. [^3] [^4]
 
+---
+
+### Summary of `createProjectDiscord` Function
+
+The [createProjectDiscord](src/teambuilderFunc/createProjectDiscord.ts) function is responsible for handling the Discord functionality associated with creating a new project in TeamBuilder. It creates a project category, and text voice channels under it following the project name. These channels are also restricted to a new role that is created in the format `Project Name - Current` and the admin role `Project/Faculty/Staff`. Use this function whenever a new project is saved to TeamBuilder.
+
+The created roles are automatically assigned upon guildMemberAdd according to database data. See [syncMember.ts](src/events/guildMemberAdd/syncMember.ts)
+
+#### Importing `createProjectDiscord`
+
+To use the `createProjectDiscord` function in your project, you need to import it as follows:
+
+```typescript
+import createProjectDiscord from './path/to/server/integrations/discordBot/src/teambuilderFunc/createProjectDiscord';
+```
 
 [^1]: [**Setup Tutorial**](https://www.youtube.com/watch?v=KZ3tIGHU314)  
 [^2]: NOTE: Getting the `TOKEN` and `BOT_ID` values require you to have admin access to a constructed bot via [Discord Dev](https://discord.com/developers/applications)  

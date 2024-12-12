@@ -1,3 +1,13 @@
+/**
+ * @file createProjectDiscord.ts
+ * 
+ * This file contains the implementation of the `createProjectDiscord` function, which is responsible for creating a project category and associated text and voice channels in a Discord server.
+ * 
+ * The function checks if a category with the specified project name exists. If not, it creates the category. It then checks if a text channel with the specified name exists under the category. If not, it creates the text channel. The function also sets permission overwrites for the created category and channels.
+ * 
+ * @module createProjectDiscord
+ */
+
 import {
     Client,
     Guild,
@@ -10,6 +20,17 @@ import {
 import { getClient } from "../utils/clientInstance";
 import { Project } from "@prisma/client";
 
+/**
+ * Creates a project category, associated text and voice channels, and roles in a Discord server.
+ * 
+ * This function checks if a category with the specified project name exists. If not, it creates the category.
+ * It then checks if a text/voice channels with the specified name exists under the category. If not, it creates the text/voice channels.
+ * The function also sets permission overwrites for the created category and channels.
+ * 
+ * @param {Project} project - The project object containing details about the project.
+ * 
+ * @throws {Error} If the GUILD_ID environment variable is not defined or if an error occurs while creating the category or channels.
+ */
 const createProjectDiscord = async (project: Project) => {
     const client = getClient();
     const guildId = process.env.GUILD_ID;
@@ -142,5 +163,5 @@ const createProjectDiscord = async (project: Project) => {
     }
 };
 
-// Export the createProjectDiscord function as default
+// Export the createProjectDiscord function
 export default createProjectDiscord;

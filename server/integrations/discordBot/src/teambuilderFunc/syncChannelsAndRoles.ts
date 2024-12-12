@@ -1,3 +1,12 @@
+/**
+ * @file syncChannelsAndRoles.ts
+ * 
+ * This file contains the implementation of the `syncChannelsAndRoles` function, which is responsible for synchronizing channels and roles in a Discord server based on the data provided in a `data.json` file.
+ * 
+ * Note: This function follows an outdated methodology that takes in a `data.json` file of all the projects.
+ * 
+ * @module syncChannelsAndRoles
+ */
 import fs from "fs";
 import {
   Client,
@@ -11,6 +20,18 @@ import {
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
+/**
+ * Synchronizes channels and roles in a Discord server based on the data provided in a `data.json` file locatted in the root folder of the bot.
+ * 
+ * This function reads the `data.json` file, which contains information about all the projects, and creates or updates the corresponding channels and roles in the Discord server.
+ * 
+ * Note: This function follows an outdated methodology that takes in a `data.json` file of all the projects instead of taking a project object.
+ * 
+ * @param {Client} client - The Discord client instance.
+ * @param {string} guildId - The ID of the Discord guild (server) where the channels and roles will be synchronized.
+ * 
+ * @throws {Error} If an error occurs while reading the `data.json` file or synchronizing the channels and roles.
+ */
 const syncChannelsAndRoles = async (client: Client, guildId: string) => {
   try {
     // Convert import.meta.url to __dirname equivalent
