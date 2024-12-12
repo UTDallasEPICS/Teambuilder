@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,66 +8,66 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid()) //@id makes it the primary key. cuid makes random id. uuid is unversial unique id
+  id    String @id @default(uuid())
   email String @unique
 
   @@map("users")
 }
 
 model Partner {
-  id           String @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
   contact_name  String    @default("")
   contact_email String    @default("")
   Projects      Project[]
-  Teams         Team[]    
+  Teams         Team[]
 
   @@map("partners")
 }
 
 model Project {
-  id           String @id @default(uuid())
-  name         String
-  targetCS     Int    @map("target_cs")
-  Teams        Team[]
-  partnerId  String         @map("partner_id")
-  Partner  Partner @relation(fields: [partnerId], references: [id]) 
+  id        String  @id @default(uuid())
+  name      String
+  targetCS  Int     @map("target_cs")
+  partnerId String  @map("partner_id")
+  Partner   Partner @relation(fields: [partnerId], references: [id])
+  Teams     Team[]
 
   @@map("projects")
 }
 
 model Team {
-  id         String         @id @default(uuid())
-  name       String
-  projectId  String         @map("project_id")
-  Project    Project        @relation(fields: [projectId], references: [id]) 
-  Students TeamToStudent[]
-  partnerId  String         @map("partner_id")
-  Partner  Partner @relation(fields: [partnerId], references: [id]) 
+  id        String          @id @default(uuid())
+  name      String
+  projectId String          @map("project_id")
+  partnerId String          @map("partner_id")
+  Students  TeamToStudent[]
+  Partner   Partner         @relation(fields: [partnerId], references: [id])
+  Project   Project         @relation(fields: [projectId], references: [id])
+
   @@map("teams")
 }
 
 model TeamToStudent {
-  id        String @id @default(uuid()) // learn about at map and at/at map. for different names of models 
-  teamId    String @map("team_id")
-  studentId String @map("student_id")
-
-  Team    Team    @relation(fields: [teamId], references: [id])
-  Student Student @relation(fields: [studentId], references: [id])
+  id        String  @id @default(uuid())
+  teamId    String  @map("team_id")
+  studentId String  @map("student_id")
+  Student   Student @relation(fields: [studentId], references: [id])
+  Team      Team    @relation(fields: [teamId], references: [id])
 
   @@map("team_to_students")
 }
 
 model Student {
-  id          String   @id @default(uuid())
-  firstName   String   @map("first_name")
-  lastName    String   @map("last_name")
-  major       String
-  seniority   String   @default("") @map("years_of_experience")
-  class       String 
-  email       String   @unique
-  gitUserName String   @unique
-
+  id            String          @id @default(uuid())
+  firstName     String          @map("first_name")
+  lastName      String          @map("last_name")
+  major         String
+  seniority     String          @default("") @map("years_of_experience")
+  class         String
+  email         String          @unique
+  gitUserName   String          @unique
+  discordUser   String          @unique
   TeamToStudent TeamToStudent[]
 
   @@map("students")
