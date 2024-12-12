@@ -32,6 +32,7 @@
           button(style='marginLeft: "20px"' class='border-solid border-8 p-2 border-transparent rounded-xl bg-[rgba(96,241,135,0.9)] text-xl') Form Teams &gt;&gt;
 </template>
 
+<<<<<<< HEAD
 
 <script setup lang="ts">
   const { data : deleteData} = await useFetch('/api/partner.delete.ts')
@@ -41,6 +42,17 @@
   const { data : postData } = await useFetch('/api/partner.post.ts')
 
   const { data : putData } = await useFetch('/api/partner.put.ts')
+=======
+//Impement API handler calls in index later
+<script setup lang="ts">
+  const { data : deleteData } = await useFetch('/api/partner.delete.ts')
+
+  const { data : getData} = await useFetch('/api/partner.get.ts')
+
+  const { data : postData } = await useFetch('/api/partner.post.ts')
+
+  const { data : putData} = await useFetch('/api/partner.put.ts')
+>>>>>>> d50d9d5f9151243fdcf042a2ff16a7388a56145c
 
 
 const fileName = ref("");
@@ -52,4 +64,22 @@ const handleFile = (file: File) => {
   uploaded.value = true;
 };
 
+<<<<<<< HEAD
 </script>
+=======
+</script>
+
+<!-- //Impement API handler calls in index later
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.delete.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.get.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.post.ts')
+</script>
+<script setup lang="ts">
+  const { data } = await useFetch('/api/partner.put.ts')
+</script> -->
+>>>>>>> d50d9d5f9151243fdcf042a2ff16a7388a56145c

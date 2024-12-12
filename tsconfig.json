@@ -1,4 +1,18 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json"
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ESNext",                                  /* Set the JavaScript language version to the latest */
+    "module": "ESNext",                                  /* Use ES Modules for modern compatibility */
+    "strict": true,                                      /* Enable strict type-checking options */
+    "esModuleInterop": true,                             /* Enable interop between CommonJS and ES Modules */
+    "moduleResolution": "node",                         /* Use Node.js-style module resolution */
+    "resolveJsonModule": true,                          /* Allow importing .json files */
+    "forceConsistentCasingInFileNames": true,           /* Ensure consistent casing in imports */
+    "skipLibCheck": true,                               /* Skip type checking for declaration files */
+    "outDir": "./dist",                                 /* Output directory for compiled JavaScript */
+    "allowSyntheticDefaultImports": true,              /* Allow default imports from CommonJS modules */
+    "isolatedModules": true                             /* Ensure safe transpilation of each file independently */
+  },
+  "include": ["./*.ts"],                                 /* Include all TypeScript files in the project root */
+  "exclude": ["node_modules", "dist"]                   /* Exclude node_modules and the output directory */
 }
