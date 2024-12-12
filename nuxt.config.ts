@@ -3,7 +3,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxtjs/tailwindcss"],
   css: ['~/index.css'],
+
   components: [
     { path: '~/components', pathPrefix: false },
   ],
+
+  compatibilityDate: '2024-08-29',
 })

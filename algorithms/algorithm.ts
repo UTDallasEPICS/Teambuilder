@@ -33,7 +33,7 @@ export function generateTeams(
   // pass 2
   passTwo(teams, projects, minimumStudents, maximumStudents);
   // pass 3
-  //passThree(teams, students, projects, minimumStudents, maximumStudents);
+  passThree(teams, students, projects, minimumStudents, maximumStudents);
   return teams;
 }
 
@@ -56,25 +56,26 @@ function setup3200Students(
   // get only students of class '2200' that picked choices
   students.forEach((student) => {
     totalNumInClass++;
-    if (student.class == "3200" && student.choices.length > 0) {
-      let found = false;
-      for (const choice of student.choices) {
-        // assign student to the first choice that has room
-        // for each student, for each choice, check if that choice has less than the maximum, if so assign student
-        if (teams[choice].length < maximumStudents) {
-          teams[choice].push(student);
-          found = true;
-          break;
-        }
-      }
-      // if no choice has less than maximum, assign to smallest team among choices
-      if (!found)
-        teams[
-          student.choices.sort((a, b) => teams[a].length - teams[b].length)[0]
-        ].push(student);
-    }
-    if (student.seniority == "Junior" || student.seniority == "Senior")
+    if (student.class == "3200") {
       numUpperClassmen++;
+      if(student.choices.length > 0) {
+        let found = false;
+        for (const choice of student.choices) {
+          // assign student to the first choice that has room
+          // for each student, for each choice, check if that choice has less than the maximum, if so assign student
+          if (teams[choice].length < maximumStudents) {
+            teams[choice].push(student);
+            found = true;
+            break;
+          }
+        }
+        // if no choice has less than maximum, assign to smallest team among choices
+        if (!found)
+          teams[
+            student.choices.sort((a, b) => teams[a].length - teams[b].length)[0]
+          ].push(student);
+      }
+    }
   });
 }
 
@@ -234,7 +235,6 @@ function classScore(student: Student, team: Student[]) {
     if (student.class == "3200") upperOnTeam++;
     teamTotal++;
   });
-
   return upperOnTeam / teamTotal - numUpperClassmen / totalNumInClass;
 }
 
@@ -334,8 +334,12 @@ function passThree(
     });
     stdDev = Math.sqrt(stdDev / totalTeams);
     //if the standard deviation is less than 1, break out of the loop
-    if (stdDev < 1) break;
+    if (stdDev < 1){
+      break;
+    } 
     //run passTwo
-    passTwo(teams, projects, minimumStudents, maximumStudents);
+    else {
+      passTwo(teams, projects, minimumStudents, maximumStudents);
+    }
   }
 }
