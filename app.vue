@@ -1,6 +1,6 @@
 <template lang="pug">
-div
-    Navbar(v-if="!isLoginPage")
+  div
+    Navbar(v-if="$route.name !== 'index'")
     NuxtPage
     
 
@@ -18,7 +18,7 @@ div
 // also need partner and teams UI - dont need CSV import
 // students need github/discord usernames
 import { useRoute } from 'vue-router'
-import Navbar from '@/components/Navbar.vue'
+
 
 // Get the current route
 const route = useRoute()
