@@ -1,5 +1,4 @@
 //dummy student nad project data to test with
-//dummy student nad project data to test with
 import type { Student, Project } from "./algorithm";
 import { generateTeams } from "./algorithm";
 
