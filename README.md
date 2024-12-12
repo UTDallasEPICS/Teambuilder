@@ -11,7 +11,7 @@ The purpose of this project is to:
 
 ## Users/Roles
 
-#### Administration and Directors of EPICS
+#### User/Administration and Directors of EPICS
 
 - View all teams and projects
 - Manage teams, projects, partners
@@ -21,44 +21,14 @@ The purpose of this project is to:
 
 ## Functional Requirements
 
-### Shopping Functionality
+### Team Creation Functionality
 
-- The page shall display the item picture, item name, and any existing deal associated with each item for all in-stock items.
-- The user shall be able to search for items.
-- The user shall be able to filter for items by category and deals.
-- The student shall be able to add/remove an item to/from cart.
-- The student shall be able to denote the expired count for items in cart.
-- The student shall be able to view all cart item information.
-- The student shall be able submit cart for verification.
+- The user shall be able to create teams based on the projects available and the student's preference
+- The user shall be able to update and modify current teams 
 
-### Questionaire Functionality
+### Team/Project Viewing Functionality
 
-- The student shall be able to accept/decline the Statement of Understanding and Nondiscrimination clause.
-
-### Cart Verification Functionality
-
-- For a pending cart, the volunteer/staff shall be able to view the cart's owner and the adjusted count breakdown dependent on actual item count, applied deals, and applied expired items.
-- For a pending cart, the page shall display a notification for the following conditions.
-  - Cart contains expired items.
-  - Adjusted cart item count exceeds 6 items.
-  - Adjusted cart item count for a category exceeds 1 item.
-- The volunteer/staff shall be able to accept/reject a cart.
-  - Upon cart acceptance, the system shall record the cart transaction in the database.
-- Upon a cart acceptance/rejection, the corresponding cart owner shall be notified of the result of cart verification.
-
-### Inventory Functionality
-
-- The page shall display the item picture, item name, and any existing deal associated with each item for all items.
-- The volunteer/staff shall be able to search for items.
-- The volunteer/staff shall be able to filter for items by category and deals.
-- The volunteer/staff shall be able to modify an item's image, name, category, quantity, or deal.
-- The volunteer/staff shall be able to select a source (eg. Community Garden) when modifying item counts.
-- The volunteer/staff shall be able to add an item entity to the inventory.
-- The staff shall be able to delete an item entity from the inventory.
-
-### Data Analytics Functionality
-
-data and graphs goes crazy here
+- The page shall display the current created teams and availabe projects, students, and partners
 
 
 ## Tech Stack
