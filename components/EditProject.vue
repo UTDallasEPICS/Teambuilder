@@ -34,10 +34,12 @@ const defaultValue = {
 
 const closeModal = () => {
   // close modal logic here
+
 };
 
 const onSubmit = (projectData: any) => {
   // submit logic here
+  
 };
 
 const formState = ref(defaultValue);

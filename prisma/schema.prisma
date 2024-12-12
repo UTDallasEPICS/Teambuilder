@@ -18,37 +18,38 @@ model User {
 }
 
 model Partner {
-  id           String @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
   contact_name  String    @default("")
   contact_email String    @default("")
   Projects      Project[]
-  Teams         Team[]    
+  Teams         Team[]
 
   @@map("partners")
 }
 
 model Project {
-  id           String @id @default(uuid())
+  id           String   @id @default(uuid())
   description  String
   name         String
-  targetCS     Int    @map("target_cs") @default(0)
+  targetCS     Int      @default(0) @map("target_cs")
   Teams        Team[]
-  partnerId    String         @map("partner_id")
+  partnerId    String   @map("partner_id")
   created_date DateTime @default(now())
-  Partner  Partner @relation(fields: [partnerId], references: [id]) 
+  Partner      Partner  @relation(fields: [partnerId], references: [id])
 
   @@map("projects")
 }
 
 model Team {
-  id         String         @id @default(uuid())
-  name       String
-  projectId  String         @map("project_id")
-  Project    Project        @relation(fields: [projectId], references: [id]) 
-  Students TeamToStudent[]
-  partnerId  String         @map("partner_id")
-  Partner  Partner @relation(fields: [partnerId], references: [id]) 
+  id        String          @id @default(uuid())
+  name      String
+  projectId String          @map("project_id")
+  Project   Project         @relation(fields: [projectId], references: [id])
+  Students  TeamToStudent[]
+  partnerId String          @map("partner_id")
+  Partner   Partner         @relation(fields: [partnerId], references: [id])
+
   @@map("teams")
 }
 
@@ -64,14 +65,15 @@ model TeamToStudent {
 }
 
 model Student {
-  id          String   @id @default(uuid())
-  firstName   String   @map("first_name")
-  lastName    String   @map("last_name")
-  major       String
-  seniority   String   @default("") @map("years_of_experience")
-  class       String 
-  email       String   @unique
-  gitUserName String   @unique
+  id         String @id @default(uuid())
+  firstName  String @map("first_name")
+  lastName   String @map("last_name")
+  major      String
+  seniority  String @default("") @map("years_of_experience")
+  class      String
+  email      String @unique
+  enrollment String
+  netID      String
 
   TeamToStudent TeamToStudent[]
 
