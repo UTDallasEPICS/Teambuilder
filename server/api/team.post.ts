@@ -1,5 +1,4 @@
-// TODO: extract list of students and do the join
-// TODO: also connect to project
+// TODO: Test the POST
 
 export default defineEventHandler(async (event) => {
   const { id, name, project, studentIds, partnerData, thursdayTeam } = await readBody(event);
@@ -14,7 +13,7 @@ export default defineEventHandler(async (event) => {
         connect: {  id: partnerData }
       },
       Students: {
-        connect: studentIds.map((studentId: string) => ({id: studentId}) )
+        connect: studentIds.map((studentId: string) => ({id: studentId}) ) // extract list of students
       },
       thursdayTeam: thursdayTeam
     },

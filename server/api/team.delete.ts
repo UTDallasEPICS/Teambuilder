@@ -1,16 +1,4 @@
-// export default defineEventHandler(async event => {
-//   const { id } = getQuery(event);
-//   await event.context.client.team.update({
-//     where: {
-//       id
-//     },
-//     data: {
-//       removed:true,
-//     },
-//   });
-// });
-
-
+//TODO: Test the DELETE
 // 11/19/24 - added 
 export default defineEventHandler(async (event) => {
   const { id } = getQuery(event);
@@ -23,20 +11,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // // Perform the update to mark the team as removed
-  // const updatedTeam = await event.context.client.team.update({
-  //   where: {
-  //     id,
-  //   },
-  //   data: {
-  //     removed: true,
-  //   },
-  // });
-
-  // // Return the updated team record
-  // return updatedTeam;
-
-  
   try {
     const updatedTeam = await event.context.client.team.update({
       where: { id },
