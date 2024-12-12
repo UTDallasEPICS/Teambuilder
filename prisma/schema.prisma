@@ -71,6 +71,7 @@ model Student {
   seniority   String   @default("") @map("years_of_experience")
   class       String 
   email       String   @unique
+  gitUserName String   @unique
 
   TeamToStudent TeamToStudent[]
 
