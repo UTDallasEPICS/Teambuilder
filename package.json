@@ -22,5 +22,11 @@
     "postcss": "^8.4.38",
     "prisma": "^5.21.1",
     "tailwindcss": "^3.4.3"
+  },
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "lint": "eslint . --ext .js,.vue,.ts"
   }
 }
