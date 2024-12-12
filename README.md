@@ -11,26 +11,11 @@ The purpose of this project is to:
 
 ## Users/Roles
 
-### User
+#### Administration and Directors of EPICS
 
-- Anyone who is able to login through UTD SSO
-
-###
-
-- Must be currently enrolled at UT Dallas
-- Check out items at the Comet Cupboard (up to 6 item counts/week)
-
-#### UTD (Student) Volunteer
-
-- Verify carts
-- Manage inventory
-- Check out items at the Comet Cupboard (up to 6 item counts/week)
-
-#### Comet Cupboard Staff
-
-- Verify carts
-- Manage inventory
-- Admin privileges such as adding/removing volunteer roles
+- View all teams and projects
+- Manage teams, projects, partners
+- Admin privileges such as adding/removing students from teams
 - Look at data analytics
 
 
