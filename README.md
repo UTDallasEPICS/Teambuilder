@@ -40,31 +40,31 @@ Other technologies: Postman, Node.js, Type Script Execute
 
 ## Vue
 
-Look at the [Vue 3 documentation](https://vuejs.org/guide/introduction.html) to learn more.
+Look at the [Vue 3 documentation](https://vuejs.org/guide/introduction.html) to learn more about how to install and operate.
 
 ## Nuxt
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more about how to install and operate.
 
 ## PostgresSQL
 
-Look at the [Postgres documentation](https://www.postgresql.org/docs/) to learn more.
+Look at the [Postgres documentation](https://www.postgresql.org/docs/) to learn more about how to install and operate.
 
 ## Prisma
 
-Look at the [Prisma documentation](https://www.prisma.io/docs) to learn more.
+Look at the [Prisma documentation](https://www.prisma.io/docs) to learn more about how to install and operate.
 
 ## Postman
 
-Look at the [Postman documentation](https://learning.postman.com/docs/introduction/overview/) to learn more.
+Look at the [Postman documentation](https://learning.postman.com/docs/introduction/overview/) to learn more about how to install and operate.
 
 ## Node.js
 
-Look at the [Node.js documentation](https://nodejs.org/docs/latest/api/) to learn more.
+Look at the [Node.js documentation](https://nodejs.org/docs/latest/api/) to learn more about how to install and operate.
 
 ## Type Script Execute
 
-Look at the [Type Script Execute documentation](https://tsx.is/getting-started) to learn more.
+Look at the [Type Script Execute documentation](https://tsx.is/getting-started) to learn more about how to install and operate.
 
 ## Setup
 
