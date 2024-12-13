@@ -33,10 +33,10 @@ The purpose of this project is to:
 
 ## Tech Stack
 
-Front End: Vue, Nuxt
-Database: PostgresSQL
-Other packages: Prisma
-Other technologies: Postman, Node.js, Type Script Execute
+- Front End: Vue, Nuxt
+- Database: PostgresSQL
+- Other packages: Prisma
+- Other technologies: Postman, Node.js, Type Script Execute
 
 ## Vue
 
