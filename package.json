@@ -3,7 +3,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.2.1",
     "@tailwindcss/typography": "^0.5.15",
     "axios": "^1.7.9",
     "jsonwebtoken": "^9.0.0",
