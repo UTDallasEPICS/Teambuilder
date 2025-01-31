@@ -33,45 +33,18 @@ The purpose of this project is to:
 
 ## Tech Stack
 
-- Front End: Vue, Nuxt
-- Database: PostgresSQL
-- Other packages: Prisma
-- Other technologies: Postman, Node.js, Type Script Execute
-
-## Vue
-
-Look at the [Vue 3 documentation](https://vuejs.org/guide/introduction.html) to learn more about how to install and operate.
-
-## Nuxt
-
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more about how to install and operate.
-
-## PostgresSQL
-
-Look at the [Postgres documentation](https://www.postgresql.org/docs/) to learn more about how to install and operate.
-
-## Prisma
-
-Look at the [Prisma documentation](https://www.prisma.io/docs) to learn more about how to install and operate.
-
-## Postman
-
-Look at the [Postman documentation](https://learning.postman.com/docs/introduction/overview/) to learn more about how to install and operate.
-
-## Node.js
-
-Look at the [Node.js documentation](https://nodejs.org/docs/latest/api/) to learn more about how to install and operate.
-
-## Type Script Execute
-
-Look at the [Type Script Execute documentation](https://tsx.is/getting-started) to learn more about how to install and operate.
+Documentation linked:
+- Front End: [Vue](https://vuejs.org/guide/introduction.html), [Nuxt](https://nuxt.com/docs/getting-started/introduction)
+- Database: [PostgresSQL](https://www.postgresql.org/docs/)
+- Other packages: [Prisma](https://www.prisma.io/docs)
+- Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started)
 
 ## Setup
 
 Make sure to install the dependencies:
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm install
 
 # pnpm
@@ -89,7 +62,7 @@ bun install
 Start/run the development server on `http://localhost:3000` (Useful for seeing results of your code/see a local verison of the application):
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm run dev
 
 # pnpm
@@ -107,7 +80,7 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm run build
 
 # pnpm
@@ -123,7 +96,7 @@ bun run build
 Locally preview production build:
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm run preview
 
 # pnpm
@@ -136,4 +109,10 @@ yarn preview
 bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Possible Setup Bugs:
+
+It has been known that some errors may come up when developing this application on Apple machines, follow these install steps to fix any issues:
+
+```bash
+# Run the following commands one at a time:
+```
