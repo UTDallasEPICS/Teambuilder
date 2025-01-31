@@ -1,4 +1,17 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
+router.push('/project');
+</script>
+
+<template lang="pug">
+</template>
+
+
+<!-- Disabling the Login page for now, leaving the original code hrer for later:
+
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 const data = ref({
@@ -31,3 +44,4 @@ div(class='container')
   button(type="submit" class="button mt-4" @click="handleSubmit") Login 
 </template>
 
+-->
