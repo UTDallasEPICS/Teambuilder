@@ -3,7 +3,7 @@
 // The steps to test the algorithm are listed below.
 // ~~ Fall 2024 Teambuilder Team 12/10/2024
 
-// To test algorithm: 
+// To test algorithm:
 // 1. type "npm install -g tsx" into terminal
 // 2. change directories into the algorithms folder
 // 3. type "tsx test.ts" (or replace test.ts with whichever file you want to test)
@@ -11,46 +11,58 @@
 // ~~ Fall 2024 Teambuilder Team 12/10/2024
 
 // Student Structure that includes Name, Major, Grade, choices, and EPICS level
+
+
+// ===================== DATA STRUCTURES =====================
+
+// Defines the structure of a Student object, which includes their 
+// name, major, grade level, project choices, and EPICS class level.
 export type Student = {
   id: string;
   name: string;
   major: "CS" | "SE" | "EE" | "ME" | "BME" | "DS" | "CE" | "Systems" | "Other";
   seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
-  choices: string[];
-  choicesString: string;
-  class: "2200" | "3200";
+  choices: string[];        // List of preferred project choices (ordered by preference)
+  choicesString: string;    // String representation of choices (Why is there a string list and a string array?)
+  class: "2200" | "3200";   // Class level (lower or upper)
 };
 
-// Project structure that includes if the project is a software, hardware, or both
+// Defines the structure of a Project object, including its name and type.
 export type Project = {
   id: string;
   name: string;
   type: "SW" | "HW" | "Both";
 };
 
-// Type for Team Assignments
+// Defines a mapping from project names to lists of students (team assignments).
+// Input string is project names, and the values are arrays of Student[] objects. 
 export type TeamAssignments = Record<string, Student[]>;
 
-// Main function to generate teams
+
+// ===================== MAIN FUNCTION TO GENERATE TEAMS =====================
+
+// Main function to generate team assignments based on student preferences, degree type, and class level.
 export function generateTeams(students: Student[], projects: Project[]): TeamAssignments {
-  // Initialize Teams for each project
+  // Initialize an empty array for each project.
+  // acc = Accumulator
   const teams: TeamAssignments = projects.reduce((acc, current) => {
-      acc[current.name] = [];
+      acc[current.name] = [];     // Assigns an empty array to the current project. 
       return acc;
   }, {} as TeamAssignments);
 
-  // Sort students by preference count
+  // Sort students by the number of project choices they provided (students with fewer choices go first).
+  // [...students] is a shallow copy
   const sortedStudents = [...students].sort((a, b) => a.choices.length - b.choices.length);
 
-  // Group Students by Preferences, degree, and class
+  // Group students by their first preference, then by their degree type, then by class level.
   const groupedByPreference = groupStudentsByPreference(sortedStudents);
   const groupedByDegree = groupStudentsByDegree(groupedByPreference);
   const groupedByClass = groupStudentsByClass(groupedByDegree);
 
-  // Place the students in teams after sorting
+  // Assign students to teams based on these groupings.
   placeStudentsInTeams(groupedByClass, teams, projects);
 
-  // Calculate minimum number of students per team
+  // Calculate the minimum number of students required per team.
   const minStudents = Math.floor(students.length / projects.length);
 
   // Ensure each project has at least one 3200-level student
@@ -59,13 +71,17 @@ export function generateTeams(students: Student[], projects: Project[]): TeamAss
   // Balance teams based on minimum students required
   balanceTeamsFixed(teams, projects, minStudents);
 
+  // Return the final team assignments.
   return teams;
 }
 
-// Group students by their top preference
+// ===================== STUDENT GROUPING FUNCTIONS =====================
+
+// Groups students based on their highest-ranked project preference.
 function groupStudentsByPreference(students: Student[]): Record<string, Student[]> {
+
   return students.reduce((grouped: Record<string, Student[]>, student) => {
-      const preference = student.choices[0] || "No preference";
+      const preference = student.choices[0] || "No preference";     // Default to "No preference" if they have none.
       grouped[preference] = grouped[preference] || [];
       grouped[preference].push(student);
       return grouped;
@@ -73,36 +89,34 @@ function groupStudentsByPreference(students: Student[]): Record<string, Student[
 }
 
 // Group students by their degree (hardware, software, other)
-function groupStudentsByDegree(
-  studentsByPreference: Record<string, Student[]>
-): Record<string, Record<string, Student[]>> {
+function groupStudentsByDegree(studentsByPreference: Record<string, Student[]>): Record<string, Record<string, Student[]>> {
+
   return Object.entries(studentsByPreference).reduce((grouped, [preference, students]) => {
       grouped[preference] = students.reduce(
           (degreeGroups: Record<string, Student[]>, student) => {
-              const degreeType = getDegreeType(student.major);
+              const degreeType = getDegreeType(student.major);        // Determine degree type (HW, SW, Other).
               degreeGroups[degreeType] = degreeGroups[degreeType] || [];
               degreeGroups[degreeType].push(student);
               return degreeGroups;
           },
-          { HW: [], SW: [], Other: [] }
+          { HW: [], SW: [], Other: [] }     // Initialize groups.
       );
       return grouped;
   }, {} as Record<string, Record<string, Student[]>>);
 }
 
-// Helper function to determine degree type as hardware (HW) or software (SW)
+// Determines if a student belongs to Hardware (HW), Software (SW), or Other category based on their major.
 function getDegreeType(major: Student['major']): string {
-  if (["EE", "ME", "BME", "CE"].includes(major)) return "HW";
-  if (["CS", "SE", "DS"].includes(major)) return "SW";
-  return "Other";
+  if (["EE", "ME", "BME", "CE"].includes(major)) return "HW";   // Engineering fields are hardware-based.
+  if (["CS", "SE", "DS"].includes(major)) return "SW";          // CS-related fields are software-based.
+  return "Other";                                               // Everything else falls under "Other."
 }
 
-// Group students based on their class
-function groupStudentsByClass(
-  studentsByDegree: Record<string, Record<string, Student[]>>
-): Record<string, Record<string, Student[]>> {
+// Further groups students by their class level (2200 = lower-level, 3200 = upper-level).
+function groupStudentsByClass(studentsByDegree: Record<string, Record<string, Student[]>>): Record<string, Record<string, Student[]>> {
+
   return Object.entries(studentsByDegree).reduce((grouped, [preference, degreeGroups]) => {
-      grouped[preference] = {
+      grouped[preference] = {     // Initialize groups.
           "2200": [],
           "3200": [],
           null: [],
@@ -110,7 +124,7 @@ function groupStudentsByClass(
 
       Object.values(degreeGroups).forEach(students => {
           students.forEach(student => {
-              grouped[preference][student.class].push(student);
+              grouped[preference][student.class].push(student);   // Place student into their class category.
           });
       });
 
@@ -118,11 +132,12 @@ function groupStudentsByClass(
   }, {} as Record<string, Record<string, Student[]>>);
 }
 
-function placeStudentsInTeams(
-  studentsByClass: Record<string, Record<string, Student[]>>,
-  teams: TeamAssignments,
-  projects: Project[]
-): void {
+
+// ===================== TEAM ASSIGNMENT FUNCTIONS =====================
+
+// Places students into teams based on their preferences and class level.
+function placeStudentsInTeams(studentsByClass: Record<string, Record<string, Student[]>>, teams: TeamAssignments, projects: Project[]): void {
+  
   Object.entries(studentsByClass).forEach(([preference, classGroups]) => {
       if (preference === "No preference") {
           // Assign students with no preferences to the smallest team
@@ -140,7 +155,7 @@ function placeStudentsInTeams(
               teams[smallestTeam.name].push(student);
           });
       } else {
-          // Regular preference-based placement
+          // Assign students to their preferred projects.
           ["2200", "3200"].forEach(classLevel => {
               classGroups[classLevel].forEach(student => {
                   if (student.choices[0]) {
@@ -153,10 +168,7 @@ function placeStudentsInTeams(
 }
 
 // Ensure each project has at least one 3200-level student
-function ensureUpperClassmen(
-  teams: TeamAssignments,
-  projects: Project[]
-): void {
+function ensureUpperClassmen(teams: TeamAssignments, projects: Project[]): void {
   const studentLocations = new Map<string, string>();
   Object.entries(teams).forEach(([teamName, teamStudents]) => {
       teamStudents.forEach(student => {
@@ -187,10 +199,7 @@ function ensureUpperClassmen(
 }
 
 // Find an available upperclassman for balancing
-function findAvailableUpperClassman(
-  teams: TeamAssignments,
-  targetProject: string
-): Student | null {
+function findAvailableUpperClassman(teams: TeamAssignments, targetProject: string): Student | null {
   for (const [teamName, teamStudents] of Object.entries(teams)) {
       if (teamName !== targetProject) {
           const upperClassmen = teamStudents.filter(s => s.class === "3200");
@@ -206,12 +215,10 @@ function findAvailableUpperClassman(
   return null;
 }
 
-// Balance teams
-function balanceTeamsFixed(
-  teams: TeamAssignments,
-  projects: Project[],
-  minStudents: number
-): void {
+// ===================== TEAM BALANCING FUNCTIONS =====================
+
+// Redistributes students to ensure teams have at least minStudents number of members.
+function balanceTeamsFixed(teams: TeamAssignments, projects: Project[], minStudents: number): void {
   let balanced = false;
   while (!balanced) {
       balanced = true;
@@ -241,10 +248,7 @@ function balanceTeamsFixed(
 }
 
 // Find the best student to move for balancing
-function findBestStudentToMove(
-  team: Student[],
-  targetProject: string
-): Student | null {
+function findBestStudentToMove(team: Student[], targetProject: string): Student | null {
   return team.reduce((best, current) => {
       if (!best) return current;
       const bestImpact = calculateImpactScore(best, targetProject);
