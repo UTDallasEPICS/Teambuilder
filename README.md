@@ -115,4 +115,8 @@ It has been known that some errors may come up when developing this application 
 
 ```bash
 # Run the following commands one at a time:
+rm
+rm 
+npm install
+npm audit fix
 ```
