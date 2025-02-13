@@ -3,6 +3,18 @@
     <div class="sidebar">
       <!-- Close Button -->
       <button class="close-button" @click="toggleSidebar">&#x2715;</button>
+
+      <!-- Import File Button -->
+      <div class="field">
+        <button @click="triggerFileImport" class="import-button">Import Excel File</button>
+        <input
+          type="file"
+          accept=".xlsx, .xls"
+          ref="fileInput"
+          @change="handleFileUpload"
+          style="display: none;"
+        />
+      </div>
   
       <!-- Time Period Tile -->
       <div class="field">
@@ -37,13 +49,11 @@
   
             <!-- Continuous Option -->
             <div v-if="timePeriodOption === 'Continuous'" class="time-period-inputs">
-              <div v-if="filter.name === 'year'">
               <label>Start Year:</label>
               <input type="text" v-model="customYearStart" placeholder="Start Year" class="custom-input" />
   
               <label>End Year:</label>
               <input type="text" v-model="customYearEnd" placeholder="End Year" class="custom-input" />
-            </div>
               <label>Start Semester:</label>
               <select v-model="customSemesterStart" class="custom-dropdown">
                 <option disabled value="">Select Semester</option>
@@ -169,6 +179,28 @@
       }
     },
     methods: {
+      triggerFileImport() {
+        this.$refs.fileInput.click();
+      },
+      handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append('file', file);
+          
+          // Store the file locally or send it to a server
+          this.storeFileLocally(file);
+        }
+      },
+      async storeFileLocally(file) {
+        try {
+          const filePath = `/path/to/local/storage/${file.name}`; // Adjust path as needed.
+          // This would require additional server-side code or file system interaction.
+          console.log(`File stored at: ${filePath}`);
+        } catch (error) {
+          console.error('Error storing the file:', error);
+        }
+      },
       toggleDropdown(filterName) {
         this.openDropdown = this.openDropdown === filterName ? null : filterName;
       },
