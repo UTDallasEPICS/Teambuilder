@@ -6,49 +6,58 @@ import { generateTeams } from "./newAlgorithm";
 const studentData: Student[] = [
   // Student 1
   {
-    id: "1",
-    name: "Michael Johnson",
-    major: "ME",
-    seniority: "Senior",
+    id: "woa24000",
+    name: "Adegenro, William",
+    major: "CE",
+    seniority: "Freshman",
     choices: [
-      "ATC: Patient Data Collection App",
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
+      "F24 - Office of Sustainability: Residential Solar Calculator",
+      "F24 - UTDesign: EPICS Database/Dashboard",
+      "F24 - KidsU: Volunteer Database",
+      "F24 -  Friends of MLK: Reading Huddle App",
+      "F24 - KidsU: Donor/Grant Database",
+      "F24 - UTDesign: Monitor Dashboard",
     ],
     class: "2200",
     choicesString:
-      "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
+      "F24 - Office of Sustainability: Residential Solar Calculator, F24 - UTDesign: EPICS Database/Dashboard, F24 - KidsU: Volunteer Database, F24 -  Friends of MLK: Reading Huddle App, F24 - KidsU: Donor/Grant Database, F24 - UTDesign: Monitor Dashboard",
   },
   // Student 2
   {
-    id: "2",
-    name: "Jessica Davis",
+    id: "axa220269",
+    name: "Aggarwal, Aadit",
+    major: "CS",
+    seniority: "Sophomore",
+    choices: [
+        "F24 -  Friends of MLK: Reading Huddle App",
+        "F24 - TheLab.ms Makerspace: Access Control Manager",
+        "F24 - Kellermann: Solar Array Kitario Project",
+        "F24 - Office of Sustainability: Residential Solar Calculator",
+        "F24 - Hope Restored Missions: Inventory Tracking",
+        "F24 - UTDesign: EPICS GitHub/Discord",
+      ],
+      class: "2200",
+      choicesString:
+      "F24 -  Friends of MLK: Reading Huddle App, F24 - TheLab.ms Makerspace: Access Control Manager, F24 - Kellermann: Solar Array Kitario Project, F24 - Office of Sustainability: Residential Solar Calculator, F24 - Hope Restored Missions: Inventory Tracking, F24 - UTDesign: EPICS GitHub/Discord",
+    },
+  // Student 3
+  {
+    id: "dxa210031",
+    name: "Agrawal, Devansh",
     major: "CS",
     seniority: "Junior",
     choices: [
-      "ATC: Sensory Devices",
-      "Carson's Village: Automated Family Page",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "2200",
-    choicesString:
-      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
-  },
-  // Student 3
-  {
-    id: "3",
-    name: "Emily Wilson",
-    major: "CS",
-    seniority: "Senior",
-    choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
-      "ATC: Patient Data Collection App",
-    ],
-    class: "3200",
-    choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
-  },
+        "F24 - TheLab.ms Makerspace: Kiosk/Calendar",
+        "F24 - GDYO: Communication App",
+        "F24 - Office of Sustainability: Residential Solar Calculator",
+        "F24 -  Friends of MLK: Reading Huddle App",
+        "F24 - Hope Restored Missions: Inventory Tracking",
+        "F24 - KidsU: Donor/Grant Database",
+      ],
+      class: "2200",
+      choicesString:
+        "F24 - TheLab.ms Makerspace: Kiosk/Calendar, F24 - GDYO: Communication App, F24 - Office of Sustainability: Residential Solar Calculator, F24 -  Friends of MLK: Reading Huddle App, F24 - Hope Restored Missions: Inventory Tracking, F24 - KidsU: Donor/Grant Database",    
+    },
   // Student 4
   {
     id: "4",

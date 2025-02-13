@@ -1,7 +1,11 @@
 <template lang="pug">
-Navbar
-NuxtPage
+  div
+    Navbar(v-if="$route.name !== 'index'")
+    NuxtPage
+    
+
 </template>
+
 <script setup lang="ts">
 // TODO: check login status, do other top level things
 // TODO: if not logged in, navigate to /login - need a route guard+
@@ -13,5 +17,17 @@ NuxtPage
 // CSV imports should detect and ignore duplicates
 // also need partner and teams UI - dont need CSV import
 // students need github/discord usernames
+import { useRoute } from 'vue-router'
+
+
+// Get the current route
+const route = useRoute()
+
+// Computed property to check if the Navbar should be displayed
+const shouldShowNavbar = computed(() => {
+  // Show navbar only if we are NOT on the login page
+  return route.path !== '/'  // Hide Navbar on login page ('/'), show it on all others
+})
+
 </script>
 <style></style>

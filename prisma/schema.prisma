@@ -28,11 +28,12 @@ model Partner {
 model Project {
   id        String  @id @default(uuid())
   name      String
-  targetCS  Int     @map("target_cs")
+  description  String
+  targetCS  Int     @default(0) @map("target_cs")
+  created_date DateTime @default(now())
   partnerId String  @map("partner_id")
   Partner   Partner @relation(fields: [partnerId], references: [id])
   Teams     Team[]
-
   @@map("projects")
 }
 
@@ -40,11 +41,10 @@ model Team {
   id        String          @id @default(uuid())
   name      String
   projectId String          @map("project_id")
-  partnerId String          @map("partner_id")
-  Students  TeamToStudent[]
-  Partner   Partner         @relation(fields: [partnerId], references: [id])
   Project   Project         @relation(fields: [projectId], references: [id])
-
+  Students  TeamToStudent[]
+  partnerId String          @map("partner_id")
+  Partner   Partner         @relation(fields: [partnerId], references: [id])
   @@map("teams")
 }
 
@@ -59,15 +59,17 @@ model TeamToStudent {
 }
 
 model Student {
-  id            String          @id @default(uuid())
-  firstName     String          @map("first_name")
-  lastName      String          @map("last_name")
-  major         String
-  seniority     String          @default("") @map("years_of_experience")
-  class         String
-  email         String          @unique
   gitUserName   String          @unique
   discordUser   String          @unique
+  id         String @id @default(uuid())
+  firstName  String @map("first_name")
+  lastName   String @map("last_name")
+  major      String
+  seniority  String @default("") @map("seniority")
+  class      String
+  email      String @unique
+  enrollment String
+  netID      String
   TeamToStudent TeamToStudent[]
 
   @@map("students")

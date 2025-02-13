@@ -1,13 +1,50 @@
-# Nuxt 3 Minimal Starter
+# EPICS Team Builder 
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Overview
+
+This project is for the EPICS program that helps the Directors to automatically create teams. 
+It works by sorting a list of students, available projects, and partners into one group based on an algorithm.
+The purpose of this project is to:
+
+- Steamline the team sorting and creation process
+- Keep track of the available projects and partners available
+
+## Users/Roles
+
+#### User/Administration and Directors of EPICS
+
+- View all teams and projects
+- Manage teams, projects, partners
+- Admin privileges such as adding/removing students from teams
+- Look at data analytics
+
+
+## Functional Requirements
+
+### Team Creation Functionality
+
+- The user shall be able to create teams based on the projects available and the student's preference
+- The user shall be able to update and modify current teams 
+
+### Team/Project Viewing Functionality
+
+- The page shall display the current created teams and availabe projects, students, and partners
+
+
+## Tech Stack
+
+Documentation linked:
+- Front End: [Vue](https://vuejs.org/guide/introduction.html), [Nuxt](https://nuxt.com/docs/getting-started/introduction)
+- Database: [PostgresSQL](https://www.postgresql.org/docs/)
+- Other packages: [Prisma](https://www.prisma.io/docs)
+- Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started)
 
 ## Setup
 
 Make sure to install the dependencies:
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm install
 
 # pnpm
@@ -22,10 +59,10 @@ bun install
 
 ## Development Server
 
-Start the development server on `http://localhost:3000`:
+Start/run the development server on `http://localhost:3000` (Useful for seeing results of your code/see a local verison of the application):
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm run dev
 
 # pnpm
@@ -43,7 +80,7 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm run build
 
 # pnpm
@@ -59,7 +96,7 @@ bun run build
 Locally preview production build:
 
 ```bash
-# npm
+# npm [Default, use this unless told otherwise]
 npm run preview
 
 # pnpm
@@ -72,4 +109,14 @@ yarn preview
 bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Possible Setup Bugs:
+
+It has been known that some errors may come up when developing this application on Apple machines, follow these install steps to fix any issues:
+
+```bash
+# Run the following commands one at a time:
+rm
+rm 
+npm install
+npm audit fix
+```
