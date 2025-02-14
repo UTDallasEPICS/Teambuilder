@@ -19,7 +19,7 @@
       li
         NuxtLink(to="/students") Students
       li
-        NuxtLink(to="/generate") Generate
+        NuxtLink(to="/generate-teams") Generate Teams
       li
         NuxtLink(to="visualizer") Visualizer
       li
