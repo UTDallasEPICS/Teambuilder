@@ -5,7 +5,7 @@
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
-router.push('/project');
+router.push('/projects');
 </script>
 
 <!-- Disabling the Login page for now, leaving the original code hrer for later:
