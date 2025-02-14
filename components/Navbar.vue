@@ -15,15 +15,15 @@
       )
     ul(class="hidden md:flex gap-x-6 text-white backgroundFont")
       li
-        NuxtLink(to="/project") Project
+        NuxtLink(to="/projects") Projects
       li
-        NuxtLink(to="/Upload") Student Upload
+        NuxtLink(to="/students") Students
       li
         NuxtLink(to="/generate") Generate
       li
-        NuxtLink(to="visual") Visualizer
+        NuxtLink(to="visualizer") Visualizer
       li
-        NuxtLink(to="/PastProject") Past Project View
+        NuxtLink(to="/past-projects") Past Projects
       
     div(class="flex items-center gap-x-4 ml-[auto] mr-10")
       NuxtLink(to="https://discord.gg/UyPg3ykKq3")
