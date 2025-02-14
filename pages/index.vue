@@ -1,13 +1,12 @@
+<template lang="pug">
+</template>
+
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
 router.push('/project');
 </script>
-
-<template lang="pug">
-</template>
-
 
 <!-- Disabling the Login page for now, leaving the original code hrer for later:
 
