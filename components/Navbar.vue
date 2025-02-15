@@ -21,7 +21,7 @@
       li
         NuxtLink(to="/generate") Generate
       li
-        NuxtLink(to="visual") Visualizer
+        NuxtLink(to="/demographics") Demographics
       li
         NuxtLink(to="/PastProject") Past Project View
       
