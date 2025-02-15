@@ -11,12 +11,13 @@
     "lint": "eslint . --ext .js,.vue,.ts"
   },
   "dependencies": {
+    "@formkit/drag-and-drop": "^0.3.4",
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.0.12",
     "@prisma/client": "6.0.1",
-    "discord.js": "^14.16.3",
     "@tailwindcss/typography": "^0.5.15",
     "axios": "^1.7.9",
+    "discord.js": "^14.16.3",
     "jsonwebtoken": "^9.0.0",
     "nuxt": "^3.11.2",
     "papaparse": "^5.4.1",
