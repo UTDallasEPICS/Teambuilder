@@ -20,7 +20,7 @@
     "axios": "^1.7.9",
     "jsonwebtoken": "^9.0.0",
     "nuxt": "^3.11.2",
-    "papaparse": "^5.4.1",
+    "papaparse": "^5.5.2",
     "pinia": "^2.3.0",
     "pug": "^3.0.2",
     "vue": "^3.4.27",
