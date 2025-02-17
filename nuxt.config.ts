@@ -1,3 +1,5 @@
+import { defineNuxtConfig } from "nuxt/config";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
@@ -12,8 +14,7 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: true },
   modules: ["@nuxtjs/tailwindcss"],
-  css: ['~/index.css'],
-
+  css: ['@/assets/css/globals.css'],
 
   components: [
     { path: '~/components', pathPrefix: false },
