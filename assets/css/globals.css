@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Jura', Arial, sans-serif;
+  user-select: none;
+}
+
+body {
+  background: linear-gradient(to bottom, rgba(94, 250, 91, 0.758), #A0DAE7);
+  height: 100vh;
+  background-attachment: fixed;
+}
+
+@layer base {
+  body {
+    @apply text-beige
+  }
+}
+
+@layer components {
+  /* used at the top of most pages to center all content horizontally */
+  .centered-rows {
+    @apply flex flex-row justify-center items-center
+  }
+  .centered-cols {
+    @apply flex flex-col justify-center items-center
+  }
+  .shaded-card {
+    @apply bg-shaded rounded-3xl
+  }
+  .teal-card {
+    @apply bg-teal rounded-3xl
+  }
+  .beige-card {
+    @apply rounded-2xl p-4 cursor-pointer bg-beige text-teal
+  }
+  .hover-effect {
+    @apply hover:translate-y-[-5px] hover:shadow-lg transition-transform duration-200
+  }
+  .pill {
+    @apply flex flex-row justify-center items-center h-fit px-3 py-1 rounded-full text-xs text-beige
+  }
+}
