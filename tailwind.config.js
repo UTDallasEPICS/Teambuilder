@@ -23,10 +23,14 @@ export default {
         '300': '300px',
       },
       colors: {
-        aqua: '#5B9486',
-        shaded: 'rgba(90,90,90,0.5)',
-        general: '#E560F1',
-        pillText: '#FDF5D9',
+        teal: 'rgb(98,158,145)',
+        shaded: 'rgba(48, 100, 162, 0.3)',
+        beige: 'rgb(253,245,217)',
+        // pill colors
+        magenta: 'rgb(226, 108, 237)',
+        green: 'rgb(119, 207, 119)',
+        orange: 'rgb(255,160,122)',
+
       },
       borderRadius: {
         '10': '10px', 
@@ -36,5 +40,3 @@ export default {
   
   plugins: [],
 }
-
-
