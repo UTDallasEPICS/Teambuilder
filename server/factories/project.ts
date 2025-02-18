@@ -11,7 +11,8 @@ export const createRandomProject = (): Project => {
     targetCS: faker.number.int({ min: 0, max: 5 }),
     status: createRandomStatus(),
     semester: createRandomSemester(),
-    repo: faker.internet.url()
+    repoURL: faker.internet.url(),
+    type: createRandomType()
   }
 }
 
@@ -26,4 +27,9 @@ export const createRandomProjects = (numProjects: number): Project[] => {
 const createRandomSemester = () => {
   const semesters = ['S2023', 'F2023', 'S2024', 'F2024', 'S2025'];
   return getRandomElement(semesters);
+}
+
+const createRandomType  = () => {
+  const types = ['software', 'hardware', 'both'];
+  return getRandomElement(types);
 }

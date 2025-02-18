@@ -1,17 +1,27 @@
 export interface Project {
-  id: number;
-  title: string;
+  id: string;
+  name: string;
   description: string;
-  status: string;
-  semester: string;
-  repo: string;
+  targetCS: number;
+  status: Status;                          // not in schema
+  semester: string;                        // not in schema
+  repoURL: string;                         // not in schema
+  type: 'software' | 'hardware' | 'both';
 }
 
 export interface Student {
-  id: number;
+  id: string;
+  netID: string;
   firstName: string;
   lastName: string;
-  status: string;
-  netID: string;
-  isAssigned: boolean;
+  email: string;
+  gitUserName: string;
+  discordUser: string;
+  major: 'CE' | 'CS' | 'DS' | 'SE' | 'ME' | 'BME' | 'EE' | 'SYS' | 'Other';
+  seniority: 'Freshman' | 'Sophomore' | 'Junior' | 'Senior';
+  class: '2200' | '3200';
+  enrollment: string;    // not sure what this is
+  status: Status;        // not in schema
 }
+
+export type Status = 'new' | 'returning' | 'archived';
