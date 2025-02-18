@@ -15,8 +15,7 @@
 
 // ===================== DATA STRUCTURES =====================
 
-// Defines the structure of a Student object, which includes their 
-// name, major, grade level, project choices, and EPICS class level.
+// TODO: synchronize with types/index.ts and/or prisma schema
 export type Student = {
   id: string;
   name: string;
