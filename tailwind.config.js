@@ -30,7 +30,7 @@ export default {
         magenta: 'rgb(226, 108, 237)',
         green: 'rgb(119, 207, 119)',
         orange: 'rgb(255,160,122)',
-
+        red: 'rgb(235, 100, 100)'
       },
       borderRadius: {
         '10': '10px', 
