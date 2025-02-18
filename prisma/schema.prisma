@@ -36,6 +36,7 @@ model Project {
   name          String
   description   String
   type          ProjectType
+  repoURL       String        @map("repo_url")
   targetCS      Int?          @map("target_cs")
 
   partnerId     String        @map("partner_id")
