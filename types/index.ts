@@ -5,7 +5,7 @@ export interface Project {
   targetCS: number;
   status: Status;                          // not in schema
   semester: string;                        // not in schema
-  repoURL: string;                         // not in schema
+  repoURL: string;                         
   type: 'software' | 'hardware' | 'both';
 }
 
