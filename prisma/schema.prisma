@@ -37,7 +37,7 @@ model Project {
   description   String
   type          ProjectType
   repoURL       String        @map("repo_url")
-  targetCS      Int?          @map("target_cs")
+  targetCS      Int           @map("target_cs")
 
   partnerId     String        @map("partner_id")
   partner       Partner       @relation(fields: [partnerId], references: [id])
