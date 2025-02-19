@@ -1,22 +1,27 @@
 <template lang="pug">
-  .project-card.rounded-2xl.p-4.mb-3.mx-2(class="bg-[#FFF8DC]")
-    h2.text-xl.font-light(class="text-[#7BA7A6]") {{ title }}
-    .indicators.flex.gap-2.mt-2
-      .indicator(
-        class="rounded-full px-3 py-1 text-xs font-light text-white"
-        :class="indicator.toLowerCase() === 'new' ? 'bg-[#90EE90]' : 'bg-[#FFA07A]'"
-      ) {{ indicator.toUpperCase() }}
-      .semester(class="bg-[#E560F1] rounded-full px-3 py-1 text-xs font-light text-white") {{ sem }}
-    p.text-sm.mt-2.font-light(class="text-[#7BA7A6]") {{ content }}
-  </template>
+  .beige-card.hover-effect.flex.flex-col.gap-2
+    .text-xl.font-medium {{ name }}
+    .flex.gap-2
+      .pill(:class="statusBgColor") {{ status.toUpperCase() }}
+      .pill.bg-magenta {{ semester }}
+    .text-md {{ description }}
+</template>
   
-  <script setup lang="ts">
-  interface Props {
-    title: string
-    content: string
-    indicator: string
-    sem: string
-  }
-  
-  defineProps<Props>()
-  </script>
+<script setup lang="ts">
+import { computed } from 'vue';
+
+interface Props {
+  name: string;
+  description: string;
+  status: string;
+  semester: string;
+}
+
+const props = defineProps<Props>()
+
+const statusBgColor = computed(() => ({
+  "bg-green": props.status === 'new',
+  "bg-orange": props.status === 'returning',
+  "bg-red": props.status === 'archived'
+}));
+</script>

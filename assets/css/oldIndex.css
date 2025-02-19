@@ -1,3 +1,8 @@
+/* 
+99% of this file is unused, so I'm copying the other 1% to 
+assets/css/globals.css and removing this from nuxt.config.ts for now.
+*/
+
 @import url('https: //fonts.googleapis.com/css2?family=Happy+Monkey&family=Jura:wght@300..700&family=Open+Sans&display=swap');
 @tailwind base;
 @tailwind components;
