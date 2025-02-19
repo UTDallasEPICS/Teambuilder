@@ -1,13 +1,13 @@
 <template lang="pug">
-  .centered-rows.mt-10
-    .centered-cols.gap-10
-      .shaded-card.centered-rows.gap-10.p-10
-        .text-3xl.centered-cols.teal-card.p-10
+  .centered-row.mt-10
+    .centered-col.gap-10
+      .shaded-card.centered-row.gap-10.p-10
+        .text-3xl.centered-col.teal-card.p-10
           div Rank
           div Attributes
-          ol.list-decimal.centered-cols.gap-3.mt-5(ref="parent")
+          ol.list-decimal.centered-col.gap-3.mt-5(ref="parent")
             li.cursor-move.beige-card.text-xl(v-for="option in options" :key="option") {{ option }}
-        form.text-3xl.gap-4.centered-cols
+        form.text-3xl.gap-4.centered-col
           div Team Size:
           input(
             v-model="maxTeamSize"
@@ -19,8 +19,8 @@
           )
           Button(title="Generate Teams" @click="handleGenerateTeams")
         
-      .centered-rows.gap-10
-        .centered-cols.shaded-card.p-4.text-xl
+      .centered-row.gap-10
+        .centered-col.shaded-card.p-4.text-xl
           div Team Combos
           .mb-3 Count: X  
           CombinationCard(
@@ -32,7 +32,7 @@
             :unassignedStudents= 30 
           )
         
-        .centered-cols.shaded-card.p-4.text-xl.gap-2
+        .centered-col.shaded-card.p-4.text-xl.gap-2
           div Unassigned Students  
           | Count: X  
           div.gap-3.overflow-y-auto.h-full
@@ -42,7 +42,7 @@
               v-bind="student"
             )
 
-        .centered-cols.shaded-card.p-4.text-xl.gap-2
+        .centered-col.shaded-card.p-4.text-xl.gap-2
           div Projects
           | Incomplete: X 
           div.gap-3.overflow-y-auto.h-full

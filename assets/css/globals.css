@@ -21,10 +21,10 @@ body {
 
 @layer components {
   /* used at the top of most pages to center all content horizontally */
-  .centered-rows {
+  .centered-row {
     @apply flex flex-row justify-center items-center
   }
-  .centered-cols {
+  .centered-col {
     @apply flex flex-col justify-center items-center
   }
   .shaded-card {

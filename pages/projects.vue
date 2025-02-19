@@ -1,6 +1,6 @@
 <template lang="pug">
-  .centered-rows.shaded-card.p-10.mx-96.mt-10.gap-10(class="h-[80vh]")
-    .centered-cols.relative.size-full
+  .centered-row.shaded-card.p-10.mx-96.mt-10.gap-10(class="h-[80vh]")
+    .centered-col.relative.size-full
       .flex.absolute.top-0.left-5.gap-2
         FileUploadButton(title="Upload Projects" @fileSelected="handleParsed")
         HelpIcon(:info="helpInfo")

@@ -16,7 +16,7 @@
       NuxtLink(to="/demographicsizer") Demographics
       NuxtLink(to="/past-projects") Past Projects
       
-    .centered-rows.gap-4.ml-auto.mr-10
+    .centered-row.gap-4.ml-auto.mr-10
       NuxtLink(to="https://discord.gg/UyPg3ykKq3")
         img.size-8(
           alt="Discord Logo"

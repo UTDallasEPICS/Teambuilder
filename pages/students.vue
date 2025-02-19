@@ -1,6 +1,6 @@
 <template lang="pug">
-  .centered-rows
-    .centered-cols.shaded-card.m-10.relative(class="max-w-[1200px]")
+  .centered-row
+    .centered-col.shaded-card.m-10.relative(class="max-w-[1200px]")
       .text-7xl.drop-shadow-md Students
 
       .text-2xl.drop-shadow-md.mt-2 Student Count: {{ studentCount }}

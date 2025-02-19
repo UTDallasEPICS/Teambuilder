@@ -4,7 +4,7 @@
       .flex.flex-col.text-xl.font-medium
         div {{ lastName + ', ' }}
         div {{ firstName }}
-      .centered-cols
+      .centered-col
         .pill(:class="statusBgColor") {{ status.toUpperCase() }}
     .text-base Net ID: {{ netID }}
   </template>
