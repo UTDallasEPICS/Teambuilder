@@ -13,7 +13,7 @@
       NuxtLink(to="/projects") Projects
       NuxtLink(to="/students") Students
       NuxtLink(to="/generate-teams") Generate Teams
-      NuxtLink(to="/demographicsizer") Demographics
+      NuxtLink(to="/demographics") Demographics
       NuxtLink(to="/past-projects") Past Projects
       
     .centered-row.gap-4.ml-auto.mr-10
