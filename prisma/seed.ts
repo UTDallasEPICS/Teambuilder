@@ -1,4 +1,5 @@
-// seed.ts
+// run tsx prisma/seed.ts to run seed file
+
 import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
