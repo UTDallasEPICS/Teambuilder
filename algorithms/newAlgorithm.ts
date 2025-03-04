@@ -18,14 +18,34 @@
 // Defines the structure of a Student object, which includes their 
 // name, major, grade level, project choices, and EPICS class level.
 export type Student = {
-  id: string;
-  name: string;
-  major: "CS" | "SE" | "EE" | "ME" | "BME" | "DS" | "CE" | "Systems" | "Other";
-  seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
-  choices: string[];        // List of preferred project choices (ordered by preference)
-  choicesString: string;    // String representation of choices (Why is there a string list and a string array?)
-  class: "2200" | "3200";   // Class level (lower or upper)
-};
+    id: string;
+    name: string;
+    major: "CS" | "SE" | "EE" | "ME" | "BME" | "DS" | "CE" | "Systems" | "Other";
+    seniority: "Freshman" | "Sophomore" | "Junior" | "Senior";
+    choices: string[];        // Stored as an array in the database (Json in Prisma)
+    choicesString?: string;   // Optional: Can be used for importing/exporting data
+    class: "2200" | "3200";
+  };
+  
+  /**
+   * Converts a student object from Prisma format (with JSON choices) into TypeScript-friendly format.
+   */
+  export function parseStudentFromDB(student: any): Student {
+    return {
+      ...student,
+      choices: Array.isArray(student.choices) ? student.choices : [], // Ensure choices is always an array
+    };
+  }
+  
+  /**
+   * Converts a Student object to Prisma format before saving.
+   */
+  export function formatStudentForDB(student: Student): any {
+    return {
+      ...student,
+      choices: JSON.stringify(student.choices), // Convert array to JSON format for database storage
+    };
+  }  
 
 // Defines the structure of a Project object, including its name and type.
 export type Project = {
