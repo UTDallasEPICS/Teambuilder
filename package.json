@@ -18,7 +18,7 @@
     "jsonwebtoken": "^9.0.0",
     "nuxt": "^3.11.2",
     "papaparse": "^5.4.1",
-    "pinia": "^2.3.0",
+    "pinia": "^3.0.1",
     "pug": "^3.0.2",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"
