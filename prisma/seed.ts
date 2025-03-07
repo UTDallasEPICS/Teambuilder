@@ -1,8 +1,29 @@
-// run tsx prisma/seed.ts to run seed file
+/* ABOUT
+- This file contains seed/test data containing Demographic information (described below).
+- Demographics data is associated with ethnicity and gender.
+- When the TypeScript code is executed, Prisma Client is used to store the object data in the SQLite database.
+*/
+
+/* RUNNING INSTRUCTIONS 
+The following commands should be run when you pull the GitHub Repository for the first time.
+- run "npx prisma generate"
+- run "tsx prisma/seed.ts" to run (this) seed file
+- then run "npm run dev" to open website and head to "Demographics" page to create charts/graphs using the selectable filters.
+*/
 
 import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
+/* The following are attributes or selectable filters used to create Charts/Graphs in the Demographics Page.
+
+- NAME is the combination of last two digits of year and semester type.
+    For example: 19F is 2019 Fall, 24U is 2024 summer, 20S is 2020 spring.
+- COURSE relates to EPICS course number: EPICS 2200 (first-time students) & EPICS 3200 (returning students)
+- YEAR and SEMESTER: ...
+- ETHNICITY types: African_American, Asian, Hispanic, International, Other, and White.
+- GENDER: Male and Female
+- TOTAL: Total is the sum of # of males and females.
+*/
 const rows = [
     {Name: "19F", Course: "2200", Year:2019, Sem: "Fall", African_American: 4, Asian: 21, Hispanic: 6, International: 16, Other: 6, White: 10, Male: 45, Female: 18, Total: 63},
     {Name: "20S", Course: "2200", Year:2020, Sem: "Spring", African_American: 4, Asian: 33, Hispanic: 12, International: 11, Other: 6, White: 17, Male: 59, Female: 24, Total: 83},
