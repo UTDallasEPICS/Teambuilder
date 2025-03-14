@@ -10,7 +10,11 @@
     "skipLibCheck": true,
     "outDir": "./dist",
     "allowSyntheticDefaultImports": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "lib": ["dom"],
+    "paths": {
+      "~/*": ["./*"]
+    }
   },
   "include": ["./*.ts"],
   "exclude": ["node_modules", "dist"]
