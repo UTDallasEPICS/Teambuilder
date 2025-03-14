@@ -22,7 +22,6 @@
         NuxtLink(to="/students") Students
         NuxtLink(to="/generate-teams") Generate Teams
         NuxtLink(to="/demographics") Demographics
-        NuxtLink(to="/past-projects") Past Projects
 
       // Social Media Links
       // Used to be: .centered-row.gap-4.ml-auto.mr-10
