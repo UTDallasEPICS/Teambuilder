@@ -54,12 +54,11 @@
 <script setup lang="ts">
 // TODO: componentize inpout & button & text, fix layout
 // TODO: needs tailwind, should be renamed to Generate.vue
-import { reactive, ref } from 'vue';
-import type { Student } from '../types';
-import { useHead } from '@unhead/vue';
+import { ref } from 'vue';
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue';
 
 useHead({ title: 'Generate Teams' });
+
 const [parent, options] = useDragAndDrop([
   'Option A',
   'Option B',
