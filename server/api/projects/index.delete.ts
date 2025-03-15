@@ -1,4 +1,3 @@
-//TODO: Test Delete Functionality
 export default defineEventHandler(async (event) => {
     //const { name } = await readBody(event);
     const { name } = getQuery(event);
