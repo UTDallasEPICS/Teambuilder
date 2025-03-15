@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  Button(:title="title" @click="handleClick")
+  ClickableButton(:title="title" @click="handleClick")
   input(type="file" @change="handleFile" ref="fileInput" style={display: 'none'})
 </template>
 

@@ -17,7 +17,7 @@
             placeholder="Enter number"
             required
           )
-          Button(title="Generate Teams" @click="handleGenerateTeams")
+          ClickableButton(title="Generate Teams" @click="handleGenerateTeams")
         
       .centered-row.gap-10
         .centered-col.shaded-card.p-4.text-xl
@@ -47,7 +47,7 @@
           | Incomplete: X 
           div.gap-3.overflow-y-auto.h-full
         
-      Button(title="Export as CSV")
+      ClickableButton(title="Export as CSV")
   
 </template>
 
