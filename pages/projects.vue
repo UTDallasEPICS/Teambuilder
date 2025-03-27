@@ -1,117 +1,170 @@
 <template lang="pug">
-  .centered-row.shaded-card.p-10.mx-96.mt-10.gap-10(class="h-[80vh]")
-    .centered-col.relative.size-full
-      .flex.absolute.top-0.left-5.gap-2
+  .overlay(v-if="selectedProject" @click="closeModal")
+  .centered-row.shaded-card.p-10.m-10.h-full
+    .centered-col.relative.h-full.gap-4
+      .flex.absolute.top-0.left-0.gap-2
         FileUploadButton(title="Upload Projects" @fileSelected="handleParsed")
         HelpIcon(:info="helpInfo")
 
-      .text-7xl.drop-shadow-md Projects
-      .text-2xl.drop-shadow-md.mt-2 Project Count: {{ filteredProjectCount }}
+      .text-7xl.embossed.drop-shadow-md Projects
+      
+      DataTable.teal-card.px-10.mt-5(
+        :value="projects" 
+        v-model:filters="filters"
+        scrollable 
+        scrollHeight="80vh"
+        class="h-[80vh]"
+        tableStyle="min-width: 50rem;"
+        dataKey="id" 
+        filterDisplay="row"
+        selectionMode="single"
+        v-model:selection="selectedProject"
+      )
+        Column(field="name" header="Name" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText.text-beige(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
+        Column(field="description" header="Description" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
+        Column(field="status" header="Status" :showFilterMenu="false")
+          template(#body="{ data }") 
+            .pill.w-20(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
+          template(#filter="{ filterModel, filterCallback }")
+            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
+              template(#option="slotProps")
+                .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option.toUpperCase() }}
+        Column(field="semester" header="Semester" :showFilterMenu="false")
+          template(#body="{ data }")
+            .text-center {{ data.semester }}
+          template(#filter="{ filterModel, filterCallback }")
+            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="semesters" placeholder="Any" :maxSelectedLabels="1")
+        Column(field="type" header="Type" :showFilterMenu="false")
+          template(#body="{ data }")
+            .text-center {{ capitalize(data.type) }}
+          template(#filter="{ filterModel, filterCallback }")
+            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="types" placeholder="Any" :maxSelectedLabels="1")
+  
+  .cardRows.relative.teal-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
 
-      .grid.grid-cols-3.teal-card.p-10.mt-10.gap-3.size-full.overflow-y-auto.no-scrollbar(style="grid-template-rows: repeat(auto-fill, 165px);")
-        ProjectCardDisplay(
-          v-for="project in filteredProjects"
-          :key="project.id"
-          v-bind="project"
-          @click="selectProject(project)"
-          style="height: 165px;"
-        )
-    .flex.flex-col(class="w-1/2").h-full.gap-10
-      .teal-card.p-5(class="h-2/5")
-        .cardRows
-          .cardTitle Filters
-          .flex.flex-col.gap-2
-            .cardSubTitle Search by Name
-            input.text-teal.p-2.rounded(
-              v-model="searchQuery"
-              type="text"
-            )
-          .flex.gap-10
-            div
-              .cardSubTitle Status
-              .flex.flex-col.gap-2.mt-1
-                button.pill.w-fit(@click="toggleFilterByNew" :class="newStatusBgColor") NEW
-                button.pill.w-fit(@click="toggleFilterByReturning" :class="returningStatusBgColor") RETURNING
-            div
-              .cardSubTitle Semester
-              .grid.grid-flow-col.grid-rows-3.gap-2.mt-1
-                button.pill.w-fit(
-                  v-for="semester in Object.keys(semesterFilters)" 
-                  @click="toggleSemesterFilter(semester)" 
-                  :class="semesterBgColor(semester)"
-                ) {{ semester.toUpperCase() }}
+    XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
+    .flex.flex-row.justify-between.gap-10
+      .cardTitle(v-if="!isEditing") {{ selectedProject?.name }}
+      input.editBox.text-5xl(v-else v-model="editedProject.name")
 
-      .teal-card.p-5.flex-auto
-        .cardRows.h-full
-          .cardTitle Project Details
-          div
-            span.cardSubTitle Name:
-            span.cardText {{ selectedProject?.name }}
-          div
-            span.cardSubTitle Description:
-            span.cardText {{ selectedProject?.description }}
-          div
-            span.cardSubTitle Status:
-            span.cardText {{ capitalize(selectedProject?.status) }}
-          div
-            span.cardSubTitle Semester:
-            span.cardText {{ selectedProject?.semester }}
-          div
-            span.cardSubTitle Repo:
-            a.cardText(:href="selectedProject?.repoURL" target="_blank") {{ selectedProject?.repoURL }}
-          .flex-grow.flex.justify-end.items-end
-            Button(v-if="selectedProject" title="Archive Project" type="warning" @click="handleArchive")
+    div
+      .cardSubTitle Description:
+      .cardText
+        template(v-if="!isEditing") {{ selectedProject?.description }}
+        input.editBox.w-full(v-else v-model="editedProject.description")
+
+    div
+      span.cardSubTitle Status:
+      span.cardText
+        template(v-if="!isEditing") {{ capitalize(selectedProject?.status) }}
+        select(v-else v-model="editedProject.status")
+          option(v-for="status in statuses" :key="status" :value="status") {{ capitalize(status) }}
+
+    div
+      span.cardSubTitle Semester:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedProject?.semester }}
+        select(v-else v-model="editedProject.semester")
+          option(v-for="semester in semesters" :key="semester" :value="semester") {{ semester }}
+
+    div
+      span.cardSubTitle Type:
+      span.cardText
+        template(v-if="!isEditing") {{ capitalize(selectedProject?.type) }}
+        select(v-else v-model="editedProject.type")
+          option(v-for="type in types" :key="type" :value="type") {{ capitalize(type) }}
+
+    div
+      span.cardSubTitle Repo:
+      span.cardText
+        a(v-if="!isEditing" :href="selectedProject?.repoURL" target="_blank") {{ selectedProject?.repoURL }}
+        input.editBox(v-else v-model="editedProject.repoURL")
+
+    .flex-grow.flex.justify-end.items-end
+      ClickableButton(v-if="!isEditing" title="Edit Project" @click="handleEdit")
+      ClickableButton(v-if="isEditing" title="Save Project" type="success" @click="handleSave")
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import type { Project } from '../types';
-import { useHead } from '@unhead/vue'
-import { storeToRefs } from 'pinia';
-import { useProjectStore } from '../stores/projectStore';
-import { useProjectFilters } from '../composables/project/useProjectFilters';
+import { onMounted, ref } from 'vue';
+import { FilterMatchMode } from '@primevue/core/api';
+import type { Project } from '@prisma/client';
+import { XCircleIcon } from '@heroicons/vue/24/solid';
+import { isEqual } from 'lodash';
 
 useHead({ title: 'Projects' });
 
-const projectStore = useProjectStore();
-const { getActiveProjects: projects } = storeToRefs(projectStore);
+const projects = ref<Project[]>([]);
+onMounted(async () => {
+  projects.value = await $fetch<Project[]>("api/projects");
+})
 const selectedProject = ref<Project | null>(null);
+const editedProject = ref<Project | null>(null);
+const isEditing = ref(false);
 
-const {
-  searchQuery,
-  filterByNew,
-  filterByReturning,
-  semesterFilters,
-  filteredProjects,
-  toggleSemesterFilter,
-  toggleFilterByNew,
-  toggleFilterByReturning,
-  filteredProjectCount
-} = useProjectFilters(projects);
+const filters = ref({
+  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  description: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  type: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  status: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  semester: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+const statuses = ref(['NEW', 'RETURNING', 'ARCHIVED']);
+const semesters = ref(['S2023', 'F2023', 'S2024', 'F2024', 'S2025']);
+const types = ref(['SOFTWARE', 'HARDWARE', 'BOTH']);
 
 const selectProject = (project: Project) => {
   selectedProject.value = project;
 }
 
+const closeModal = () => {
+  selectedProject.value = null;
+  isEditing.value = false;
+}
+
+const handleEdit = () => {
+  if (!selectedProject.value) return;
+
+  isEditing.value = true;
+  editedProject.value = { ...selectedProject.value };
+}
+
+const handleSave = async () => {
+  if (
+    selectedProject.value && 
+    editedProject.value && 
+    !isEqual(selectedProject.value, editedProject.value)
+  ) {
+    const id = editedProject.value.id;
+    await $fetch(`api/projects/${id}`, {
+      method: 'PUT',
+      body: editedProject.value
+    });
+    selectedProject.value = editedProject.value;
+    const index = projects.value.findIndex((project) => project.id === id);
+    projects.value[index] = editedProject.value;
+  }
+  isEditing.value = false;
+}
+
 const handleArchive = () => {
   const id = selectedProject.value?.id;
-  if (id) projectStore.archiveProject(id);
 }
 
 const handleParsed = (parsed: any) => {
   console.log(parsed)
 };
-
-const newStatusBgColor = computed(() => 
-  filterByNew.value ? "bg-green" : "bg-gray-500"
-)
-
-const returningStatusBgColor = computed(() => 
-  filterByReturning.value ? "bg-orange" : "bg-gray-500"
-)
-
-const semesterBgColor = (semester: string) => 
-  semesterFilters[semester] ? "bg-magenta" : "bg-gray-500";
+  
+const statusBgColor = (status: string) => ({
+  "bg-green": status === "NEW",
+  "bg-orange": status === "RETURNING",
+  "bg-red": status === "ARCHIVED",
+});
 
 const helpInfo = `Upload information for your projects here.  
   Be sure to enter project name, project partner, target # of CS majors, 
@@ -124,7 +177,7 @@ const helpInfo = `Upload information for your projects here.
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;
-  @apply text-4xl
+  @apply text-5xl drop-shadow-sm
 }
 .cardSubTitle {
   text-shadow: 1px 1px 1px #0000008b;
@@ -133,11 +186,31 @@ const helpInfo = `Upload information for your projects here.
 .cardText {
   @apply text-xl
 }
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
+/* .p-select-list-container {
+  background-color: #00796b;
+  color: black;
+} */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 98;
 }
-.no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 99;
+}
+.editBox {
+  @apply text-teal rounded-md bg-beige p-1
+}
+select {
+  @apply bg-beige text-teal rounded-md border-red p-1
 }
 </style>
