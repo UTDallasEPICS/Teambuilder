@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { createRandomStudents } from '../server/factories/student'
-import { Student } from '../types';
+import type { Student } from '@prisma/client';
 
 export const useStudentStore = defineStore('studentStore', {
   state: () => ({
@@ -17,7 +17,7 @@ export const useStudentStore = defineStore('studentStore', {
     archiveStudent(id: string) {
       const student = this.getStudentById(id);
       if (student) {
-        student.status = 'archived';
+        student.status = 'ARCHIVED';
       } else {
         console.error('Could not find student')
       }
@@ -25,7 +25,7 @@ export const useStudentStore = defineStore('studentStore', {
     restoreStudent(id: string) {
       const student = this.getStudentById(id);
       if (student) {
-        student.status = 'returning';
+        student.status = 'RETURNING';
       } else {
         console.error('Could not find student')
       }
@@ -42,10 +42,10 @@ export const useStudentStore = defineStore('studentStore', {
       return state.students;
     },
     getActiveStudents: (state) => {
-      return state.students.filter(student => student.status !== 'archived');
+      return state.students.filter(student => student.status !== 'ARCHIVED');
     },
     getArchivedStudents: (state) => {
-      return state.students.filter(student => student.status === 'archived');
+      return state.students.filter(student => student.status === 'ARCHIVED');
     },
     getStudentById: (state) => (id: string) => {
       return state.students.find(student => student.id === id);
