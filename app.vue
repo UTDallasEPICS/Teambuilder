@@ -1,7 +1,8 @@
 <template lang="pug">
-  div
+  .flex.flex-row.h-screen.w-full.items-start
     Navbar(v-if="$route.name !== 'index'")
-    NuxtPage
+    .centered-row.flex-auto
+      NuxtPage
 </template>
 
 <script setup lang="ts">
@@ -15,14 +16,5 @@
 // CSV imports should detect and ignore duplicates
 // also need partner and teams UI - dont need CSV import
 // students need github/discord usernames
-import { useProjectStore } from './stores/projectStore';
-import { useStudentStore } from './stores/studentStore';
-
-// Seed frontend state
-const projectStore = useProjectStore();
-const studentStore = useStudentStore();
-
-projectStore.createDummyData();
-studentStore.createDummyData();
 </script>
 <style></style>
