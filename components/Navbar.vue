@@ -4,12 +4,12 @@
   //.flex
   // Now: wrapped navigation in .sidebar div. flex-col stacks items vertically. fixed on left side. Spacing adjusted.
   // h-full makes it full height. 
-  .sidebar.fixed.top-0.left-0.h-full.w-64.bg-teal.p-4.flex.flex-col.items-start  
-    img.h-20.w-64(
+  .sidebar.h-full.w-64.bg-teal.p-4.flex.flex-col.items-start  
+    img.h-20(
       alt="EPICS Logo" 
       src="/logo1.png" 
     )
-    img.h-20.w-64(
+    img.h-20(
       alt="Team Formation Logo" 
       src="/team-formation-text.png" 
     )
