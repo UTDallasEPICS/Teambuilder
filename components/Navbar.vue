@@ -21,7 +21,7 @@
         NuxtLink(to="/projects") Projects
         NuxtLink(to="/students") Students
         NuxtLink(to="/generate-teams") Generate Teams
-        NuxtLink(to="/demographicsizer") Demographics
+        NuxtLink(to="/demographics") Demographics
         NuxtLink(to="/past-projects") Past Projects
 
       // Social Media Links
@@ -39,7 +39,6 @@
             alt="GitHub Logo"
             src="/github-mark.png"
           ) 
-
     // Main Content Area
     // Wrapped the rest of the page in .content.flex-1.p-4 to prevent overlap:
     .content.flex-1.p-4
