@@ -36,8 +36,9 @@ model Project {
   name          String
   description   String
   type          ProjectType
+  status        Status
+  semester      String
   repoURL       String        @map("repo_url")
-  targetCS      Int           @map("target_cs")
 
   partnerId     String        @map("partner_id")
   partner       Partner       @relation(fields: [partnerId], references: [id])
@@ -71,13 +72,14 @@ model Student {
   github        String?     @unique
   discord       String?     @unique
   email         String      @unique
+  netID         String      @map("net_id") @unique
   firstName     String      @map("first_name")
   lastName      String      @map("last_name")
   major         String 
   year          Year
   class         String
   enrollment    String
-  netID         String      @map("net_id")
+  status        Status
 
   teams         Team[]
 
@@ -98,4 +100,10 @@ enum ProjectType {
   SOFTWARE
   HARDWARE
   BOTH
+}
+
+enum Status {
+  NEW
+  RETURNING
+  ARCHIVED
 }
