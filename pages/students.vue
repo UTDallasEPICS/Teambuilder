@@ -19,28 +19,16 @@
 </template>
 
 <script lang="ts" setup>
-import { useHead } from '@unhead/vue'
 import { useStudentStore } from '../stores/studentStore';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
-import { useStudentFilters } from '../composables/student/useStudentFilters';
-import type { Student } from '../types';
+import type { Student } from '@prisma/client';
 
 useHead({ title: 'Students' });
 
 const studentStore = useStudentStore();
 const { getAllStudents: students } = storeToRefs(studentStore);
 const selectedStudent = ref<Student | null>(null);
-
-const {
-    searchQuery,
-    filterByNew,
-    filterByReturning,
-    filteredStudents,
-    filteredStudentCount,
-    toggleFilterByNew,
-    toggleFilterByReturning,
-  } = useStudentFilters(students);
 
 const handleParsed = (parsed: any) => {
   console.log(parsed)
