@@ -13,6 +13,87 @@ body {
   background-attachment: fixed;
 }
 
+/* freeze header */
+/* .p-datatable-thead {
+  position: sticky;
+  top: 0;
+} */
+
+/* remove scrollbar */
+/* .p-datatable-table-container {
+  @apply no-scrollbar
+} */
+
+/* column header names */
+/* .p-datatable thead [data-pc-name="headercell"] {
+  @apply text-2xl p-3 pb-1 bg-teal font-normal text-left embossed
+} */
+
+/* column header filters */
+/* .p-datatable thead [data-pc-name="filterheadercell"] {
+  @apply p-3 bg-teal
+} */
+
+/* filter cells */
+/* .p-datatable-filter {
+  @apply px-2 py-1 border border-beige rounded-md
+} */
+
+/* table cell styles */
+/* .p-datatable .p-datatable-tbody td {
+  @apply p-3
+} */
+
+/* table row styles */
+/* .p-datatable .p-datatable-tbody tr {
+  @apply bg-beige text-teal
+}
+
+.p-datatable-filter-element-container {
+  @apply flex flex-row justify-start
+}
+
+.p-multiselect {
+  @apply flex flex-row justify-between
+} */
+
+/* .p-multiselect-option .p-checkbox {
+  @apply inline-flex
+} */
+
+/* .p-multiselect-overlay {
+  --tw-bg-opacity: 1;
+  @apply blue-card p-3
+} */
+
+/* .p-checkbox-input {
+  @apply size-4 border border-beige
+} */
+
+/* .p-checkbox-box {
+  @apply flex
+} */
+
+/* .p-datatable-row-selected {
+  @apply bg-lightblue text-beige !important;
+}
+
+[data-pc-section="headerrow"]:first-of-type {
+  @apply border-b-2 border-beige
+} */
+
+/* input[data-pc-name="inputtext"] {
+  @apply font-normal
+}
+
+input[data-pc-name="inputtext"]:focus {
+  outline: none;
+}
+
+input[data-pc-name="inputtext"]::placeholder {
+  @apply text-beige font-normal text-left
+} */
+
 @layer base {
   body {
     @apply text-beige
@@ -20,7 +101,6 @@ body {
 }
 
 @layer components {
-  /* used at the top of most pages to center all content horizontally */
   .centered-row {
     @apply flex flex-row justify-center items-center
   }
@@ -36,10 +116,30 @@ body {
   .beige-card {
     @apply rounded-2xl p-4 cursor-pointer bg-beige text-teal
   }
+  .blue-card {
+    @apply rounded-lg bg-lightblue shadow-lg text-teal
+  }
   .hover-effect {
     @apply hover:translate-y-[-5px] hover:shadow-lg transition-transform duration-200
   }
+  .zoom-effect {
+    @apply hover:scale-105 hover:shadow-lg transition-transform duration-200 bg-beige
+  }
   .pill {
     @apply flex flex-row justify-center items-center h-fit px-3 py-1 rounded-full text-xs text-beige
+  }
+  .embossed {
+    text-shadow: 1px 1px 1px #0000008b;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+  /* for debugging */
+  .bor {
+    @apply border-red border-2
   }
 }
