@@ -1,27 +1,31 @@
 import { faker } from '@faker-js/faker';
-import { Project } from "~/types";
 import { createRandomStatus } from './status';
 import { getRandomElement } from './helpers';
+import { Partner, Project } from '@prisma/client';
 
-export const createRandomProject = (): Project => {
+export const createRandomProject = (partnerId: string): Project => {
+  const now = new Date();
+
   return {
     id: faker.string.uuid(),
     name: faker.commerce.productName(),
     description: faker.lorem.sentence(),
-    targetCS: faker.number.int({ min: 0, max: 5 }),
     status: createRandomStatus(),
     semester: createRandomSemester(),
     repoURL: faker.internet.url(),
-    type: createRandomType()
+    type: createRandomType(),
+    createdAt: now,
+    updatedAt: now,
+    partnerId
   }
 }
 
-export const createRandomProjects = (numProjects: number): Project[] => {
-  const arr = [];
-  for (let i = 0; i < numProjects; i++) {
-    arr.push(createRandomProject())
-  }
-  return arr;
+export const createRandomProjects = (length: number, partners: Partner[] = []): Project[] => {
+  return Array.from({ length }, () => {
+      const randomPartnerId = getRandomElement(partners.map((partner) => partner.id))
+      return createRandomProject(randomPartnerId);
+    }
+  );
 }
 
 const createRandomSemester = () => {
@@ -30,6 +34,6 @@ const createRandomSemester = () => {
 }
 
 const createRandomType  = () => {
-  const types = ['software', 'hardware', 'both'];
+  const types = ['SOFTWARE', 'HARDWARE', 'BOTH'];
   return getRandomElement(types);
 }
