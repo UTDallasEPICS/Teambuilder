@@ -8,7 +8,9 @@
       .flex.absolute.top-5.right-5.gap-2
         HelpIcon
 
-        FileUploadButton(title="Upload Students" @fileSelected="handleParsed")
+        // Used to be: FileUploadButton(title="Upload Students" @fileSelected="handleParsed")
+        // Changed it to match @dataParsed, so it matches what the component emits: 'dataParsed'
+        FileUploadButton(title="Upload Students" @dataParsed="handleParsed")
 
       .grid.grid-cols-4.teal-card.mt-10.gap-3
         StudentCardDisplay(
@@ -31,6 +33,7 @@ const { getAllStudents: students } = storeToRefs(studentStore);
 const selectedStudent = ref<Student | null>(null);
 
 const handleParsed = (parsed: any) => {
-  console.log(parsed)
+  console.log('Recieved parsed data', parsed);
+  // added message above for clarity
 };
 </script>
