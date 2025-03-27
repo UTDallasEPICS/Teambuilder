@@ -26,6 +26,7 @@ export default {
         teal: 'rgb(98,158,145)',
         shaded: 'rgba(48, 100, 162, 0.3)',
         beige: 'rgb(253,245,217)',
+        lightblue:'rgba(153, 219, 230, 1)',
         // pill colors
         magenta: 'rgb(226, 108, 237)',
         green: 'rgb(119, 207, 119)',
