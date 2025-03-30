@@ -16,6 +16,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "discord.js": "^14.16.3",
     "jsonwebtoken": "^9.0.0",
+    "node-xlsx": "^0.24.0",
     "nuxt": "^3.11.2",
     "papaparse": "^5.4.1",
     "pinia": "^2.3.0",
