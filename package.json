@@ -16,12 +16,14 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "discord.js": "^14.16.3",
     "jsonwebtoken": "^9.0.0",
+    "node-xlsx": "^0.24.0",
     "nuxt": "^3.11.2",
     "papaparse": "^5.4.1",
     "pinia": "^2.3.0",
     "pug": "^3.0.2",
     "vue": "^3.4.27",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.3.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.0",
