@@ -91,7 +91,7 @@
         >
           {{ getFilterDisplayText(filter) }}
         </button>
-  
+
         <div v-if="isDropdownOpen(filter.name)" class="dropdown-options">
           <div 
             v-for="option in filter.options" 
@@ -136,7 +136,8 @@ export default defineComponent({
         { name: "Course", options: ["2200", "3200"], selectedOptions: [] },
         { name: "Ethnicity", options: ["African_American", "Asian", "Hispanic", "International", "Other", "White"], selectedOptions: [] },
         { name: "Gender", options: ["Female", "Male"], selectedOptions: [] },
-        { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] }
+        { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] },
+        { name: "Y-axis", options: ["Number", "Percentages"], selectedOptions: [] }
       ],
       semesters: ["Fall", "Spring", "Summer"],
       openDropdown: null,
@@ -215,6 +216,10 @@ export default defineComponent({
 
       const params = new URLSearchParams();
 
+      if (this.filters.find(f => f.name === "Y-axis").selectedOptions.length > 0) {
+      const yAxis = this.filters.find(f => f.name === "Y-axis").selectedOptions[0];
+      params.append("Y-axis", yAxis);
+      }
       if (this.timePeriodOption === "Continuous") {
         params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
         if (this.customSemesterStart && this.customSemesterEnd) {
@@ -265,252 +270,241 @@ export default defineComponent({
       }
     },
     plotChart() {
-      console.log('Starting plotChart with data:', this.chartData);
-      console.log('Chart type:', this.filters.find(f => f.name === "Chart")?.selectedOptions[0]);
+    console.log('Starting plotChart with data:', this.chartData);
+    console.log('Chart type:', this.filters.find(f => f.name === "Chart")?.selectedOptions[0]);
 
-      // Destroy existing chart
-      if (this.chart) {
+    // Destroy existing chart
+    if (this.chart) {
         this.chart.destroy();
         this.chart = null;
-      }
+    }
 
-      // Basic validation
-      if (!this.chartData.length) {
+    // Basic validation
+    if (!this.chartData.length) {
         console.log('No data to plot');
         return;
-      }
+    }
 
-      const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
-      if (!chartType) {
+    const chartType = this.filters.find(f => f.name === "Chart")?.selectedOptions[0];
+    if (!chartType) {
         console.log('No chart type selected');
         return;
-      }
+    }
 
-      const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
-      const selectedGenders = this.filters.find(f => f.name === "Gender")?.selectedOptions;
-      
-      const isOnlyTotalView = (!selectedGenders?.length && !selectedEthnicities?.length) || 
+    const selectedEthnicities = this.filters.find(f => f.name === "Ethnicity")?.selectedOptions;
+    const selectedGenders = this.filters.find(f => f.name === "Gender")?.selectedOptions;
+
+    const isOnlyTotalView = (!selectedGenders?.length && !selectedEthnicities?.length) || 
                            (selectedGenders?.[0] === "Empty" && selectedEthnicities?.[0] === "Empty");
 
-      console.log('Is total view:', isOnlyTotalView);
+    console.log('Is total view:', isOnlyTotalView);
 
-      if (isOnlyTotalView) {
-  const xValues = this.chartData.map(item => item.Name);
-  const totalValues = this.chartData.map(item => item.Total);
-  
-  // Calculate grand total for percentage calculations
-  const grandTotal = totalValues.reduce((sum, val) => sum + val, 0);
-  
-  // Separate data by course
-  const courses = [...new Set(this.chartData.map(item => item.Course))];
-  const datasets = courses.map(course => ({
-    label: `Course ${course}`,
-    data: this.chartData
-      .filter(item => item.Course === course)
-      .map(item => item.Total),
-    backgroundColor: course === "2200" ? 'rgba(0, 109, 72, 0.7)' : 'rgba(75, 192, 192, 0.7)',
-    borderColor: course === "2200" ? 'rgb(0, 109, 72)' : 'rgb(75, 192, 192)',
-    borderWidth: 1
-  }));
+    // When the "Total View" is selected, calculate percentage for each course.
+    if (isOnlyTotalView) {
+        const xValues = this.chartData.map(item => item.Name);
+        const totalValues = this.chartData.map(item => item.Total);
 
-  let chartConfig = {
-    type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
-    data: {
-      labels: [...new Set(xValues)],
-      datasets: datasets
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        title: {
-          display: true,
-          text: `Total Students per Semester by Course`
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => {
-              const value = context.raw;
-              const percentage = ((value / grandTotal) * 100).toFixed(1);
-              return `${context.dataset.label}: ${value} students (${percentage}% of total)`;
+        // Calculate grand total for percentage calculations
+        const grandTotal = totalValues.reduce((sum, val) => sum + val, 0);
+
+        // Separate data by course
+        const courses = [...new Set(this.chartData.map(item => item.Course))];
+        const datasets = courses.map(course => ({
+            label: `Course ${course}`,
+            data: this.chartData
+                .filter(item => item.Course === course)
+                .map(item => (this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages"
+                    ? (item.Total / grandTotal) * 100
+                    : item.Total)),
+            backgroundColor: course === "2200" ? 'rgba(0, 109, 72, 0.7)' : 'rgba(75, 192, 192, 0.7)',
+            borderColor: course === "2200" ? 'rgb(0, 109, 72)' : 'rgb(75, 192, 192)',
+            borderWidth: 1
+        }));
+
+        let chartConfig = {
+            type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
+            data: {
+                labels: [...new Set(xValues)],
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Total Students per Semester by Course`
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0); // Grand total for current dataset
+
+                                const percentage = (this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages")
+                                    ? `${((value / total) * 100).toFixed(1)}%` // Correct percentage calculation
+                                    : `${((value / total) * 100).toFixed(1)}%`; // Always show percentage for consistency
+
+                                const rawValue = this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages"
+                                    ? context.raw * total / 100
+                                    : context.raw; // Convert back to raw number for correct tooltip
+
+                                // Display both raw count and calculated percentage
+                                return `${context.dataset.label}: ${rawValue} students (${percentage})`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: (context) => context.dataset.data[context.dataIndex] > 10,
+                        color: 'black',
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: (value) => value
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 100 : undefined,  // Max is 100 for percentages
+                        title: {
+                            display: true,
+                            text: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 'Percentage of Students' : 'Number of Students'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                if (this.options.ticks.max === 100) {
+                                    return value + '%'; // Show percentage on Y-axis if percentages are selected
+                                }
+                                return value; // Show raw number if numbers are selected
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Semester'
+                        },
+                        ticks: {
+                            minRotation: 45,
+                            maxRotation: 45
+                        }
+                    }
+                }
             }
-          }
-        },
-        datalabels: {
-          display: (context) => context.dataset.data[context.dataIndex] > 10,
-          color: 'black',
-          anchor: 'end',
-          align: 'top',
-          formatter: (value) => value
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grace: '5%',
-          title: {
-            display: true,
-            text: 'Number of Students'
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: 'Semester'
-          },
-          ticks: {
-            minRotation: 45,
-            maxRotation: 45
-          }
-        }
-      }
-    }
-  };
+        };
 
-  // Modify config based on chart type
-  if (chartType === "Pie") {
-    // For pie chart, combine course and semester labels
-    const combinedLabels = this.chartData.map(item => `${item.Name} - Course ${item.Course}`);
-    chartConfig.data.labels = combinedLabels;
-    chartConfig.data = {
-      labels: combinedLabels,
-      datasets: [{
-        data: totalValues,
-        backgroundColor: this.chartData.map(item => 
-          item.Course === "2200" ? 'rgba(0, 109, 72, 0.7)' : 'rgba(75, 192, 192, 0.7)'
-        )
-      }]
-    };
-    chartConfig.options.plugins.tooltip.callbacks.label = (context) => {
-      const value = context.raw;
-      const percentage = ((value / grandTotal) * 100).toFixed(1);
-      return `${context.label}: ${value} students (${percentage}% of total)`;
-    };
-  } else if (chartType === "Line") {
-    datasets.forEach(dataset => {
-      dataset.fill = false;
-      dataset.tension = 0.4;
-    });
-  } else if (chartType === "Combined bar and line") {
-    chartConfig.type = 'bar';
-    chartConfig.data.datasets = [
-      ...datasets,  // Bar datasets
-      ...datasets.map(dataset => ({  // Line datasets
-        ...dataset,
-        type: 'line',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4,
-        order: 1
-      }))
-    ];
-  }
-
-  console.log('Creating chart with config:', chartConfig);
-  const ctx = this.$refs.chartCanvas.getContext('2d');
-  this.chart = new Chart(ctx, chartConfig);
-} else {
-        // Original ethnicity/gender visualization logic
+        console.log('Creating chart with config:', chartConfig);
+        const ctx = this.$refs.chartCanvas.getContext('2d');
+        this.chart = new Chart(ctx, chartConfig);
+    } else {
+        // Ethnicity or Gender Visualization logic
         const isGenderMode = selectedGenders && selectedGenders.length > 0;
         const selectedCategories = isGenderMode ? selectedGenders : selectedEthnicities;
         const xValues = this.chartData.map(item => `${item.Name}-${item.Course}`);
 
         const colors = selectedCategories.map(() => 
-          `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)})`
+            `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)})`
         );
 
         let chartConfig = {
-          type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
-          data: {
-            labels: xValues,
-            datasets: []
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              title: {
-                display: true,
-                text: `Demographic Data by ${isGenderMode ? 'Gender' : 'Ethnicity'}`
-              },
-              legend: {
-                display: true,
-                position: 'top'
-              },
-              tooltip: {
-                callbacks: {
-                  label: (context) => {
-                    const value = context.raw;
-                    const dataIndex = context.dataIndex;
-                    const dataPoint = this.chartData[dataIndex];
-                    const percentage = ((value / dataPoint.Total) * 100).toFixed(1);
-                    return `${context.dataset.label}: ${value} (${percentage}%)`;
-                  }
-                }
-              },
-              datalabels: {
-                display: false
-              }
+            type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
+            data: {
+                labels: xValues,
+                datasets: []
             },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grace: '5%',
-                title: {
-                  display: true,
-                  text: 'Count'
-                }
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Year-Semester-Course'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Demographic Data by ${isGenderMode ? 'Gender' : 'Ethnicity'}`
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                          label: (context) => {
+                            const value = context.raw;  // The value for the current bar (either percentage or raw count)
+                            const dataIndex = context.dataIndex;
+                            const dataPoint = this.chartData[dataIndex];  // Getting the data point for this specific bar
+                            const total = dataPoint.Total;  // Total number of students for the current data point
+
+                            let percentage = '';
+                            let rawValue = '';
+
+                            if (this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages") {
+                                // When "Percentages" is selected
+                                percentage = `${(value).toFixed(1)}%`;  // Use context.raw for percentage, rounded to 1 decimal place
+                                rawValue = Math.round(value * total / 100);  // Convert percentage to raw value, rounded to nearest whole number
+                            } else {
+                                // When "Number" is selected
+                                percentage = `${((value / total) * 100).toFixed(1)}%`;  // Calculate percentage and round to 1 decimal place
+                                rawValue = Math.round(value);  // Raw value (student count), rounded to nearest whole number
+                            }
+
+                            // Return both the raw count of students and the percentage in the tooltip
+                            return `${context.dataset.label}: ${rawValue} students (${percentage})`;
+                          }
+                        }
+                    },
+                    datalabels: {
+                        display: false
+                    }
                 },
-                ticks: {
-                  minRotation: 45,
-                  maxRotation: 45
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 100 : undefined,  // Max is 100 for percentages
+                        title: {
+                            display: true,
+                            text: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 'Percentage of Students' : 'Number of Students'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                if (this.options.ticks.max === 100) {
+                                    return value + '%'; // Show percentage on Y-axis if percentages are selected
+                                }
+                                return value; // Show raw number if numbers are selected
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year-Semester-Course'
+                        },
+                        ticks: {
+                            minRotation: 45,
+                            maxRotation: 45
+                        }
+                    }
                 }
-              }
             }
-          }
         };
 
-        if (chartType === "Pie") {
-          const firstCategory = selectedCategories[0];
-          const pieData = this.chartData.map(item => item[firstCategory]);
-          const total = pieData.reduce((sum, value) => sum + value, 0);
-          
-          chartConfig.data.datasets = [{
-            data: pieData,
-            backgroundColor: colors,
-            hoverOffset: 4
-          }];
-
-          chartConfig.options.plugins.tooltip = {
-            callbacks: {
-              label: function(context) {
-                const value = context.raw;
-                const percentage = ((value / total) * 100).toFixed(1);
-                return `${context.label}: ${value} (${percentage}%)`;
-              }
-            }
-          };
-        } else {
-          chartConfig.data.datasets = selectedCategories.map((category, index) => ({
+        chartConfig.data.datasets = selectedCategories.map((category, index) => ({
             label: category,
-            data: this.chartData.map((item, i) => item[category]),
+            data: this.chartData.map((item, i) => {
+                // If "Percentages" is selected, convert to percentage
+                return this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages"
+                    ? (item[category] / item.Total) * 100
+                    : item[category]; // Return raw number if "Number" is selected
+            }),
             backgroundColor: colors[index],
             borderColor: colors[index],
             fill: false,
             tension: chartType === "Line" ? 0.4 : undefined
-          }));
-        }
+        }));
 
         console.log('Creating demographic chart with config:', chartConfig);
         const ctx = this.$refs.chartCanvas.getContext('2d');
         this.chart = new Chart(ctx, chartConfig);
-      }
-    },
+    }
+},
+
     beforeUnmount() {
       if (this.chart) {
         this.chart.destroy();
