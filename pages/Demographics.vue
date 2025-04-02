@@ -3,6 +3,18 @@
     <div class="sidebar">
       <!-- Close Button -->
       <button class="close-button" @click="toggleSidebar">&#x2715;</button>
+
+
+      <!-- Import Button -->
+     
+     <div class="import-query">
+        <input
+        type="file"
+      @change="onFileChanged($event)"
+      accept="text/*"
+      capture
+        />
+      </div>
   
       <!-- Time Period Tile -->
       <div class="field">
@@ -148,7 +160,10 @@ export default defineComponent({
       selectedSemesters: [],
       chartData: [],
       chart: null,
-      isLoading: false
+      isLoading: false,
+      fileName: "",
+      uploaded: false,
+      fileUploader: null
     };
   },
   watch: {
@@ -209,6 +224,18 @@ export default defineComponent({
       }
       return "Time Period";
     },
+
+
+
+
+    async importFile(){
+      console.log("Import button pressed");
+    },
+
+
+
+
+
     async getRequest() {
       if (this.isLoading) return;
       this.isLoading = true;
@@ -656,6 +683,35 @@ export default defineComponent({
 }
 
 .submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.import-query {
+  margin-bottom: 20px;
+}
+
+.import-button {
+  background-color: #ffffff;
+  color: #006d48;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.import-button:hover {
+  background-color: #e8f5e9;
+}
+
+.import-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
