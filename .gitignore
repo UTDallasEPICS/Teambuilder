@@ -25,3 +25,6 @@ logs
 
 # Package.json
 package.json
+
+# Database
+prisma/dev.db
