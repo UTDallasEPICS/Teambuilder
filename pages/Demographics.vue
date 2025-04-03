@@ -225,23 +225,18 @@ export default defineComponent({
       return "Time Period";
     },
 
-
-    async onFileChange(event){
+     async onFileChange(event){
       console.log("Beginning file upload");
       const fileToSend = event.target.files[0];
-      const fileBuffer = await fileToSend.arrayBuffer();
+      const dataToSend = new FormData();
+      dataToSend.append('Excel Spreadsheet', fileToSend);
       const res = await $fetch('/api/demographic', {
         method: 'POST',
-        body: fileBuffer
+        body: dataToSend
       })
+      console.log("File sent!")
       console.log(res);
     },
-
-    // This will be necessary if I make an import button separately from the file uploader
-    // async importFile(){
-    //   console.log("Import button pressed");
-    // },
-
 
     async getRequest() {
       if (this.isLoading) return;
