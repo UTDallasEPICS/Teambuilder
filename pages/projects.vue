@@ -22,7 +22,7 @@
       )
         Column(field="name" header="Name" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
-            InputText.text-beige(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
         Column(field="description" header="Description" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
@@ -214,3 +214,5 @@ select {
   @apply bg-beige text-teal rounded-md border-red p-1
 }
 </style>
+
+<!-- Top Row: Name, Email, NETID, Major, Status, Year -->
