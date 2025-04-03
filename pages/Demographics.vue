@@ -85,7 +85,11 @@
   
       <!-- Filter Buttons -->
       <div v-for="filter in filters" :key="filter.name" class="field">
+        <!-- Only display buttons for "Ethnicity" or "Gender" if selected in Demographics -->
         <button 
+          v-if="(filter.name === 'Ethnicity' && filters.find(f => f.name === 'Demographics').selectedOptions.includes('Ethnicity')) || 
+                (filter.name === 'Gender' && filters.find(f => f.name === 'Demographics').selectedOptions.includes('Gender')) ||
+                (filter.name !== 'Ethnicity' && filter.name !== 'Gender')" 
           @click="toggleDropdown(filter.name)" 
           class="field-button"
         >
@@ -93,17 +97,56 @@
         </button>
 
         <div v-if="isDropdownOpen(filter.name)" class="dropdown-options">
-          <div 
-            v-for="option in filter.options" 
-            :key="option" 
-            :class="{'dropdown-item': true, 'selected': filter.selectedOptions.includes(option)}"
-            @click="toggleOption(filter.name, option)"
-          >
-            {{ option }}
+          <!-- Show the Demographics filter dropdown -->
+          <div v-if="filter.name === 'Demographics'">
+            <div 
+              v-for="option in filter.options" 
+              :key="option" 
+              :class="{'dropdown-item': true, 'selected': filter.selectedOptions.includes(option)}"
+              @click="toggleOption(filter.name, option)"
+            >
+              {{ option }}
+            </div>
+          </div>
+
+          <!-- Show Ethnicity options if Ethnicity is selected in Demographics -->
+          <div v-if="filter.name === 'Ethnicity' && filters.find(f => f.name === 'Demographics').selectedOptions.includes('Ethnicity')">
+            <div 
+              v-for="option in filter.options" 
+              :key="option" 
+              :class="{'dropdown-item': true, 'selected': filter.selectedOptions.includes(option)}"
+              @click="toggleOption(filter.name, option)"
+            >
+              {{ option }}
+            </div>
+          </div>
+
+          <!-- Show Gender options if Gender is selected in Demographics -->
+          <div v-if="filter.name === 'Gender' && filters.find(f => f.name === 'Demographics').selectedOptions.includes('Gender')">
+            <div 
+              v-for="option in filter.options" 
+              :key="option" 
+              :class="{'dropdown-item': true, 'selected': filter.selectedOptions.includes(option)}"
+              @click="toggleOption(filter.name, option)"
+            >
+              {{ option }}
+            </div>
+          </div>
+
+          <!-- Show the regular dropdown options for filters like Course, Y-axis, and Chart -->
+          <div v-if="filter.name !== 'Demographics' && filter.name !== 'Ethnicity' && filter.name !== 'Gender'">
+            <div 
+              v-for="option in filter.options" 
+              :key="option" 
+              :class="{'dropdown-item': true, 'selected': filter.selectedOptions.includes(option)}"
+              @click="toggleOption(filter.name, option)"
+            >
+              {{ option }}
+            </div>
           </div>
         </div>
       </div>
-  
+
       <!-- Submit Button -->
       <div class="submit-query">
         <button 
@@ -134,6 +177,7 @@ export default defineComponent({
     return {
       filters: [
         { name: "Course", options: ["2200", "3200"], selectedOptions: [] },
+        { name: "Demographics", options: ["Ethnicity", "Gender"], selectedOptions: [] }, // New Demographics filter
         { name: "Ethnicity", options: ["African_American", "Asian", "Hispanic", "International", "Other", "White"], selectedOptions: [] },
         { name: "Gender", options: ["Female", "Male"], selectedOptions: [] },
         { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] },
@@ -182,16 +226,36 @@ export default defineComponent({
     },
     toggleOption(filterName, option) {
       const filter = this.filters.find(f => f.name === filterName);
+
+      // If the option is already selected, unselect it
       const optionIndex = filter.selectedOptions.indexOf(option);
-      
       if (optionIndex === -1) {
-        filter.selectedOptions.push(option);
+        // Clear other selected options and add the new option
+        filter.selectedOptions = [option];  // Keep only the new option
       } else {
+        // If already selected, remove it (if toggling off)
         filter.selectedOptions.splice(optionIndex, 1);
+      }
+
+      // If Demographics filter is selected, ensure that only one of Ethnicity or Gender is chosen
+      if (filterName === "Demographics") {
+        if (option === "Ethnicity") {
+          this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
+        } else if (option === "Gender") {
+          this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
+        }
+      }
+
+      // Ensure that for Chart and Y-axis filters, only one option is selected at a time
+      if (filterName === "Chart" || filterName === "Y-axis") {
+        filter.selectedOptions = [option];  // Keep only the newly selected option
       }
     },
     getFilterDisplayText(filter) {
       if (filter.selectedOptions.length > 0) {
+        if (filter.name === "Demographics") {
+          return `Demographics: ${filter.selectedOptions.join(', ')}`;
+        }
         return `${filter.name}: ${filter.selectedOptions.join(', ')}`;
       }
       return filter.name;
