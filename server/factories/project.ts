@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { createRandomStatus } from './status';
 import { getRandomElement } from './helpers';
-import { Partner, Project } from '@prisma/client';
+import type { Partner, Project, ProjectStatus } from '@prisma/client';
 
 export const createRandomProject = (partnerId: string): Project => {
   const now = new Date();
@@ -36,4 +35,9 @@ const createRandomSemester = () => {
 const createRandomType  = () => {
   const types = ['SOFTWARE', 'HARDWARE', 'BOTH'];
   return getRandomElement(types);
+}
+
+const createRandomStatus = (): ProjectStatus => {
+  const statuses: ProjectStatus[] = ['NEW', 'RETURNING', 'ARCHIVED'];
+  return statuses[Math.floor(Math.random() * statuses.length)];
 }

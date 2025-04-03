@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { Partner } from "@prisma/client";
+import type { Partner } from "@prisma/client";
 
 export const createRandomPartner = (): Partner => {
   const now = new Date();

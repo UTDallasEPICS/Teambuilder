@@ -1,23 +1,26 @@
 import { faker } from '@faker-js/faker';
-import { Student } from "~/types"
-import { createRandomStatus } from './status';
 import { getRandomElement } from './helpers';
+import type { Student, StudentStatus } from '@prisma/client';
 
 export const createRandomStudent = (): Student => {
+  const now = new Date();
+
   return {
     id: faker.string.uuid(),
     netID: getRandomNetID(),
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
-    gitUserName: faker.internet.username(),
-    discordUser: faker.internet.username(),
+    github: faker.internet.username(),
+    discord: faker.internet.username(),
     major: getRandomMajor(),
-    seniority: getRandomSeniority(),
+    year: getRandomSeniority(),
     class: getRandomClass(),
     // not sure what enrollment is
-    // enrollment: string,
-    status: createRandomStatus()
+    enrollment: '',
+    status: createRandomStatus(),
+    createdAt: now,
+    updatedAt: now
   }
 }
 
@@ -41,11 +44,16 @@ const getRandomMajor = () => {
 }
 
 const getRandomSeniority = () => {
-  const years = ['Freshman', 'Sophomore', 'Junior', 'Senior'];
+  const years = ['FRESHMAN', 'SOPHOMORE', 'JUNIOR', 'SENIOR'];
   return getRandomElement(years);
 }
 
 const getRandomClass = () => {
   const classes = ['2200', '3200'];
   return getRandomElement(classes);
+}
+
+const createRandomStatus = (): StudentStatus => {
+  const statuses: StudentStatus[] = ['NEW', 'RETURNING', 'WITHDRAWN', 'HOLD', 'COMPLETE'];
+  return statuses[Math.floor(Math.random() * statuses.length)];
 }
