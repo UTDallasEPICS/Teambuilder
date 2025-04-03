@@ -10,6 +10,9 @@
     "start": "nuxt start",
     "lint": "eslint . --ext .js,.vue,.ts"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@formkit/drag-and-drop": "^0.3.4",
     "@headlessui/vue": "^1.7.13",
