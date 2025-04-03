@@ -145,6 +145,7 @@
 </template>
 
 <script>
+import * as XLSX from 'xlsx'; //This will be better used as https://docs.sheetjs.com/docs/getting-started/installation/nodejs#vendoring
 import { defineComponent } from 'vue';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -234,20 +235,61 @@ export default defineComponent({
       }
       return "Time Period";
     },
+    async onFileChange(event){
+      // console.log("Beginning file upload");
+      // const fileToSend = event.target.files[0];
+      // const fileAsBuffer = await fileToSend.arrayBuffer();
+      // console.log(`fileAsBuffer equals ${fileAsBuffer}`);
+      // const dataToSend = new FormData();
+      // dataToSend.append('Excel Spreadsheet', fileToSend);
+      // const res = await $fetch('/api/demographic', {
+      //   method: 'POST',
+      //   body: dataToSend
+      // })
+      // console.log("File sent!")
+      // console.log(res);
+      
+      function getColumnMajor(arr){//Requires a rectangular 2D array
+        let transpose = [];
+        for(let c = 0; c < arr[0].length; c++){
+            let currentCol = [];
+            for(let r = 0; r < arr.length; r++){
+                currentCol.push(arr[r][c]);
+            }
+            transpose.push(currentCol); //Pushes it as, essentially, a row
+        }
+        return transpose;
+      }
+      function extractCells(worksheet, relevantRange){
+        return XLSX.utils.sheet_to_json(worksheet, {header: 1, range: relevantRange});
+      }
+      function extractColumnMajor(worksheet, relevantRange){
+        return getColumnMajor(extractCells(worksheet, relevantRange));
+      }
+      //Parsing logic will occur on the frontend
+      try{
+        const reader = new FileReader();
+        const workbook = XLSX.read(await (event.target.files[0]).arrayBuffer()); //Assuming that the whole post body will be the file.
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        
+        //const relevantRange = XLSX.utils.decode_range("J34:W57"); //This may need to be horizontally extended to accomodate future semesters. However, there's no option to have an unspecified right boundary.
+        const rangeSemesterNames = XLSX.utils.decode_range("L34:V34");
+        const rangeEthnicity = XLSX.utils.decode_range("K35:K44");
+        const semesterNames = extractCells(worksheet, rangeSemesterNames);
+        console.log(semesterNames);
+        const ethnicities = extractColumnMajor(worksheet, rangeEthnicity);
 
-     async onFileChange(event){
-      console.log("Beginning file upload");
-      const fileToSend = event.target.files[0];
-      const dataToSend = new FormData();
-      dataToSend.append('Excel Spreadsheet', fileToSend);
-      const res = await $fetch('/api/demographic', {
-        method: 'POST',
-        body: dataToSend
-      })
-      console.log("File sent!")
-      console.log(res);
+        const range2200 = XLSX.utils.decode_range("L35:V45");
+        const range3200 = XLSX.utils.decode_range("L48:V56");
+        const dataFrom2200 = extractColumnMajor(worksheet, range2200);
+        const dataFrom3200 = extractColumnMajor(worksheet, range3200);
+        console.log(dataFrom2200);
+        console.log(dataFrom3200);
+      }
+      catch (error) {
+        console.log(error);
+      }
     },
-
     async getRequest() {
       if (this.isLoading) return;
       this.isLoading = true;
