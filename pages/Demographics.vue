@@ -126,7 +126,17 @@
           {{ isLoading ? 'Loading...' : 'Submit' }}
         </button>
       </div>
+      <div class="import-query">
+      <input class="import-button" type = "file"></input>
+
     </div>
+    </div>
+
+    
+
+    
+  
+    
   
     <div class="chart-container">
       <canvas ref="chartCanvas"></canvas>
@@ -683,12 +693,26 @@ export default defineComponent({
 .submit-button:hover {
   background-color: #e8f5e9;
 }
+.import-button{
+  margin-left: 10px;
+  margin-top: 10px;
+  background-color: rgb(88, 227, 148);
+  padding: 10px;
+  border-radius: 4px;
+  width: 90%;
+  height: 90%;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  color: white;
+}
 
 .submit-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
+<<<<<<< HEAD
 .import-query {
   margin-bottom: 20px;
 }
@@ -717,4 +741,6 @@ export default defineComponent({
   opacity: 0.7;
   cursor: not-allowed;
 }
+=======
+>>>>>>> feature-import-button
 </style>
