@@ -236,19 +236,6 @@ export default defineComponent({
       return "Time Period";
     },
     async onFileChange(event){
-      // console.log("Beginning file upload");
-      // const fileToSend = event.target.files[0];
-      // const fileAsBuffer = await fileToSend.arrayBuffer();
-      // console.log(`fileAsBuffer equals ${fileAsBuffer}`);
-      // const dataToSend = new FormData();
-      // dataToSend.append('Excel Spreadsheet', fileToSend);
-      // const res = await $fetch('/api/demographic', {
-      //   method: 'POST',
-      //   body: dataToSend
-      // })
-      // console.log("File sent!")
-      // console.log(res);
-      
       function getColumnMajor(arr){//Requires a rectangular 2D array
         let transpose = [];
         for(let c = 0; c < arr[0].length; c++){
@@ -266,6 +253,38 @@ export default defineComponent({
       function extractColumnMajor(worksheet, relevantRange){
         return getColumnMajor(extractCells(worksheet, relevantRange));
       }
+      function createSemesterFrom2DArray(arr, courseName){//expects a 2D array extracted from lines 34-45 of the Excel file
+        let semesterArray = []
+        arr.forEach(element => {
+          constructedYear = Number("20"+element[0].substring(0,2));
+          otherAmount = Number(element[5]) + Number(element[6]) + Number(element[7]);
+          constructedSemester = "";
+          if(element[0][2]==='S'){//third character of the semester
+            constructedSemester = "Spring";
+          }
+          else if(element[0][2]==='F'){
+            constructedSemester = "Fall";
+          }
+          else{//No winter semesters yet. This is a consequential assumption. Isaac Philo, April 3rd, 2025.
+            constructedSemester = "Summer";
+          }
+          semesterArray.append({
+            Name: element[0],
+            Course: courseName,
+            Year: constructedYear,
+            Sem: constructedSemester,
+            African_American: Number(element[1]),
+            Asian: Number(element[2]),
+            Hispanic: Number(element[3]),
+            International: Number(element[4]),
+            Other: otherAmount,
+            White: Number(element[8]),
+            Male: Number(element[9]),
+            Female: Number(element[10]),
+            Total: Number(element[11])
+          });
+        });
+      }
       //Parsing logic will occur on the frontend
       try{
         const reader = new FileReader();
@@ -279,13 +298,25 @@ export default defineComponent({
         console.log(semesterNames);
         const ethnicities = extractColumnMajor(worksheet, rangeEthnicity);
 
-        const range2200 = XLSX.utils.decode_range("L35:V45");
-        const range3200 = XLSX.utils.decode_range("L48:V56");
+        const range2200 = XLSX.utils.decode_range("L34:V45");
+        const range3200 = XLSX.utils.decode_range("L47:V57");
         const dataFrom2200 = extractColumnMajor(worksheet, range2200);
         const dataFrom3200 = extractColumnMajor(worksheet, range3200);
-        console.log(dataFrom2200);
-        console.log(dataFrom3200);
-      }
+        const JSONFor2200 = createSemesterFrom2DArray(dataFrom2200, "2200");
+        const JSONFor3200 = createSemesterFrom2DArray(dataFrom3200, "3200");
+        console.log(JSONFor2200);//Arrays of JSON objects
+        console.log(JSONFor3200);
+
+
+        console.log("Beginning data transfer...");
+        semestersObject = JSONFor2200.concat(JSONFor3200); //TODO: FILL THIS WITH DATA FROM THE EXCEL SHEET
+        const res = await $fetch('/api/demographic', {
+          method: 'POST',
+          body: semestersObject
+        })
+        console.log("File sent!")
+        console.log(res);
+        }
       catch (error) {
         console.log(error);
       }
