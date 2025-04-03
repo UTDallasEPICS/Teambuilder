@@ -3,19 +3,6 @@
     <div class="sidebar">
       <!-- Close Button -->
       <button class="close-button" @click="toggleSidebar">&#x2715;</button>
-
-
-      <!-- Import Button -->
-     
-     <div class="import-query">
-        <input
-        type="file"
-      @change="onFileChange($event)"
-      accept=".xlsx, .xls, .csv"
-      capture
-        />
-      </div>
-  
       <!-- Time Period Tile -->
       <div class="field">
         <button 
@@ -126,8 +113,16 @@
           {{ isLoading ? 'Loading...' : 'Submit' }}
         </button>
       </div>
+
+      <!-- Import Button -->
       <div class="import-query">
-      <input class="import-button" type = "file"></input>
+      <input
+        class="import-button"
+        type = "file"
+        @change="onFileChange($event)"
+        accept=".xlsx, .xls, .csv"
+        capture>
+      </input>
 
     </div>
     </div>
@@ -253,12 +248,24 @@ export default defineComponent({
       function extractColumnMajor(worksheet, relevantRange){
         return getColumnMajor(extractCells(worksheet, relevantRange));
       }
-      function createSemesterFrom2DArray(arr, courseName){//expects a 2D array extracted from lines 34-45 of the Excel file
+      function createSemestersFrom2DArray(arr, courseName){//expects a 2D array extracted from lines 34-45 of the Excel file
+        //if the course is 3200, there is no "Other" row
+        let otherIndexOffset = 0;
+        if(courseName === "2200"){
+          otherIndexOffset = 1;
+        }
         let semesterArray = []
         arr.forEach(element => {
-          constructedYear = Number("20"+element[0].substring(0,2));
-          otherAmount = Number(element[5]) + Number(element[6]) + Number(element[7]);
-          constructedSemester = "";
+          let constructedYear = Number("20"+element[0].substring(0,2));
+          let otherAmount = 0;
+          //The "Other" amount is constructed from 3 rows for 2200 and 2 rows for 3200 (there's no "Other" row for 3200)
+          if(courseName==="2200"){
+            otherAmount = Number(element[5]) + Number(element[6]) + Number(element[7]);
+          }
+          else{
+            otherAmount = Number(element[5]) + Number(element[6]);
+          }
+          let constructedSemester = "";
           if(element[0][2]==='S'){//third character of the semester
             constructedSemester = "Spring";
           }
@@ -268,7 +275,7 @@ export default defineComponent({
           else{//No winter semesters yet. This is a consequential assumption. Isaac Philo, April 3rd, 2025.
             constructedSemester = "Summer";
           }
-          semesterArray.append({
+          semesterArray.push({
             Name: element[0],
             Course: courseName,
             Year: constructedYear,
@@ -278,12 +285,15 @@ export default defineComponent({
             Hispanic: Number(element[3]),
             International: Number(element[4]),
             Other: otherAmount,
-            White: Number(element[8]),
-            Male: Number(element[9]),
-            Female: Number(element[10]),
-            Total: Number(element[11])
+            //OtherIndexOffset gives us an index that is 1 higher if and only if we are processing EPCS 2200.
+            //No incrementation for 2200.
+            White: Number(element[7+otherIndexOffset]),
+            Male: Number(element[8+otherIndexOffset]),
+            Female: Number(element[9+otherIndexOffset]),
+            Total: Number(element[10+otherIndexOffset])
           });
         });
+        return semesterArray;
       }
       //Parsing logic will occur on the frontend
       try{
@@ -302,14 +312,14 @@ export default defineComponent({
         const range3200 = XLSX.utils.decode_range("L47:V57");
         const dataFrom2200 = extractColumnMajor(worksheet, range2200);
         const dataFrom3200 = extractColumnMajor(worksheet, range3200);
-        const JSONFor2200 = createSemesterFrom2DArray(dataFrom2200, "2200");
-        const JSONFor3200 = createSemesterFrom2DArray(dataFrom3200, "3200");
+        const JSONFor2200 = createSemestersFrom2DArray(dataFrom2200, "2200");
+        const JSONFor3200 = createSemestersFrom2DArray(dataFrom3200, "3200");
         console.log(JSONFor2200);//Arrays of JSON objects
         console.log(JSONFor3200);
 
 
         console.log("Beginning data transfer...");
-        semestersObject = JSONFor2200.concat(JSONFor3200); //TODO: FILL THIS WITH DATA FROM THE EXCEL SHEET
+        let semestersObject = JSONFor2200.concat(JSONFor3200); //TODO: FILL THIS WITH DATA FROM THE EXCEL SHEET
         const res = await $fetch('/api/demographic', {
           method: 'POST',
           body: semestersObject
