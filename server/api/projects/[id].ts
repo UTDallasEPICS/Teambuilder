@@ -1,5 +1,7 @@
 // TODO: add DELETE
 
+import { PrismaClient } from "@prisma/client";
+
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id;
 
@@ -13,20 +15,19 @@ export default defineEventHandler(async (event) => {
     }
 
     const method = event.method;
-    const project = event.context.client.project;
-    const updatedProject = await readBody(event);
-
-    console.log(id)
-    console.log(method)
-    console.log(updatedProject)
-
+    const client: PrismaClient = event.context.client;
+    const project = client.project;
+    
     switch (method) {
       case 'GET':
         return project.findUnique({ where: { id } });
       case 'PUT':
+        const updatedProject = await readBody(event);
         return project.update({
           where: { id },
           data: updatedProject,
         })
+      case 'DELETE':
+        return project.delete({ where: { id } });
     }
 });
