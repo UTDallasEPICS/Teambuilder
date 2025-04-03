@@ -9,16 +9,20 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    console.log("POST request now being handled");
     const postBody = await readBody(event);//Assuming this gets the whole file through in one go, like in https://nuxt.com/docs/guide/directory-structure/server#body-handling.
+    console.log("postBody has now been read");
     //If that is not true, then this page may be helpful: https://austingil.com/file-uploads-in-node/
     //relevant tutorial page for remote file processing: https://docs.sheetjs.com/docs/solutions/input#example-remote-file
-    const workbook = XLSX.read(postBody); //Assuming that the whole post body will be the file.
+    const workbook = XLSX.read(await Buffer.from(postBody)); //Assuming that the whole post body will be the file.
+    console.log(postBody);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     
     //const relevantRange = XLSX.utils.decode_range("J34:W57"); //This may need to be horizontally extended to accomodate future semesters. However, there's no option to have an unspecified right boundary.
     const rangeSemesterNames = XLSX.utils.decode_range("L34:V34");
     const rangeEthnicity = XLSX.utils.decode_range("K35:K44");
     const semesterNames = extractCells(worksheet, rangeSemesterNames);
+    console.log(semesterNames);
     const ethnicities = extractColumnMajor(workbook, rangeEthnicity);
 
     const range2200 = XLSX.utils.decode_range("L35:V45");

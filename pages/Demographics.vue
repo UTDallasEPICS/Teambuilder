@@ -10,8 +10,8 @@
      <div class="import-query">
         <input
         type="file"
-      @change="onFileChanged($event)"
-      accept="text/*"
+      @change="onFileChange($event)"
+      accept=".xlsx, .xls, .csv"
       capture
         />
       </div>
@@ -226,14 +226,21 @@ export default defineComponent({
     },
 
 
-
-
-    async importFile(){
-      console.log("Import button pressed");
+    async onFileChange(event){
+      console.log("Beginning file upload");
+      const fileToSend = event.target.files[0];
+      const fileBuffer = await fileToSend.arrayBuffer();
+      const res = await $fetch('/api/demographic', {
+        method: 'POST',
+        body: fileBuffer
+      })
+      console.log(res);
     },
 
-
-
+    // This will be necessary if I make an import button separately from the file uploader
+    // async importFile(){
+    //   console.log("Import button pressed");
+    // },
 
 
     async getRequest() {
