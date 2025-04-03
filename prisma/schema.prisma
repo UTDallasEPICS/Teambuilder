@@ -36,7 +36,7 @@ model Project {
   name          String
   description   String
   type          ProjectType
-  status        Status
+  status        ProjectStatus
   semester      String
   repoURL       String        @map("repo_url")
 
@@ -79,7 +79,7 @@ model Student {
   year          Year
   class         String
   enrollment    String
-  status        Status
+  status        StudentStatus
 
   teams         Team[]
 
@@ -102,7 +102,15 @@ enum ProjectType {
   BOTH
 }
 
-enum Status {
+enum StudentStatus {
+  NEW
+  RETURNING
+  COMPLETE
+  WITHDRAWN
+  HOLD
+}
+
+enum ProjectStatus {
   NEW
   RETURNING
   ARCHIVED
