@@ -10,7 +10,75 @@ export default defineEventHandler(async (event) => {
     console.log("POST request now being handled");
     // console.log(event);
     const postBody = await readBody(event);
-    // console.log(`postBody = ${postBody}`);
+    // postBody.forEach((element: any) => {console.log(element)});
+    //Update the database
+    await postBody.forEach(async (element: any) => {
+      let name: string = element.Name;
+      let course: string = element.Course;
+      let year: number = element.Year;
+      let semester = element.Sem;
+      let african_american = element.African_American;
+      let asian = element.Asian;
+      let hispanic = element.Hispanic;
+      let international = element.International;
+      let other = element.Other;
+      let white = element.White;
+      let male = element.Male;
+      let female = element.Female;
+      let total = element.Total;
+      //Assuming this will return only one semester
+      //Assuming a given combination of name, year, and semester is unique
+      const desiredSemesters = await prisma.semester.findMany({
+        where: {
+          Name: name,
+          Course: course,
+          Year: year
+        },
+      });
+      let prismaReturned;
+      if(desiredSemesters[0]===undefined){//If the database has no entry for this semester
+        prismaReturned = await prisma.semester.create({
+          data: {
+            Name: name,
+            Course: course,
+            Year: year,
+            Sem: semester,
+            African_American: african_american,
+            Asian: asian,
+            Hispanic: hispanic,
+            International: international,
+            Other: other,
+            White: white,
+            Male: male,
+            Female: female,
+            Total: total
+          }
+        });
+      }
+      else{//If we need to update the database
+        prismaReturned = await prisma.semester.update({
+          where: {
+            Id: desiredSemesters[0].Id,
+          },
+          data: {
+            Name: name,
+            Course: course,
+            Year: year,
+            Sem: semester,
+            African_American: african_american,
+            Asian: asian,
+            Hispanic: hispanic,
+            International: international,
+            Other: other,
+            White: white,
+            Male: male,
+            Female: female,
+            Total: total
+          }
+        });
+      }
+      console.log(`Prisma returned: ${prismaReturned}`);
+    });
   }
   catch(error){
     console.log(error);

@@ -324,7 +324,8 @@ export default defineComponent({
           method: 'POST',
           body: semestersObject
         })
-        console.log("File sent!")
+        console.log("JSON objects sent!");
+        semestersObject.forEach(element => {console.log(element);});
         console.log(res);
         }
       catch (error) {
