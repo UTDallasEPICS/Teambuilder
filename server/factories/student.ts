@@ -54,6 +54,6 @@ const getRandomClass = () => {
 }
 
 const createRandomStatus = (): StudentStatus => {
-  const statuses: StudentStatus[] = ['NEW', 'RETURNING', 'WITHDRAWN', 'HOLD', 'COMPLETE'];
+  const statuses: StudentStatus[] = ['ACTIVE', 'INACTIVE'];
   return statuses[Math.floor(Math.random() * statuses.length)];
 }

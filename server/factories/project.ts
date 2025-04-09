@@ -38,6 +38,6 @@ const createRandomType  = () => {
 }
 
 const createRandomStatus = (): ProjectStatus => {
-  const statuses: ProjectStatus[] = ['NEW', 'RETURNING', 'ARCHIVED'];
-  return statuses[Math.floor(Math.random() * statuses.length)];
+  const statuses: ProjectStatus[] = ['NEW', 'RETURNING', 'WITHDRAWN', 'HOLD', 'COMPLETE'];
+  return getRandomElement(statuses);
 }
