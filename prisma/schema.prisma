@@ -102,7 +102,7 @@ enum ProjectType {
   BOTH
 }
 
-enum StudentStatus {
+enum ProjectStatus {
   NEW
   RETURNING
   COMPLETE
@@ -110,8 +110,7 @@ enum StudentStatus {
   HOLD
 }
 
-enum ProjectStatus {
-  NEW
-  RETURNING
-  ARCHIVED
+enum StudentStatus {
+  ACTIVE 
+  INACTIVE
 }
