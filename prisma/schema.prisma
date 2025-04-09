@@ -64,6 +64,7 @@ model Team {
   updatedAt   DateTime   @updatedAt
 
   @@map("teams")
+  @@unique([projectId, semesterId])
 }
 
 model Student {
