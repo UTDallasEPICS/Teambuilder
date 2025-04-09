@@ -37,7 +37,6 @@ model Project {
   description   String
   type          ProjectType
   status        ProjectStatus
-  semester      String
   repoURL       String        @map("repo_url")
 
   partnerId     String        @map("partner_id")
@@ -53,11 +52,11 @@ model Project {
 
 model Team {
   id          String     @id @default(uuid())
-  name        String
-  semester    String
   
   projectId   String     @map("project_id")
   project     Project    @relation(fields: [projectId], references: [id])
+  semesterId  String     @map("semester_id")
+  semester    Semester   @relation(fields: [semesterId], references: [id])
 
   students    Student[]
 
@@ -93,6 +92,8 @@ model Semester {
   id            String       @id @default(uuid())
   year          Int
   season        Season
+
+  teams         Team[]
 
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
