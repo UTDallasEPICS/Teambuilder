@@ -89,11 +89,28 @@ model Student {
   @@map("students")
 }
 
+model Semester {
+  id            String       @id @default(uuid())
+  year          Int
+  season        Season
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("semesters")
+}
+
 enum Year {
   FRESHMAN
   SOPHOMORE
   JUNIOR
   SENIOR
+}
+
+enum Season {
+  SPRING
+  SUMMER
+  FALL
 }
 
 enum ProjectType {
