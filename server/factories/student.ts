@@ -39,7 +39,7 @@ const getRandomNetID = () => {
 }
 
 const getRandomMajor = () => {
-  const majors = ['CE', 'CS', 'DS', 'SE', 'ME', 'BME', 'EE'];
+  const majors = ['CE', 'CS', 'DS', 'SE', 'ME', 'BME', 'EE', 'Systems', 'Other'];
   return getRandomElement(majors);
 }
 

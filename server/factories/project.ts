@@ -10,7 +10,6 @@ export const createRandomProject = (partnerId: string): Project => {
     name: faker.commerce.productName(),
     description: faker.lorem.sentence(),
     status: createRandomStatus(),
-    semester: createRandomSemester(),
     repoURL: faker.internet.url(),
     type: createRandomType(),
     createdAt: now,
@@ -25,11 +24,6 @@ export const createRandomProjects = (length: number, partners: Partner[] = []): 
       return createRandomProject(randomPartnerId);
     }
   );
-}
-
-const createRandomSemester = () => {
-  const semesters = ['S2023', 'F2023', 'S2024', 'F2024', 'S2025'];
-  return getRandomElement(semesters);
 }
 
 const createRandomType  = () => {

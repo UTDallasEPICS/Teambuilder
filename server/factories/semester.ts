@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Season, Semester } from "@prisma/client";
+import type { Season, Semester } from "@prisma/client";
 
 export const createSemesters = (): Semester[] => {
   const years = [2023, 2024];
