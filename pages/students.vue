@@ -21,15 +21,19 @@
         selectionMode="single"
         v-model:selection="selectedStudent"
       )
-        Column(field="name" header="Name" :showFilterMenu="false")
+        Column(field="lastName" header="Last Name" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
-            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by last" :showClear="true")
+
+        Column(field="firstName" header="First Name" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by first" :showClear="true")
 
         Column(field="email" header="Email" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by email" :showClear="true")
 
-        Column(field="netid" header="NetID" :showFilterMenu="false")
+        Column(field="netID" header="NetID" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by NetID" :showClear="true")
 
@@ -38,14 +42,17 @@
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="majors" placeholder="Any" :maxSelectedLabels="1")
 
         Column(field="year" header="Year" :showFilterMenu="false")
+          template(#body="{ data }") {{ capitalize(data.year) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="years" placeholder="Any" :maxSelectedLabels="1")
 
         Column(field="status" header="Status" :showFilterMenu="false")
           template(#body="{ data }") 
-            .pill.w-20(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
+            .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
+              template(#option="slotProps")
+                .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
 </template>
 
 <script lang="ts" setup>
@@ -53,38 +60,46 @@ import { onMounted, ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
+import type { Student } from '@prisma/client';
 
 useHead({ title: 'Students' });
 
-const students = ref([]);
+const students = ref<Student[]>([]);
 const studentCount = ref(0);
 
 onMounted(async () => {
-  students.value = await $fetch("api/students");
+  students.value = await $fetch<Student[]>("api/students");
+  console.log(students.value[0])
   studentCount.value = students.value.length;
 });
 
-const handleParsed = (uploadedStudents) => {
+const handleParsed = (uploadedStudents: Student[]) => {
   students.value.push(...uploadedStudents);
   studentCount.value = students.value.length;
 };
 
-const selectedStudent = ref(null);
-const editedStudent = ref(null);
+const selectedStudent = ref<Student | null>(null);
+const editedStudent = ref<Student | null>(null);
 const isEditing = ref(false);
 
 const filters = ref({
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  lastName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  firstName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   email: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  netid: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  netID: { value: null, matchMode: FilterMatchMode.CONTAINS },
   major: { value: [], matchMode: FilterMatchMode.IN },
   year: { value: [], matchMode: FilterMatchMode.IN },
   status: { value: [], matchMode: FilterMatchMode.IN },
 });
 
-const statuses = ref(['ACTIVE', 'INACTIVE', 'GRADUATED']);
+const statuses = ref(['ACTIVE', 'INACTIVE']);
 const majors = ref(['CS', 'SE', 'EE', 'ME', 'BME', 'DS', 'CE', 'Systems', 'Other']);
 const years = ref(['Freshman', 'Sophomore', 'Junior', 'Senior']);
+
+const statusBgColor = (status: string) => ({
+  "bg-green": status === "ACTIVE",
+  "bg-red": status === "INACTIVE",
+});
 
 const closeModal = () => {
   selectedStudent.value = null;
