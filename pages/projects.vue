@@ -30,14 +30,14 @@
           template(#body="{ data }") 
             .pill.w-20(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
           template(#filter="{ filterModel, filterCallback }")
-            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
+            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="0")
               template(#option="slotProps")
-                .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option.toUpperCase() }}
-        Column(field="semester" header="Semester" :showFilterMenu="false")
-          template(#body="{ data }")
-            .text-center {{ data.semester }}
-          template(#filter="{ filterModel, filterCallback }")
-            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="semesters" placeholder="Any" :maxSelectedLabels="1")
+                .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
+        //- Column(field="semester" header="Semester" :showFilterMenu="false")
+        //-   template(#body="{ data }")
+        //-     .text-center {{ data.semester }}
+        //-   template(#filter="{ filterModel, filterCallback }")
+        //-     MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="semesters" placeholder="Any" :maxSelectedLabels="1")
         Column(field="type" header="Type" :showFilterMenu="false")
           template(#body="{ data }")
             .text-center {{ capitalize(data.type) }}
@@ -65,11 +65,11 @@
           option(v-for="status in statuses" :key="status" :value="status") {{ capitalize(status) }}
 
     div
-      span.cardSubTitle Semester:
+      span.cardSubTitle Semesters:
       span.cardText
-        template(v-if="!isEditing") {{ selectedProject?.semester }}
-        select(v-else v-model="editedProject.semester")
-          option(v-for="semester in semesters" :key="semester" :value="semester") {{ semester }}
+        template(v-if="!isEditing") {{ selectedProjectSemesters }}
+        //- select(v-else v-model="editedProject.semester")
+        //-   option(v-for="semester in semesters" :key="semester" :value="semester") {{ semester }}
 
     div
       span.cardSubTitle Type:
@@ -92,33 +92,41 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import type { Project } from '@prisma/client';
+import type { Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
+import { capitalize } from '@/utils/index';
+import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
+import { stringifySemesters } from '@/utils/index';
 
 useHead({ title: 'Projects' });
 
-const projects = ref<Project[]>([]);
+const projects = ref<ProjectWithSemesters[]>([]);
 onMounted(async () => {
-  projects.value = await $fetch<Project[]>("api/projects");
+  projects.value = await $fetch<ProjectWithSemesters[]>("api/projects");
+  console.log(projects.value[0])
 })
-const selectedProject = ref<Project | null>(null);
-const editedProject = ref<Project | null>(null);
+const selectedProject = ref<ProjectWithSemesters | null>(null);
+const selectedProjectSemesters = computed(() => (
+  stringifySemesters(selectedProject.value?.teams.map(team => team.semester))
+));
+// const selectedProjectSemesters: Semester[] | undefined = selectedProject.value?.teams.map(team => team.semester);
+const editedProject = ref<ProjectWithSemesters | null>(null);
 const isEditing = ref(false);
 
 const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   description: { value: null, matchMode: FilterMatchMode.CONTAINS },
   type: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  status: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  semester: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  status: { value: [], matchMode: FilterMatchMode.IN },
+  semester: { value: [], matchMode: FilterMatchMode.IN },
 });
 
-const statuses = ref(['NEW', 'RETURNING', 'ARCHIVED']);
+const statuses = ref(['NEW', 'RETURNING', 'COMPLETE', 'WITHDRAWN', 'HOLD']);
 const semesters = ref(['S2023', 'F2023', 'S2024', 'F2024', 'S2025']);
-const types = ref(['SOFTWARE', 'HARDWARE', 'BOTH']);
+const types = ref(['Software', 'Hardware', 'Both']);
 
-const selectProject = (project: Project) => {
+const selectProject = (project: ProjectWithSemesters) => {
   selectedProject.value = project;
 }
 
@@ -163,7 +171,9 @@ const handleParsed = (parsed: any) => {
 const statusBgColor = (status: string) => ({
   "bg-green": status === "NEW",
   "bg-orange": status === "RETURNING",
-  "bg-red": status === "ARCHIVED",
+  "bg-lightblue": status === "COMPLETE",
+  "bg-gray": status === "WITHDRAWN",
+  "bg-red": status === "HOLD",
 });
 
 const helpInfo = `Upload information for your projects here.  
@@ -186,10 +196,6 @@ const helpInfo = `Upload information for your projects here.
 .cardText {
   @apply text-xl
 }
-/* .p-select-list-container {
-  background-color: #00796b;
-  color: black;
-} */
 .overlay {
   position: absolute;
   top: 0;
