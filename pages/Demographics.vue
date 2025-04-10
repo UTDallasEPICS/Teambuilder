@@ -248,6 +248,18 @@ export default defineComponent({
       function extractColumnMajor(worksheet, relevantRange){
         return getColumnMajor(extractCells(worksheet, relevantRange));
       }
+      function determineEndingColumn(worksheet, beginningAddress){//Given a SheetJS worksheet and a valid top-left address for the table, determine the width of the table
+        let jsonaddress = {c:beginningAddress.c, r:beginningAddress.r};
+        let address = XLSX.utils.encode_cell(jsonaddress);
+        let cell = worksheet[address];
+        while(cell !== undefined){
+          jsonaddress.c += 1;
+          address = XLSX.utils.encode_cell(jsonaddress);
+          cell = worksheet[address];
+        }
+        jsonaddress.c -= 2; //the last relevant column is to the left of the total column which is to the left of the first undefined column
+        return jsonaddress.c;
+      }
       function createSemestersFrom2DArray(arr, courseName){//expects a 2D array extracted from lines 34-45 of the Excel file
         //if the course is 3200, there is no "Other" row
         let otherIndexOffset = 0;
@@ -300,18 +312,30 @@ export default defineComponent({
         const reader = new FileReader();
         const workbook = XLSX.read(await (event.target.files[0]).arrayBuffer()); //Assuming that the whole post body will be the file.
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        
-        //const relevantRange = XLSX.utils.decode_range("J34:W57"); //This may need to be horizontally extended to accomodate future semesters. However, there's no option to have an unspecified right boundary.
-        const rangeSemesterNames = XLSX.utils.decode_range("L34:V34");
-        const rangeEthnicity = XLSX.utils.decode_range("K35:K44");
-        const semesterNames = extractCells(worksheet, rangeSemesterNames);
-        console.log(semesterNames);
-        const ethnicities = extractColumnMajor(worksheet, rangeEthnicity);
 
         const range2200 = XLSX.utils.decode_range("L34:V45");
         const range3200 = XLSX.utils.decode_range("L47:V57");
-        const dataFrom2200 = extractColumnMajor(worksheet, range2200);
-        const dataFrom3200 = extractColumnMajor(worksheet, range3200);
+        //Some variables for more flexible row selections
+        //The table for 2200 starts at column L and is in rows 34-45 (L34:V45 was the relevant selection as of April 10th, 2025)
+        //The table for 3200 starts at column L and is in rows 47-57 (L47:V57 was the relevant selection as of April 10th, 2025)
+        //These ranges are of different length because the categories for each class differ slightly (differences are merged in processing)
+        const startingColumn = XLSX.utils.decode_col("L");
+
+        const beginningRow2200 = XLSX.utils.decode_row("34");
+        const endingRow2200 = XLSX.utils.decode_row("45");
+
+        const beginningRow3200 = XLSX.utils.decode_row("47");
+        const endingRow3200 = XLSX.utils.decode_row("57");
+
+        const beginningAddress = XLSX.utils.decode_cell("L34");
+        const endingColumn = determineEndingColumn(worksheet, beginningAddress);
+        console.log(`Ending column = ${endingColumn}`);
+
+        const calculatedRange2200 = {s: {r: beginningRow2200, c: startingColumn}, e: {r: endingRow2200, c: endingColumn}};
+        const calculatedRange3200 = {s: {r: beginningRow3200, c: startingColumn}, e: {r: endingRow3200, c: endingColumn}};
+
+        const dataFrom2200 = extractColumnMajor(worksheet, calculatedRange2200);
+        const dataFrom3200 = extractColumnMajor(worksheet, calculatedRange3200);
         const JSONFor2200 = createSemestersFrom2DArray(dataFrom2200, "2200");
         const JSONFor3200 = createSemestersFrom2DArray(dataFrom3200, "3200");
         console.log(JSONFor2200);//Arrays of JSON objects
