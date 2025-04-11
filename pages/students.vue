@@ -29,10 +29,6 @@
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by first" :showClear="true")
 
-        Column(field="email" header="Email" :showFilterMenu="false")
-          template(#filter="{ filterModel, filterCallback }")
-            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by email" :showClear="true")
-
         Column(field="netID" header="NetID" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by NetID" :showClear="true")
@@ -45,7 +41,10 @@
           template(#body="{ data }") {{ capitalizeFirst(data.year) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="years" placeholder="Any" :maxSelectedLabels="1")
+              // dropdown options
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
+              // selected value
+              template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
 
         Column(field="status" header="Status" :showFilterMenu="false")
           template(#body="{ data }") 
@@ -61,7 +60,7 @@ import { onMounted, ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
-import type { Student } from '@prisma/client';
+import type { Student, Year } from '@prisma/client';
 
 useHead({ title: 'Students' });
 
@@ -70,7 +69,6 @@ const studentCount = ref(0);
 
 onMounted(async () => {
   students.value = await $fetch<Student[]>("api/students");
-  console.log(students.value[0])
   studentCount.value = students.value.length;
 });
 
@@ -86,16 +84,21 @@ const isEditing = ref(false);
 const filters = ref({
   lastName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   firstName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  email: { value: null, matchMode: FilterMatchMode.CONTAINS },
   netID: { value: null, matchMode: FilterMatchMode.CONTAINS },
   major: { value: [], matchMode: FilterMatchMode.IN },
   year: { value: [], matchMode: FilterMatchMode.IN },
   status: { value: [], matchMode: FilterMatchMode.IN },
 });
 
+const formatYearsFilter = (years: Year[] | undefined) => {
+  if (!years || years.length === 0) return 'Any';
+  if (years.length !== 1) return `${years.length} items selected`
+  return capitalizeFirst(years[0]);
+}
+
 const statuses = ref(['ACTIVE', 'INACTIVE']);
 const majors = ref(['CS', 'SE', 'EE', 'ME', 'BME', 'DS', 'CE', 'Systems', 'Other']);
-const years = ref(['Freshman', 'Sophomore', 'Junior', 'Senior']);
+const years = ref(['FRESHMAN', 'SOPHOMORE', 'JUNIOR', 'SENIOR']);
 
 const statusBgColor = (status: string) => ({
   "bg-green": status === "ACTIVE",
