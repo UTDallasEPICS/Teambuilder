@@ -42,9 +42,10 @@
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="majors" placeholder="Any" :maxSelectedLabels="1")
 
         Column(field="year" header="Year" :showFilterMenu="false")
-          template(#body="{ data }") {{ capitalize(data.year) }}
+          template(#body="{ data }") {{ capitalizeFirst(data.year) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="years" placeholder="Any" :maxSelectedLabels="1")
+              template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
 
         Column(field="status" header="Status" :showFilterMenu="false")
           template(#body="{ data }") 

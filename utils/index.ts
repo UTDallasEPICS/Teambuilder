@@ -1,6 +1,6 @@
 import type { Semester } from "@prisma/client";
 
-export const capitalize = (string: string | null) => {
+export const capitalizeFirst = (string: string | null) => {
   if (!string) return null;
   return string[0].toUpperCase() + string.substring(1).toLowerCase();
 }
@@ -11,7 +11,7 @@ export const stringifySemesters = (semesters: Semester[] | undefined) => {
   if (!semesters) return string;
   
   semesters.forEach(semester => {
-    string += capitalize(semester.season);
+    string += capitalizeFirst(semester.season);
     string += ' ';
     string += semester.year;
     string += ', ';

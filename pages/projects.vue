@@ -40,7 +40,7 @@
         //-     MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="semesters" placeholder="Any" :maxSelectedLabels="1")
         Column(field="type" header="Type" :showFilterMenu="false")
           template(#body="{ data }")
-            .text-center {{ capitalize(data.type) }}
+            .text-center {{ capitalizeFirst(data.type) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="types" placeholder="Any" :maxSelectedLabels="1")
   
@@ -60,9 +60,9 @@
     div
       span.cardSubTitle Status:
       span.cardText
-        template(v-if="!isEditing") {{ capitalize(selectedProject?.status) }}
+        template(v-if="!isEditing") {{ capitalizeFirst(selectedProject?.status) }}
         select(v-else v-model="editedProject.status")
-          option(v-for="status in statuses" :key="status" :value="status") {{ capitalize(status) }}
+          option(v-for="status in statuses" :key="status" :value="status") {{ capitalizeFirst(status) }}
 
     div
       span.cardSubTitle Semesters:
@@ -74,9 +74,9 @@
     div
       span.cardSubTitle Type:
       span.cardText
-        template(v-if="!isEditing") {{ capitalize(selectedProject?.type) }}
+        template(v-if="!isEditing") {{ capitalizeFirst(selectedProject?.type) }}
         select(v-else v-model="editedProject.type")
-          option(v-for="type in types" :key="type" :value="type") {{ capitalize(type) }}
+          option(v-for="type in types" :key="type" :value="type") {{ capitalizeFirst(type) }}
 
     div
       span.cardSubTitle Repo:
@@ -95,7 +95,7 @@ import { FilterMatchMode } from '@primevue/core/api';
 import type { Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
-import { capitalize } from '@/utils/index';
+import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import { stringifySemesters } from '@/utils/index';
 
