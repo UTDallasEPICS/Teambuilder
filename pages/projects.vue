@@ -33,11 +33,6 @@
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="0")
               template(#option="slotProps")
                 .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
-        //- Column(field="semester" header="Semester" :showFilterMenu="false")
-        //-   template(#body="{ data }")
-        //-     .text-center {{ data.semester }}
-        //-   template(#filter="{ filterModel, filterCallback }")
-        //-     MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="semesters" placeholder="Any" :maxSelectedLabels="1")
         Column(field="type" header="Type" :showFilterMenu="false")
           template(#body="{ data }")
             .text-center {{ capitalizeFirst(data.type) }}
@@ -119,7 +114,6 @@ const filters = ref({
   description: { value: null, matchMode: FilterMatchMode.CONTAINS },
   type: { value: null, matchMode: FilterMatchMode.CONTAINS },
   status: { value: [], matchMode: FilterMatchMode.IN },
-  semester: { value: [], matchMode: FilterMatchMode.IN },
 });
 
 const statuses = ref(['NEW', 'RETURNING', 'COMPLETE', 'WITHDRAWN', 'HOLD']);
