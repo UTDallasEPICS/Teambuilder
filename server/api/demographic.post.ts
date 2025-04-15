@@ -17,15 +17,15 @@ export default defineEventHandler(async (event) => {
       let course: string = element.Course;
       let year: number = element.Year;
       let semester = element.Sem;
-      let african_american = element.African_American;
-      let asian = element.Asian;
-      let hispanic = element.Hispanic;
-      let international = element.International;
-      let other = element.Other;
-      let white = element.White;
-      let male = element.Male;
-      let female = element.Female;
-      let total = element.Total;
+      let african_american = element.African_American ? element.African_American : 0;
+      let asian = element.Asian ? element.Asian : 0;
+      let hispanic = element.Hispanic ? element.Hispanic : 0;
+      let international = element.International ? element.International : 0;
+      let other = element.Other ? element.Other : 0;
+      let white = element.White ? element.White : 0;
+      let male = element.Male ? element.Male : 0;
+      let female = element.Female ? element.Female : 0;
+      let total = element.Total ? element.Total : 0;
       //Assuming this will return only one semester
       //Assuming a given combination of name, year, and semester is unique
       const desiredSemesters = await prisma.semester.findMany({
