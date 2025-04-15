@@ -77,7 +77,7 @@ export default defineEventHandler(async (event) => {
           }
         });
       }
-      console.log(`Prisma returned: ${prismaReturned}`);
+      // console.log(`Prisma returned: ${JSON.stringify(prismaReturned)}`);
     });
   }
   catch(error){

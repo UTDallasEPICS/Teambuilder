@@ -263,7 +263,7 @@ export default defineComponent({
       function createSemestersFrom2DArray(arr, courseName){//expects a 2D array extracted from lines 34-45 of the Excel file
         //if the course is 3200, there is no "Other" row
         let otherIndexOffset = 0;
-        if(courseName === "2200"){
+        if((courseName === "2200") || (courseName === "2100")){
           otherIndexOffset = 1;
         }
         let semesterArray = []
@@ -271,14 +271,14 @@ export default defineComponent({
           let constructedYear = Number("20"+element[0].substring(0,2));
           let otherAmount = 0;
           //The "Other" amount is constructed from 3 rows for 2200 and 2 rows for 3200 (there's no "Other" row for 3200)
-          if(courseName==="2200"){
+          if((courseName==="2200")||(courseName==="2100")){
             otherAmount = Number(element[5]) + Number(element[6]) + Number(element[7]);
           }
           else{
             otherAmount = Number(element[5]) + Number(element[6]);
           }
           let constructedSemester = "";
-          if(element[0][2]==='S'){//third character of the semester
+          if(element[0][2]==='S'){//third character of the semester entry of the element
             constructedSemester = "Spring";
           }
           else if(element[0][2]==='F'){
@@ -287,7 +287,7 @@ export default defineComponent({
           else{//No winter semesters yet. This is a consequential assumption. Isaac Philo, April 3rd, 2025.
             constructedSemester = "Summer";
           }
-          semesterArray.push({
+          let semesterToPush = {
             Name: element[0],
             Course: courseName,
             Year: constructedYear,
@@ -303,7 +303,9 @@ export default defineComponent({
             Male: Number(element[8+otherIndexOffset]),
             Female: Number(element[9+otherIndexOffset]),
             Total: Number(element[10+otherIndexOffset])
-          });
+          };
+          semesterArray.push(semesterToPush);
+          console.log("Semester being pushed: " + JSON.stringify(semesterToPush));
         });
         return semesterArray;
       }
@@ -313,8 +315,8 @@ export default defineComponent({
         const workbook = XLSX.read(await (event.target.files[0]).arrayBuffer()); //Assuming that the whole post body will be the file.
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-        const range2200 = XLSX.utils.decode_range("L34:V45");
-        const range3200 = XLSX.utils.decode_range("L47:V57");
+        const range2100 = XLSX.utils.decode_range("C34:I45");
+        const range3100 = XLSX.utils.decode_range("C47:I57");
         //Some variables for more flexible row selections
         //The table for 2200 starts at column L and is in rows 34-45 (L34:V45 was the relevant selection as of April 10th, 2025)
         //The table for 3200 starts at column L and is in rows 47-57 (L47:V57 was the relevant selection as of April 10th, 2025)
@@ -336,14 +338,18 @@ export default defineComponent({
 
         const dataFrom2200 = extractColumnMajor(worksheet, calculatedRange2200);
         const dataFrom3200 = extractColumnMajor(worksheet, calculatedRange3200);
+        const dataFrom2100 = extractColumnMajor(worksheet, range2100);
+        const dataFrom3100 = extractColumnMajor(worksheet, range3100);
         const JSONFor2200 = createSemestersFrom2DArray(dataFrom2200, "2200");
         const JSONFor3200 = createSemestersFrom2DArray(dataFrom3200, "3200");
+        const JSONFor2100 = createSemestersFrom2DArray(dataFrom2100, "2100");
+        const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3100");
         console.log(JSONFor2200);//Arrays of JSON objects
         console.log(JSONFor3200);
 
 
         console.log("Beginning data transfer...");
-        let semestersObject = JSONFor2200.concat(JSONFor3200); //TODO: FILL THIS WITH DATA FROM THE EXCEL SHEET
+        let semestersObject = JSONFor2100.concat(JSONFor2200).concat(JSONFor3100).concat(JSONFor3200); //An array of all of the semester data in total
         const res = await $fetch('/api/demographic', {
           method: 'POST',
           body: semestersObject
@@ -820,7 +826,7 @@ export default defineComponent({
   cursor: not-allowed;
 }
 
-<<<<<<< HEAD
+/*HEAD*/
 .import-query {
   margin-bottom: 20px;
 }
