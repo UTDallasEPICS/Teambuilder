@@ -133,14 +133,10 @@
         </div>
       </div>
     </div>
-  </div>
-  
- 
-  
     <div class="chart-container">
       <canvas ref="chartCanvas"></canvas>
     </div> 
-  
+  </div>  
 </template>
 
 <script>
@@ -370,14 +366,16 @@ export default defineComponent({
         const JSONFor2100 = createSemestersFrom2DArray(dataFrom2100, "2200");
         //Uploading 3100 under the name of 3200 because Andrea considers those two classes synonymous as well
         const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3200");
-
-        console.log("Beginning data transfer...");
-        const res = await $fetch('/api/demographic', {
         console.log(JSONFor2200);//Arrays of JSON objects
         console.log(JSONFor3200);
-
-        this.parsedData = JSONFor2200.concat(JSONFor3200);
-        }
+        let semestersObject = JSONFor2100.concat(JSONFor3100).concat(JSONFor2200).concat(JSONFor3200); //An array of all of the semester data in total
+        const res = await $fetch('/api/demographic', {
+          method: 'POST',
+          body: semestersObject
+        })
+        console.log("JSON objects sent!");
+        // console.log(JSON.stringify(res));
+      }
       catch (error) {
         console.log(error);
       }
@@ -839,7 +837,7 @@ export default defineComponent({
   background-color: #e8f5e9;
 }
 .import-button{
-  margin-left: 10px;
+  margin-left: 0px;
   margin-top: 10px;
   background-color: rgb(88, 227, 148);
   padding: 10px;
