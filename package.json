@@ -14,7 +14,6 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@formkit/drag-and-drop": "^0.3.4",
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.2.0",
     "@pinia/nuxt": "^0.10.1",
