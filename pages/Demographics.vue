@@ -263,6 +263,7 @@ export default defineComponent({
       function createSemestersFrom2DArray(arr, courseName){//expects a 2D array extracted from lines 34-45 of the Excel file
         //if the course is 3200, there is no "Other" row
         let otherIndexOffset = 0;
+        //The "courseName === "2100"" part, and all similar parts conditional on 2100 and 3100, are irrelevant now that data from those classes is uploaded under the names of 2200 and 3200 respectively
         if((courseName === "2200") || (courseName === "2100")){
           otherIndexOffset = 1;
         }
@@ -342,11 +343,10 @@ export default defineComponent({
         const dataFrom3100 = extractColumnMajor(worksheet, range3100);
         const JSONFor2200 = createSemestersFrom2DArray(dataFrom2200, "2200");
         const JSONFor3200 = createSemestersFrom2DArray(dataFrom3200, "3200");
-        const JSONFor2100 = createSemestersFrom2DArray(dataFrom2100, "2100");
-        const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3100");
-        console.log(JSONFor2200);//Arrays of JSON objects
-        console.log(JSONFor3200);
-
+        //Uploading 2100 under the name of 2200 because Andrea considers the two classes synonymous
+        const JSONFor2100 = createSemestersFrom2DArray(dataFrom2100, "2200");
+        //Uploading 3100 under the name of 3200 because Andrea considers those two classes synonymous as well
+        const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3200");
 
         console.log("Beginning data transfer...");
         let semestersObject = JSONFor2100.concat(JSONFor2200).concat(JSONFor3100).concat(JSONFor3200); //An array of all of the semester data in total
