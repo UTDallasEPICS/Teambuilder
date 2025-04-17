@@ -56,6 +56,8 @@ export default defineEventHandler(async (event) => {
                 }
             });
 
+            records.sort((first, second)=>(first.Name > second.Name ? 1 : -1));
+
             return {
                 success: true,
                 data: records
@@ -99,6 +101,7 @@ export default defineEventHandler(async (event) => {
                     ['Total', r.Total]
                 ] as [string, number][])
             );
+            filteredRecords.sort((first, second)=>(first.Name > second.Name ? 1 : -1));
 
             return {
                 success: true,
@@ -135,6 +138,7 @@ export default defineEventHandler(async (event) => {
                     ['Total', r.Total]
                 ] as [string, number][])
             );
+            filteredRecords.sort((first, second)=>(first.Name > second.Name ? 1 : -1));
 
             return {
                 success: true,

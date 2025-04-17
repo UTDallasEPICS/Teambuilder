@@ -349,7 +349,7 @@ export default defineComponent({
         const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3200");
 
         console.log("Beginning data transfer...");
-        let semestersObject = JSONFor2100.concat(JSONFor2200).concat(JSONFor3100).concat(JSONFor3200); //An array of all of the semester data in total
+        let semestersObject = JSONFor2100.concat(JSONFor3100).concat(JSONFor2200).concat(JSONFor3200); //An array of all of the semester data in total
         const res = await $fetch('/api/demographic', {
           method: 'POST',
           body: semestersObject
