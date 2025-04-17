@@ -133,7 +133,7 @@
             </div>
           </div>
 
-          <!-- Show the regular dropdown options for filters like Course, Y-axis, and Chart -->
+          <!-- Show the regular dropdown options for filters like Course, Metric Type, and Chart -->
           <div v-if="filter.name !== 'Demographics' && filter.name !== 'Ethnicity' && filter.name !== 'Gender'">
             <div 
               v-for="option in filter.options" 
@@ -181,7 +181,7 @@ export default defineComponent({
         { name: "Ethnicity", options: ["African_American", "Asian", "Hispanic", "International", "Other", "White"], selectedOptions: [] },
         { name: "Gender", options: ["Female", "Male"], selectedOptions: [] },
         { name: "Chart", options: ["Bar", "Pie", "Line", "Combined bar and line"], selectedOptions: [] },
-        { name: "Y-axis", options: ["Number", "Percentages"], selectedOptions: [] }
+        { name: "Metric Type", options: ["Number", "Percentages"], selectedOptions: [] }
       ],
       semesters: ["Fall", "Spring", "Summer"],
       openDropdown: null,
@@ -225,32 +225,36 @@ export default defineComponent({
       }
     },
     toggleOption(filterName, option) {
-      const filter = this.filters.find(f => f.name === filterName);
+  const filter = this.filters.find(f => f.name === filterName);
 
-      // If the option is already selected, unselect it
-      const optionIndex = filter.selectedOptions.indexOf(option);
-      if (optionIndex === -1) {
-        // Clear other selected options and add the new option
-        filter.selectedOptions = [option];  // Keep only the new option
-      } else {
-        // If already selected, remove it (if toggling off)
-        filter.selectedOptions.splice(optionIndex, 1);
-      }
+  // If the option is already selected, unselect it
+  const optionIndex = filter.selectedOptions.indexOf(option);
+  if (optionIndex === -1) {
+    // If not selected, add the option to the array (keep multiple selections for Ethnicity and Gender)
+    filter.selectedOptions.push(option);
+  } else {
+    // If already selected, remove it (toggle off)
+    filter.selectedOptions.splice(optionIndex, 1);
+  }
 
-      // If Demographics filter is selected, ensure that only one of Ethnicity or Gender is chosen
-      if (filterName === "Demographics") {
-        if (option === "Ethnicity") {
-          this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
-        } else if (option === "Gender") {
-          this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
-        }
+  // If Demographics filter is selected, ensure that only one of Ethnicity or Gender is chosen
+  if (filterName === "Demographics") {
+    if (option === "Ethnicity" || option === "Gender") {
+      // If one option is selected, reset the other option
+      this.filters.find(f => f.name === "Demographics").selectedOptions = [option];
+      if (option === "Ethnicity") {
+        this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
+      } else if (option === "Gender") {
+        this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
       }
+    }
+  }
 
-      // Ensure that for Chart and Y-axis filters, only one option is selected at a time
-      if (filterName === "Chart" || filterName === "Y-axis") {
-        filter.selectedOptions = [option];  // Keep only the newly selected option
-      }
-    },
+  // Ensure that for Chart and Metric Type filters, only one option is selected at a time
+  if (filterName === "Chart" || filterName === "Metric Type") {
+    filter.selectedOptions = [option];  // Keep only the newly selected option
+  }
+},
     getFilterDisplayText(filter) {
       if (filter.selectedOptions.length > 0) {
         if (filter.name === "Demographics") {
@@ -280,9 +284,9 @@ export default defineComponent({
 
       const params = new URLSearchParams();
 
-      if (this.filters.find(f => f.name === "Y-axis").selectedOptions.length > 0) {
-      const yAxis = this.filters.find(f => f.name === "Y-axis").selectedOptions[0];
-      params.append("Y-axis", yAxis);
+      if (this.filters.find(f => f.name === "Metric Type").selectedOptions.length > 0) {
+      const yAxis = this.filters.find(f => f.name === "Metric Type").selectedOptions[0];
+      params.append("Metric Type", yAxis);
       }
       if (this.timePeriodOption === "Continuous") {
         params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
@@ -333,7 +337,30 @@ export default defineComponent({
         this.isLoading = false;
       }
     },
-    plotChart() {
+
+  // Helper function to generate distinct colors for ethnicities
+getColorForEthnicity(ethnicity) {
+    const colors = {
+        "African_American": "rgba(0, 109, 72, 0.7)",
+        "Asian": "rgba(75, 192, 192, 0.7)",
+        "Hispanic": "rgba(255, 99, 132, 0.7)",
+        "International": "rgba(153, 102, 255, 0.7)",
+        "Other": "rgba(255, 159, 64, 0.7)",
+        "White": "rgba(54, 162, 235, 0.7)"
+    };
+    return colors[ethnicity] || "rgba(0, 0, 0, 0.7)";
+},
+
+// Helper function to generate distinct colors for genders
+getColorForGender(gender) {
+    const colors = {
+        "Male": "rgba(0, 123, 255, 0.7)",
+        "Female": "rgba(255, 99, 132, 0.7)"
+    };
+    return colors[gender] || "rgba(0, 0, 0, 0.7)";
+},
+    
+  plotChart() {
     console.log('Starting plotChart with data:', this.chartData);
     console.log('Chart type:', this.filters.find(f => f.name === "Chart")?.selectedOptions[0]);
 
@@ -372,18 +399,67 @@ export default defineComponent({
         const grandTotal = totalValues.reduce((sum, val) => sum + val, 0);
 
         // Separate data by course
-        const courses = [...new Set(this.chartData.map(item => item.Course))];
-        const datasets = courses.map(course => ({
-            label: `Course ${course}`,
-            data: this.chartData
-                .filter(item => item.Course === course)
-                .map(item => (this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages"
-                    ? (item.Total / grandTotal) * 100
-                    : item.Total)),
-            backgroundColor: course === "2200" ? 'rgba(0, 109, 72, 0.7)' : 'rgba(75, 192, 192, 0.7)',
-            borderColor: course === "2200" ? 'rgb(0, 109, 72)' : 'rgb(75, 192, 192)',
-            borderWidth: 1
-        }));
+        const courses = selectedCourses; // We'll just use the selected courses directly
+        let combinedData = {}; // Object to store combined data for each semester
+
+      // Loop through selected courses (2200, 3200, etc.)
+      selectedCourses.forEach(course => {
+          const courseData = this.chartData.filter(item => item.Course === course);
+          const semesters = [...new Set(courseData.map(item => item.Sem))];
+
+          semesters.forEach(semester => {
+              // Initialize combined data for the semester if not already created
+              if (!combinedData[semester]) {
+                  combinedData[semester] = {
+                      total: 0,
+                      ethnicityData: {},
+                      genderData: {}
+                  };
+              }
+
+              let currentSemesterData = combinedData[semester];
+
+              // Aggregate data for each semester and course
+              courseData.filter(item => item.Sem === semester).forEach(item => {
+                  currentSemesterData.total += item.Total;
+
+                  // Aggregate ethnicity data
+                  selectedEthnicities.forEach(e => {
+                      currentSemesterData.ethnicityData[e] = (currentSemesterData.ethnicityData[e] || 0) + item[e];
+                  });
+
+                  // Aggregate gender data
+                  selectedGenders.forEach(g => {
+                      currentSemesterData.genderData[g] = (currentSemesterData.genderData[g] || 0) + item[g];
+                  });
+              });
+          });
+      });
+
+// Now push the combined data into xValues and datasets
+      Object.keys(combinedData).forEach(semester => {
+          xValues.push(semester);
+
+          // For Ethnicities
+          selectedEthnicities.forEach(e => {
+              datasets.push({
+                  label: `${e} Ethnicity`, // Label for ethnicity
+                  data: [(combinedData[semester].ethnicityData[e] / combinedData[semester].total) * 100], // Percentage
+                  backgroundColor: this.getColorForEthnicity(e), // Use a function to get unique color
+                  stack: semester // Stack by semester
+              });
+          });
+
+          // For Genders
+          selectedGenders.forEach(g => {
+              datasets.push({
+                  label: `${g} Gender`, // Label for gender
+                  data: [(combinedData[semester].genderData[g] / combinedData[semester].total) * 100], // Percentage
+                  backgroundColor: this.getColorForGender(g), // Use a function to get unique color
+                  stack: semester // Stack by semester
+              });
+          });
+      });
 
         let chartConfig = {
             type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
@@ -405,11 +481,11 @@ export default defineComponent({
                                 const value = context.raw;
                                 const total = context.dataset.data.reduce((sum, val) => sum + val, 0); // Grand total for current dataset
 
-                                const percentage = (this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages")
+                                const percentage = (this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages")
                                     ? `${((value / total) * 100).toFixed(1)}%` // Correct percentage calculation
                                     : `${((value / total) * 100).toFixed(1)}%`; // Always show percentage for consistency
 
-                                const rawValue = this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages"
+                                const rawValue = this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages"
                                     ? context.raw * total / 100
                                     : context.raw; // Convert back to raw number for correct tooltip
 
@@ -429,15 +505,15 @@ export default defineComponent({
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 100 : undefined,  // Max is 100 for percentages
+                        max: this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages" ? 100 : undefined,  // Max is 100 for percentages
                         title: {
                             display: true,
-                            text: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 'Percentage of Students' : 'Number of Students'
+                            text: this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages" ? 'Percentage of Students' : 'Number of Students'
                         },
                         ticks: {
                             callback: function(value) {
                                 if (this.options.ticks.max === 100) {
-                                    return value + '%'; // Show percentage on Y-axis if percentages are selected
+                                    return value + '%'; // Show percentage on Metric Type if percentages are selected
                                 }
                                 return value; // Show raw number if numbers are selected
                             }
@@ -499,7 +575,7 @@ export default defineComponent({
                             let percentage = '';
                             let rawValue = '';
 
-                            if (this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages") {
+                            if (this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages") {
                                 // When "Percentages" is selected
                                 percentage = `${(value).toFixed(1)}%`;  // Use context.raw for percentage, rounded to 1 decimal place
                                 rawValue = Math.round(value * total / 100);  // Convert percentage to raw value, rounded to nearest whole number
@@ -521,15 +597,15 @@ export default defineComponent({
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 100 : undefined,  // Max is 100 for percentages
+                        max: this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages" ? 100 : undefined,  // Max is 100 for percentages
                         title: {
                             display: true,
-                            text: this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages" ? 'Percentage of Students' : 'Number of Students'
+                            text: this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages" ? 'Percentage of Students' : 'Number of Students'
                         },
                         ticks: {
                             callback: function(value) {
                                 if (this.options.ticks.max === 100) {
-                                    return value + '%'; // Show percentage on Y-axis if percentages are selected
+                                    return value + '%'; // Show percentage on Metric Type if percentages are selected
                                 }
                                 return value; // Show raw number if numbers are selected
                             }
@@ -553,7 +629,7 @@ export default defineComponent({
             label: category,
             data: this.chartData.map((item, i) => {
                 // If "Percentages" is selected, convert to percentage
-                return this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages"
+                return this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages"
                     ? (item[category] / item.Total) * 100
                     : item[category]; // Return raw number if "Number" is selected
             }),
