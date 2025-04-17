@@ -113,30 +113,34 @@
           {{ isLoading ? 'Loading...' : 'Submit' }}
         </button>
       </div>
+      <!--import button-->
+      <button class="import-button" @click="triggerFileInput">Import File</button>
+      <div class="upload-wrapper">
+        <div class="file-upload">
+          <input
+            ref="fileInput"
+            type="file"
+            accept=".xlsx, .xls, .csv"
+            @change="onFileSelected"
+            style = "display:none"
+            />
 
-      <!-- Import Button -->
-      <div class="import-query">
-      <input
-        class="import-button"
-        type = "file"
-        @change="onFileChange($event)"
-        accept=".xlsx, .xls, .csv"
-        capture>
-      </input>
-
+          <div v-if="file" class="file-info">   
+            <span>{{ file.name }}</span>
+            <button @click="removeFile">&#x2715;</button>
+            <button class = "import-button" @click="onFileChange">Send Extracted Data</button>
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
-
-    
-
-    
+  </div>
   
-    
+ 
   
     <div class="chart-container">
       <canvas ref="chartCanvas"></canvas>
     </div> 
-  </div>
+  
 </template>
 
 <script>
@@ -167,6 +171,7 @@ export default defineComponent({
       chartData: [],
       chart: null,
       isLoading: false,
+      file: null,
       fileName: "",
       uploaded: false,
       fileUploader: null
@@ -230,6 +235,24 @@ export default defineComponent({
       }
       return "Time Period";
     },
+
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    removeFile() {
+      this.file = null;
+      this.parsedData = null;
+      this.$refs.fileInput.value = null;
+    },
+
+    onFileSelected(event){
+      const selectedFile = event.target.files[0]; 
+      if(selectedFile){
+        this.file = selectedFile; 
+      }
+    },
+
+    //onFileChange ➔ Do all the Excel parsing, JSON conversion, and upload to server.
     async onFileChange(event){
       function getColumnMajor(arr){//Requires a rectangular 2D array
         let transpose = [];
@@ -313,7 +336,7 @@ export default defineComponent({
       //Parsing logic will occur on the frontend
       try{
         const reader = new FileReader();
-        const workbook = XLSX.read(await (event.target.files[0]).arrayBuffer()); //Assuming that the whole post body will be the file.
+        const workbook = XLSX.read(await this.file.arrayBuffer()); //Assuming that the whole post body will be the file.
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
         const range2100 = XLSX.utils.decode_range("C34:I45");
@@ -349,19 +372,17 @@ export default defineComponent({
         const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3200");
 
         console.log("Beginning data transfer...");
-        let semestersObject = JSONFor2100.concat(JSONFor3100).concat(JSONFor2200).concat(JSONFor3200); //An array of all of the semester data in total
         const res = await $fetch('/api/demographic', {
-          method: 'POST',
-          body: semestersObject
-        })
-        console.log("JSON objects sent!");
-        semestersObject.forEach(element => {console.log(element);});
-        console.log(res);
+        console.log(JSONFor2200);//Arrays of JSON objects
+        console.log(JSONFor3200);
+
+        this.parsedData = JSONFor2200.concat(JSONFor3200);
         }
       catch (error) {
         console.log(error);
       }
     },
+    
     async getRequest() {
       if (this.isLoading) return;
       this.isLoading = true;
@@ -678,6 +699,16 @@ export default defineComponent({
   display: flex;
   height: 100vh;
 }
+.upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.file-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 
 .sidebar {
   background-color: #006d48;
@@ -826,7 +857,6 @@ export default defineComponent({
   cursor: not-allowed;
 }
 
-/*HEAD*/
 .import-query {
   margin-bottom: 20px;
 }
@@ -851,10 +881,4 @@ export default defineComponent({
   background-color: #e8f5e9;
 }
 
-.import-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-/* ======= */
-/* >>>>>>> feature-import-button */
 </style>
