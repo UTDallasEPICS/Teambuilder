@@ -312,20 +312,20 @@ export default defineComponent({
             Course: courseName,
             Year: constructedYear,
             Sem: constructedSemester,
-            African_American: Number(element[1]),
-            Asian: Number(element[2]),
-            Hispanic: Number(element[3]),
-            International: Number(element[4]),
-            Other: otherAmount,
+            African_American: Number(element[1]) || 0,
+            Asian: Number(element[2]) || 0,
+            Hispanic: Number(element[3]) || 0,
+            International: Number(element[4]) || 0,
+            Other: otherAmount || 0,
             //OtherIndexOffset gives us an index that is 1 higher if and only if we are processing EPCS 2200.
             //No incrementation for 2200.
-            White: Number(element[7+otherIndexOffset]),
-            Male: Number(element[8+otherIndexOffset]),
-            Female: Number(element[9+otherIndexOffset]),
-            Total: Number(element[10+otherIndexOffset])
+            White: Number(element[7+otherIndexOffset]) || 0,
+            Male: Number(element[8+otherIndexOffset]) || 0,
+            Female: Number(element[9+otherIndexOffset]) || 0,
+            Total: Number(element[10+otherIndexOffset]) || 0
           };
           semesterArray.push(semesterToPush);
-          console.log("Semester being pushed: " + JSON.stringify(semesterToPush));
+          // console.log("Semester being pushed: " + JSON.stringify(semesterToPush));
         });
         return semesterArray;
       }
@@ -366,13 +366,29 @@ export default defineComponent({
         const JSONFor2100 = createSemestersFrom2DArray(dataFrom2100, "2200");
         //Uploading 3100 under the name of 3200 because Andrea considers those two classes synonymous as well
         const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3200");
-        console.log(JSONFor2200);//Arrays of JSON objects
-        console.log(JSONFor3200);
+        // console.log(JSONFor2200);//Arrays of JSON objects
+        // console.log(JSONFor3200);
         let semestersObject = JSONFor2100.concat(JSONFor3100).concat(JSONFor2200).concat(JSONFor3200); //An array of all of the semester data in total
+        
+        //Regarding a possible additional column for the ongoing semester, to be extracted from the top right table
+        const afterCensusDayBeginningAddress = XLSX.utils.decode_cell("L5");
+        const topEndingColumn = determineEndingColumn(worksheet, afterCensusDayBeginningAddress);
+        if(topEndingColumn > endingColumn){ //If the file uploaded contains data for the current, ongoing semester, which occurs if the top table is wider than the bottom table
+          const currentSemesterRange2200 = {s: {r: XLSX.decode_row("5"), c: topEndingColumn}, e: {r: XLSX.decode_row("16"), c: topEndingColumn}};
+          const currentSemesterRange3200 = {s: {r: XLSX.decode_row("18"), c: topEndingColumn}, e: {r: XLSX.decode_row("28"), c: topEndingColumn}};
+          const currentSemesterData2200 = extractColumnMajor(worksheet, currentSemesterRange2200);
+          const currentSemesterData3200 = extractColumnMajor(worksheet, currentSemesterRange3200);
+          const currentSemesterJSON2200 = createSemestersFrom2DArray(currentSemesterData2200, "2200");
+          const currentSemesterJSON3200 = createSemestersFrom2DArray(currentSemesterData3200, "3200");
+          semestersObject = semestersObject.concat(currentSemesterJSON2200).concat(currentSemesterJSON3200);
+        }
+        
         const res = await $fetch('/api/demographic', {
           method: 'POST',
           body: semestersObject
         })
+        console.log("Sending the following JSON objects:");
+        semestersObject.forEach(element => {console.log(JSON.stringify(element))});
         console.log("JSON objects sent!");
         // console.log(JSON.stringify(res));
       }
