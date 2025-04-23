@@ -280,14 +280,50 @@ export default defineComponent({
 
       const params = new URLSearchParams();
 
+      // Add the time period option to the params
+      if (this.timePeriodOption) {
+        params.append("TimePeriod", this.timePeriodOption);
+      }
+
       if (this.filters.find(f => f.name === "Y-axis").selectedOptions.length > 0) {
       const yAxis = this.filters.find(f => f.name === "Y-axis").selectedOptions[0];
       params.append("Y-axis", yAxis);
       }
+
+
       if (this.timePeriodOption === "Continuous") {
         params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
+
+
         if (this.customSemesterStart && this.customSemesterEnd) {
-          params.append("Semester", `${this.customSemesterStart},${this.customSemesterEnd}`);
+          
+          // For continuous mode, we need to send all semesters between start and end
+          // First, determine the order of semesters
+          const semesterOrder = ["Spring", "Summer", "Fall"];
+          const startIndex = semesterOrder.indexOf(this.customSemesterStart);
+          const endIndex = semesterOrder.indexOf(this.customSemesterEnd);
+          
+          // If in the same year or across years, we need all semesters between start and end
+          // This ensures all semesters between start and end are included
+          const allSemesters = [];
+
+          // If start comes before end in the semester order
+          if(startIndex <= endIndex) {
+            for(let i = 0; i <= 2; i++) {
+              allSemesters.push(semesterOrder[i]);
+            }
+          } else {
+            // If end comes before start in semester order
+            for(let i = startIndex; i <= 2; i++) {
+              allSemesters.push(semesterOrder[i]);
+            }
+            for(let i = 0; i <= endIndex; i++) {
+              allSemesters.push(semesterOrder[i]);
+            }
+          }
+          params.append("Semester", allSemesters.join(","));
+        } else {
+          params.append("Semester", "Spring,Summer,Fall"); // Default to all semesters if none are selected
         }
       } else if (this.timePeriodOption === "Semester-based") {
         params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
