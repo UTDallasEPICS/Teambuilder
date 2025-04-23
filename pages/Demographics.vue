@@ -44,15 +44,15 @@
             <input type="text" v-model="customYearEnd" placeholder="End Year" class="custom-input" />
   
             <label>Start Semester:</label>
-            <select v-model="customSemesterStart" class="custom-dropdown">
+            <select v-model="customSemesterStart" class="custom-dropdown"> <!-- Sets v-model to customerSemesterStart, whatever user selects -->
               <option disabled value="">Select Semester</option>
               <option>Spring</option>
               <option>Summer</option>
               <option>Fall</option>
             </select>
   
-            <label>End Semester:</label>
-            <select v-model="customSemesterEnd" class="custom-dropdown">
+            <label>End Semester:</label> 
+            <select v-model="customSemesterEnd" class="custom-dropdown"> <!-- Sets v-model to customerSemesterStart, whatever user selects -->
               <option disabled value="">Select Semester</option>
               <option>Spring</option>
               <option>Summer</option>
@@ -199,7 +199,7 @@ export default defineComponent({
   watch: {
     timePeriodOption(newVal) {
       if (newVal === "Continuous") {
-        this.selectedSemesters = [];
+        this.selectedSemesters = []; // Clear selected semesters
       } else if (newVal === "Semester-based") {
         this.customSemesterStart = "";
         this.customSemesterEnd = "";
