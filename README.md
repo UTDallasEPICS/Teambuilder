@@ -109,6 +109,95 @@ yarn preview
 bun run preview
 ```
 
+## Endpoints
+<details close>
+<summary>Expand</summary>
+
+### Get projects with semesters
+```http
+GET /api/projects
+```
+
+<details close>
+<summary>Details</summary>
+<br>
+
+| Code | Description |
+| :--- | :--- |
+| 200 | `OK` |
+
+Example response:
+```json
+[
+  {
+    "id": "40c129a8-c4b6-4057-88d9-0c653b86f14d",
+    "name": "Handcrafted Aluminum Fish",
+    "description": "Calamitas defessus traho.",
+    "type": "SOFTWARE",
+    "status": "HOLD",
+    "repoURL": "https://finished-window.name/",
+    "partnerId": "eaf74e1a-ca69-4312-892b-a0d154edad8a",
+    "createdAt": "2025-04-17T23:56:36.138Z",
+    "updatedAt": "2025-04-17T23:56:36.138Z",
+    "teams": [
+      {
+        "semester": {
+          "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
+          "year": 2023,
+          "season": "SUMMER",
+          "createdAt": "2025-04-17T23:56:36.135Z",
+          "updatedAt": "2025-04-17T23:56:36.135Z"
+        }
+      },
+      {
+        "semester": {
+          "id": "3d0ae042-42f7-41fc-adde-4789318a3b47",
+          "year": 2023,
+          "season": "FALL",
+          "createdAt": "2025-04-17T23:56:36.135Z",
+          "updatedAt": "2025-04-17T23:56:36.135Z"
+        }
+      },
+    ]
+  },
+  {
+    "id": "cd4274dd-20d9-4b40-bd0c-7949bb67fd0b",
+    "name": "Recycled Metal Chips",
+    "description": "Bos tendo carpo consectetur coma auctor beneficium avarus vetus.",
+    "type": "BOTH",
+    "status": "RETURNING",
+    "repoURL": "https://raw-marksman.biz",
+    "partnerId": "ee073720-87f6-4f98-9c7b-0de0cc1b0a44",
+    "createdAt": "2025-04-17T23:56:36.138Z",
+    "updatedAt": "2025-04-17T23:56:36.138Z",
+    "teams": [
+      {
+        "semester": {
+          "id": "38eb5cba-1517-434c-a3ef-5e03cbabb0ec",
+          "year": 2024,
+          "season": "FALL",
+          "createdAt": "2025-04-17T23:56:36.135Z",
+          "updatedAt": "2025-04-17T23:56:36.135Z"
+        }
+      },
+      {
+        "semester": {
+          "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
+          "year": 2023,
+          "season": "SUMMER",
+          "createdAt": "2025-04-17T23:56:36.135Z",
+          "updatedAt": "2025-04-17T23:56:36.135Z"
+        }
+      },
+    ]
+  },
+]
+```
+</details>
+
+</details>
+
+
 ## Possible Setup Bugs:
 
 It has been known that some errors may come up when developing this application on Apple machines, follow these install steps to fix any issues:
