@@ -125,22 +125,23 @@
             style = "display:none"
             />
 
-          <div v-if="file" class="file-info">   
-            <span>{{ file.name }}</span>
-            <button @click="removeFile">&#x2715;</button>
-            <button class = "import-button" @click="onFileChange">Send Extracted Data</button>
+          <div v-if="file && !isSent" class="file-info">   
+            <div class="file-info">
+                <span class="file-name">{{ file.name }}</span>
+              <div class="button-group">
+                <button class="import-button" @click="removeFile">Cancel</button>
+                <button class = "import-button" @click="onFileChange">Send Extracted Data</button>
+              </div>   
+            </div>       
           </div>
+          <p v-if="isSent" class="success-message">Data sent successfully!</p>
         </div>
       </div>
     </div>
-  </div>
-  
- 
-  
     <div class="chart-container">
       <canvas ref="chartCanvas"></canvas>
     </div> 
-  
+  </div>  
 </template>
 
 <script>
@@ -174,6 +175,7 @@ export default defineComponent({
       file: null,
       fileName: "",
       uploaded: false,
+      isSent: false,
       fileUploader: null
     };
   },
@@ -244,12 +246,21 @@ export default defineComponent({
       this.parsedData = null;
       this.$refs.fileInput.value = null;
     },
+    
 
     onFileSelected(event){
       const selectedFile = event.target.files[0]; 
       if(selectedFile){
+        this.resetUpload(); 
         this.file = selectedFile; 
       }
+    },
+    resetUpload() {
+      this.file = null;
+      this.fileName = "";
+      this.parsedData = null;
+      this.uploaded = false;
+      this.isSent = false;
     },
 
     //onFileChange ➔ Do all the Excel parsing, JSON conversion, and upload to server.
@@ -316,20 +327,20 @@ export default defineComponent({
             Course: courseName,
             Year: constructedYear,
             Sem: constructedSemester,
-            African_American: Number(element[1]),
-            Asian: Number(element[2]),
-            Hispanic: Number(element[3]),
-            International: Number(element[4]),
-            Other: otherAmount,
+            African_American: Number(element[1]) || 0,
+            Asian: Number(element[2]) || 0,
+            Hispanic: Number(element[3]) || 0,
+            International: Number(element[4]) || 0,
+            Other: otherAmount || 0,
             //OtherIndexOffset gives us an index that is 1 higher if and only if we are processing EPCS 2200.
             //No incrementation for 2200.
-            White: Number(element[7+otherIndexOffset]),
-            Male: Number(element[8+otherIndexOffset]),
-            Female: Number(element[9+otherIndexOffset]),
-            Total: Number(element[10+otherIndexOffset])
+            White: Number(element[7+otherIndexOffset]) || 0,
+            Male: Number(element[8+otherIndexOffset]) || 0,
+            Female: Number(element[9+otherIndexOffset]) || 0,
+            Total: Number(element[10+otherIndexOffset]) || 0
           };
           semesterArray.push(semesterToPush);
-          console.log("Semester being pushed: " + JSON.stringify(semesterToPush));
+          // console.log("Semester being pushed: " + JSON.stringify(semesterToPush));
         });
         return semesterArray;
       }
@@ -370,14 +381,34 @@ export default defineComponent({
         const JSONFor2100 = createSemestersFrom2DArray(dataFrom2100, "2200");
         //Uploading 3100 under the name of 3200 because Andrea considers those two classes synonymous as well
         const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3200");
-
-        console.log("Beginning data transfer...");
-        const res = await $fetch('/api/demographic', {
-        console.log(JSONFor2200);//Arrays of JSON objects
-        console.log(JSONFor3200);
-
-        this.parsedData = JSONFor2200.concat(JSONFor3200);
+        // console.log(JSONFor2200);//Arrays of JSON objects
+        // console.log(JSONFor3200);
+        let semestersObject = JSONFor2100.concat(JSONFor3100).concat(JSONFor2200).concat(JSONFor3200); //An array of all of the semester data in total
+        
+        //Regarding a possible additional column for the ongoing semester, to be extracted from the top right table
+        const afterCensusDayBeginningAddress = XLSX.utils.decode_cell("L5");
+        const topEndingColumn = determineEndingColumn(worksheet, afterCensusDayBeginningAddress);
+        if(topEndingColumn > endingColumn){ //If the file uploaded contains data for the current, ongoing semester, which occurs if the top table is wider than the bottom table
+          const currentSemesterRange2200 = {s: {r: XLSX.decode_row("5"), c: topEndingColumn}, e: {r: XLSX.decode_row("16"), c: topEndingColumn}};
+          const currentSemesterRange3200 = {s: {r: XLSX.decode_row("18"), c: topEndingColumn}, e: {r: XLSX.decode_row("28"), c: topEndingColumn}};
+          const currentSemesterData2200 = extractColumnMajor(worksheet, currentSemesterRange2200);
+          const currentSemesterData3200 = extractColumnMajor(worksheet, currentSemesterRange3200);
+          const currentSemesterJSON2200 = createSemestersFrom2DArray(currentSemesterData2200, "2200");
+          const currentSemesterJSON3200 = createSemestersFrom2DArray(currentSemesterData3200, "3200");
+          semestersObject = semestersObject.concat(currentSemesterJSON2200).concat(currentSemesterJSON3200);
         }
+        
+        const res = await $fetch('/api/demographic', {
+          method: 'POST',
+          body: semestersObject
+        })
+        console.log("Sending the following JSON objects:");
+        semestersObject.forEach(element => {console.log(JSON.stringify(element))});
+        console.log("JSON objects sent!");
+        // console.log(JSON.stringify(res));
+        this.isSent = true;
+
+      }
       catch (error) {
         console.log(error);
       }
@@ -740,7 +771,7 @@ export default defineComponent({
 }
 
 .field {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .field-button {
@@ -833,15 +864,34 @@ export default defineComponent({
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-bottom: 10px;
 }
 
 .submit-button:hover {
   background-color: #e8f5e9;
 }
+.file-info{
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+}
+.file-name{
+  display: block;
+  margin-bottom: 2px;
+  font-weight: bold;
+  margin-top: 5x;
+}
+.button-group{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 16px;
+}
 .import-button{
-  margin-left: 10px;
+  margin-left: 0px;
   margin-top: 10px;
-  background-color: rgb(88, 227, 148);
+  margin-bottom: 3px;
+  background-color: rgb(50, 55, 52);
   padding: 10px;
   border-radius: 4px;
   width: 90%;
@@ -879,6 +929,12 @@ export default defineComponent({
 
 .import-button:hover {
   background-color: #e8f5e9;
+}
+
+.success-message{
+  margin-top: 10px;   
+  font-weight: bold; 
+  text-align: center;
 }
 
 </style>

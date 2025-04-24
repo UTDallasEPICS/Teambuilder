@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
           Year: year
         },
       });
-      let prismaReturned;
+      let prismaReturned = null;
       if(desiredSemesters[0]===undefined){//If the database has no entry for this semester
         prismaReturned = await prisma.semester.create({
           data: {
@@ -77,7 +77,8 @@ export default defineEventHandler(async (event) => {
           }
         });
       }
-      // console.log(`Prisma returned: ${JSON.stringify(prismaReturned)}`);
+      // console.log(`In POST: Prisma returned: ${JSON.stringify(prismaReturned)}`); //This does work
+      return {success: true, message: `Prisma returned: ${JSON.stringify(prismaReturned)}`}; //This seems to not work for some reason, but it causes no errors, so I'll leave it in here to convey intention.
     });
   }
   catch(error){
@@ -87,4 +88,5 @@ export default defineEventHandler(async (event) => {
       message: error instanceof Error ? error.message : "Unknown Error"
     }
   }
+  console.log("POST request completed");
 })
