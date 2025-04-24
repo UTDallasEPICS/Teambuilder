@@ -56,7 +56,28 @@ export default defineEventHandler(async (event) => {
                 }
             });
 
-            records.sort((first, second)=>(first.Name > second.Name ? 1 : -1));
+            records.sort((first, second)=>{
+              let firstName = first.Name;
+              let secondName = second.Name;
+              let firstYear = firstName.substring(0,2);
+              let firstSem = firstName.substring(2,3);
+              let secondYear = secondName.substring(0,2);
+              let secondSem = secondName.substring(2,3);
+              if (firstYear>secondYear) {
+                return 1;
+              }
+              else if (firstYear<secondYear) {
+                return -1;
+              }
+              else {//Fall (F) > Summer (U) > Spring (S)
+                //If first is fall and second is summer or first is fall and second is spring or first is summer and second is spring, the first is greater
+                if(((firstSem === 'F') && (secondSem === 'U'))||((firstSem === 'F') && (secondSem === 'S'))||((firstSem === 'U') && (secondSem === 'S'))){
+                  return 1;
+                }
+                //Assuming no duplicate semesters, the previous if statement exhausts all possible ways for the first to be greater than the second
+                return -1;
+              }
+            });
 
             return {
                 success: true,
@@ -101,7 +122,32 @@ export default defineEventHandler(async (event) => {
                     ['Total', r.Total]
                 ] as [string, number][])
             );
-            filteredRecords.sort((first, second)=>(first.Name > second.Name ? 1 : -1));
+            filteredRecords.sort((first, second)=>{
+              let firstName = first.Name;
+              let secondName = second.Name;
+              let firstYear = firstName.substring(0,2);
+              let firstSem = firstName.substring(2,3);
+              let secondYear = secondName.substring(0,2);
+              let secondSem = secondName.substring(2,3);
+              if (firstYear>secondYear) {
+                // console.log("First year > Second year");
+                return 1;
+              }
+              else if (firstYear<secondYear) {
+                // console.log("First year < Second year");
+                return -1;
+              }
+              else {//Fall (F) > Summer (U) > Spring (S)
+                //If first is fall and second is summer or first is fall and second is spring or first is summer and second is spring, the first is greater
+                if(((firstSem === 'F') && (secondSem === 'U'))||((firstSem === 'F') && (secondSem === 'S'))||((firstSem === 'U') && (secondSem === 'S'))){
+                  // console.log("First semester > Second semester");
+                  return 1;
+                }
+                //Assuming no duplicate semesters, the previous if statement exhausts all possible ways for the first to be greater than the second
+                // console.log("First semester < Second semester");
+                return -1;
+              }
+            });
 
             return {
                 success: true,
@@ -138,7 +184,35 @@ export default defineEventHandler(async (event) => {
                     ['Total', r.Total]
                 ] as [string, number][])
             );
-            filteredRecords.sort((first, second)=>(first.Name > second.Name ? 1 : -1));
+
+            //Sorting the list returned from the API by year and then semester
+            filteredRecords.sort((first, second)=>{
+              // console.log("First: " + JSON.stringify(first) + " second: " + JSON.stringify(second));
+              let firstName = first.Name;
+              let secondName = second.Name;
+              let firstYear = firstName.substring(0,2);
+              let firstSem = firstName.substring(2,3);
+              let secondYear = secondName.substring(0,2);
+              let secondSem = secondName.substring(2,3);
+              if (firstYear>secondYear) {
+                // console.log("First year > Second year");
+                return 1;
+              }
+              else if (firstYear<secondYear) {
+                // console.log("First year < Second year");
+                return -1;
+              }
+              else {//Fall (F) > Summer (U) > Spring (S)
+                //If first is fall and second is summer or first is fall and second is spring or first is summer and second is spring, the first is greater
+                if(((firstSem === 'F') && (secondSem === 'U'))||((firstSem === 'F') && (secondSem === 'S'))||((firstSem === 'U') && (secondSem === 'S'))){
+                  // console.log("First semester > Second semester");
+                  return 1;
+                }
+                //Assuming no duplicate semesters, the previous if statement exhausts all possible ways for the first to be greater than the second
+                // console.log("First semester < Second semester");
+                return -1;
+              }
+            });
 
             return {
                 success: true,
