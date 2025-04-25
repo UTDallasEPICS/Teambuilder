@@ -34,6 +34,50 @@ export default defineEventHandler(async (event) => {
       throw new Error("You must pick at least one Semester");
     }
 
+        // If neither ethnicity nor gender is selected, return total only
+        if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
+            const records = await prisma.semester.findMany({
+                where: {
+                    Course: {
+                        in: courses
+                    },
+                    Year: {
+                        gte: Number(years[0]),
+                        lte: Number(years[1])
+                    },
+                    Sem: {
+                        in: semesters
+                    }
+                },
+                select: {
+                    Name: true,
+                    Course: true,
+                    Total: true
+                }
+            });
+
+            records.sort((first, second)=>{
+              let firstName = first.Name;
+              let secondName = second.Name;
+              let firstYear = firstName.substring(0,2);
+              let firstSem = firstName.substring(2,3);
+              let secondYear = secondName.substring(0,2);
+              let secondSem = secondName.substring(2,3);
+              if (firstYear>secondYear) {
+                return 1;
+              }
+              else if (firstYear<secondYear) {
+                return -1;
+              }
+              else {//Fall (F) > Summer (U) > Spring (S)
+                //If first is fall and second is summer or first is fall and second is spring or first is summer and second is spring, the first is greater
+                if(((firstSem === 'F') && (secondSem === 'U'))||((firstSem === 'F') && (secondSem === 'S'))||((firstSem === 'U') && (secondSem === 'S'))){
+                  return 1;
+                }
+                //Assuming no duplicate semesters, the previous if statement exhausts all possible ways for the first to be greater than the second
+                return -1;
+              }
+            });
     // If neither ethnicity nor gender is selected, return total only
     if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
       const records = await prisma.semester.findMany({

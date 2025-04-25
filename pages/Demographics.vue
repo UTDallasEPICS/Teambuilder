@@ -3,7 +3,6 @@
     <div class="sidebar">
       <!-- Close Button -->
       <button class="close-button" @click="toggleSidebar">&#x2715;</button>
-  
       <!-- Time Period Tile -->
       <div class="field">
         <button 
@@ -158,15 +157,39 @@
           {{ isLoading ? 'Loading...' : 'Submit' }}
         </button>
       </div>
+      <!--import button-->
+      <button class="import-button" @click="triggerFileInput">Import File</button>
+      <div class="upload-wrapper">
+        <div class="file-upload">
+          <input
+            ref="fileInput"
+            type="file"
+            accept=".xlsx, .xls, .csv"
+            @change="onFileSelected"
+            style = "display:none"
+            />
+
+          <div v-if="file && !isSent" class="file-info">   
+            <div class="file-info">
+                <span class="file-name">{{ file.name }}</span>
+              <div class="button-group">
+                <button class="import-button" @click="removeFile">Cancel</button>
+                <button class = "import-button" @click="onFileChange">Send Extracted Data</button>
+              </div>   
+            </div>       
+          </div>
+          <p v-if="isSent" class="success-message">Data sent successfully!</p>
+        </div>
+      </div>
     </div>
-  
     <div class="chart-container">
       <canvas ref="chartCanvas"></canvas>
     </div> 
-  </div>
+  </div>  
 </template>
 
 <script>
+import * as XLSX from 'xlsx'; //This will be better used as https://docs.sheetjs.com/docs/getting-started/installation/nodejs#vendoring
 import { defineComponent } from 'vue';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -194,7 +217,12 @@ export default defineComponent({
       selectedSemesters: [],
       chartData: [],
       chart: null,
-      isLoading: false
+      isLoading: false,
+      file: null,
+      fileName: "",
+      uploaded: false,
+      isSent: false,
+      fileUploader: null
     };
   },
   watch: {
@@ -279,6 +307,183 @@ export default defineComponent({
       }
       return "Time Period";
     },
+
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    removeFile() {
+      this.file = null;
+      this.parsedData = null;
+      this.$refs.fileInput.value = null;
+    },
+    
+
+    onFileSelected(event){
+      const selectedFile = event.target.files[0]; 
+      if(selectedFile){
+        this.resetUpload(); 
+        this.file = selectedFile; 
+      }
+    },
+    resetUpload() {
+      this.file = null;
+      this.fileName = "";
+      this.parsedData = null;
+      this.uploaded = false;
+      this.isSent = false;
+    },
+
+    //onFileChange ➔ Do all the Excel parsing, JSON conversion, and upload to server.
+    async onFileChange(event){
+      function getColumnMajor(arr){//Requires a rectangular 2D array
+        let transpose = [];
+        for(let c = 0; c < arr[0].length; c++){
+            let currentCol = [];
+            for(let r = 0; r < arr.length; r++){
+                currentCol.push(arr[r][c]);
+            }
+            transpose.push(currentCol); //Pushes it as, essentially, a row
+        }
+        return transpose;
+      }
+      function extractCells(worksheet, relevantRange){
+        return XLSX.utils.sheet_to_json(worksheet, {header: 1, range: relevantRange});
+      }
+      function extractColumnMajor(worksheet, relevantRange){
+        return getColumnMajor(extractCells(worksheet, relevantRange));
+      }
+      function determineEndingColumn(worksheet, beginningAddress){//Given a SheetJS worksheet and a valid top-left address for the table, determine the width of the table
+        let jsonaddress = {c:beginningAddress.c, r:beginningAddress.r};
+        let address = XLSX.utils.encode_cell(jsonaddress);
+        let cell = worksheet[address];
+        while(cell !== undefined){
+          jsonaddress.c += 1;
+          address = XLSX.utils.encode_cell(jsonaddress);
+          cell = worksheet[address];
+        }
+        jsonaddress.c -= 2; //the last relevant column is to the left of the total column which is to the left of the first undefined column
+        return jsonaddress.c;
+      }
+      function createSemestersFrom2DArray(arr, courseName){//expects a 2D array extracted from lines 34-45 of the Excel file
+        //if the course is 3200, there is no "Other" row
+        let otherIndexOffset = 0;
+        //The "courseName === "2100"" part, and all similar parts conditional on 2100 and 3100, are irrelevant now that data from those classes is uploaded under the names of 2200 and 3200 respectively
+        if((courseName === "2200") || (courseName === "2100")){
+          otherIndexOffset = 1;
+        }
+        let semesterArray = []
+        arr.forEach(element => {
+          let constructedYear = Number("20"+element[0].substring(0,2));
+          let otherAmount = 0;
+          //The "Other" amount is constructed from 3 rows for 2200 and 2 rows for 3200 (there's no "Other" row for 3200)
+          if((courseName==="2200")||(courseName==="2100")){
+            otherAmount = Number(element[5]) + Number(element[6]) + Number(element[7]);
+          }
+          else{
+            otherAmount = Number(element[5]) + Number(element[6]);
+          }
+          let constructedSemester = "";
+          if(element[0][2]==='S'){//third character of the semester entry of the element
+            constructedSemester = "Spring";
+          }
+          else if(element[0][2]==='F'){
+            constructedSemester = "Fall";
+          }
+          else{//No winter semesters yet. This is a consequential assumption. Isaac Philo, April 3rd, 2025.
+            constructedSemester = "Summer";
+          }
+          let semesterToPush = {
+            Name: element[0],
+            Course: courseName,
+            Year: constructedYear,
+            Sem: constructedSemester,
+            African_American: Number(element[1]) || 0,
+            Asian: Number(element[2]) || 0,
+            Hispanic: Number(element[3]) || 0,
+            International: Number(element[4]) || 0,
+            Other: otherAmount || 0,
+            //OtherIndexOffset gives us an index that is 1 higher if and only if we are processing EPCS 2200.
+            //No incrementation for 2200.
+            White: Number(element[7+otherIndexOffset]) || 0,
+            Male: Number(element[8+otherIndexOffset]) || 0,
+            Female: Number(element[9+otherIndexOffset]) || 0,
+            Total: Number(element[10+otherIndexOffset]) || 0
+          };
+          semesterArray.push(semesterToPush);
+          // console.log("Semester being pushed: " + JSON.stringify(semesterToPush));
+        });
+        return semesterArray;
+      }
+      //Parsing logic will occur on the frontend
+      try{
+        const reader = new FileReader();
+        const workbook = XLSX.read(await this.file.arrayBuffer()); //Assuming that the whole post body will be the file.
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        const range2100 = XLSX.utils.decode_range("C34:I45");
+        const range3100 = XLSX.utils.decode_range("C47:I57");
+        //Some variables for more flexible row selections
+        //The table for 2200 starts at column L and is in rows 34-45 (L34:V45 was the relevant selection as of April 10th, 2025)
+        //The table for 3200 starts at column L and is in rows 47-57 (L47:V57 was the relevant selection as of April 10th, 2025)
+        //These ranges are of different length because the categories for each class differ slightly (differences are merged in processing)
+        const startingColumn = XLSX.utils.decode_col("L");
+
+        const beginningRow2200 = XLSX.utils.decode_row("34");
+        const endingRow2200 = XLSX.utils.decode_row("45");
+
+        const beginningRow3200 = XLSX.utils.decode_row("47");
+        const endingRow3200 = XLSX.utils.decode_row("57");
+
+        const beginningAddress = XLSX.utils.decode_cell("L34");
+        const endingColumn = determineEndingColumn(worksheet, beginningAddress);
+        console.log(`Ending column = ${endingColumn}`);
+
+        const calculatedRange2200 = {s: {r: beginningRow2200, c: startingColumn}, e: {r: endingRow2200, c: endingColumn}};
+        const calculatedRange3200 = {s: {r: beginningRow3200, c: startingColumn}, e: {r: endingRow3200, c: endingColumn}};
+
+        const dataFrom2200 = extractColumnMajor(worksheet, calculatedRange2200);
+        const dataFrom3200 = extractColumnMajor(worksheet, calculatedRange3200);
+        const dataFrom2100 = extractColumnMajor(worksheet, range2100);
+        const dataFrom3100 = extractColumnMajor(worksheet, range3100);
+        const JSONFor2200 = createSemestersFrom2DArray(dataFrom2200, "2200");
+        const JSONFor3200 = createSemestersFrom2DArray(dataFrom3200, "3200");
+        //Uploading 2100 under the name of 2200 because Andrea considers the two classes synonymous
+        const JSONFor2100 = createSemestersFrom2DArray(dataFrom2100, "2200");
+        //Uploading 3100 under the name of 3200 because Andrea considers those two classes synonymous as well
+        const JSONFor3100 = createSemestersFrom2DArray(dataFrom3100, "3200");
+        // console.log(JSONFor2200);//Arrays of JSON objects
+        // console.log(JSONFor3200);
+        let semestersObject = JSONFor2100.concat(JSONFor3100).concat(JSONFor2200).concat(JSONFor3200); //An array of all of the semester data in total
+        
+        //Regarding a possible additional column for the ongoing semester, to be extracted from the top right table
+        const afterCensusDayBeginningAddress = XLSX.utils.decode_cell("L5");
+        const topEndingColumn = determineEndingColumn(worksheet, afterCensusDayBeginningAddress);
+        if(topEndingColumn > endingColumn){ //If the file uploaded contains data for the current, ongoing semester, which occurs if the top table is wider than the bottom table
+          const currentSemesterRange2200 = {s: {r: XLSX.decode_row("5"), c: topEndingColumn}, e: {r: XLSX.decode_row("16"), c: topEndingColumn}};
+          const currentSemesterRange3200 = {s: {r: XLSX.decode_row("18"), c: topEndingColumn}, e: {r: XLSX.decode_row("28"), c: topEndingColumn}};
+          const currentSemesterData2200 = extractColumnMajor(worksheet, currentSemesterRange2200);
+          const currentSemesterData3200 = extractColumnMajor(worksheet, currentSemesterRange3200);
+          const currentSemesterJSON2200 = createSemestersFrom2DArray(currentSemesterData2200, "2200");
+          const currentSemesterJSON3200 = createSemestersFrom2DArray(currentSemesterData3200, "3200");
+          semestersObject = semestersObject.concat(currentSemesterJSON2200).concat(currentSemesterJSON3200);
+        }
+        
+        const res = await $fetch('/api/demographic', {
+          method: 'POST',
+          body: semestersObject
+        })
+        console.log("Sending the following JSON objects:");
+        semestersObject.forEach(element => {console.log(JSON.stringify(element))});
+        console.log("JSON objects sent!");
+        // console.log(JSON.stringify(res));
+        this.isSent = true;
+
+      }
+      catch (error) {
+        console.log(error);
+      }
+    },
+    
     async getRequest() {
       if (this.isLoading) return;
       this.isLoading = true;
@@ -836,6 +1041,16 @@ getColorForGender(gender) {
   display: flex;
   height: 100vh;
 }
+.upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.file-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 
 .sidebar {
   background-color: #006d48;
@@ -867,7 +1082,7 @@ getColorForGender(gender) {
 }
 
 .field {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .field-button {
@@ -960,14 +1175,77 @@ getColorForGender(gender) {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-bottom: 10px;
 }
 
 .submit-button:hover {
   background-color: #e8f5e9;
+}
+.file-info{
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+}
+.file-name{
+  display: block;
+  margin-bottom: 2px;
+  font-weight: bold;
+  margin-top: 5x;
+}
+.button-group{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 16px;
+}
+.import-button{
+  margin-left: 0px;
+  margin-top: 10px;
+  margin-bottom: 3px;
+  background-color: rgb(50, 55, 52);
+  padding: 10px;
+  border-radius: 4px;
+  width: 90%;
+  height: 90%;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  color: white;
 }
 
 .submit-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+.import-query {
+  margin-bottom: 20px;
+}
+
+.import-button {
+  background-color: #ffffff;
+  color: #006d48;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.import-button:hover {
+  background-color: #e8f5e9;
+}
+
+.success-message{
+  margin-top: 10px;   
+  font-weight: bold; 
+  text-align: center;
+}
+
 </style>
