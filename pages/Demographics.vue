@@ -134,6 +134,7 @@
           </div>
 
           <!-- Show the regular dropdown options for filters like Course, Metric Type, and Chart -->
+          <!-- Show the regular dropdown options for filters like Course, Metric Type, and Chart -->
           <div v-if="filter.name !== 'Demographics' && filter.name !== 'Ethnicity' && filter.name !== 'Gender'">
             <div 
               v-for="option in filter.options" 
@@ -225,34 +226,36 @@ export default defineComponent({
       }
     },
     toggleOption(filterName, option) {
-        const filter = this.filters.find(f => f.name === filterName);
+  const filter = this.filters.find(f => f.name === filterName);
 
-        // If the filter allows multiple selections (Course, Gender, Ethnicity)
-        if (filterName === "Course" || filterName === "Gender" || filterName === "Ethnicity") {
-            // If the option is not already selected, add it to the list of selected options
-            const optionIndex = filter.selectedOptions.indexOf(option);
-            if (optionIndex === -1) {
-                filter.selectedOptions.push(option);
-            } else {
-                // If the option is already selected, remove it
-                filter.selectedOptions.splice(optionIndex, 1);
-            }
-        }
-        // If the filter is Demographics, Chart, or Metric Type, allow only one selection at a time
-        else if (filterName === "Demographics" || filterName === "Chart" || filterName === "Metric Type") {
-            // Set the selected option to the new option (only one allowed at a time)
-            filter.selectedOptions = [option];
-            
-            // If Demographics is selected, ensure that only one of Ethnicity or Gender is chosen
-            if (filterName === "Demographics") {
-                if (option === "Ethnicity") {
-                    this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
-                } else if (option === "Gender") {
-                    this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
-                }
-            }
-        }
-    },
+  // If the option is already selected, unselect it
+  const optionIndex = filter.selectedOptions.indexOf(option);
+  if (optionIndex === -1) {
+    // If not selected, add the option to the array (keep multiple selections for Ethnicity and Gender)
+    filter.selectedOptions.push(option);
+  } else {
+    // If already selected, remove it (toggle off)
+    filter.selectedOptions.splice(optionIndex, 1);
+  }
+
+  // If Demographics filter is selected, ensure that only one of Ethnicity or Gender is chosen
+  if (filterName === "Demographics") {
+    if (option === "Ethnicity" || option === "Gender") {
+      // If one option is selected, reset the other option
+      this.filters.find(f => f.name === "Demographics").selectedOptions = [option];
+      if (option === "Ethnicity") {
+        this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
+      } else if (option === "Gender") {
+        this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
+      }
+    }
+  }
+
+  // Ensure that for Chart and Metric Type filters, only one option is selected at a time
+  if (filterName === "Chart" || filterName === "Metric Type") {
+    filter.selectedOptions = [option];  // Keep only the newly selected option
+  }
+},
     getFilterDisplayText(filter) {
       if (filter.selectedOptions.length > 0) {
         if (filter.name === "Demographics") {
@@ -281,7 +284,7 @@ export default defineComponent({
       this.isLoading = true;
 
       const params = new URLSearchParams();
-
+      console.log("Here are the filters now that submit has been called: " + JSON.stringify(this.filters));
       if (this.filters.find(f => f.name === "Metric Type").selectedOptions.length > 0) {
       const yAxis = this.filters.find(f => f.name === "Metric Type").selectedOptions[0];
       params.append("Metric Type", yAxis);
@@ -335,30 +338,29 @@ export default defineComponent({
         this.isLoading = false;
       }
     },
-    getColorForEthnicity(ethnicity) {
-    const colors = {
-      "African_American": "rgba(0, 109, 72, 0.7)",
-      "Asian": "rgba(75, 192, 192, 0.7)",
-      "Hispanic": "rgba(255, 99, 132, 0.7)",
-      "International": "rgba(153, 102, 255, 0.7)",
-      "Other": "rgba(255, 159, 64, 0.7)",
-      "White": "rgba(54, 162, 235, 0.7)"
-    };
 
-    return colors[ethnicity] || "rgba(0, 0, 0, 0.7)"; // Default to black if not found
+  // Helper function to generate distinct colors for ethnicities
+getColorForEthnicity(ethnicity) {
+    const colors = {
+        "African_American": "rgba(0, 109, 72, 0.7)",
+        "Asian": "rgba(75, 192, 192, 0.7)",
+        "Hispanic": "rgba(255, 99, 132, 0.7)",
+        "International": "rgba(153, 102, 255, 0.7)",
+        "Other": "rgba(255, 159, 64, 0.7)",
+        "White": "rgba(54, 162, 235, 0.7)"
+    };
+    return colors[ethnicity] || "rgba(0, 0, 0, 0.7)";
 },
 
-// Modify getColorForGender to accept course as a parameter
+// Helper function to generate distinct colors for genders
 getColorForGender(gender) {
     const colors = {
-      "Male": "rgba(0, 123, 255, 0.7)", // Blue for Male in 2200
-      "Female": "rgba(255, 99, 132, 0.7)" // Red for Female in 2200
+        "Male": "rgba(0, 123, 255, 0.7)",
+        "Female": "rgba(255, 99, 132, 0.7)"
     };
-
-    return colors[gender] || "rgba(0, 0, 0, 0.7)"; // Default to black if not found
+    return colors[gender] || "rgba(0, 0, 0, 0.7)";
 },
-
-
+    
   plotChart() {
     console.log('Starting plotChart with data:', this.chartData);
     console.log('Chart type:', this.filters.find(f => f.name === "Chart")?.selectedOptions[0]);
@@ -399,18 +401,67 @@ getColorForGender(gender) {
         const grandTotal = totalValues.reduce((sum, val) => sum + val, 0);
 
         // Separate data by course
-        const courses = [...new Set(this.chartData.map(item => item.Course))];
-        const datasets = courses.map(course => ({
-            label: `Course ${course}`,
-            data: this.chartData
-                .filter(item => item.Course === course)
-                .map(item => (this.filters.find(f => f.name === "Metric Type").selectedOptions[0] === "Percentages"
-                    ? (item.Total / grandTotal) * 100
-                    : item.Total)),
-            backgroundColor: course === "2200" ? 'rgba(0, 109, 72, 0.7)' : 'rgba(75, 192, 192, 0.7)',
-            borderColor: course === "2200" ? 'rgb(0, 109, 72)' : 'rgb(75, 192, 192)',
-            borderWidth: 1
-        }));
+        const courses = selectedCourses; // We'll just use the selected courses directly
+        let combinedData = {}; // Object to store combined data for each semester
+
+      // Loop through selected courses (2200, 3200, etc.)
+      selectedCourses.forEach(course => {
+          const courseData = this.chartData.filter(item => item.Course === course);
+          const semesters = [...new Set(courseData.map(item => item.Sem))];
+
+          semesters.forEach(semester => {
+              // Initialize combined data for the semester if not already created
+              if (!combinedData[semester]) {
+                  combinedData[semester] = {
+                      total: 0,
+                      ethnicityData: {},
+                      genderData: {}
+                  };
+              }
+
+              let currentSemesterData = combinedData[semester];
+
+              // Aggregate data for each semester and course
+              courseData.filter(item => item.Sem === semester).forEach(item => {
+                  currentSemesterData.total += item.Total;
+
+                  // Aggregate ethnicity data
+                  selectedEthnicities.forEach(e => {
+                      currentSemesterData.ethnicityData[e] = (currentSemesterData.ethnicityData[e] || 0) + item[e];
+                  });
+
+                  // Aggregate gender data
+                  selectedGenders.forEach(g => {
+                      currentSemesterData.genderData[g] = (currentSemesterData.genderData[g] || 0) + item[g];
+                  });
+              });
+          });
+      });
+
+// Now push the combined data into xValues and datasets
+      Object.keys(combinedData).forEach(semester => {
+          xValues.push(semester);
+
+          // For Ethnicities
+          selectedEthnicities.forEach(e => {
+              datasets.push({
+                  label: `${e} Ethnicity`, // Label for ethnicity
+                  data: [(combinedData[semester].ethnicityData[e] / combinedData[semester].total) * 100], // Percentage
+                  backgroundColor: this.getColorForEthnicity(e), // Use a function to get unique color
+                  stack: semester // Stack by semester
+              });
+          });
+
+          // For Genders
+          selectedGenders.forEach(g => {
+              datasets.push({
+                  label: `${g} Gender`, // Label for gender
+                  data: [(combinedData[semester].genderData[g] / combinedData[semester].total) * 100], // Percentage
+                  backgroundColor: this.getColorForGender(g), // Use a function to get unique color
+                  stack: semester // Stack by semester
+              });
+          });
+      });
 
         let chartConfig = {
             type: chartType === "Bar" ? "bar" : chartType.toLowerCase(),
