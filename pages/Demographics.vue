@@ -283,7 +283,7 @@ export default defineComponent({
       this.isLoading = true;
 
       const params = new URLSearchParams();
-
+      console.log("Here are the filters now that submit has been called: " + JSON.stringify(this.filters));
       if (this.filters.find(f => f.name === "Metric Type").selectedOptions.length > 0) {
       const yAxis = this.filters.find(f => f.name === "Metric Type").selectedOptions[0];
       params.append("Metric Type", yAxis);
