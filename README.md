@@ -139,24 +139,20 @@ Example response:
     "partnerId": "eaf74e1a-ca69-4312-892b-a0d154edad8a",
     "createdAt": "2025-04-17T23:56:36.138Z",
     "updatedAt": "2025-04-17T23:56:36.138Z",
-    "teams": [
+    "semesters": [
       {
-        "semester": {
-          "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
-          "year": 2023,
-          "season": "SUMMER",
-          "createdAt": "2025-04-17T23:56:36.135Z",
-          "updatedAt": "2025-04-17T23:56:36.135Z"
-        }
+        "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
+        "year": 2023,
+        "season": "SUMMER",
+        "createdAt": "2025-04-17T23:56:36.135Z",
+        "updatedAt": "2025-04-17T23:56:36.135Z"
       },
       {
-        "semester": {
-          "id": "3d0ae042-42f7-41fc-adde-4789318a3b47",
-          "year": 2023,
-          "season": "FALL",
-          "createdAt": "2025-04-17T23:56:36.135Z",
-          "updatedAt": "2025-04-17T23:56:36.135Z"
-        }
+        "id": "3d0ae042-42f7-41fc-adde-4789318a3b47",
+        "year": 2023,
+        "season": "FALL",
+        "createdAt": "2025-04-17T23:56:36.135Z",
+        "updatedAt": "2025-04-17T23:56:36.135Z"
       },
     ]
   },
@@ -170,24 +166,20 @@ Example response:
     "partnerId": "ee073720-87f6-4f98-9c7b-0de0cc1b0a44",
     "createdAt": "2025-04-17T23:56:36.138Z",
     "updatedAt": "2025-04-17T23:56:36.138Z",
-    "teams": [
+    "semesters": [
       {
-        "semester": {
-          "id": "38eb5cba-1517-434c-a3ef-5e03cbabb0ec",
-          "year": 2024,
-          "season": "FALL",
-          "createdAt": "2025-04-17T23:56:36.135Z",
-          "updatedAt": "2025-04-17T23:56:36.135Z"
-        }
+        "id": "38eb5cba-1517-434c-a3ef-5e03cbabb0ec",
+        "year": 2024,
+        "season": "FALL",
+        "createdAt": "2025-04-17T23:56:36.135Z",
+        "updatedAt": "2025-04-17T23:56:36.135Z"
       },
       {
-        "semester": {
-          "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
-          "year": 2023,
-          "season": "SUMMER",
-          "createdAt": "2025-04-17T23:56:36.135Z",
-          "updatedAt": "2025-04-17T23:56:36.135Z"
-        }
+        "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
+        "year": 2023,
+        "season": "SUMMER",
+        "createdAt": "2025-04-17T23:56:36.135Z",
+        "updatedAt": "2025-04-17T23:56:36.135Z"
       },
     ]
   },
