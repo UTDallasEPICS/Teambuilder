@@ -33,6 +33,13 @@ export default defineEventHandler(async (event) => {
     } else if (semesters[0] == "Empty") {
       throw new Error("You must pick at least one Semester");
     }
+    if (courses[0] == "Empty") {
+      throw new Error("You must pick at least one Course");
+    } else if (years[0] == "Empty" || years.length < 2) {
+      throw new Error("Both Years must be chosen");
+    } else if (semesters[0] == "Empty") {
+      throw new Error("You must pick at least one Semester");
+    }
 
     // If neither ethnicity nor gender is selected, return total only
     if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
@@ -78,6 +85,27 @@ export default defineEventHandler(async (event) => {
                 return -1;
               }
             });
+    // If neither ethnicity nor gender is selected, return total only
+    if (ethnicities[0] == "Empty" && genders[0] == "Empty") {
+      const records = await prisma.semester.findMany({
+        where: {
+          Course: {
+            in: courses,
+          },
+          Year: {
+            gte: Number(years[0]),
+            lte: Number(years[1]),
+          },
+          Sem: {
+            in: semesters,
+          },
+        },
+        select: {
+          Name: true,
+          Course: true,
+          Total: true,
+        },
+      });
 
       return {
         success: true,
