@@ -5,16 +5,19 @@ export const createTeams = (projects: Project[], semesters: Semester[]): Team[] 
   const now = new Date();
 
   return projects.flatMap((project) => {
-    const projectLength = faker.number.int({ min: 1, max: semesters.length});
-
-    return semesters.slice(0, projectLength).map((semester) => {
-      return {
+    // include a project in a semester 30% of the time
+    const randomizedSemesters = semesters.filter(
+      semester => faker.number.float({ min: 0, max: 1 }) < 0.3
+    );
+    
+    return randomizedSemesters.map((semester) => (
+      {
         id: faker.string.uuid(),
         projectId: project.id,
         semesterId: semester.id,
         createdAt: now,
         updatedAt: now
       }
-    })
+    ))
   })
 }
