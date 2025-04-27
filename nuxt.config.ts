@@ -1,29 +1,65 @@
 import { defineNuxtConfig } from "nuxt/config";
 import Aura from '@primeuix/themes/aura';
 import { definePreset } from '@primeuix/themes';
+import { colors } from "./utils/colors";
 
 const MyPreset = definePreset(Aura, {
-  components: {
-    multiselect: {
-      root: {
-        background: 'rgb(253,245,217)'
+  semantic: {
+    primary: {
+      50: '{teal.50}',
+      100: '{teal.100}',
+      200: '{teal.200}',
+      300: '{teal.300}',
+      400: '{teal.400}',
+      500: '{teal.500}',
+      600: '{teal.600}',
+      700: '{teal.700}',
+      800: '{teal.800}',
+      900: '{teal.900}',
+      950: '{teal.950}'
+    },  
+    colorScheme: {
+      surface: {
+        100: colors.beige,
+        200: colors.darkBeige
+      },
+      formField: {
+        background: colors.beige,
+        borderColor: colors.teal,
+      },
+      overlay: {
+        select: {
+          background: colors.beige
+        }
+      },
+      navigation: {
+        submenuIcon: {
+          color: colors.beige,
+          focusColor: colors.beige,
+          activeColor: colors.beige
+        }
+      },
+      // DataTable colors
+      content: {
+        background: colors.beige,
+        // hoverBackground: colors.red, // row hover
       }
-    },
-    inputtext: {
+    }
+  },
+  components: {
+    button: {
       root: {
-        background: 'rgb(253,245,217)',
-        borderColor: 'rgb(253,245,217)'
+        secondary: {
+          background: colors.beige,
+          activeColor: colors.beige,
+        }
       }
     },
     datatable: {
       headerCell: {
-        background: 'rgb(98,158,145)',
-        borderColor: 'rgb(253,245,217)'
+        background: colors.teal,
       },
-      row: {
-        background: 'rgb(253,245,217)'
-      },
-    }
+    },
   }
 })
 
