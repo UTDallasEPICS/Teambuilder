@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
         if (firstYear > secondYear) return 1;
         if (firstYear < secondYear) return -1;
 
-        const semesterOrder = ['F', 'U', 'S'];
+        const semesterOrder = ['S', 'U', 'F'];
         return semesterOrder.indexOf(firstSem) - semesterOrder.indexOf(secondSem);
       });
 
@@ -120,7 +120,7 @@ export default defineEventHandler(async (event) => {
         if (firstYear > secondYear) return 1;
         if (firstYear < secondYear) return -1;
 
-        const semesterOrder = ['F', 'U', 'S'];
+        const semesterOrder = ['S', 'U', 'F'];
         return semesterOrder.indexOf(firstSem) - semesterOrder.indexOf(secondSem);
       });
 
@@ -174,7 +174,7 @@ export default defineEventHandler(async (event) => {
       if (firstYear > secondYear) return 1;
       if (firstYear < secondYear) return -1;
 
-      const semesterOrder = ['F', 'U', 'S'];
+      const semesterOrder = ['S', 'U', 'F'];
       return semesterOrder.indexOf(firstSem) - semesterOrder.indexOf(secondSem);
     });
 
