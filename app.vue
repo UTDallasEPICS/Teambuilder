@@ -1,4 +1,5 @@
 <template lang="pug">
+  Toast
   .flex.flex-row.h-screen.w-full.items-start
     Navbar(v-if="$route.name !== 'index'")
     .centered-row.flex-auto
