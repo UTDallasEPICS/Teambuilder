@@ -25,18 +25,7 @@ export default {
       minHeight: {
         '300': '300px',
       },
-      colors: {
-        teal: colors.teal,
-        shaded: colors.shaded,
-        beige: colors.beige,
-        magenta: colors.magenta,
-        // pill colors
-        lightblue:colors.lightblue,
-        green: colors.green,
-        orange: colors.orange,
-        red: colors.red,
-        gray: colors.gray
-      },
+      colors,
       borderRadius: {
         '10': '10px', 
       },

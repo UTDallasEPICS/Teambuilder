@@ -4,6 +4,7 @@ export const colors = {
   beige: 'rgb(253,245,217)',
   darkBeige: 'rgb(217, 210, 186)',
   magenta: 'rgb(226, 108, 237)',
+  // pill colors
   lightblue: 'rgb(111, 201, 216)',
   green: 'rgb(119, 207, 119)',
   orange: 'rgb(255,160,122)',
