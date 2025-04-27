@@ -19,7 +19,13 @@ export const getInactiveProjects = (projects: ProjectWithSemesters[], semester: 
 )
 
 // Given an array of projects, get inactive projects with status of NEW or RETURNING
-// Added in to cut down on the amount of inactive projects on the Generate Teams PickList
+// Should eventually be added in to cut down on projects on the generate teams page as
+// PickList may have performance issues when the number of projects balloons.
+// Leaving out for now because I'm not sure how to handle modifying past semesters.  
+// Projects for the current semester should all be NEW or RETURNING, but projects 
+// from past semesters can have any status, so removing, say, a WITHDRAWN 
+// project from a past semester would make it disappear from the page entirely,
+// which is very confusing.
 export const getAvailableProjects = (projects: ProjectWithSemesters[], semester: Semester | null) => (
   getInactiveProjects(projects, semester).filter(project => project.status === 'NEW' || project.status === 'RETURNING')
 )
