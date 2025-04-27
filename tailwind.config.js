@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+import { colors } from "./utils/colors";
+
 export default {
   content: [],
   theme: {
@@ -23,16 +26,16 @@ export default {
         '300': '300px',
       },
       colors: {
-        teal: 'rgb(98,158,145)',
-        shaded: 'rgba(48, 100, 162, 0.3)',
-        beige: 'rgb(253,245,217)',
-        lightblue:'rgb(111, 201, 216)',
+        teal: colors.teal,
+        shaded: colors.shaded,
+        beige: colors.beige,
+        magenta: colors.magenta,
         // pill colors
-        magenta: 'rgb(226, 108, 237)',
-        green: 'rgb(119, 207, 119)',
-        orange: 'rgb(255,160,122)',
-        red: 'rgb(235, 100, 100)',
-        gray: 'rgb(150,150,150)'
+        lightblue:colors.lightblue,
+        green: colors.green,
+        orange: colors.orange,
+        red: colors.red,
+        gray: colors.gray
       },
       borderRadius: {
         '10': '10px', 
