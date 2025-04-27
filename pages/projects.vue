@@ -99,11 +99,10 @@ useHead({ title: 'Projects' });
 const projects = ref<ProjectWithSemesters[]>([]);
 onMounted(async () => {
   projects.value = await $fetch<ProjectWithSemesters[]>("api/projects");
-  console.log(projects.value[0])
 })
 const selectedProject = ref<ProjectWithSemesters | null>(null);
 const selectedProjectSemesters = computed(() => (
-  stringifySemesters(selectedProject.value?.teams.map(team => team.semester))
+  stringifySemesters(selectedProject.value?.semesters)
 ));
 // const selectedProjectSemesters: Semester[] | undefined = selectedProject.value?.teams.map(team => team.semester);
 const editedProject = ref<ProjectWithSemesters | null>(null);
