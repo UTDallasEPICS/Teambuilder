@@ -10,7 +10,7 @@
       .text-2xl.mt-2 Student count: {{ studentCount }}
       
       DataTable.teal-card.px-10.mt-5(
-        :value="students" 
+        :value="studentsWithFullName" 
         v-model:filters="filters"
         scrollable 
         scrollHeight="80vh"
@@ -21,13 +21,9 @@
         selectionMode="single"
         v-model:selection="selectedStudent"
       )
-        Column(field="lastName" header="Last Name" :showFilterMenu="false")
+        Column(field="fullName" header="Name" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
-            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by last" :showClear="true")
-
-        Column(field="firstName" header="First Name" :showFilterMenu="false")
-          template(#filter="{ filterModel, filterCallback }")
-            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by first" :showClear="true")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
 
         Column(field="netID" header="NetID" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
@@ -66,6 +62,14 @@ useHead({ title: 'Students' });
 
 const students = ref<Student[]>([]);
 const studentCount = ref(0);
+const studentsWithFullName = computed(() => (
+  students.value.map((student) => {
+    return {
+      ...student,
+      fullName: student.lastName + ', ' + student.firstName
+    }
+  })
+))
 
 onMounted(async () => {
   students.value = await $fetch<Student[]>("api/students");
@@ -82,8 +86,7 @@ const editedStudent = ref<Student | null>(null);
 const isEditing = ref(false);
 
 const filters = ref({
-  lastName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  firstName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  fullName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   netID: { value: null, matchMode: FilterMatchMode.CONTAINS },
   major: { value: [], matchMode: FilterMatchMode.IN },
   year: { value: [], matchMode: FilterMatchMode.IN },
