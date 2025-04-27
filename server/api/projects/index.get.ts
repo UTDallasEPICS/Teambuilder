@@ -1,7 +1,7 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Project, Semester } from "@prisma/client";
 
 export default defineEventHandler(async (event) => {
-  return event.context.client.project.findMany({
+  const projectsQuery = await event.context.client.project.findMany({
     include: {
       teams: {
         select: {
@@ -10,9 +10,16 @@ export default defineEventHandler(async (event) => {
       }
     }
   });
+
+  // Simplifies the API response to directly include a semesters array with each project
+  return projectsQuery.map((project: ProjectWithSemestersQuery) => ({
+    ...project,
+    semesters: project.teams.map(team => team.semester),
+    teams: undefined
+  }))
 })
 
-export type ProjectWithSemesters = Prisma.ProjectGetPayload<{
+type ProjectWithSemestersQuery = Prisma.ProjectGetPayload<{
   include: {
     teams: {
       select: {
@@ -21,3 +28,7 @@ export type ProjectWithSemesters = Prisma.ProjectGetPayload<{
     }
   }
 }>
+
+export type ProjectWithSemesters = Project & {
+  semesters: Semester[]
+}
