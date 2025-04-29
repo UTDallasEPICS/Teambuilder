@@ -5,9 +5,7 @@
     :options="semesters"
     placeholder="Select Semester"
   )
-    template(#option="slotProps")
-      div(v-if="slotProps.option") {{ displaySemester(slotProps.option) }}
-      span(v-else) {{ slotProps.placeholder }}
+    template(#option="slotProps") {{ displaySemester(slotProps.option) }}
     template(#value="slotProps")
       div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
       span(v-else) {{ slotProps.placeholder }}
