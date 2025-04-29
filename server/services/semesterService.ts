@@ -6,14 +6,14 @@ export const stringifySemesters = (semesters: Semester[] | undefined) => (
   semesters ? sortSemesters(semesters).map(displaySemester).join(', ') : ''
 )
 
-// Sorts semesters chronologically
+// Sorts semesters in reverse chronological order
 export const sortSemesters = (semesters: Semester[]) => {
   const seasonsOrder = {
     'SPRING': 1,
     'SUMMER': 2,
     'FALL': 3
   }
-  return semesters.sort((a, b) => a.year - b.year || seasonsOrder[a.season] - seasonsOrder[b.season]);
+  return semesters.sort((a, b) => b.year - a.year || seasonsOrder[b.season] - seasonsOrder[a.season]);
 }
 
 // Returns a string for the given semester in the format "Spring 2025"
