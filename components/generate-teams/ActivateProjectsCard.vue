@@ -39,8 +39,16 @@ import type { PickListMoveToSourceEvent, PickListMoveToTargetEvent } from 'prime
 import { filterProjectsByName, getActiveProjects, getInactiveProjects } from '~/server/services/projectService';
 import { displaySemester } from '~/server/services/semesterService';
 
+const { projects, semesters } = defineProps<{
+  projects: Project[]
+  semesters: Semester[]
+}>()
+
+const emit = defineEmits<{
+  (e: 'fetchProjects'): void
+}>()
+
 const { successToast, errorToast, infoToast } = usePrimeVueToast();
-const { projects, semesters } = useProjectsAndSemesters();
 
 const selectedSemester = ref<Semester | null>(null);
 
@@ -69,8 +77,8 @@ watch(selectedSemester, (newValue) => {
   deactivateProjectsById = [];
 
   // TODO: Change getInactiveProjects to getAvailableProjects.  See notes in projectService.
-  inactiveProjects.value = getInactiveProjects(projects.value, newValue);
-  activeProjects.value = getActiveProjects(projects.value, newValue);
+  inactiveProjects.value = getInactiveProjects(projects, newValue);
+  activeProjects.value = getActiveProjects(projects, newValue);
 
   pickListProjects.value = [
     inactiveProjects.value,
@@ -184,7 +192,7 @@ const handleSaveProjects = async () => {
 
   // Sync projetcs ref with database
   if (didUpdate) {
-    projects.value = await $fetch<ProjectWithSemesters[]>('/api/projects');
+    emit('fetchProjects');
   }
 }
 </script>

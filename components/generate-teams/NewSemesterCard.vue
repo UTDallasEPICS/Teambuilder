@@ -23,8 +23,11 @@
 <script setup lang="ts">
 import type { Season, Semester } from '@prisma/client';
 
-const { successToast, errorToast, infoToast } = usePrimeVueToast();
-const { semesters } = useProjectsAndSemesters();
+const emit = defineEmits<{
+  (e: 'fetchSemesters'): void
+}>()
+
+const { successToast, errorToast } = usePrimeVueToast();
 
 const seasons = ref([
   'SPRING',
@@ -46,7 +49,7 @@ const handleCreateSemester = async () => {
 
   if (response.status === 201) {
     successToast('New semester created!');
-    semesters.value = await $fetch<Semester[]>('/api/semesters');
+    emit('fetchSemesters');
   } else {
     errorToast('Error creating new semester.  Please try again.');
   }
