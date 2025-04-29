@@ -39,7 +39,7 @@ import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import Dropdown from 'primevue/dropdown';
 import type { PickListMoveToSourceEvent, PickListMoveToTargetEvent } from 'primevue/picklist';
 import { filterProjectsByName, getActiveProjects, getInactiveProjects } from '~/server/services/projectService';
-import { displaySemester } from '@/utils/index';
+import { displaySemester } from '~/server/services/semesterService';
 
 const { successToast, errorToast, infoToast } = usePrimeVueToast();
 const { projects, semesters } = useProjectsAndSemesters();

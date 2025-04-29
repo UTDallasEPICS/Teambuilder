@@ -92,7 +92,7 @@ import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
-import { stringifySemesters } from '@/utils/index';
+import { stringifySemesters } from '~/server/services/semesterService';
 
 useHead({ title: 'Projects' });
 
