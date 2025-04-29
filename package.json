@@ -18,7 +18,7 @@
     "@heroicons/vue": "^2.2.0",
     "@pinia/nuxt": "^0.10.1",
     "@primeuix/themes": "^1.0.0",
-    "@prisma/client": "^6.6.0",
+    "@prisma/client": "^6.7.0",
     "@tailwindcss/typography": "^0.5.15",
     "axios": "^1.7.9",
     "discord.js": "^14.16.3",
@@ -41,7 +41,7 @@
     "@vue/language-plugin-pug": "latest",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
-    "prisma": "^6.6.0",
+    "prisma": "^6.7.0",
     "tailwindcss": "^3.4.3",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
