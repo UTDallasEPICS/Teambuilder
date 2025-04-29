@@ -1,14 +1,10 @@
 <template lang="pug">
   .centered-col.shaded-card.mt-10.p-10.gap-10
-    .stepCard
-      .cardTitle Step 1: Start New Semester
-      //- .centered-row
-      //-   Dropdown(
-      //-     v-model=""
-      //-   )
+    .stepCard.gap-5
+      NewSemesterCard
     .stepCard.gap-5
       ActivateProjectsCard
-    .stepCard
+    .stepCard.gap-5
       .cardTitle Step 3: Generate Teams
 </template>
 
