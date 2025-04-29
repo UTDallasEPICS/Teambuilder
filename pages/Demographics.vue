@@ -254,36 +254,41 @@ export default defineComponent({
       }
     },
     toggleOption(filterName, option) {
-  const filter = this.filters.find(f => f.name === filterName);
+      const filter = this.filters.find(f => f.name === filterName);
 
-  // If the option is already selected, unselect it
-  const optionIndex = filter.selectedOptions.indexOf(option);
-  if (optionIndex === -1) {
-    // If not selected, add the option to the array (keep multiple selections for Ethnicity and Gender)
-    filter.selectedOptions.push(option);
-  } else {
-    // If already selected, remove it (toggle off)
-    filter.selectedOptions.splice(optionIndex, 1);
-  }
-
-  // If Demographics filter is selected, ensure that only one of Ethnicity or Gender is chosen
-  if (filterName === "Demographics") {
-    if (option === "Ethnicity" || option === "Gender") {
-      // If one option is selected, reset the other option
-      this.filters.find(f => f.name === "Demographics").selectedOptions = [option];
-      if (option === "Ethnicity") {
-        this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
-      } else if (option === "Gender") {
-        this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
+      // If the option is already selected, unselect it
+      const optionIndex = filter.selectedOptions.indexOf(option);
+      if (optionIndex === -1) {
+        // If not selected, add the option to the array (keep multiple selections for Ethnicity and Gender)
+        filter.selectedOptions.push(option);
+      } else {
+        // If already selected, remove it (toggle off)
+        filter.selectedOptions.splice(optionIndex, 1);
       }
-    }
-  }
 
-  // Ensure that for Chart and Metric Type filters, only one option is selected at a time
-  if (filterName === "Chart" || filterName === "Metric Type" || filterName === "Demographics") {
-    filter.selectedOptions = [option];  // Keep only the newly selected option
-  }
-},
+      // If Demographics filter is selected, ensure that only one of Ethnicity or Gender is chosen
+      if (filterName === "Demographics") {
+        if (option === "Ethnicity" || option === "Gender") {
+          // If one option is selected, reset the other option
+          this.filters.find(f => f.name === "Demographics").selectedOptions = [option];
+          if (option === "Ethnicity") {
+            this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
+          } else if (option === "Gender") {
+            this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
+          }
+        }
+        else if (option === "Total"){ //We don't want to select any ethnicities or genders if the total option is selected
+          this.filters.find(f => f.name === "Demographics").selectedOptions = [option];
+          this.filters.find(f => f.name === "Gender").selectedOptions = []; // Reset Gender
+          this.filters.find(f => f.name === "Ethnicity").selectedOptions = []; // Reset Ethnicity
+        }
+      }
+
+      // Ensure that for Chart and Metric Type filters, only one option is selected at a time
+      if (filterName === "Chart" || filterName === "Metric Type" || filterName === "Demographics") {
+        filter.selectedOptions = [option];  // Keep only the newly selected option
+      }
+    },
     getFilterDisplayText(filter) {
       if (filter.selectedOptions.length > 0) {
         if (filter.name === "Demographics") {
@@ -495,11 +500,13 @@ export default defineComponent({
       params.append("Metric Type", yAxis);
       }
       if (this.timePeriodOption === "Continuous") {
+        params.append("Continuous", "true");
         params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
         if (this.customSemesterStart && this.customSemesterEnd) {
           params.append("Semester", `${this.customSemesterStart},${this.customSemesterEnd}`);
         }
       } else if (this.timePeriodOption === "Semester-based") {
+        params.append("Continuous", "false");
         params.append("Year", `${this.customYearStart},${this.customYearEnd}`);
         if (this.selectedSemesters.length) {
           params.append("Semester", this.selectedSemesters.join(","));
