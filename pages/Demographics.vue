@@ -464,12 +464,13 @@ export default defineComponent({
         const afterCensusDayBeginningAddress = XLSX.utils.decode_cell("L5");
         const topEndingColumn = determineEndingColumn(worksheet, afterCensusDayBeginningAddress);
         if(topEndingColumn > endingColumn){ //If the file uploaded contains data for the current, ongoing semester, which occurs if the top table is wider than the bottom table
-          const currentSemesterRange2200 = {s: {r: XLSX.decode_row("5"), c: topEndingColumn}, e: {r: XLSX.decode_row("16"), c: topEndingColumn}};
-          const currentSemesterRange3200 = {s: {r: XLSX.decode_row("18"), c: topEndingColumn}, e: {r: XLSX.decode_row("28"), c: topEndingColumn}};
+          const currentSemesterRange2200 = {s: {r: XLSX.utils.decode_row("5"), c: topEndingColumn}, e: {r: XLSX.utils.decode_row("16"), c: topEndingColumn}};
+          const currentSemesterRange3200 = {s: {r: XLSX.utils.decode_row("18"), c: topEndingColumn}, e: {r: XLSX.utils.decode_row("28"), c: topEndingColumn}};
           const currentSemesterData2200 = extractColumnMajor(worksheet, currentSemesterRange2200);
           const currentSemesterData3200 = extractColumnMajor(worksheet, currentSemesterRange3200);
           const currentSemesterJSON2200 = createSemestersFrom2DArray(currentSemesterData2200, "2200");
           const currentSemesterJSON3200 = createSemestersFrom2DArray(currentSemesterData3200, "3200");
+          console.log("Adding current semester: " + JSON.stringify(currentSemesterJSON2200) + JSON.stringify(currentSemesterJSON3200));
           semestersObject = semestersObject.concat(currentSemesterJSON2200).concat(currentSemesterJSON3200);
         }
         
