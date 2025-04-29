@@ -71,14 +71,14 @@ model Student {
   id            String      @id @default(uuid())
   github        String?     @unique
   discord       String?     @unique
-  email         String      @unique
+  email         String?     @unique
   netID         String      @map("net_id") @unique
   firstName     String      @map("first_name")
   lastName      String      @map("last_name")
   major         String 
   year          Year
   class         String
-  enrollment    String
+  enrollment    String?
   status        StudentStatus
 
   teams         Team[]
