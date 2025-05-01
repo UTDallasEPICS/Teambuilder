@@ -9,6 +9,13 @@ The purpose of this project is to:
 - Steamline the team sorting and creation process
 - Keep track of the available projects and partners available
 
+In addition, the purpose of this project is to import demographic data in order to
+graphically display said demographic data. The demographics include Ethnicity (African American,
+Asian, Hispanic, White, International, and other) and Gender (Male Female), and the different way
+to display this data is based on the course, (2200/3200), semester(Spring, Summer, Fall), the year, 
+and finally by percentage, raw count, or total. The options of diplaying the data is by seperate Bar Graphs,
+a single pie chart, or a single line graph.
+
 ## Users/Roles
 
 #### User/Administration and Directors of EPICS
@@ -17,9 +24,114 @@ The purpose of this project is to:
 - Manage teams, projects, partners
 - Admin privileges such as adding/removing students from teams
 - Look at data analytics
-
+- Import Demographic data
+- Display demographic data by Bar Graphs, Pie Charts, or Line Graphs
 
 ## Functional Requirements
+
+### 1. **Filter Management**
+
+- **Course Filter**: Users can filter data based on selected courses (e.g., "2200" and "3200"). Multiple courses can be selected.
+- **Demographic Filter**: Users can filter data by gender or ethnicity, with multiple selections allowed.
+- **Year and Semester Filter**: Users can filter data by specific years and semesters. Multiple years or semesters can be selected.
+- **Y-axis Metric Selection**: Users can choose to display data as either raw counts or percentages.
+- **Validation**: Ensures that required filters (e.g., Course, Year, Semester) are selected. Throws error if mandatory filters are not provided.
+
+### 2. **Data Visualization**
+
+- **Charts**: Data is displayed as bar, line, or pie charts based on the user's selection. The chart is updated dynamically when filters change.
+  - **Bar Chart**: Displays total students per semester by course. The bars represent the selected demographic data.
+  - **Line Chart**: Displays trends over time (e.g., semester-wise changes in demographics).
+  - **Pie Chart**: Shows the distribution of selected demographics (gender/ethnicity) across all selected semesters and courses.
+- **Tooltip**: Tooltips display additional information when hovering over the chart segments, such as the raw count and percentage of total.
+  - Example Tooltip:
+    ```javascript
+    chartConfig.options.plugins.tooltip.callbacks.label = (context) => {
+      const value = context.raw;
+      const percentage = ((value / grandTotal) * 100).toFixed(1);
+      return `${context.dataset.label}: ${value} students (${percentage}% of total)`;
+    };
+    ```
+
+### 3. **Data Export**
+
+- **Exporting Data**: Users can export the filtered data in CSV or Excel format.
+- **Chart Export**: Users can download the chart as an image (e.g., PNG).
+
+### 4. **Handling Demographics and Courses**
+
+- **Demographics**: Data can be filtered based on ethnicity or gender. Users can choose which demographic (or both) to view.
+- **Course Filtering**: Data can be filtered for specific courses, and the app supports combined data from multiple courses (e.g., 2200 and 3200).
+  - Example of filtering data by courses:
+    ```javascript
+    const courses = Course ? String(Course).split(",") : [];
+    ```
+
+### 5. **Data Sorting and Display**
+
+- **Sorting Data**: The records are sorted by year and semester to display in chronological order. This ensures data is displayed in the correct order for visual analysis.
+  - Sorting logic:
+    ```javascript
+    records.sort((first, second) => {
+      const firstYear = first.Name.substring(0, 2);
+      const firstSem = first.Name.substring(2, 3);
+      const secondYear = second.Name.substring(0, 2);
+      const secondSem = second.Name.substring(2, 3);
+      if (firstYear > secondYear) return 1;
+      if (firstYear < secondYear) return -1;
+      const semesterOrder = ['F', 'U', 'S'];
+      return semesterOrder.indexOf(firstSem) - semesterOrder.indexOf(secondSem);
+    });
+    ```
+
+### 6. **Validation and Error Handling**
+
+- **Validation for Filters**: Ensures that at least one course, one semester, and both years are selected before data is processed. Throws error if conditions are not met.
+  - Example error handling:
+    ```javascript
+    if (courses[0] == "Empty") {
+      throw new Error("You must pick at least one Course");
+    } else if (years[0] == "Empty" || years.length < 2) {
+      throw new Error("Both Years must be chosen");
+    } else if (semesters[0] == "Empty") {
+      throw new Error("You must pick at least one Semester");
+    }
+    ```
+
+### 7. **Dynamic Data Updates**
+
+- **Dynamic Chart Updates**: When users select or change filters (such as ethnicity, gender, etc.), the charts update dynamically with the new data.
+  - **Example of updating charts dynamically**:
+    ```javascript
+    chartConfig.data.datasets = selectedCategories.map((category, index) => ({
+      label: category,
+      data: this.chartData.map((item) => {
+        return this.filters.find(f => f.name === "Y-axis").selectedOptions[0] === "Percentages"
+          ? (item[category] / item.Total) * 100
+          : item[category];
+      }),
+      backgroundColor: isGenderMode ? this.getColorForGender(category) : this.getColorForEthnicity(category),
+      borderColor: isGenderMode ? this.getColorForGender(category) : this.getColorForEthnicity(category),
+      fill: false,
+      tension: chartType === "Line" ? 0.4 : undefined
+    }));
+    ```
+
+### 8. **User Interface (UI) and Layout**
+
+- **Responsive Design**: The app is designed to be responsive across devices (desktop, tablet, and mobile).
+- **Navigation**: Easy-to-use navigation menus for users to access different pages, such as filtering data, viewing charts, and exporting data.
+
+---
+
+### Summary
+
+This app allows users to:
+- Select and filter demographic data by course, year, semester, and gender/ethnicity.
+- View the filtered data through dynamic bar, line, and pie charts.
+- Export the data in various formats like CSV or Excel.
+- Update the charts and data dynamically based on the selected filters.
+- Ensure that all data is properly validated and errors are handled gracefully.
 
 ### Team Creation Functionality
 
@@ -37,7 +149,7 @@ Documentation linked:
 - Front End: [Vue](https://vuejs.org/guide/introduction.html), [Nuxt](https://nuxt.com/docs/getting-started/introduction)
 - Database: [PostgresSQL](https://www.postgresql.org/docs/)
 - Other packages: [Prisma](https://www.prisma.io/docs)
-- Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started)
+- Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started), and [SheetJS](https://docs.sheetjs.com/docs/)
 
 ## Setup
 
