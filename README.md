@@ -136,11 +136,11 @@ This app allows users to:
 ### Team Creation Functionality
 
 - The user shall be able to create teams based on the projects available and the student's preference
-- The user shall be able to update and modify current teams 
+- The user shall be able to update and modify the current teams 
 
 ### Team/Project Viewing Functionality
 
-- The page shall display the current created teams and availabe projects, students, and partners
+- The page shall display the current created teams and available projects, students, and partners
 
 
 ## Tech Stack
