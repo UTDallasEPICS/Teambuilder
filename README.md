@@ -152,7 +152,10 @@ Documentation linked:
 - Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started), and [SheetJS](https://docs.sheetjs.com/docs/)
 
 ## Migration Scripts
-- If the database is not populated on your device, you will need a copy of the domain-specific demographic data Excel sheet, provided by the University. Then, after running the website, simply navigate to the Demographics page and import the file using the provided "Import File" button in the bottom left. Then, click "Send Extracted Data" to populate the database using the Excel sheet. (This assumes your Excel sheet will be of the same layout as those provided in prior years, which is a necessary assumption.)
+- If the database is not populated on your device, you will need a copy of the domain-specific demographic data Excel sheet, provided by the University.
+- After running the website, navigate to the Demographics page and import the demographics spreadsheet using the provided "Import File" button in the bottom left.
+- Then, click "Send Extracted Data" to populate the database using the Excel sheet.
+- (This assumes your Excel sheet will be of the same layout as those provided in prior years, which is a necessary assumption.)
 - If it is a new semester and you have a spreadsheet with the most recent data on it, simply import that file in the same manner as previously described. The database will be updated with the new data.
 
 ## Setup
