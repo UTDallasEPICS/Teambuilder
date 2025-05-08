@@ -18,9 +18,11 @@
     // Now: .flex.flex-col.text-xl.gap-y-4 -> now alligned vertically 
     .mt-6.flex.flex-col.text-xl.gap-y-4
       NuxtLink(to="/projects") Projects
+      NuxtLink(to="/partners") Partners
       NuxtLink(to="/students") Students
       NuxtLink(to="/generate-teams") Generate Teams
       NuxtLink(to="/demographics") Demographics
+    
 
     // Social Media Links
     // Used to be: .centered-row.gap-4.ml-auto.mr-10

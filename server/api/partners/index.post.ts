@@ -1,16 +1,27 @@
 // TODO: Test the Post/Create function
-export default defineEventHandler(async event => {
-  const { id, name, contact_email } = await readBody(event);
-  const postPartner = await event.context.client.partner.create({
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const { name, contactName, contactEmail, projectIds } = body;
+
+  const newPartner = await event.context.client.partner.create({
     data: {
-      id: id,
-      name: name,
-      contact_email: contact_email,
+      name,
+      contactName,
+      contactEmail,
+      projects: projectIds
+        ? {
+            connect: projectIds.map((id: string) => ({ id })),
+          }
+        : undefined,
     },
     include: {
-      Projects: true,
-      Team: true
-    }
+      projects: true,
+    },
   });
-  return postPartner;
+
+  return {
+    ...newPartner,
+    projectName: newPartner.projects.map(p => p.name).join(', ') || 'None',
+  };
 });
+

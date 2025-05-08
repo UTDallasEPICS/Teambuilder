@@ -4,12 +4,17 @@ import { sortSemesters } from "~/server/services/semesterService";
 export default defineEventHandler(async (event) => {
   const projectsQuery = await event.context.client.project.findMany({
     include: {
+      partner: {
+        select: {
+          name: true, // this is the organization's name
+        },
+      },
       teams: {
         select: {
-          semester: true
-        }
-      }
-    }
+          semester: true,
+        },
+      },
+    },
   });
 
   // Simplifies the API response to directly include a semesters array with each project
@@ -22,14 +27,19 @@ export default defineEventHandler(async (event) => {
 
 type ProjectWithSemestersQuery = Prisma.ProjectGetPayload<{
   include: {
+    partner: {
+      select: {
+        name: true;
+      };
+    };
     teams: {
       select: {
-        semester: true
-      }
-    }
-  }
+        semester: true;
+      };
+    };
+  };
 }>
 
 export type ProjectWithSemesters = Project & {
   semesters: Semester[]
-}
+};

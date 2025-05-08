@@ -26,6 +26,9 @@
         Column(field="description" header="Description" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
+        Column(field="partnerName" header="Organization" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by organization" :showClear="true")
         Column(field="status" header="Status" :showFilterMenu="false")
           template(#body="{ data }") 
             .pill.w-20(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
@@ -96,16 +99,21 @@ import { stringifySemesters } from '~/server/services/semesterService';
 
 useHead({ title: 'Projects' });
 
-const projects = ref<ProjectWithSemesters[]>([]);
+const projects = ref<ProjectWithSemestersAndPartner[]>([]);
 onMounted(async () => {
-  projects.value = await $fetch<ProjectWithSemesters[]>("api/projects");
-})
-const selectedProject = ref<ProjectWithSemesters | null>(null);
+  const raw = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
+  projects.value = raw.map(p => ({
+    ...p,
+    partnerName: p.partner?.name ?? ''
+  }));
+});
+
+const selectedProject = ref<ProjectWithSemestersAndPartner | null>(null);
 const selectedProjectSemesters = computed(() => (
   stringifySemesters(selectedProject.value?.semesters)
 ));
 // const selectedProjectSemesters: Semester[] | undefined = selectedProject.value?.teams.map(team => team.semester);
-const editedProject = ref<ProjectWithSemesters | null>(null);
+const editedProject = ref<ProjectWithSemestersAndPartner | null>(null);
 const isEditing = ref(false);
 
 const filters = ref({
@@ -113,13 +121,16 @@ const filters = ref({
   description: { value: null, matchMode: FilterMatchMode.CONTAINS },
   type: { value: null, matchMode: FilterMatchMode.CONTAINS },
   status: { value: [], matchMode: FilterMatchMode.IN },
+  semester: { value: [], matchMode: FilterMatchMode.IN },
+  partnerName: { value: null, matchMode: FilterMatchMode.CONTAINS }
+
 });
 
 const statuses = ref(['NEW', 'RETURNING', 'COMPLETE', 'WITHDRAWN', 'HOLD']);
 const semesters = ref(['S2023', 'F2023', 'S2024', 'F2024', 'S2025']);
 const types = ref(['Software', 'Hardware', 'Both']);
 
-const selectProject = (project: ProjectWithSemesters) => {
+const selectProject = (project: ProjectWithSemestersAndPartner) => {
   selectedProject.value = project;
 }
 
