@@ -17,15 +17,19 @@ export default defineEventHandler(async (event) => {
     },
   });
 
-  // Simplifies the API response to directly include a semesters array with each project
-  return projectsQuery.map((project: ProjectWithSemestersQuery) => ({
+  // Simplifies the API response to directly include:
+  // 1) a semesters array with each project
+  // 2) partnerName
+  return projectsQuery.map((project: ProjectWithSemestersAndPartnerQuery) => ({
     ...project,
     semesters: sortSemesters(project.teams.map(team => team.semester)),
-    teams: undefined
+    partnerName: project.partner.name,
+    teams: undefined,
+    partner: undefined
   }))
 })
 
-type ProjectWithSemestersQuery = Prisma.ProjectGetPayload<{
+type ProjectWithSemestersAndPartnerQuery = Prisma.ProjectGetPayload<{
   include: {
     partner: {
       select: {
@@ -41,5 +45,10 @@ type ProjectWithSemestersQuery = Prisma.ProjectGetPayload<{
 }>
 
 export type ProjectWithSemesters = Project & {
-  semesters: Semester[]
+  semesters: Semester[],
+};
+
+export type ProjectWithSemestersAndPartner = Project & {
+  semesters: Semester[],
+  partnerName: string
 };
