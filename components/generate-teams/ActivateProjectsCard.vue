@@ -40,7 +40,7 @@ import { filterProjectsByName, getActiveProjects, getInactiveProjects } from '~/
 import { displaySemester } from '~/server/services/semesterService';
 
 const { projects, semesters } = defineProps<{
-  projects: Project[]
+  projects: ProjectWithSemesters[]
   semesters: Semester[]
 }>()
 
