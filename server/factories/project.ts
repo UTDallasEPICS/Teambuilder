@@ -19,9 +19,8 @@ export const createRandomProject = (partnerId: string): Project => {
 }
 
 export const createRandomProjects = (length: number, partners: Partner[] = []): Project[] => {
-  return Array.from({ length }, () => {
-      const randomPartnerId = getRandomElement(partners.map((partner) => partner.id))
-      return createRandomProject(randomPartnerId);
+  return Array.from({ length }, (_, i) => {
+      return createRandomProject(partners[i % partners.length].id);
     }
   );
 }

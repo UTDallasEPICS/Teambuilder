@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { createRandomChoices } from "~/server/factories/choice";
 import { createRandomPartners } from "~/server/factories/partner";
 import { createRandomProjects } from "~/server/factories/project";
 import { createSemesters } from "~/server/factories/semester";
@@ -10,16 +11,18 @@ const prisma = new PrismaClient()
 const main = async () => {
     try {
         const semesters = createSemesters();
-        const partners = createRandomPartners(20);
+        const partners = createRandomPartners(50);
         const projects = createRandomProjects(100, partners);
-        const students = createRandomStudents(200);
+        const students = createRandomStudents(300);
         const teams = createTeams(projects, semesters);
+        const choices = createRandomChoices(students, teams, semesters);
 
         await prisma.semester.createMany({ data: semesters });
         await prisma.partner.createMany({ data: partners });
         await prisma.project.createMany({ data: projects });
         await prisma.student.createMany({ data: students });
         await prisma.team.createMany({ data: teams });
+        await prisma.choice.createMany({ data: choices });
     } catch(error) {
         console.log(error)
     }

@@ -48,9 +48,10 @@ const getRandomSeniority = () => {
   return getRandomElement(years);
 }
 
+// 20% chance for 3200, 80% chance for 2200
 const getRandomClass = () => {
-  const classes = ['2200', '3200'];
-  return getRandomElement(classes);
+  const rand = faker.number.float({ min: 0, max: 1 });
+  return rand < 0.2 ? '3200' : '2200';
 }
 
 const createRandomStatus = (): StudentStatus => {
