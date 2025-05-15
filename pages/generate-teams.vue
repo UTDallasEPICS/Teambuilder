@@ -5,18 +5,24 @@
     .stepCard.gap-5
       ActivateProjectsCard(:projects="projects" :semesters="semesters" @fetchProjects="fetchProjects")
     .stepCard.gap-5
-      GenerateTeamsCard
+      GenerateTeamsCard(:projects="projects" :semesters="semesters" :students="students")
 </template>
 
 <script setup lang="ts">
+import type { Semester } from '@prisma/client';
+import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
+import type { StudentWithChoices } from '~/server/api/students/index.get';
+
 useHead({ title: 'Generate Teams' });
 
 const semesters = ref<Semester[]>([]);
 const projects = ref<ProjectWithSemesters[]>([]);
+const students = ref<StudentWithChoices[]>([]);
 
 onMounted(async () => {
   fetchSemesters();
   fetchProjects();
+  fetchStudents();
 });
 
 const fetchSemesters = async () => {
@@ -25,6 +31,10 @@ const fetchSemesters = async () => {
 
 const fetchProjects = async () => {
   projects.value = await $fetch<ProjectWithSemesters[]>('/api/projects');
+}
+
+const fetchStudents = async () => {
+  students.value = await $fetch<StudentWithChoices[]>('/api/students?choices=true')
 }
 </script>
 
