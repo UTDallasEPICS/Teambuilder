@@ -41,6 +41,10 @@
             .text-center {{ capitalizeFirst(data.type) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="types" placeholder="Any" :maxSelectedLabels="1")
+              // dropdown options
+              template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
+              // selected value
+              template(#value="slotProps") {{ formatTypesFilter(slotProps.value) }}
   
   .cardRows.relative.teal-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
 
@@ -72,7 +76,7 @@
       span.cardText
         template(v-if="!isEditing") {{ capitalizeFirst(selectedProject?.type) }}
         select(v-else v-model="editedProject.type")
-          option(v-for="type in types" :key="type" :value="type") {{ capitalizeFirst(type) }}
+          option(v-for="type in types" :key="type" :value="type") {{ type.toLowerCase() }}
 
     div
       span.cardSubTitle Repo:
@@ -88,7 +92,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import type { Project, Semester } from '@prisma/client';
+import type { Project, ProjectType, Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
@@ -110,6 +114,7 @@ const selectedProjectSemesters = computed(() => (
 const editedProject = ref<ProjectWithSemestersAndPartner | null>(null);
 const isEditing = ref(false);
 
+// TODO: change type filter to work more intuitively.  selecting hardware and software should show projects with type BOTH
 const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   description: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -118,6 +123,12 @@ const filters = ref({
   semester: { value: [], matchMode: FilterMatchMode.IN },
   partnerName: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
+
+const formatTypesFilter = (types: ProjectType[] | undefined) => {
+  if (!types || types.length === 0) return 'Any';
+  if (types.length !== 1) return `${types.length} items selected`
+  return capitalizeFirst(types[0]);
+}
 
 const statuses = ref(['NEW', 'RETURNING', 'COMPLETE', 'WITHDRAWN', 'HOLD']);
 const semesters = ref(['S2023', 'F2023', 'S2024', 'F2024', 'S2025']);
@@ -161,10 +172,6 @@ const handleSave = async () => {
     projects.value[index] = editedProject.value;
   }
   isEditing.value = false;
-}
-
-const handleArchive = () => {
-  const id = selectedProject.value?.id;
 }
 
 const handleParsed = (parsed: any) => {
@@ -219,9 +226,8 @@ const helpInfo = `Upload information for your projects here.
 .editBox {
   @apply text-teal rounded-md bg-beige p-1
 }
+/* TODO: move this styling to primevue's tokens in nuxt.config.ts */
 select {
-  @apply bg-beige text-teal rounded-md border-red p-1
+  @apply bg-beige text-teal rounded-md p-1
 }
 </style>
-
-<!-- Top Row: Name, Email, NETID, Major, Status, Year -->
