@@ -26,9 +26,9 @@
         Column(field="description" header="Description" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
-        Column(field="partnerName" header="Organization" :showFilterMenu="false")
+        Column(field="partnerName" header="Partner" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
-            InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by organization" :showClear="true")
+            InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
         Column(field="status" header="Status" :showFilterMenu="false")
           template(#body="{ data }") 
             .pill.w-20(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
@@ -66,8 +66,6 @@
       span.cardSubTitle Semesters:
       span.cardText
         template(v-if="!isEditing") {{ selectedProjectSemesters }}
-        //- select(v-else v-model="editedProject.semester")
-        //-   option(v-for="semester in semesters" :key="semester" :value="semester") {{ semester }}
 
     div
       span.cardSubTitle Type:
@@ -90,22 +88,18 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import type { Semester } from '@prisma/client';
+import type { Project, Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
-import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
+import type { ProjectWithSemesters, ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { stringifySemesters } from '~/server/services/semesterService';
 
 useHead({ title: 'Projects' });
 
 const projects = ref<ProjectWithSemestersAndPartner[]>([]);
 onMounted(async () => {
-  const raw = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
-  projects.value = raw.map(p => ({
-    ...p,
-    partnerName: p.partner?.name ?? ''
-  }));
+  projects.value = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
 });
 
 const selectedProject = ref<ProjectWithSemestersAndPartner | null>(null);
@@ -123,12 +117,11 @@ const filters = ref({
   status: { value: [], matchMode: FilterMatchMode.IN },
   semester: { value: [], matchMode: FilterMatchMode.IN },
   partnerName: { value: null, matchMode: FilterMatchMode.CONTAINS }
-
 });
 
 const statuses = ref(['NEW', 'RETURNING', 'COMPLETE', 'WITHDRAWN', 'HOLD']);
 const semesters = ref(['S2023', 'F2023', 'S2024', 'F2024', 'S2025']);
-const types = ref(['Software', 'Hardware', 'Both']);
+const types = ref(['SOFTWARE', 'HARDWARE', 'BOTH']);
 
 const selectProject = (project: ProjectWithSemestersAndPartner) => {
   selectedProject.value = project;
@@ -153,10 +146,16 @@ const handleSave = async () => {
     !isEqual(selectedProject.value, editedProject.value)
   ) {
     const id = editedProject.value.id;
+
     await $fetch(`api/projects/${id}`, {
       method: 'PUT',
-      body: editedProject.value
+      body: {
+        ...editedProject.value,
+        semesters: undefined,
+        partnerName: undefined,
+      }
     });
+
     selectedProject.value = editedProject.value;
     const index = projects.value.findIndex((project) => project.id === id);
     projects.value[index] = editedProject.value;
