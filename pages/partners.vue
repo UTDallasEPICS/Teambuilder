@@ -1,42 +1,42 @@
 <template lang="pug">
-    .overlay(v-if="selectedPartner" @click="closeModal")
-    .centered-row.shaded-card.p-10.m-10.h-full
-      .centered-col.relative.h-full.gap-4
-        .flex.absolute.top-0.left-0.gap-2
-          FileUploadButton(title="Upload Partners" @fileSelected="handleParsed")
-          HelpIcon(:info="helpInfo")
-  
-        .text-7xl.embossed.drop-shadow-md Partners
-        .text-2xl.mt-2 Partner count: {{ partnerCount }}
-        
-        DataTable.teal-card.px-10.mt-5(
-          :value="partners" 
-          v-model:filters="filters"
-          scrollable 
-          scrollHeight="80vh"
-          class="h-[80vh]"
-          tableStyle="min-width: 50rem;"
-          dataKey="id" 
-          filterDisplay="row"
-          selectionMode="single"
-          v-model:selection="selectedPartner"
-        )
+  .overlay(v-if="selectedPartner" @click="closeModal")
+  .centered-row.shaded-card.p-10.m-10.h-full
+    .centered-col.relative.h-full.gap-4
+      .flex.absolute.top-0.left-0.gap-2
+        FileUploadButton(title="Upload Partners" @fileSelected="handleParsed")
+        HelpIcon(:info="helpInfo")
 
-          Column(field="organizationName" header="Organization" :showFilterMenu="false")
-            template(#filter="{ filterModel, filterCallback }")
-              InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by organization")
-  
-          Column(field="contactName" header="Contact Name" :showFilterMenu="false")
-            template(#filter="{ filterModel, filterCallback }")
-              InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name")
-  
-          Column(field="contactEmail" header="Contact Email" :showFilterMenu="false")
-            template(#filter="{ filterModel, filterCallback }")
-              InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by contact email")
-  
-          Column(field="projectName" header="Project" :showFilterMenu="false")
-            template(#filter="{ filterModel, filterCallback }")
-              InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project")
+      .text-7xl.embossed.drop-shadow-md Partners
+      .text-2xl.mt-2 Partner count: {{ partnerCount }}
+      
+      DataTable.teal-card.px-10.mt-5(
+        :value="partners" 
+        v-model:filters="filters"
+        scrollable 
+        scrollHeight="80vh"
+        class="h-[80vh]"
+        tableStyle="min-width: 50rem;"
+        dataKey="id" 
+        filterDisplay="row"
+        selectionMode="single"
+        v-model:selection="selectedPartner"
+      )
+
+        Column(field="name" header="Name" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name")
+
+        Column(field="contactName" header="Contact Name" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by contact name")
+
+        Column(field="contactEmail" header="Contact Email" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by contact email")
+
+        Column(field="projectName" header="Projects" :showFilterMenu="false")
+          template(#filter="{ filterModel, filterCallback }")
+            InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project")
 
   </template>
   
@@ -65,8 +65,8 @@
   const isEditing = ref(false);
   
   const filters = ref({
+    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
     contactName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    organizationName: { value: null, matchMode: FilterMatchMode.CONTAINS },
     contactEmail: { value: null, matchMode: FilterMatchMode.CONTAINS },
     projectName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
