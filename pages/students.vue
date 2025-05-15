@@ -49,6 +49,59 @@
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
               template(#option="slotProps")
                 .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
+
+  .cardRows.relative.teal-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
+    XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
+
+    div
+      span.cardSubTitle First Name:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.firstName }}
+        input.editBox(v-else v-model="editedStudent.firstName")
+
+    div
+      span.cardSubTitle Last Name:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.lastName }}
+        input.editBox(v-else v-model="editedStudent.lastName")
+
+    div
+      span.cardSubTitle netID:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.netID }}
+        input.editBox(v-else v-model="editedStudent.netID")
+
+    div
+      span.cardSubTitle Class:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.class }}
+        input.editBox(v-else v-model="editedStudent.class")
+
+    div
+      span.cardSubTitle Status:
+      span.cardText
+        template(v-if="!isEditing") {{ capitalizeFirst(selectedStudent?.status) }}
+        select(v-else v-model="editedStudent.status")
+          option(v-for="status in statuses" :key="status" :value="status") {{ capitalizeFirst(status) }}
+
+    div
+      span.cardSubTitle Year:
+      span.cardText
+        template(v-if="!isEditing") {{ capitalizeFirst(selectedStudent?.year) }}
+        select(v-else v-model="editedStudent.year")
+          option(v-for="year in years" :key="year" :value="year") {{ capitalizeFirst(year) }}
+
+    div
+      span.cardSubTitle Major:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.major }}
+        select(v-else v-model="editedStudent.major")
+          option(v-for="major in majors" :key="major" :value="major") {{ major }}
+
+    .flex-grow.flex.justify-end.items-end
+      ClickableButton(v-if="!isEditing" title="Edit Project" @click="handleEdit")
+      ClickableButton(v-if="isEditing" title="Save Project" type="success" @click="handleSave")
+
 </template>
 
 <script lang="ts" setup>
@@ -76,9 +129,8 @@ onMounted(async () => {
   studentCount.value = students.value.length;
 });
 
-const handleParsed = (uploadedStudents: Student[]) => {
-  students.value.push(...uploadedStudents);
-  studentCount.value = students.value.length;
+const handleParsed = (parsed: any) => {
+  console.log(parsed);
 };
 
 const selectedStudent = ref<Student | null>(null);
@@ -103,6 +155,10 @@ const statuses = ref(['ACTIVE', 'INACTIVE']);
 const majors = ref(['CS', 'SE', 'EE', 'ME', 'BME', 'DS', 'CE', 'Systems', 'Other']);
 const years = ref(['FRESHMAN', 'SOPHOMORE', 'JUNIOR', 'SENIOR']);
 
+const selectStudent = (student: Student) => {
+  selectedStudent.value = student;
+}
+
 const statusBgColor = (status: string) => ({
   "bg-green": status === "ACTIVE",
   "bg-red": status === "INACTIVE",
@@ -124,7 +180,10 @@ const handleSave = async () => {
     const id = editedStudent.value.id;
     await $fetch(`api/students/${id}`, {
       method: 'PUT',
-      body: editedStudent.value
+      body: {
+        ...editedStudent.value,
+        fullName: undefined
+      }
     });
     selectedStudent.value = editedStudent.value;
     const index = students.value.findIndex((student) => student.id === id);
@@ -166,5 +225,12 @@ const helpInfo = `Upload student information here.`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99;
+}
+.editBox {
+  @apply text-teal rounded-md bg-beige p-1
+}
+/* TODO: move this styling to primevue's tokens in nuxt.config.ts */
+select {
+  @apply bg-beige text-teal rounded-md p-1
 }
 </style>
