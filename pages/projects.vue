@@ -76,7 +76,7 @@
       span.cardText
         template(v-if="!isEditing") {{ capitalizeFirst(selectedProject?.type) }}
         select(v-else v-model="editedProject.type")
-          option(v-for="type in types" :key="type" :value="type") {{ type.toLowerCase() }}
+          option(v-for="type in types" :key="type" :value="type") {{ capitalizeFirst(type) }}
 
     div
       span.cardSubTitle Repo:
