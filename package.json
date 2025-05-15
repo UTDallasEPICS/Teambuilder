@@ -24,7 +24,6 @@
     "discord.js": "^14.16.3",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
-    "munkres-js": "^1.2.2",
     "nuxt": "^3.11.2",
     "papaparse": "^5.4.1",
     "pinia": "^3.0.1",
