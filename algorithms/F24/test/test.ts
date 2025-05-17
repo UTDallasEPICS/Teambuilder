@@ -1,7 +1,7 @@
 //dummy student nad project data to test with
 //dummy student nad project data to test with
-import type { Student, Project } from "../algorithm-F24";
-import { generateTeams } from "../algorithm-F24";
+import type { Student, Project } from "..";
+import { generateTeams } from "..";
 
 const studentData: Student[] = [
   // Student 1
@@ -11,13 +11,13 @@ const studentData: Student[] = [
     major: "ME",
     seniority: "Senior",
     choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
       "ATC: Patient Data Collection App",
+      "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
     ],
     class: "2200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
   },
   // Student 2
   {
@@ -26,13 +26,13 @@ const studentData: Student[] = [
     major: "CS",
     seniority: "Junior",
     choices: [
-      "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
     class: "2200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
   // Student 3
   {
@@ -57,12 +57,12 @@ const studentData: Student[] = [
     seniority: "Freshman",
     choices: [
       "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
       "ATC: Patient Data Collection App",
+      "ATC: Sensory Devices",
     ],
     class: "2200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "Carson's Village: Automated Family Page, ATC: Patient Data Collection App, ATC: Sensory Devices",
   },
   // Student 5
   {
@@ -71,13 +71,13 @@ const studentData: Student[] = [
     major: "CS",
     seniority: "Sophomore",
     choices: [
-      "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
     class: "2200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
   // Student 6
   {
@@ -86,13 +86,13 @@ const studentData: Student[] = [
     major: "EE",
     seniority: "Senior",
     choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
       "ATC: Patient Data Collection App",
+      "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
     ],
     class: "3200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
   },
   // Student 7
   {
@@ -116,13 +116,13 @@ const studentData: Student[] = [
     major: "CS",
     seniority: "Sophomore",
     choices: [
-      "Carson's Village: Automated Family Page",
-      "ATC: Sensory Devices",
       "ATC: Patient Data Collection App",
+      "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
     ],
     class: "2200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "ATC: Patient Data Collection App, ATC: Sensory Devices, Carson's Village: Automated Family Page",
   },
   // Student 9
   {
@@ -131,13 +131,13 @@ const studentData: Student[] = [
     major: "BME",
     seniority: "Senior",
     choices: [
-      "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
     class: "3200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
   // Student 10
   {
@@ -146,13 +146,13 @@ const studentData: Student[] = [
     major: "CS",
     seniority: "Freshman",
     choices: [
-      "Carson's Village: Automated Family Page",
       "ATC: Sensory Devices",
+      "Carson's Village: Automated Family Page",
       "ATC: Patient Data Collection App",
     ],
     class: "2200",
     choicesString:
-      "Carson's Village: Automated Family Page, ATC: Sensory Devices, ATC: Patient Data Collection App",
+      "ATC: Sensory Devices, Carson's Village: Automated Family Page, ATC: Patient Data Collection App",
   },
 ];
 

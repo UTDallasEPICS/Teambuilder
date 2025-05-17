@@ -1,5 +1,5 @@
-import type { Student, Project } from "../algorithm-F24";
-import { generateTeams } from "../algorithm-F24";
+import type { Student, Project } from "..";
+import { generateTeams } from "..";
 
 const studentData: Student[] = [
 

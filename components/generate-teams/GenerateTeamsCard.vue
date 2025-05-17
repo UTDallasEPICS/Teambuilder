@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import type { Project, Semester } from '@prisma/client';
-import { generateTeams } from '~/algorithms/algorithm-S25';
+import { generateTeams } from '~/algorithms/S25';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import type { StudentWithChoices } from '~/server/api/students/index.get';
 import { getActiveProjects } from '~/server/services/projectService';

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import Papa from 'papaparse';
-import type { Student, Project } from "../algorithm-F24";
-import { generateTeams } from "../algorithm-F24";
+import type { Student, Project } from "..";
+import { generateTeams } from "..";
 
 function readCSVFile(filePath: string): Student[] {
   const fileContent = fs.readFileSync(filePath, 'utf-8');
