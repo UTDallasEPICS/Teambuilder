@@ -148,6 +148,7 @@ This app allows users to:
 Documentation linked:
 - Front End: [Vue](https://vuejs.org/guide/introduction.html), [Nuxt](https://nuxt.com/docs/getting-started/introduction)
 - Database: [PostgresSQL](https://www.postgresql.org/docs/)
+- Style/UI: [PrimeVue](https://primevue.org/)
 - Other packages: [Prisma](https://www.prisma.io/docs)
 - Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started), and [SheetJS](https://docs.sheetjs.com/docs/)
 
@@ -227,6 +228,12 @@ yarn preview
 # bun
 bun run preview
 ```
+## UI
+
+- Much of the app utilizes pre-made components from [PrimeVue](https://primevue.org/).
+- Colors for PrimeVue are defined in nuxt.config.ts, where an object with color settings is passed into PrimeVue's initialization (MyPreset).
+- It is strongly recommended to modify colors using [Semantic Tokens](https://primevue.org/theming/styled/), which can be used to target specific parts of components.
+- The specific shape of the color settings object can be a bit tricky to nail down at times, but are generally found under "Design Tokens" for a component's style page, e.g. [DataTable Design Tokens](https://primevue.org/datatable/#theming.tokens).
 
 ## Endpoints
 <details close>
