@@ -1,4 +1,4 @@
-import { Prisma, Project, Semester } from "@prisma/client";
+import type { Prisma, Project, Semester } from "@prisma/client";
 import { sortSemesters } from "~/server/services/semesterService";
 
 export default defineEventHandler(async (event) => {
