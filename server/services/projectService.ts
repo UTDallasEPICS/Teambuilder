@@ -1,5 +1,6 @@
-import { Semester } from "@prisma/client"
-import { ProjectWithSemesters } from "../api/projects/index.get"
+import type { Project, Semester } from "@prisma/client"
+import type { ProjectWithSemesters } from "../api/projects/index.get"
+import type { TeamAssignments } from "~/algorithms/S25"
 
 // Filter an array of projects by name
 export const filterProjectsByName = (projects: ProjectWithSemesters[], filter: string) => (
@@ -33,4 +34,9 @@ export const getAvailableProjects = (projects: ProjectWithSemesters[], semester:
 // Determines if project is active in a given semester
 export const isProjectActive = (project: ProjectWithSemesters, semester: Semester) => (
   project.semesters.some(projectSemester => projectSemester.id === semester.id)
+)
+
+// Get the name of a project by projectId from a projects array
+export const getProjectNameFromId = (projectId: string, projects: Project[]) => (
+  projects.find(project => project.id === projectId)?.name || 'Project not found'
 )
