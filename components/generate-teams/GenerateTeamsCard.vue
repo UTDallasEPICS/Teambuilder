@@ -9,27 +9,29 @@
     template(#value="slotProps")
       div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
       span(v-else) {{ slotProps.placeholder }}
-  ClickableButton.mt-5(title="Generate Teams", @click="handleGenerateTeams")
+  ClickableButton.mt-5(title="Generate Teams", @click="handleGenerateTeamAssignments")
   .overlay(v-if="showOverlay" @click="closeModal")
   .teal-card.p-15.modal.gap-2.overflow-y-auto.max-h-screen.m-10(v-if="showOverlay")
     .text-5xl.embossed.mb-5.text-center Generated Teams
     .grid.grid-cols-4
-      div(v-for="(studentNames, projectName) in displayTeams" :key="team" class="mb-8")
-        h2.text-xl.embossed {{ projectName }}
-        div(v-for="(studentName, index) in studentNames" :key="index") {{ studentName }}
+      div(v-for="(students, projectId) in teamAssignments" :key="projectId" class="mb-8")
+        h2.text-xl.embossed {{ getProjectNameFromId(projectId, projects) }} ({{ getProjectTeamSize(projectId) }})
+        div(
+          v-for="(student, index) in students" 
+          :key="index"
+          :class="getStudentColor(student)"
+        ) {{ getDisplayName(student) }} ({{ getProjectRankForStudent(projectId, student) }})
 </template>
 
 <script setup lang="ts">
 import type { Project, Semester } from '@prisma/client';
-import { generateTeams } from '~/algorithms/S25';
+import type { TeamAssignments } from '~/algorithms/S25';
+import { generateTeamAssignments } from '~/algorithms/S25';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import type { StudentWithChoices } from '~/server/api/students/index.get';
-import { getActiveProjects } from '~/server/services/projectService';
+import { getActiveProjects, getProjectNameFromId } from '~/server/services/projectService';
 import { displaySemester } from '~/server/services/semesterService';
-
-interface DisplayTeams {
-  [key: string]: string[]
-}
+import { getDisplayName, getProjectRankForStudent } from '~/server/services/studentService';
 
 const { projects, semesters, students } = defineProps<{
   projects: ProjectWithSemesters[]
@@ -39,36 +41,40 @@ const { projects, semesters, students } = defineProps<{
 
 const selectedSemester = ref<Semester | null>(null);
 const showOverlay = ref<boolean>(false);
-const displayTeams = ref<DisplayTeams | null>(null);
+const teamAssignments = ref<TeamAssignments | null>(null);
 
 const closeModal = () => {
   showOverlay.value = false;
 }
 
-const handleGenerateTeams = async () => {
+const handleGenerateTeamAssignments = async () => {
   if (!selectedSemester.value) {
     // show error toast prompting semester selection
     // maybe just gray out and disable button if a semester isn't selected
   } else {
     const activeStudents = students.filter(student => student.status === 'ACTIVE');
-    const activeProjects = getActiveProjects(projects, selectedSemester.value)
-    const teams = generateTeams(activeStudents, activeProjects, selectedSemester.value);
-    displayTeams.value = Object.fromEntries(
-      Object.entries(teams).map(([projectId, students]) => {
-        const projectName = projects.find(project => project.id === projectId)?.name || 'Not Found';
-        const studentNames = students.map(student => `${student.lastName}, ${student.firstName}`);
-        return [projectName, studentNames]
-      })
-    )
-
+    const activeProjects = getActiveProjects(projects, selectedSemester.value);
+    teamAssignments.value = generateTeamAssignments(activeStudents, activeProjects);
     showOverlay.value = true;
+  }
+}
+
+const getProjectTeamSize = (projectId: string) => {
+  if (teamAssignments.value) {
+    return teamAssignments.value[projectId].length
+  }
+}
+
+const getStudentColor = (student: StudentWithChoices) => {
+  if (student.class === '3200') {
+    return 'text-amber-500'
   }
 }
 </script>
 
 <style scoped>
 .overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
