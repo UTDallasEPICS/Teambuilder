@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client"
-import { createRandomChoices } from "~/server/factories/choice";
+import { createChoicesForSemester } from "~/server/factories/choice";
 import { createRandomPartners } from "~/server/factories/partner";
 import { createRandomProjects } from "~/server/factories/project";
 import { createSemesters } from "~/server/factories/semester";
 import { createRandomStudents } from "~/server/factories/student";
-import { createTeams } from "~/server/factories/team";
+import { createRandomTeams } from "~/server/factories/team";
 
 const prisma = new PrismaClient()
 
@@ -14,8 +14,9 @@ const main = async () => {
         const partners = createRandomPartners(50);
         const projects = createRandomProjects(100, partners);
         const students = createRandomStudents(300);
-        const teams = createTeams(projects, semesters);
-        const choices = createRandomChoices(students, teams, semesters);
+        const teams = createRandomTeams(projects, semesters);
+        const latestSemester = semesters[semesters.length-1];
+        const choices = createChoicesForSemester(students, teams, latestSemester);
 
         await prisma.semester.createMany({ data: semesters });
         await prisma.partner.createMany({ data: partners });

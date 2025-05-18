@@ -1,18 +1,13 @@
-// This only creates choices for the latest semester, which is how it should be in practice
 import { faker } from "@faker-js/faker";
 import type { Semester, Student, Team } from "@prisma/client";
 
-export const createRandomChoices = (students: Student[], teams: Team[], semesters: Semester[]) => {
+export const createChoicesForSemester = (students: Student[], teams: Team[], semester: Semester) => {
   const now = new Date();
-  const latestSemester = semesters[semesters.length-1]; // these are seeded in chronological order, so last index is most recent
-  const projectIdsForSemester = teams.filter(team => team.semesterId === latestSemester.id).map(team => team.projectId)
+  const projectIdsForSemester = teams.filter(team => team.semesterId === semester.id).map(team => team.projectId)
   const activeStudents = students.filter(student => student.status === 'ACTIVE');
 
   // chop off 10% of students to simulate them not filling out the choices survey
   const numNoPreference = Math.round(activeStudents.length / 10);
-  console.log('numnopref', numNoPreference);
-  console.log(activeStudents.length)
-  console.log(activeStudents.slice(numNoPreference, activeStudents.length).length)
 
   return activeStudents.slice(numNoPreference, activeStudents.length).flatMap(student => {
     // shuffle projectIds
