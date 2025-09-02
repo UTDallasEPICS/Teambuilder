@@ -89,36 +89,6 @@ sudo npm install
 # Starts running an instance of the website
 npm run dev
 ```
-
-```bash
-# npm [Default, use this unless told otherwise]
-npm install
-```
-
-## Development Server
-
-Start/run the development server on `http://localhost:3000` (Useful for seeing results of your code/see a local verison of the application):
-
-```bash
-# npm [Default, use this unless told otherwise]
-npm run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm [Default, use this unless told otherwise]
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-# npm [Default, use this unless told otherwise]
-npm run preview
-```
 ## UI
 
 - Much of the app utilizes pre-made components from [PrimeVue](https://primevue.org/).
