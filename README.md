@@ -66,18 +66,33 @@ Documentation linked:
 
 Make sure to install the dependencies:
 
+## INSTALLATION [9/2/25 and onward] 
+```bash
+# For Windows Machines, to setup environment run these commands in a WSL console in VS Code
+
+# Update your WSL instance
+sudo apt update
+sudo apt upgrade
+
+# Copy the desired branch (This command only copys the main branch
+sudo git clone github.com/UTDallasEPICS/Teambuilder
+cd Teambuilder
+
+# Installs nodejs and the node package manager (npm)
+sudo apt install nodejs
+sudo apt install nodejs npm
+
+# Sets up npm in the /Teambuilder directory
+npm install
+sudo npm install
+
+# Starts running an instance of the website
+npm run dev
+```
+
 ```bash
 # npm [Default, use this unless told otherwise]
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
 ## Development Server
@@ -87,15 +102,6 @@ Start/run the development server on `http://localhost:3000` (Useful for seeing r
 ```bash
 # npm [Default, use this unless told otherwise]
 npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
@@ -105,15 +111,6 @@ Build the application for production:
 ```bash
 # npm [Default, use this unless told otherwise]
 npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
 Locally preview production build:
@@ -121,15 +118,6 @@ Locally preview production build:
 ```bash
 # npm [Default, use this unless told otherwise]
 npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 ## UI
 
