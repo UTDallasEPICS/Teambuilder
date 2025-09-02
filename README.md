@@ -83,8 +83,8 @@ sudo apt install nodejs
 sudo apt install nodejs npm
 
 # Sets up npm in the /Teambuilder directory
-npm install
 sudo npm install
+npm audit fix
 
 # Starts running an instance of the website
 npm run dev
