@@ -1,5 +1,5 @@
 <template lang="pug">
-  .fixed.top-0.left-0.h-full.w-64.bg-teal.p-4.flex.flex-col.items-start
+  .fixed.top-0.left-0.h-full.w-64.bg-teal.p-4.flex.flex-col.items-start.md(class="hidden sm:flex")
     img.h-20(
       alt="EPICS Logo" 
       src="/logo1.png" 
@@ -9,7 +9,7 @@
       src="/team-formation-text.png" 
     )
     .mt-6.flex.flex-col.text-xl.gap-y-4
-      NuxtLink(to="/projects") Projects
+      NuxtLink(to="/projects") ProjectsTEST
       NuxtLink(to="/partners") Partners
       NuxtLink(to="/students") Students
       NuxtLink(to="/generate-teams") Generate Teams
@@ -26,3 +26,11 @@
           src="/github-mark.png"
         )
 </template>
+
+<style scoped>
+@media (max-width: 768px) {
+  .fixed.top-0.left-0.h-full.w-64.bg-teal.p-4.flex.flex-col.items-start {
+    display: none;
+  }
+}
+</style>

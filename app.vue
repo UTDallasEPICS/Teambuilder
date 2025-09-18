@@ -7,9 +7,19 @@
 </template>
 
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
+import { ref, onMounted } from 'vue'
+
+const windowWidth = ref<number | null>(null)
+const windowHeight = ref<number | null>(null)
+
+onMounted(() => {
+  const { width, height } = useWindowSize();
+  windowWidth.value = width.value;
+  windowHeight.value = height.value;
+})
 // TODO: check login status, do other top level things
 // TODO: if not logged in, navigate to /login - need a route guard+
-
 // TODO: nav should be: projects, students, partners, generate, github, discord
 // projects and students need buttons for importing from CSV
 // CSV imports should be their own page, and should display what was imported for editing BEFORE saving to DB
@@ -18,4 +28,11 @@
 // also need partner and teams UI - dont need CSV import
 // students need github/discord usernames
 </script>
-<style></style>
+
+<style>
+@media (max-width: 768px) {
+  .flex-row {
+    flex-direction: column;
+  }
+}
+</style>
