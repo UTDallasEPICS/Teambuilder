@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Jura', Arial, sans-serif;
+  user-select: none;
+}
+
+body {
+  background: linear-gradient(to bottom, rgba(94, 250, 91, 0.758), #A0DAE7);
+  height: 100vh;
+  background-attachment: fixed;
+}
+
+@layer base {
+  body {
+    @apply text-beige
+  }
+}
+
+@layer components {
+  .centered-row {
+    @apply flex flex-row justify-center items-center
+  }
+  .centered-col {
+    @apply flex flex-col justify-center items-center
+  }
+  .shaded-card {
+    @apply bg-shaded rounded-3xl
+  }
+  .teal-card {
+    @apply bg-teal rounded-3xl
+  }
+  .beige-card {
+    @apply rounded-2xl p-4 cursor-pointer bg-beige text-teal
+  }
+  .blue-card {
+    @apply rounded-lg bg-lightblue shadow-lg text-teal
+  }
+  .hover-effect {
+    @apply hover:translate-y-[-5px] hover:shadow-lg transition-transform duration-200
+  }
+  .zoom-effect {
+    @apply hover:scale-105 hover:shadow-lg transition-transform duration-200 bg-beige
+  }
+  .pill {
+    @apply flex flex-row justify-center items-center h-fit px-3 py-1 rounded-full text-xs text-beige
+  }
+  .embossed {
+    text-shadow: 1px 1px 1px #0000008b;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+  /* for debugging */
+  .bor {
+    @apply border-red border-2
+  }
+}

@@ -1,9 +1,9 @@
 <template lang="pug">
-  div
+  Toast
+  .flex.flex-row.h-screen.w-full.items-start
     Navbar(v-if="$route.name !== 'index'")
-    NuxtPage
-    
-
+    .centered-row.flex-auto
+      NuxtPage
 </template>
 
 <script setup lang="ts">
@@ -17,17 +17,5 @@
 // CSV imports should detect and ignore duplicates
 // also need partner and teams UI - dont need CSV import
 // students need github/discord usernames
-import { useRoute } from 'vue-router'
-
-
-// Get the current route
-const route = useRoute()
-
-// Computed property to check if the Navbar should be displayed
-const shouldShowNavbar = computed(() => {
-  // Show navbar only if we are NOT on the login page
-  return route.path !== '/'  // Hide Navbar on login page ('/'), show it on all others
-})
-
 </script>
 <style></style>

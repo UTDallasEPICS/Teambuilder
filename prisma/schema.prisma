@@ -8,86 +8,146 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
-  email String @unique
+  id          String     @id @default(uuid())
+  email       String     @unique
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@map("users")
 }
 
 model Partner {
-  id            String    @id @default(uuid())
-  name          String
-  contact_name  String    @default("")
-  contact_email String    @default("")
-  Projects      Project[]
-  Teams         Team[]
+  id             String      @id @default(uuid())
+  name           String
+  contactName    String      @map("contact_name")
+  contactEmail   String      @map("contact_email")
+
+  projects       Project[]   
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   @@map("partners")
 }
 
 model Project {
-  id        String  @id @default(uuid())
-  name      String
-  description  String
-  targetCS  Int     @default(0) @map("target_cs")
-  created_date DateTime @default(now())
-  partnerId String  @map("partner_id")
-  Partner   Partner @relation(fields: [partnerId], references: [id])
-  Teams     Team[]
+  id            String        @id @default(uuid())
+  name          String
+  description   String
+  type          ProjectType
+  status        ProjectStatus
+  repoURL       String        @map("repo_url")
+
+  partnerId     String        @map("partner_id")
+  partner       Partner       @relation(fields: [partnerId], references: [id])
+
+  teams         Team[]
+  choices       Choice[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
   @@map("projects")
 }
 
 model Team {
-  id        String          @id @default(uuid())
-  name      String
-  projectId String          @map("project_id")
-  Project   Project         @relation(fields: [projectId], references: [id])
-  Students  TeamToStudent[]
-  partnerId String          @map("partner_id")
-  Partner   Partner         @relation(fields: [partnerId], references: [id])
+  id          String     @id @default(uuid())
+  
+  projectId   String     @map("project_id")
+  project     Project    @relation(fields: [projectId], references: [id])
+  semesterId  String     @map("semester_id")
+  semester    Semester   @relation(fields: [semesterId], references: [id])
+
+  students    Student[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
   @@map("teams")
-}
-
-model TeamToStudent {
-  id        String  @id @default(uuid())
-  teamId    String  @map("team_id")
-  studentId String  @map("student_id")
-  Student   Student @relation(fields: [studentId], references: [id])
-  Team      Team    @relation(fields: [teamId], references: [id])
-
-  @@map("team_to_students")
+  @@unique([projectId, semesterId])
 }
 
 model Student {
-  gitUserName   String          @unique
-  discordUser   String          @unique
-  id         String @id @default(uuid())
-  firstName  String @map("first_name")
-  lastName   String @map("last_name")
-  major      String
-  seniority  String @default("") @map("seniority")
-  class      String
-  email      String @unique
-  enrollment String
-  netID      String
-  TeamToStudent TeamToStudent[]
+  id            String      @id @default(uuid())
+  github        String?     @unique
+  discord       String?     @unique
+  email         String?     @unique
+  netID         String      @map("net_id") @unique
+  firstName     String      @map("first_name")
+  lastName      String      @map("last_name")
+  major         String 
+  year          Year
+  class         String
+  enrollment    String?
+  status        StudentStatus
+
+  teams         Team[]
+  choices       Choice[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@map("students")
 }
 
+model Choice {
+  id            String       @id @default(uuid())
+  rank          Int
+
+  studentId     String       @map("student_id")
+  student       Student      @relation(fields: [studentId], references: [id])
+  projectId     String       @map("project_id")
+  project       Project      @relation(fields: [projectId], references: [id])
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("choices")
+}
+
 model Semester {
-  Id               String @id @default(uuid())
-  Name             String
-  Course           String
-  Year             Int
-  Sem              String
-  African_American Int
-  Asian            Int
-  Hispanic         Int
-  International    Int
-  Other            Int
-  White            Int
-  Male             Int
-  Female           Int
-  Total            Int
+  id            String       @id @default(uuid())
+  year          Int
+  season        Season
+
+  teams         Team[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("semesters")
+  @@unique([year, season])
+}
+
+enum Year {
+  FRESHMAN
+  SOPHOMORE
+  JUNIOR
+  SENIOR
+}
+
+enum Season {
+  SPRING
+  SUMMER
+  FALL
+}
+
+enum ProjectType {
+  SOFTWARE
+  HARDWARE
+  BOTH
+}
+
+enum ProjectStatus {
+  NEW
+  RETURNING
+  COMPLETE
+  WITHDRAWN
+  HOLD
+}
+
+enum StudentStatus {
+  ACTIVE 
+  INACTIVE
 }
