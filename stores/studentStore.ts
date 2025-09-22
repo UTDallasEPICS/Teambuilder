@@ -30,7 +30,10 @@ export const useStudentStore = defineStore('studentStore', {
         console.error('Could not find student')
       }
     },
-    createDummyData() {
+   /* parseFileData(){
+      this.hasDummyData = false;
+    }*/
+    createDummyData() { //replace this with a parsing method instead
       if (!this.hasDummyData) {
         this.setStudents(createRandomStudents(150))
         this.hasDummyData = true;

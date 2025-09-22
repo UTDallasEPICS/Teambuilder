@@ -3,7 +3,8 @@
   .centered-row.shaded-card.p-10.m-10.h-full
     .centered-col.relative.h-full.gap-4
       .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Students" @fileSelected="handleParsed")
+        FileUploadButton(title="Upload Students" @dataParsed="handleParsed") <!--parsing happens HERE thru FileUploadButton.vue-->
+        //-changed from fileSelected to dataParsed - successful change, handleParsed now runs
         HelpIcon(:info="helpInfo")
 
       .text-7xl.embossed.drop-shadow-md Students
@@ -105,11 +106,13 @@
 </template>
 
 <script lang="ts" setup>
+//import { PrismaClient } from "@prisma/client" //added
 import { onMounted, ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import type { Student, Year } from '@prisma/client';
+import { Row } from '#components';
 
 useHead({ title: 'Students' });
 
@@ -124,13 +127,34 @@ const studentsWithFullName = computed(() => (
   })
 ))
 
-onMounted(async () => {
-  students.value = await $fetch<Student[]>("api/students");
-  studentCount.value = students.value.length;
+onMounted(async () => { //adds dummy data, students.value is what holds frontend table data
+  students.value = await $fetch<Student[]>("api/students"); //loads in random starting data
+  studentCount.value = students.value.length; 
 });
 
-const handleParsed = (parsed: any) => {
-  console.log(parsed);
+const handleParsed = (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
+  //Dummy data already generates stuff as separate fields (first name and last name separately) whereas we have to parse them
+    const formattedStudents = parsed.map((stu : any) =>{
+    const[lastName, firstName] = stu.name.split(', ');
+    return{  //maybe put in FileUploadButton instead, what stu returns for EACH element of students (what it does to each student)
+      netID : stu.id,
+      firstName : firstName,
+      lastName: lastName,
+     // email: null,
+     // github: null,
+     // discord: null,
+      major: stu.major,
+      year: stu.seniority,
+      class: stu.class,
+    //  enrollment: '', // not sure what enrollment is
+      status: null
+    }
+  });
+  students.value = formattedStudents;
+  studentCount.value = students.value.length; 
+  console.log(students.value); 
+  console.log('Table updated! :)');
+//database comes later, send it locally to tables to populate the website
 };
 
 const selectedStudent = ref<Student | null>(null);
