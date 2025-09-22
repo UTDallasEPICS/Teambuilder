@@ -25,7 +25,7 @@
     "buffer": "^6.0.3",
     "chart.js": "^4.4.8",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "discord.js": "^14.16.3",
+    "discord.js": "^14.22.1",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "munkres-algorithm": "^1.0.2",
