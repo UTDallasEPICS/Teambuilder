@@ -140,13 +140,13 @@ const handleParsed = (parsed: any) => { //when it reaches here it's already pars
       netID : stu.id,
       firstName : firstName,
       lastName: lastName,
-     // email: null,
-     // github: null,
-     // discord: null,
+      email: null,
+      github: null,
+      discord: null,
       major: stu.major,
       year: stu.seniority,
       class: stu.class,
-    //  enrollment: '', // not sure what enrollment is
+     // enrollment: null, // not sure what enrollment is
       status: null
     }
   });

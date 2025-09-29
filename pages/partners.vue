@@ -3,7 +3,7 @@
   .centered-row.shaded-card.p-10.m-10.h-full
     .centered-col.relative.h-full.gap-4
       .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Partners" @fileSelected="handleParsed")
+        FileUploadButton(title="Upload Partners" @dataParsed="handleParsed")
         HelpIcon(:info="helpInfo")
 
       .text-7xl.embossed.drop-shadow-md Partners

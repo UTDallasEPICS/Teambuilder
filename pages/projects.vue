@@ -3,7 +3,7 @@
   .centered-row.shaded-card.p-10.m-10.h-full
     .centered-col.relative.h-full.gap-4
       .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Projects" @fileSelected="handleParsed")
+        FileUploadButton(title="Upload Projects" @dataParsed="handleParsed")
         HelpIcon(:info="helpInfo")
 
       .text-7xl.embossed.drop-shadow-md Projects
@@ -92,12 +92,14 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import type { Project, ProjectType, Semester } from '@prisma/client';
+import { ProjectType, type Project, type Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemesters, ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { stringifySemesters } from '~/server/services/semesterService';
+import { faker } from '@faker-js/faker';
+import {type ProjectStatus} from '@prisma/client';
 
 useHead({ title: 'Projects' });
 
@@ -174,9 +176,45 @@ const handleSave = async () => {
   isEditing.value = false;
 }
 
-const handleParsed = (parsed: any) => {
-  console.log(parsed)
-};
+const handleParsed = (parsed : any) => {console.log(parsed)};
+
+//THIS WORKS, JUST COMMENTING FOR SAKE OF PUSHING
+ /* const handleParsed = (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
+   const formattedProjects = parsed.map((proj : any) =>{
+
+      let projStatus = proj.status.toUpperCase();
+      console.log('\nSTATUS:');
+      console.log(projStatus);
+      if (projStatus.includes('COMPLETED')) projStatus = 'COMPLETE'; //prioritizes project's other statuses over it being new/returning if both
+      else if (projStatus.includes('WITHDRAW')) projStatus = 'WITHDRAWN';
+      else if (projStatus.includes('IN PROGRESS')) projStatus = 'RETURNING';
+      else if (projStatus.includes('HOLD')) projStatus = 'HOLD';
+      else projStatus = 'NEW';
+    
+      //Right now this spreadsheet uploads eveyr semester of a prohect SEPARATELY. 
+      //EX: Child Data Center has run for three semesters and has three separate listings in the table.
+      //We need to find a way to combine these and have them listed in the semester tag
+      //This is where projectID comes in!!! OR if it's returning
+      //widthdtawn/hold/completed: the project's last semester
+      //new: the project's first semester
+
+     // let projType = 'BOTH';
+     //if !(projID used) before then return:
+    return{  //maybe put in FileUploadButton instead, what stu returns for EACH element of students (what it does to each student)
+      id: proj.id,
+      name: proj.title,
+      description: faker.lorem.sentence(),
+      status: projStatus as ProjectStatus,
+      partnerID: proj.partner,
+      repoURL: faker.internet.url(),
+      type: 'BOTH',
+     //have to parse and normalize TYPE and STATUS values to turn it into an enum, we don't have TYPE yet
+    }
+  });
+
+  projects.value = formattedProjects;
+  console.log('Table updated! :)');
+}; //database comes later, send it locally to tables to populate the website*/
   
 const statusBgColor = (status: string) => ({
   "bg-green": status === "NEW",
