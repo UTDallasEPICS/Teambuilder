@@ -2,20 +2,17 @@
   Toast
   .flex.flex-row.h-screen.w-full.items-start
     Navbar(v-if="$route.name !== 'index'")
-    .centered-row.flex-auto
+    .centered-row.flex-auto.content-area(class="ml-0 xl:ml-64 md:border-l md:border-gray-200")
       NuxtPage
 </template>
 
 <script setup lang="ts">
-// TODO: check login status, do other top level things
-// TODO: if not logged in, navigate to /login - need a route guard+
-
-// TODO: nav should be: projects, students, partners, generate, github, discord
-// projects and students need buttons for importing from CSV
-// CSV imports should be their own page, and should display what was imported for editing BEFORE saving to DB
-// then navigate back to their main pages
-// CSV imports should detect and ignore duplicates
-// also need partner and teams UI - dont need CSV import
-// students need github/discord usernames
 </script>
-<style></style>
+
+<style>
+@media (max-width: 767px) {
+  .flex-row {
+    flex-direction: column;
+  }
+}
+</style>
