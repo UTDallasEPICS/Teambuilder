@@ -24,6 +24,25 @@ const handleFile = (event: Event) => {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
+      /*transform: function(value, header){
+        switch (header){
+          case "id":{
+            return value;
+            break;
+          }
+          case "name":{
+            return value;
+           /*let fullName = value.split(',') 
+            fullName[0] = fullName[0].trim(); //last name
+            fullName[1] = fullName[1].trim(); //first name
+            return fullName;
+            break;
+         }
+          default: {return value;
+            break;
+         }
+        }
+      },*/
       complete: (results) => {
         const parsed = results.data;
         emit('dataParsed', parsed)

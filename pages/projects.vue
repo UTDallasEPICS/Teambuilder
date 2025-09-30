@@ -3,7 +3,7 @@
   .centered-row.shaded-card.p-10.m-10.h-full
     .centered-col.relative.h-full.gap-4
       .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Projects" @fileSelected="handleParsed")
+        FileUploadButton(title="Upload Projects" @dataParsed="handleParsed")
         HelpIcon(:info="helpInfo")
 
       .project-title Projects
@@ -96,6 +96,8 @@ import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { stringifySemesters } from '~/server/services/semesterService';
+import { faker } from '@faker-js/faker';
+import {type ProjectStatus} from '@prisma/client';
 
 useHead({ title: 'Projects' });
 
