@@ -1,3 +1,7 @@
+/* 
+S.C.I.P.E. - Smart Computer Interface for Protocol Execution
+Created by: Alex Quigley
+*/
 import dotenv from 'dotenv';
 import { Client, IntentsBitField } from 'discord.js';
 import eventHandler from './handlers/eventHandler';
