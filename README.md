@@ -50,7 +50,7 @@ This app allows users to:
 
 Documentation linked:
 - Front End: [Vue](https://vuejs.org/guide/introduction.html), [Nuxt](https://nuxt.com/docs/getting-started/introduction)
-- Database: [PostgresSQL](https://www.postgresql.org/docs/)
+- Database: [SQLite](https://www.sqlite.org/docs.html)
 - Style/UI: [PrimeVue](https://primevue.org/)
 - Other packages: [Prisma](https://www.prisma.io/docs)
 - Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started), and [SheetJS](https://docs.sheetjs.com/docs/)
