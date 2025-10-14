@@ -91,13 +91,13 @@
 import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import type { ProjectType } from '@prisma/client';
-import { XCircleIcon } from '@heroicons/vue/24/solid';
+//import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { stringifySemesters } from '~/server/services/semesterService';
-import { faker } from '@faker-js/faker';
-import {type ProjectStatus} from '@prisma/client';
+//import { faker } from '@faker-js/faker';
+//import {type ProjectStatus} from '@prisma/client';
 
 useHead({ title: 'Projects' });
 

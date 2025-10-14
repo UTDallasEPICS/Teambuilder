@@ -1,4 +1,4 @@
-import { Octokit } from "@octokit/rest";
+/*import { Octokit } from "@octokit/rest";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";

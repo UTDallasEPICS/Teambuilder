@@ -1,3 +1,4 @@
+/*
 import { defineStore } from 'pinia'
 import { Project } from '../types'
 import { createRandomProjects } from '../server/factories/project'
@@ -49,3 +50,4 @@ export const useProjectStore = defineStore('projectStore', {
     },
   }
 })
+*/

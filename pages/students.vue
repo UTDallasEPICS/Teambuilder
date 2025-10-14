@@ -112,7 +112,7 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import type { Student, Year } from '@prisma/client';
-import { Row } from '#components';
+//import { Row } from '#components';
 
 useHead({ title: 'Students' });
 
