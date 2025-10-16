@@ -164,4 +164,6 @@ const syncChannelsAndRoles = async (client: Client, guildId: string) => {
   }
 };
 
+
+
 export default syncChannelsAndRoles;
