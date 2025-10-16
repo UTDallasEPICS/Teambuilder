@@ -1,46 +1,70 @@
 <template>
-<div class="min-h-screen flex items-center justify-center p-6">
-    <div class="w-full max-w-md bg-beige rounded-2xl p-6 shadow-md">
-      <h1 class="text-3xl font-semibold mb-4 text-teal">Login</h1>
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+  <div class="min-h-screen items-center justify-center flex bg-gray-100">
+    <div class="w-full max-w-md bg-white rounded-2xl p-6">
+      <h1 class="mb-4 text-black font-semibold">Login</h1>
+
+      <!---->
+
+      <!-- login(gpt)  -->
         <div>
-          <label class="block text-sm text-teal mb-1">Email</label>
+          <label class="block text-black mb-1">Email</label>
           <input
             v-model="form.email"
             type="email"
             required
-            placeholder="you@school.edu"
-            class="w-full p-2 rounded border border-gray-300"
+            autocomplete="email"
+            placeholder="AlexQuigley@utd.edu"
+            class="w-full p-2 rounded border border-gray-300 text-black"
           />
         </div>
 
+      <!-- password(gpt)  -->
         <div>
-          <label class="block text-sm text-teal mb-1">Password</label>
+          <label class="block text-black mb-1">Password</label>
           <input
             v-model="form.password"
             type="password"
             required
-            placeholder="••••••••"
-            class="w-full p-2 rounded border border-gray-300"
+            placeholder="enter your password"
+            class="w-full p-2 rounded border border-gray-300 text-black"
           />
         </div>
 
-        <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
+        <p v-if="error" class="text-red">{{ error }}</p>
 
         <button
           type="submit"
           :disabled="loading"
-          class="w-full p-2 rounded bg-teal text-beige disabled:opacity-60"
+          class="w-full p-2 rounded bg-green text-black"
         >
-          <span v-if="loading">Signing in...</span>
-          <span v-else>Sign in</span>
+          <span>Sign in</span>
         </button>
-      </form>
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+//import type { Login } from '@prisma/client';
+
+useHead({ title: 'Login' });
+
+const router = useRouter();
+const form = reactive({ email: '', password: '' });
+
+//gpt
+const loading = ref(false);
+const error = ref('');
+
+
+
+</script>
+<style scoped>
+input:disabled,
+button:disabled 
+{
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+</style>
