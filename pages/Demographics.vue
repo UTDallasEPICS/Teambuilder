@@ -1,6 +1,8 @@
 
 <!--THIS ENTIRE PAGE NEEDS TO BE REDONE FROM THE GROUND UP, WHY THE F**K IS A SINGLE PAGE 1200 LINES OF F**KING PURE HTML CODE-->
 
+<!--All of this HTML needs to be turned into concise tailwind elements and use the same coding scheme as the rest of the website-->
+
 <template>  
   <div class="dashboard-container">
     <div class="sidebar">
