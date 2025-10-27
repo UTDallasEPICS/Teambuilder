@@ -1,0 +1,578 @@
+{
+  "partners": [
+    {
+      "id": "partner-001",
+      "name": "Partner 1",
+      "contact_name": "Contact 1",
+      "contact_email": "contact1@partner.com",
+      "discord": "Contact1#1234",
+      "projects": [
+        {
+          "id": "project-001",
+          "name": "Project 1A",
+          "targetCS": 5,
+          "teams": [
+            {
+              "id": "team-001",
+              "name": "Team 1A-1",
+              "students": [
+                {
+                  "id": "student-001",
+                  "firstName": "Alice",
+                  "lastName": "Smith",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Senior",
+                  "email": "alice.smith@university.edu",
+                  "discord": "Alice#1234"
+                },
+                {
+                  "id": "student-002",
+                  "firstName": "Bob",
+                  "lastName": "Johnson",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Junior",
+                  "email": "bob.johnson@university.edu",
+                  "discord": "Bob#5678"
+                },
+                {
+                  "id": "student-003",
+                  "firstName": "Charlie",
+                  "lastName": "Brown",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "charlie.brown@university.edu",
+                  "discord": "Charlie#4321"
+                },
+                {
+                  "id": "student-004",
+                  "firstName": "David",
+                  "lastName": "Lee",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "david.lee@university.edu",
+                  "discord": "David#8765"
+                },
+                {
+                  "id": "student-005",
+                  "firstName": "Eve",
+                  "lastName": "Davis",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "eve.davis@university.edu",
+                  "discord": "Eve#9876"
+                },
+                {
+                  "id": "student-006",
+                  "firstName": "Frank",
+                  "lastName": "Miller",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "frank.miller@university.edu",
+                  "discord": "Frank#6543"
+                }
+              ]
+            },
+            {
+              "id": "team-002",
+              "name": "Team 1A-2",
+              "students": [
+                {
+                  "id": "student-007",
+                  "firstName": "Grace",
+                  "lastName": "Wilson",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "grace.wilson@university.edu",
+                  "discord": "Grace#1234"
+                },
+                {
+                  "id": "student-008",
+                  "firstName": "Hank",
+                  "lastName": "Moore",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "hank.moore@university.edu",
+                  "discord": "Hank#5678"
+                },
+                {
+                  "id": "student-009",
+                  "firstName": "Ivy",
+                  "lastName": "Taylor",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "ivy.taylor@university.edu",
+                  "discord": "Ivy#4321"
+                },
+                {
+                  "id": "student-010",
+                  "firstName": "Jack",
+                  "lastName": "Anderson",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "jack.anderson@university.edu",
+                  "discord": "Jack#8765"
+                },
+                {
+                  "id": "student-011",
+                  "firstName": "Kate",
+                  "lastName": "Thomas",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "kate.thomas@university.edu",
+                  "discord": "Kate#9876"
+                },
+                {
+                  "id": "student-012",
+                  "firstName": "Leo",
+                  "lastName": "Jackson",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "leo.jackson@university.edu",
+                  "discord": "Leo#6543"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "project-002",
+          "name": "Project 1B",
+          "targetCS": 5,
+          "teams": [
+            {
+              "id": "team-003",
+              "name": "Team 1B-1",
+              "students": [
+                {
+                  "id": "student-013",
+                  "firstName": "Mia",
+                  "lastName": "White",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "mia.white@university.edu",
+                  "discord": "Mia#1234"
+                },
+                {
+                  "id": "student-014",
+                  "firstName": "Noah",
+                  "lastName": "Harris",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "noah.harris@university.edu",
+                  "discord": "Noah#5678"
+                },
+                {
+                  "id": "student-015",
+                  "firstName": "Olivia",
+                  "lastName": "Martin",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "olivia.martin@university.edu",
+                  "discord": "Olivia#4321"
+                },
+                {
+                  "id": "student-016",
+                  "firstName": "Paul",
+                  "lastName": "Garcia",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "paul.garcia@university.edu",
+                  "discord": "Paul#8765"
+                },
+                {
+                  "id": "student-017",
+                  "firstName": "Quinn",
+                  "lastName": "Martinez",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "quinn.martinez@university.edu",
+                  "discord": "Quinn#9876"
+                },
+                {
+                  "id": "student-018",
+                  "firstName": "Ryan",
+                  "lastName": "Rodriguez",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "ryan.rodriguez@university.edu",
+                  "discord": "Ryan#6543"
+                }
+              ]
+            },
+            {
+              "id": "team-004",
+              "name": "Team 1B-2",
+              "students": [
+                {
+                  "id": "student-019",
+                  "firstName": "Sophia",
+                  "lastName": "Lewis",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "sophia.lewis@university.edu",
+                  "discord": "Sophia#1234"
+                },
+                {
+                  "id": "student-020",
+                  "firstName": "Tom",
+                  "lastName": "Walker",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "tom.walker@university.edu",
+                  "discord": "Tom#5678"
+                },
+                {
+                  "id": "student-021",
+                  "firstName": "Uma",
+                  "lastName": "Hall",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "uma.hall@university.edu",
+                  "discord": "Uma#4321"
+                },
+                {
+                  "id": "student-022",
+                  "firstName": "Victor",
+                  "lastName": "Allen",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "victor.allen@university.edu",
+                  "discord": "Victor#8765"
+                },
+                {
+                  "id": "student-023",
+                  "firstName": "Wendy",
+                  "lastName": "Young",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "wendy.young@university.edu",
+                  "discord": "Wendy#9876"
+                },
+                {
+                  "id": "student-024",
+                  "firstName": "Xander",
+                  "lastName": "King",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "xander.king@university.edu",
+                  "discord": "Xander#6543"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "partner-002",
+      "name": "Partner 2",
+      "contact_name": "Contact 2",
+      "contact_email": "contact2@partner.com",
+      "discord": "Contact2#1234",
+      "projects": [
+        {
+          "id": "project-003",
+          "name": "Project 2A",
+          "targetCS": 5,
+          "teams": [
+            {
+              "id": "team-005",
+              "name": "Team 2A-1",
+              "students": [
+                {
+                  "id": "student-025",
+                  "firstName": "Yara",
+                  "lastName": "Scott",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "yara.scott@university.edu",
+                  "discord": "Yara#1234"
+                },
+                {
+                  "id": "student-026",
+                  "firstName": "Zane",
+                  "lastName": "Adams",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "zane.adams@university.edu",
+                  "discord": "Zane#5678"
+                },
+                {
+                  "id": "student-027",
+                  "firstName": "Amy",
+                  "lastName": "Baker",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "amy.baker@university.edu",
+                  "discord": "Amy#4321"
+                },
+                {
+                  "id": "student-028",
+                  "firstName": "Ben",
+                  "lastName": "Carter",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "ben.carter@university.edu",
+                  "discord": "Ben#8765"
+                },
+                {
+                  "id": "student-029",
+                  "firstName": "Cara",
+                  "lastName": "Evans",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "cara.evans@university.edu",
+                  "discord": "Cara#9876"
+                },
+                {
+                  "id": "student-030",
+                  "firstName": "Dan",
+                  "lastName": "Foster",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "dan.foster@university.edu",
+                  "discord": "Dan#6543"
+                }
+              ]
+            },
+            {
+              "id": "team-006",
+              "name": "Team 2A-2",
+              "students": [
+                {
+                  "id": "student-031",
+                  "firstName": "Ella",
+                  "lastName": "Gray",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "ella.gray@university.edu",
+                  "discord": "Ella#1234"
+                },
+                {
+                  "id": "student-032",
+                  "firstName": "Finn",
+                  "lastName": "Hill",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "finn.hill@university.edu",
+                  "discord": "Finn#5678"
+                },
+                {
+                  "id": "student-033",
+                  "firstName": "Gina",
+                  "lastName": "Ivy",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "gina.ivy@university.edu",
+                  "discord": "Gina#4321"
+                },
+                {
+                  "id": "student-034",
+                  "firstName": "Harry",
+                  "lastName": "Jones",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "harry.jones@university.edu",
+                  "discord": "Harry#8765"
+                },
+                {
+                  "id": "student-035",
+                  "firstName": "Isla",
+                  "lastName": "Kelly",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "isla.kelly@university.edu",
+                  "discord": "Isla#9876"
+                },
+                {
+                  "id": "student-036",
+                  "firstName": "Jake",
+                  "lastName": "Lopez",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "jake.lopez@university.edu",
+                  "discord": "Jake#6543"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "project-004",
+          "name": "Project 2B",
+          "targetCS": 5,
+          "teams": [
+            {
+              "id": "team-007",
+              "name": "Team 2B-1",
+              "students": [
+                {
+                  "id": "student-037",
+                  "firstName": "Bao",
+                  "lastName": "Nguyen",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "liam.morris@university.edu",
+                  "discord": "kingpenguintest"
+                },
+                {
+                  "id": "student-038",
+                  "firstName": "Maya",
+                  "lastName": "Nelson",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "maya.nelson@university.edu",
+                  "discord": "Maya#5678"
+                },
+                {
+                  "id": "student-039",
+                  "firstName": "Nina",
+                  "lastName": "Owen",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "nina.owen@university.edu",
+                  "discord": "Nina#4321"
+                },
+                {
+                  "id": "student-040",
+                  "firstName": "Oscar",
+                  "lastName": "Parker",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "oscar.parker@university.edu",
+                  "discord": "Oscar#8765"
+                },
+                {
+                  "id": "student-041",
+                  "firstName": "Pia",
+                  "lastName": "Quinn",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "pia.quinn@university.edu",
+                  "discord": "Pia#9876"
+                },
+                {
+                  "id": "student-042",
+                  "firstName": "Rex",
+                  "lastName": "Reed",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "rex.reed@university.edu",
+                  "discord": "Rex#6543"
+                }
+              ]
+            },
+            {
+              "id": "team-008",
+              "name": "Team 2B-2",
+              "students": [
+                {
+                  "id": "student-043",
+                  "firstName": "Sara",
+                  "lastName": "Stewart",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "sara.stewart@university.edu",
+                  "discord": "Sara#1234"
+                },
+                {
+                  "id": "student-044",
+                  "firstName": "Tim",
+                  "lastName": "Turner",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "tim.turner@university.edu",
+                  "discord": "Tim#5678"
+                },
+                {
+                  "id": "student-045",
+                  "firstName": "Uma",
+                  "lastName": "Vance",
+                  "major": "CS",
+                  "seniority": "3 years",
+                  "class": "Senior",
+                  "email": "uma.vance@university.edu",
+                  "discord": "Uma#4321"
+                },
+                {
+                  "id": "student-046",
+                  "firstName": "Victor",
+                  "lastName": "Wright",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "victor.wright@university.edu",
+                  "discord": "Victor#8765"
+                },
+                {
+                  "id": "student-047",
+                  "firstName": "Wendy",
+                  "lastName": "Xavier",
+                  "major": "CS",
+                  "seniority": "1 year",
+                  "class": "Sophomore",
+                  "email": "wendy.xavier@university.edu",
+                  "discord": "Wendy#9876"
+                },
+                {
+                  "id": "student-048",
+                  "firstName": "Xander",
+                  "lastName": "Young",
+                  "major": "CS",
+                  "seniority": "2 years",
+                  "class": "Junior",
+                  "email": "xander.young@university.edu",
+                  "discord": "Xander#6543"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("PRISMA_DB_URL")
+}
+
+model User {
+  id          String     @id @default(uuid())
+  email       String     @unique
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("users")
+}
+
+model Partner {
+  id             String      @id @default(uuid())
+  name           String
+  contactName    String      @map("contact_name")
+  contactEmail   String      @map("contact_email")
+
+  projects       Project[]   
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@map("partners")
+}
+
+model Project {
+  id            String        @id @default(uuid())
+  name          String
+  description   String
+  type          ProjectType
+  status        ProjectStatus
+  repoURL       String        @map("repo_url")
+
+  partnerId     String        @map("partner_id")
+  partner       Partner       @relation(fields: [partnerId], references: [id])
+
+  teams         Team[]
+  choices       Choice[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("projects")
+}
+
+model Team {
+  id          String     @id @default(uuid())
+  
+  projectId   String     @map("project_id")
+  project     Project    @relation(fields: [projectId], references: [id])
+  semesterId  String     @map("semester_id")
+  semester    Semester   @relation(fields: [semesterId], references: [id])
+
+  students    Student[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("teams")
+  @@unique([projectId, semesterId])
+}
+
+model Student {
+  id            String      @id @default(uuid())
+  github        String?     @unique
+  discord       String?     @unique
+  email         String?     @unique
+  netID         String      @map("net_id") @unique
+  firstName     String      @map("first_name")
+  lastName      String      @map("last_name")
+  major         String 
+  year          Year
+  class         String
+  enrollment    String?
+  status        StudentStatus
+
+  teams         Team[]
+  choices       Choice[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("students")
+}
+
+model Choice {
+  id            String       @id @default(uuid())
+  rank          Int
+
+  studentId     String       @map("student_id")
+  student       Student      @relation(fields: [studentId], references: [id])
+  projectId     String       @map("project_id")
+  project       Project      @relation(fields: [projectId], references: [id])
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@map("choices")
+}
+
+model Semester {
+  id            String       @id @default(uuid())
+  year          Int
+  season        Season
+
+  teams         Team[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("semesters")
+  @@unique([year, season])
+}
+
+enum Year {
+  FRESHMAN
+  SOPHOMORE
+  JUNIOR
+  SENIOR
+}
+
+enum Season {
+  SPRING
+  SUMMER
+  FALL
+}
+
+enum ProjectType {
+  SOFTWARE
+  HARDWARE
+  BOTH
+}
+
+enum ProjectStatus {
+  NEW
+  RETURNING
+  COMPLETE
+  WITHDRAWN
+  HOLD
+}
+
+enum StudentStatus {
+  ACTIVE 
+  INACTIVE
+}
