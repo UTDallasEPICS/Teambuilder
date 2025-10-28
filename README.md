@@ -35,6 +35,7 @@ This app allows users to:
 - Export the data in various formats like CSV or Excel.
 - Update the charts and data dynamically based on the selected filters.
 - Ensure that all data is properly validated and errors are handled gracefully.
+- Update the EPICS Discord server using the [S.C.I.P.E.](https://github.com/AlexQuigley/S.C.I.P.E) bot to automatically add missing channels and roles for projects. 
 
 ### Team Creation Functionality
 
