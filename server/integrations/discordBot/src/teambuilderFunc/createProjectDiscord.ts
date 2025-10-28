@@ -96,6 +96,14 @@ const createProjectDiscord = async (project: Project) => {
         }
     }
 
+        // If category still doesn't exist (e.g., server hit 500 channel limit), skip channel creation
+        if (!projectCategory) {
+            console.warn(
+                `[DiscordBot] Skipping channel creation for ${formattedChannelName} because category is missing (possibly due to channel limit).`
+            );
+            return;
+        }
+
     // Check if a text channel with the formatted name already exists under the category
     const textChannelExists = existingChannels.some(
         (channel) => channel.name === formattedChannelName && channel.parentId === projectCategory.id && channel.type === ChannelType.GuildText
