@@ -8,6 +8,7 @@
       NuxtLink(to="/students") Students
       NuxtLink(to="/generate-teams") Generate Teams
       NuxtLink(to="/demographics") Demographics
+      NuxtLink(to="/SCIPE") S.C.I.P.E. Bot
     .mt-auto.flex.flex-col.gap-y-4
       NuxtLink(to="https://discord.gg/UyPg3ykKq3")
         img.size-8(alt="Discord Logo" src="/discord.svg")

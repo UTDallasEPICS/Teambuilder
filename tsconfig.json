@@ -4,4 +4,6 @@
     "strict": true,
     "types": ["nuxt"]
   }
+  ,
+  "include": ["types/**/*.d.ts"]
 }
