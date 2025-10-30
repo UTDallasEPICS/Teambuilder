@@ -8,12 +8,12 @@
 
       .project-title Projects
 
-      DataTable.teal-card(
+      DataTable.beige-card.overflow-hidden(
         :value="projects"
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] px-4 md:px-10 mt-2 md:mt-5"
+        class="h-[80vh] w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
@@ -31,7 +31,8 @@
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
         Column(field="status" header="Status" :showFilterMenu="false")
           template(#body="{ data }")
-            .pill(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
+            .flex.justify-center
+              .pill(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="0")
               template(#option="slotProps")
@@ -98,6 +99,7 @@ import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index
 import { stringifySemesters } from '~/server/services/semesterService';
 import { faker } from '@faker-js/faker';
 import {type ProjectStatus} from '@prisma/client';
+import { useHead } from '@vueuse/head';
 
 useHead({ title: 'Projects' });
 
@@ -193,5 +195,5 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 }
 
 .project-title { font-size: 2.25rem; font-weight:600; margin-bottom: 0.5rem; }
-.pill { display:inline-block; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.875rem; background:rgba(0,0,0,0.06); }
+.pill { display:inline-flex; align-items:center; justify-content:center; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.875rem; background:rgba(0,0,0,0.06); min-width:5.5rem; white-space:nowrap; line-height:1; }
 </style>

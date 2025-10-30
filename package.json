@@ -21,6 +21,7 @@
     "@prisma/client": "6.17.1",
     "@tailwindcss/typography": "^0.5.15",
     "@vueuse/core": "^13.9.0",
+    "@vueuse/head": "^2.0.0",
     "axios": "^1.7.9",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.8",
