@@ -1,5 +1,5 @@
 <template>
-  <div class="discord-bot-control bg-white rounded-lg shadow-md p-6 max-w-2xl">
+  <div class="discord-bot-control scipe-card bg-white rounded-lg shadow-md p-6 max-w-2xl">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-bold text-gray-800">SCIPE Discord Bot Control</h2>
       <div class="flex items-center gap-2">
@@ -240,5 +240,11 @@ onUnmounted(() => {
   to {
     transform: rotate(360deg);
   }
+}
+</style>
+<style scoped>
+.discord-bot-control,
+.discord-bot-control * {
+  color: #0f172a !important;
 }
 </style>
