@@ -2,15 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: light !important;
+}
+
 * {
   font-family: 'Jura', Arial, sans-serif;
   user-select: none;
+  color-scheme: light !important;
 }
 
+
 body {
-  background: linear-gradient(to bottom, rgba(94, 250, 91, 0.758), #A0DAE7);
+  color-scheme: light !important;
+  background: linear-gradient(to bottom, rgba(94, 250, 91, 0.758), #A0DAE7) !important;
   height: 100vh;
   background-attachment: fixed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root, html, body, * {
+    color-scheme: light !important;
+  }
+  
+  /*force light backgrounds on tables in dark mode */
+  .p-datatable,
+  .p-datatable-table,
+  .p-datatable-thead,
+  .p-datatable-tbody,
+  .p-datatable tr,
+  .p-datatable th,
+  .p-datatable td,
+  .p-datatable-wrapper {
+    background: white !important;
+    background-color: white !important;
+    color: #374151 !important;
+  }
+  
+  .p-datatable th {
+    background: #f9fafb !important;
+    color: #111827 !important;
+    font-weight: 600;
+  }
+  
+  .p-datatable td {
+    color: #374151 !important;
+  }
+  
+  .p-datatable tr:hover {
+    background: #f3f4f6 !important;
+  }
+  
+  /* force dark text in table cells and links */
+  .p-datatable a,
+  .p-datatable span,
+  .p-datatable div {
+    color: #374151 !important;
+  }
+  
+  /* force light backgrounds on form inputs and dropdowns */
+  input,
+  textarea,
+  select,
+  .p-inputtext,
+  .p-multiselect,
+  .p-dropdown,
+  .p-calendar,
+  .p-inputnumber,
+  .p-multiselect-panel,
+  .p-dropdown-panel {
+    background: white !important;
+    background-color: white !important;
+    color: #000 !important;
+  }
+  
+  .p-multiselect-item,
+  .p-dropdown-item {
+    background: white !important;
+    color: #000 !important;
+  }
+  
+  .p-multiselect-item:hover,
+  .p-dropdown-item:hover {
+    background: #f3f4f6 !important;
+  }
 }
 
 @layer base {
@@ -54,6 +129,8 @@ body {
 
   .pill {
     @apply flex flex-row justify-center items-center h-fit px-3 py-1 rounded-full text-xs text-beige;
+    min-width: 5.5rem;
+    white-space: nowrap;
   }
 
   .embossed {
@@ -120,6 +197,68 @@ body {
 .p-datatable th {
   white-space: normal;
   word-break: break-word;
+}
+
+/* force light mode for all PrimeVue DataTable components */
+.p-datatable,
+.p-datatable-table,
+.p-datatable-thead,
+.p-datatable-tbody,
+.p-datatable tr,
+.p-datatable th,
+.p-datatable td,
+.p-datatable-wrapper {
+  background: white !important;
+  background-color: white !important;
+  color: #374151 !important;
+}
+
+.p-datatable th {
+  background: #f9fafb !important;
+  color: #111827 !important;
+  font-weight: 600;
+}
+
+.p-datatable td {
+  color: #374151 !important;
+}
+
+.p-datatable tr:hover {
+  background: #f3f4f6 !important;
+}
+
+/* force dark text in table cells and links */
+.p-datatable a,
+.p-datatable span,
+.p-datatable div {
+  color: #374151 !important;
+}
+
+/* force light backgrounds on all form inputs and dropdowns */
+input,
+textarea,
+select,
+.p-inputtext,
+.p-multiselect,
+.p-dropdown,
+.p-calendar,
+.p-inputnumber,
+.p-multiselect-panel,
+.p-dropdown-panel {
+  background: white !important;
+  background-color: white !important;
+  color: #000 !important;
+}
+
+.p-multiselect-item,
+.p-dropdown-item {
+  background: white !important;
+  color: #000 !important;
+}
+
+.p-multiselect-item:hover,
+.p-dropdown-item:hover {
+  background: #f3f4f6 !important;
 }
 
 .pill {
