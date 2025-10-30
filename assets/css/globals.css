@@ -262,9 +262,14 @@ select,
 }
 
 .pill {
-  display: inline-block;
+  /* Ensure pill text is centered both horizontally and vertically.
+     This overrides the duplicate inline-block rule that caused misalignment. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
   font-size: 0.875rem;
   background: rgba(0,0,0,0.06);
+  min-width: 5.5rem; /* match component-layer min-width */
 }

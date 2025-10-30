@@ -43,13 +43,15 @@
               // selected value
               template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
 
-        Column(field="status" header="Status" :showFilterMenu="false")
+        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem")
           template(#body="{ data }") 
-            .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
+            .flex.justify-center
+              .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
           template(#filter="{ filterModel, filterCallback }")
-            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
-              template(#option="slotProps")
-                .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
+            .flex.justify-center
+              MultiSelect.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
+                template(#option="slotProps")
+                  .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
 
   .cardRows.relative.teal-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
@@ -107,12 +109,12 @@
 
 <script lang="ts" setup>
 //import { PrismaClient } from "@prisma/client" //added
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import type { Student, Year } from '@prisma/client';
-import { Row } from '#components';
+import { useHead } from '@vueuse/head';
 
 useHead({ title: 'Students' });
 
@@ -168,6 +170,11 @@ const filters = ref({
   year: { value: [], matchMode: FilterMatchMode.IN },
   status: { value: [], matchMode: FilterMatchMode.IN },
 });
+
+const capitalizeFirst = (s: string | undefined | null) => {
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
 
 const formatYearsFilter = (years: Year[] | undefined) => {
   if (!years || years.length === 0) return 'Any';
