@@ -196,4 +196,11 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 
 .project-title { font-size: 2.25rem; font-weight:600; margin-bottom: 0.5rem; }
 .pill { display:inline-flex; align-items:center; justify-content:center; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.875rem; background:rgba(0,0,0,0.06); min-width:5.5rem; white-space:nowrap; line-height:1; }
+
+/* colors for pills! */
+.pill.bg-green { background: #77cf77 !important; color: #ffffff !important; }
+.pill.bg-orange { background: #ffa07a !important; color: #ffffff !important; }
+.pill.bg-lightblue { background: #6fc9d8 !important; color: #ffffff !important; }
+.pill.bg-gray { background: #969696 !important; color: #ffffff !important; }
+.pill.bg-red { background: #eb6464 !important; color: #ffffff !important; }
 </style>

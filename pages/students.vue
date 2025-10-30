@@ -264,4 +264,8 @@ const helpInfo = `Upload student information here.`
 select {
   @apply bg-beige text-teal rounded-md p-1
 }
+
+/* colors for pills! */
+.pill.bg-green { background: #77cf77 !important; color: #ffffff !important; }
+.pill.bg-red { background: #eb6464 !important; color: #ffffff !important; }
 </style>
