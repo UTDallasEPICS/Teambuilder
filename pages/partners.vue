@@ -41,11 +41,12 @@
   </template>
   
   <script lang="ts" setup>
-  import { ref, onMounted } from 'vue';
-  import { FilterMatchMode } from '@primevue/core/api';
-  import type { Partner } from '@prisma/client';
-  
-  useHead({ title: 'Partners' });
+    import { ref, onMounted } from 'vue';
+    import { FilterMatchMode } from '@primevue/core/api';
+    import type { Partner } from '@prisma/client';
+    import { useHead } from '@vueuse/head';
+    
+    useHead({ title: 'Partners' });
   
   const partners = ref<Partner[]>([]);
   const partnerCount = ref(0);

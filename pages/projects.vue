@@ -194,13 +194,38 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
   word-break: break-word;
 }
 
-.project-title { font-size: 2.25rem; font-weight:600; margin-bottom: 0.5rem; }
+.project-title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  background: var(--color-utd-orange);
+  color: #ffffff;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+}
 .pill { display:inline-flex; align-items:center; justify-content:center; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.875rem; background:rgba(0,0,0,0.06); min-width:5.5rem; white-space:nowrap; line-height:1; }
 
 /* colors for pills! */
-.pill.bg-green { background: #77cf77 !important; color: #ffffff !important; }
-.pill.bg-orange { background: #ffa07a !important; color: #ffffff !important; }
-.pill.bg-lightblue { background: #6fc9d8 !important; color: #ffffff !important; }
-.pill.bg-gray { background: #969696 !important; color: #ffffff !important; }
-.pill.bg-red { background: #eb6464 !important; color: #ffffff !important; }
+.pill.bg-green { background: var(--color-pill-new) !important; color: #ffffff !important; }
+.pill.bg-orange { background: var(--color-pill-returning) !important; color: #ffffff !important; }
+.pill.bg-lightblue { background: var(--color-pill-complete) !important; color: #ffffff !important; }
+.pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
+.pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
+
+/* make the whole shaded card area use the UTD orange and fill surrounding whitespace */
+.centered-row.shaded-card {
+  background: var(--color-utd-orange) !important;
+  padding: 2rem !important; /* widen the orange frame */
+  border-radius: 0.5rem;
+}
+
+/* keep the primevue DataTable itself white but make the inner area around it orange as well */
+.centered-row.shaded-card > .centered-col {
+  background: var(--color-utd-orange) !important;
+  border-radius: 0.75rem;
+  padding: 1.25rem !important; /* inner inset padding */
+  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  width: 100%;
+}
 </style>

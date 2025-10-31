@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  ClickableButton(:title="title" @click="handleClick")
+  ClickableButton(:title="title" type="success" @click="handleClick")
   input(type="file" @change="handleFile" ref="fileInput" style={display: 'none'})
 </template>
 
@@ -9,7 +9,7 @@ import { ref } from 'vue';
 import Papa from 'papaparse';
 
 defineProps<{ title: string }>();
-const fileInput = ref<HTMLInputElement | null>(null);
+const fileInput = ref<any>(null);
 const emit = defineEmits(['dataParsed']);
 
 const handleClick = () => {
@@ -17,8 +17,9 @@ const handleClick = () => {
 };
 
 const handleFile = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
+  // Use a safe any cast because DOM lib types like HTMLInputElement may not be available
+  const target = event.target as any;
+  const file = target?.files?.[0];
 
   if (file) {
     Papa.parse(file, {

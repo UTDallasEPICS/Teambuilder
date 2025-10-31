@@ -36,10 +36,11 @@ const frontClass = type + 'Front';
   background: #eb6464;
 }
 .successEdge {
-  background: #43944c;
+  background: #0f3f2c !important; /* stronger UTD darker edge */
 }
 .successFront {
-  background: #77cf77;
+  background: #154734 !important; /* UTD green (ensure exact color) */
+  color: #ffffff !important; /* ensure white text despite inherited .text-beige */
 }
 .edge:active .front {
   transform: translateY(-2px);

@@ -6,18 +6,40 @@
   color-scheme: light !important;
 }
 
+/* Centralized color palette variables — update these to change the site theme.
+   NOTE: These variables do not change element styles by themselves. They are
+   provided as a single source of truth so we can safely re-skin later without
+   altering component markup or layout. */
+:root {
+  --color-frame-orange: #c97500; /* page frame / accent */
+  --color-beige: #fcf5dc; /* main table background */
+  --color-beige-light: #fff6e2; /* header / inputs */
+  --color-pill-new: #34d399; /* NEW */
+  --color-pill-returning: #fb923c; /* RETURNING */
+  --color-pill-complete: #60a5fa; /* COMPLETE */
+  --color-pill-withdrawn: #9ca3af; /* WITHDRAWN */
+  --color-pill-hold: #ef4444; /* HOLD */
+  --color-text-dark: #0f172a; /* primary readable text */
+  --color-card-bg: #ffffff; /* card background */
+  --color-accent-green: #10b981; /* success / accents */
+  --color-accent-utd-green: #154734; /* UTD green accent */
+  --color-utd-orange: #e87500; /* UTD orange accent */
+  --color-nav-bg: #e6e6e6; /* neutral grey for left navigation */
+  --color-nav-text: #6c737a; /* neutral grey for nav text */
+}
+
 * {
   font-family: 'Jura', Arial, sans-serif;
   user-select: none;
-  color-scheme: light !important;
+  color-scheme: light !important; 
 }
 
 
 body {
   color-scheme: light !important;
-  background: linear-gradient(to bottom, rgba(94, 250, 91, 0.758), #A0DAE7) !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   height: 100vh;
-  background-attachment: fixed;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,8 +56,8 @@ body {
   .p-datatable th,
   .p-datatable td,
   .p-datatable-wrapper {
-    background: white !important;
-    background-color: white !important;
+    background: var(--color-beige) !important;
+    background-color: var(--color-beige) !important;
     color: #374151 !important;
   }
   
@@ -208,8 +230,8 @@ body {
 .p-datatable th,
 .p-datatable td,
 .p-datatable-wrapper {
-  background: white !important;
-  background-color: white !important;
+  background: var(--color-beige) !important;
+  background-color: var(--color-beige) !important;
   color: #374151 !important;
 }
 
@@ -273,3 +295,33 @@ select,
   background: rgba(0,0,0,0.06);
   min-width: 5.5rem; /* match component-layer min-width */
 }
+
+/* Map beige-card to the centralized palette (table backgrounds and text) */
+.beige-card {
+  background: var(--color-beige) !important;
+  color: var(--color-text-dark) !important;
+}
+
+/* Ensure PrimeVue DataTable inside a .beige-card uses the beige tones */
+:deep(.beige-card .p-datatable),
+:deep(.beige-card .p-datatable-wrapper),
+:deep(.beige-card .p-datatable-table),
+:deep(.beige-card .p-datatable-thead),
+:deep(.beige-card .p-datatable-tbody),
+:deep(.beige-card .p-datatable td),
+:deep(.beige-card .p-datatable th) {
+  background: var(--color-beige) !important;
+  color: var(--color-text-dark) !important;
+}
+
+:deep(.beige-card .p-datatable th) {
+  background: var(--color-beige-light) !important;
+  color: var(--color-text-dark) !important;
+}
+
+/* Pill color mappings (use centralized palette) */
+.pill.bg-green { background: var(--color-pill-new) !important; color: #ffffff !important; }
+.pill.bg-orange { background: var(--color-pill-returning) !important; color: #ffffff !important; }
+.pill.bg-lightblue { background: var(--color-pill-complete) !important; color: #ffffff !important; }
+.pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
+.pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }

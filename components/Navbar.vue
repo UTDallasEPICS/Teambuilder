@@ -1,5 +1,5 @@
 <template lang="pug">
-  .fixed.top-0.left-0.h-full.w-64.bg-teal.p-4.flex.flex-col.items-start(class="hidden xl:flex")
+  .fixed.top-0.left-0.h-full.w-64.p-4.flex.flex-col.items-start(class="hidden xl:flex" style="background:var(--color-nav-bg); color:var(--color-nav-text)")
     img.h-20(alt="EPICS Logo" src="/logo1.png")
     img.h-20.mt-2(alt="Team Formation Logo" src="/team-formation-text.png")
     .mt-6.flex.flex-col.text-xl.gap-y-4
