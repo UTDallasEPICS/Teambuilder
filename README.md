@@ -69,23 +69,22 @@ Make sure to install the dependencies:
 
 ## INSTALLATION [9/2/25 and onward] 
 ```bash
-# For Windows Machines, to setup environment run these commands in a WSL console in VS Code
+# For Windows Machines, to setup environment run these commands in a git bash console in VS Code
 
-# Update your WSL instance
-sudo apt update
-sudo apt upgrade
+# Install [git](https://git-scm.com/install/windows) for windows.
 
-# Copy the desired branch (This command only copys the main branch
-sudo git clone github.com/UTDallasEPICS/Teambuilder
-cd Teambuilder
+# Clone the [Teambuilder](https://github.com/utdallasEPICS/teambuilder) directory.
 
-# Installs nodejs and the node package manager (npm)
-sudo apt install nodejs
-sudo apt install nodejs npm
+# Install [nodejs](https://nodejs.org/en) for Windows
 
 # Sets up npm in the /Teambuilder directory
-sudo npm install
-npm audit fix
+- npm install
+- npm audit fix
+
+# Set up the database and prisma files 
+- npx prisma generate
+- npx prisma migrate dev
+*In some circumstances you may need to delete the dev.db if it already exists or if prima is throwing sync issues. 
 
 # Starts running an instance of the website
 npm run dev
