@@ -6,10 +6,7 @@
   color-scheme: light !important;
 }
 
-/* Centralized color palette variables — update these to change the site theme.
-   NOTE: These variables do not change element styles by themselves. They are
-   provided as a single source of truth so we can safely re-skin later without
-   altering component markup or layout. */
+/* color palette */
 :root {
   --color-frame-orange: #c97500; /* page frame / accent */
   --color-beige: #fcf5dc; /* main table background */
@@ -25,7 +22,7 @@
   --color-accent-utd-green: #154734; /* UTD green accent */
   --color-utd-orange: #e87500; /* UTD orange accent */
   --color-nav-bg: #e6e6e6; /* neutral grey for left navigation */
-  --color-nav-text: #6c737a; /* neutral grey for nav text */
+  --color-nav-text: #5b5f63; /* neutral grey for nav text */
 }
 
 * {
@@ -56,8 +53,9 @@ body {
   .p-datatable th,
   .p-datatable td,
   .p-datatable-wrapper {
-    background: var(--color-beige) !important;
-    background-color: var(--color-beige) !important;
+    /* tables should use the card background (white) instead of beige */
+    background: var(--color-card-bg) !important;
+    background-color: var(--color-card-bg) !important;
     color: #374151 !important;
   }
   
@@ -133,6 +131,11 @@ body {
     @apply bg-teal rounded-3xl;
   }
 
+  .orange-card {
+    background: var(--color-utd-orange);
+    @apply rounded-3xl;
+  }
+
   .beige-card {
     @apply rounded-2xl p-4 cursor-pointer bg-beige text-teal;
   }
@@ -159,6 +162,41 @@ body {
     text-shadow: 1px 1px 1px #0000008b;
   }
 
+/* Remove embossed/text-shadow and any extra box-shadow for the page headings
+   (e.g. 'Partners', 'Projects') so they render cleanly. Use !important to
+   override earlier utility classes while keeping the rest of the theme intact. */
+.project-title,
+.partners-button,
+.projects-button,
+.project-title.embossed,
+.centered-row .project-title,
+.centered-row .partners-button {
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* Tailwind's `drop-shadow-*` utilities use `filter: drop-shadow(...)`.
+   Override any drop-shadow or filter-based effect for the `.project-title` so
+   the small rounded inner rectangle / embossed look is removed. */
+.project-title,
+.project-title.embossed,
+.project-title.drop-shadow-md,
+.centered-row .project-title {
+  filter: none !important;
+  -webkit-filter: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/* Also make sure any descendant pseudo-elements don't add inner shadows */
+.project-title::before,
+.project-title::after {
+  box-shadow: none !important;
+  filter: none !important;
+  content: none !important;
+}
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -174,6 +212,12 @@ body {
 
   .project-title {
     @apply text-3xl font-semibold;
+    background: var(--color-utd-orange);
+    color: #ffffff;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
   }
 }
 
@@ -230,8 +274,8 @@ body {
 .p-datatable th,
 .p-datatable td,
 .p-datatable-wrapper {
-  background: var(--color-beige) !important;
-  background-color: var(--color-beige) !important;
+  background: var(--color-card-bg) !important;
+  background-color: var(--color-card-bg) !important;
   color: #374151 !important;
 }
 
@@ -298,7 +342,8 @@ select,
 
 /* Map beige-card to the centralized palette (table backgrounds and text) */
 .beige-card {
-  background: var(--color-beige) !important;
+  /* legacy class name kept, but map to white card background now */
+  background: var(--color-card-bg) !important;
   color: var(--color-text-dark) !important;
 }
 
@@ -310,12 +355,14 @@ select,
 :deep(.beige-card .p-datatable-tbody),
 :deep(.beige-card .p-datatable td),
 :deep(.beige-card .p-datatable th) {
-  background: var(--color-beige) !important;
+  /* ensure DataTables inside "beige-card" are rendered as white cards */
+  background: var(--color-card-bg) !important;
   color: var(--color-text-dark) !important;
 }
 
 :deep(.beige-card .p-datatable th) {
-  background: var(--color-beige-light) !important;
+  /* table headers use a subtle neutral tone to separate from white body */
+  background: #f9fafb !important;
   color: var(--color-text-dark) !important;
 }
 
@@ -325,3 +372,115 @@ select,
 .pill.bg-lightblue { background: var(--color-pill-complete) !important; color: #ffffff !important; }
 .pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
 .pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
+
+/* Orange page frame + inner orange area used on Projects/Students/Partners pages */
+.centered-row.shaded-card {
+  background: var(--color-utd-orange) !important;
+  padding: 2rem !important;
+  border-radius: 0.5rem;
+}
+
+.centered-row.shaded-card > .centered-col {
+  background: var(--color-utd-orange) !important;
+  border-radius: 0.75rem;
+  padding: 1.25rem !important;
+  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  width: 100%;
+}
+
+/* Stronger scoped overrides so search/filter inputs inside beige DataTables use the beige background */
+:deep(.beige-card .p-datatable input),
+:deep(.beige-card .p-datatable textarea),
+:deep(.beige-card .p-datatable select),
+:deep(.beige-card .p-datatable .p-inputtext),
+:deep(.beige-card .p-datatable .p-inputtext-input),
+:deep(.beige-card .p-datatable .p-column-filter .p-inputtext),
+:deep(.beige-card .p-datatable .p-column-filter input),
+:deep(.beige-card .p-datatable .p-column-filter .p-dropdown-label),
+:deep(.beige-card .p-datatable .p-column-filter .p-multiselect-label) {
+  /* inputs inside card/table should be white (card bg) */
+  background: var(--color-card-bg) !important;
+  background-color: var(--color-card-bg) !important;
+  color: var(--color-text-dark) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 0.75rem !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+:deep(.beige-card .p-datatable input::placeholder),
+:deep(.beige-card .p-datatable .p-inputtext::placeholder) {
+  color: rgba(55,65,81,0.45) !important;
+}
+
+/* Override inputs/dropdowns inside beige-card DataTables to use beige background */
+.beige-card .p-datatable input,
+.beige-card .p-datatable textarea,
+.beige-card .p-datatable select,
+.beige-card .p-datatable .p-inputtext,
+.beige-card .p-datatable .p-multiselect,
+.beige-card .p-datatable .p-dropdown,
+.beige-card .p-datatable .p-multiselect .p-multiselect-label,
+.beige-card .p-datatable .p-dropdown .p-dropdown-label {
+  background: var(--color-card-bg) !important;
+  background-color: var(--color-card-bg) !important;
+  color: var(--color-text-dark) !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  border-radius: 0.375rem !important;
+  box-shadow: none !important;
+}
+
+.beige-card .p-datatable input::placeholder,
+.beige-card .p-datatable .p-inputtext::placeholder {
+  color: rgba(55,65,81,0.5) !important;
+}
+
+/* Fix: rounded focus ring for pill/buttons (e.g. 'Partners' label)
+   Reason: the browser default outline is drawn outside the element's border-radius
+   and appears square. Replace default outline with a rounded box-shadow on
+   :focus-visible to preserve keyboard accessibility while removing the square look. */
+.pill,
+.project-title,
+.beige-card button,
+.centered-row .beige-card a,
+.partners-button {
+  border-radius: 0.75rem; /* match design */
+}
+
+.pill:focus-visible,
+.project-title:focus-visible,
+.beige-card button:focus-visible,
+.partners-button:focus-visible {
+  outline: none; /* remove square outline */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12), 0 0 0 4px rgba(255,255,255,0.06) inset;
+  border-radius: 0.75rem; /* keep focus shadow rounded */
+}
+
+/* If you prefer a colored focus ring for accessibility, replace the box-shadow
+   above with something like:
+     box-shadow: 0 0 0 3px rgba(245,158,11,0.24); */
+
+/* Hide the native focus outline/ ring when the element is focused via mouse
+   (or programmatically) but keep a clear visible ring for keyboard users.
+   This prevents the square outline around rounded buttons like "Partners"
+   while preserving accessibility via :focus-visible. */
+.pill:focus,
+.project-title:focus,
+.beige-card button:focus,
+.beige-card a:focus,
+.partners-button:focus {
+  outline: none; /* remove default browser outline */
+  box-shadow: none; /* remove any browser-supplied focus ring */
+}
+
+/* If an element should show a custom rounded focus ring for keyboard users, use :focus-visible */
+.pill:focus-visible,
+.project-title:focus-visible,
+.beige-card button:focus-visible,
+.beige-card a:focus-visible,
+.partners-button:focus-visible {
+  outline: none;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12), 0 0 0 4px rgba(255,255,255,0.06) inset;
+  border-radius: 0.75rem;
+}

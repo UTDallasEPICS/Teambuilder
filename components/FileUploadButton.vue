@@ -45,8 +45,28 @@ const handleFile = (event: Event) => {
         }
       },*/
       complete: (results) => {
-        const parsed = results.data;
-        emit('dataParsed', parsed)
+        // Sanitize parsed rows to avoid dangerous keys that shadow Object.prototype methods
+        // (e.g. a CSV header named "hasOwnProperty" would create an own property that is
+        // not a function and break Pinia/SSR hydration checks).
+        const sanitizeRow = (row: Record<string, any>) => {
+          const reserved = ['hasOwnProperty', '__proto__', 'constructor'];
+          const out: Record<string, any> = {};
+          for (const key in row) {
+            if (Object.prototype.hasOwnProperty.call(row, key)) {
+              if (reserved.includes(key)) {
+                // rename reserved keys to avoid collisions
+                out[`_${key}`] = row[key];
+              }
+              else {
+                out[key] = row[key];
+              }
+            }
+          }
+          return out;
+        };
+
+        const parsed = results.data.map((r: any) => sanitizeRow(r));
+        emit('dataParsed', parsed);
         console.log('Parsed CSV Data:', parsed);
       },
       error: (error) => {

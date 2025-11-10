@@ -6,17 +6,17 @@
         FileUploadButton(title="Upload Partners" @dataParsed="handleParsed")
         HelpIcon(:info="helpInfo")
 
-      .text-7xl.embossed.drop-shadow-md Partners
+      .project-title.embossed.drop-shadow-md Partners
       .text-2xl.mt-2 Partner count: {{ partnerCount }}
       
-      DataTable.teal-card.px-10.mt-5(
-        :value="partners" 
+      DataTable.beige-card.overflow-hidden.px-10.mt-5(
+        :value="partners"
         v-model:filters="filters"
-        scrollable 
+        scrollable
         scrollHeight="80vh"
-        class="h-[80vh]"
+        class="h-[80vh] w-full mt-2 md:mt-5"
         tableStyle="min-width: 50rem;"
-        dataKey="id" 
+        dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedPartner"
@@ -38,6 +38,35 @@
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project")
 
+  .cardRows.relative.orange-card.p-15.modal(v-if="selectedPartner" class="w-[50vw]")
+    XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
+    
+    div
+      span.cardSubTitle Name:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedPartner?.name }}
+        input.editBox(v-else v-model="editedPartner.name")
+    
+    div
+      span.cardSubTitle Contact Name:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedPartner?.contactName }}
+        input.editBox(v-else v-model="editedPartner.contactName")
+    
+    div
+      span.cardSubTitle Contact Email:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedPartner?.contactEmail }}
+        input.editBox(v-else v-model="editedPartner.contactEmail")
+    
+    div
+      span.cardSubTitle Projects:
+      span.cardText {{ selectedPartner?.projectName || 'None' }}
+    
+    .flex-grow.flex.justify-end.items-end
+      ClickableButton(v-if="!isEditing" title="Edit Partner" type="success" @click="handleEdit")
+      ClickableButton(v-if="isEditing" title="Save Partner" type="success" @click="handleSave")
+
   </template>
   
   <script lang="ts" setup>
@@ -45,6 +74,7 @@
     import { FilterMatchMode } from '@primevue/core/api';
     import type { Partner } from '@prisma/client';
     import { useHead } from '@vueuse/head';
+    import { XCircleIcon } from '@heroicons/vue/24/solid';
     
     useHead({ title: 'Partners' });
   
@@ -101,12 +131,33 @@
   </script>
   
   <style scoped>
-  .overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 98;
-  }
+  /* Projects-like styling for Partners page */
+  .cardRows { display:flex; flex-direction:column; gap:1.25rem; }
+  .cardTitle { text-shadow:1px 1px 1px rgba(0,0,0,0.55); font-size:3rem; filter:drop-shadow(0 1px 1px rgba(0,0,0,0.25)); }
+  .cardSubTitle { text-shadow:1px 1px 1px rgba(0,0,0,0.55); font-size:1.5rem; margin-right:0.5rem; }
+  .cardText { font-size:1.25rem; }
+
+  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 98; }
+  .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 99; }
+  .editBox { color: #14b8a6; border-radius: 0.375rem; background-color: #f5f5dc; padding: 0.25rem; }
+
+  :deep(.p-datatable-wrapper) { overflow-x: auto !important; }
+
+  @media (min-width: 768px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 50rem !important; } }
+  @media (max-width: 767px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 20rem !important; } .project-title { font-size: 1.25rem; } }
+
+  :deep(.p-datatable td) { white-space: normal; word-break: break-word; }
+
+  .project-title { font-size: 2.25rem; font-weight:600; margin-bottom:0.5rem; margin:0 auto; display:inline-block; background:var(--color-utd-orange); color:#fff; padding:0.375rem 0.75rem; border-radius:0.5rem; }
+  .pill { display:inline-flex; align-items:center; justify-content:center; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.875rem; background:rgba(0,0,0,0.06); min-width:5.5rem; white-space:nowrap; line-height:1; }
+
+  .pill.bg-green { background: var(--color-pill-new) !important; color: #ffffff !important; }
+  .pill.bg-orange { background: var(--color-pill-returning) !important; color: #ffffff !important; }
+  .pill.bg-lightblue { background: var(--color-pill-complete) !important; color: #ffffff !important; }
+  .pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
+  .pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
+
+  .centered-row.shaded-card { background: var(--color-utd-orange) !important; padding: 2rem !important; border-radius: 0.5rem; }
+  .centered-row.shaded-card > .centered-col { background: var(--color-utd-orange) !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: 0 8px 20px rgba(16,24,40,0.06); width: 100%; }
   </style>
   

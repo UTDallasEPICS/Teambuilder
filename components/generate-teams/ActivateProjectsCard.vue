@@ -1,5 +1,5 @@
 <template lang="pug">
-  .text-3xl.embossed Step 2: Activate Projects for Semester
+  .text-3xl.font-semibold.mb-4 Step 2: Activate Projects for Semester
   Dropdown(
     v-model="selectedSemester"
     :options="semesters"
@@ -28,13 +28,15 @@
     template(#targetheader)
       .text-xl.font-bold Active ({{ activeProjectCount }})
     template(#item="slotProps") {{ slotProps.item.name }}
-  ClickableButton.mt-5(title="Save Projects" @click="handleSaveProjects")
+  ClickableButton.mt-5(title="Save Projects" type="success" @click="handleSaveProjects")
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch } from 'vue';
 import type { Semester } from '@prisma/client';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import Dropdown from 'primevue/dropdown';
+import { useToast } from 'primevue/usetoast';
 import type { PickListMoveToSourceEvent, PickListMoveToTargetEvent } from 'primevue/picklist';
 import { filterProjectsByName, getActiveProjects, getInactiveProjects } from '~/server/services/projectService';
 import { displaySemester } from '~/server/services/semesterService';
@@ -47,6 +49,14 @@ const { projects, semesters } = defineProps<{
 const emit = defineEmits<{
   (e: 'fetchProjects'): void
 }>()
+
+function usePrimeVueToast() {
+  const toast = useToast();
+  const successToast = (message: string) => toast.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+  const errorToast = (message: string) => toast.add({ severity: 'error', summary: 'Error', detail: message, life: 5000 });
+  const infoToast = (message: string) => toast.add({ severity: 'info', summary: 'Info', detail: message, life: 3000 });
+  return { successToast, errorToast, infoToast };
+}
 
 const { successToast, errorToast, infoToast } = usePrimeVueToast();
 

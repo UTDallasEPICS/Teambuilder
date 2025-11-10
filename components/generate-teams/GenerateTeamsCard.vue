@@ -1,5 +1,5 @@
 <template lang="pug">
-  .text-3xl.embossed Step 3: Generate Teams
+  .text-3xl.font-semibold.mb-4 Step 3: Generate Teams
   Dropdown(
     v-model="selectedSemester"
     :options="semesters"
@@ -9,13 +9,13 @@
     template(#value="slotProps")
       div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
       span(v-else) {{ slotProps.placeholder }}
-  ClickableButton.mt-5(title="Generate Teams", @click="handleGenerateTeamAssignments")
+  ClickableButton.mt-5(title="Generate Teams" type="success" @click="handleGenerateTeamAssignments")
   .overlay(v-if="showOverlay" @click="closeModal")
-  .teal-card.p-15.modal.gap-2.overflow-y-auto.max-h-screen.m-10(v-if="showOverlay")
-    .text-5xl.embossed.mb-5.text-center Generated Teams
+  .orange-card.p-15.modal.gap-2.overflow-y-auto.max-h-screen.m-10(v-if="showOverlay")
+    .text-5xl.font-bold.mb-5.text-center.text-white Generated Teams
     .grid.grid-cols-4
       div(v-for="(students, projectId) in teamAssignments" :key="projectId" class="mb-8")
-        h2.text-xl.embossed {{ getProjectNameFromId(projectId, projects) }} ({{ getProjectTeamSize(projectId) }})
+        h2.text-xl.font-semibold.text-white {{ getProjectNameFromId(projectId, projects) }} ({{ getProjectTeamSize(projectId) }})
         div(
           v-for="(student, index) in students" 
           :key="index"
@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { Project, Semester } from '@prisma/client';
 import type { TeamAssignments } from '~/algorithms/S25';
 import { generateTeamAssignments } from '~/algorithms/S25';

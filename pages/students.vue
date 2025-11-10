@@ -7,17 +7,16 @@
         //-changed from fileSelected to dataParsed - successful change, handleParsed now runs
         HelpIcon(:info="helpInfo")
 
-      .text-7xl.embossed.drop-shadow-md Students
+      .project-title Students
       .text-2xl.mt-2 Student count: {{ studentCount }}
-      
-      DataTable.teal-card.px-10.mt-5(
-        :value="studentsWithFullName" 
+
+      DataTable.beige-card.overflow-hidden(
+        :value="studentsWithFullName"
         v-model:filters="filters"
-        scrollable 
+        scrollable
         scrollHeight="80vh"
-        class="h-[80vh]"
-        tableStyle="min-width: 50rem;"
-        dataKey="id" 
+        class="h-[80vh] w-full mt-2 md:mt-5"
+        dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedStudent"
@@ -53,7 +52,7 @@
                 template(#option="slotProps")
                   .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
 
-  .cardRows.relative.teal-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
+  .cardRows.relative.orange-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
 
     div
@@ -102,7 +101,7 @@
           option(v-for="major in majors" :key="major" :value="major") {{ major }}
 
     .flex-grow.flex.justify-end.items-end
-      ClickableButton(v-if="!isEditing" title="Edit Project" @click="handleEdit")
+      ClickableButton(v-if="!isEditing" title="Edit Project" type="success" @click="handleEdit")
       ClickableButton(v-if="isEditing" title="Save Project" type="success" @click="handleSave")
 
 </template>
@@ -263,6 +262,30 @@ const helpInfo = `Upload student information here.`
 /* TODO: move this styling to primevue's tokens in nuxt.config.ts */
 select {
   @apply bg-beige text-teal rounded-md p-1
+}
+
+/* Make DataTable wrapper scrollable horizontally */
+:deep(.p-datatable-wrapper) { 
+  overflow-x: auto !important; 
+}
+
+/* Set minimum width for DataTable on larger screens */
+@media (min-width: 768px) {
+  :deep(.p-datatable-scrollable .p-datatable-table) { 
+    min-width: 50rem !important; 
+  }
+}
+
+@media (max-width: 767px) {
+  :deep(.p-datatable-scrollable .p-datatable-table) { 
+    min-width: 20rem !important; 
+  }
+}
+
+/* Allow text wrapping in table cells */
+:deep(.p-datatable td) {
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* colors for pills! */

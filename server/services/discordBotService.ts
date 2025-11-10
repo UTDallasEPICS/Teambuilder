@@ -13,9 +13,14 @@ export async function startDiscordBot(): Promise<{ success: boolean; message: st
 
   try {
     const token = process.env.DISCORD_BOT_TOKEN || process.env.TOKEN;
-    
+
+    // If no token is present, do not throw — return a graceful failure so the
+    // dev server can start without the Discord bot. Production should provide
+    // the token and will start the bot as expected.
     if (!token) {
-      throw new Error('DISCORD_BOT_TOKEN or TOKEN is not defined in environment variables');
+      const msg = 'DISCORD_BOT_TOKEN or TOKEN is not defined in environment variables';
+      console.warn(`⚠️ [DiscordBot] ${msg} — skipping startup`);
+      return { success: false, message: msg };
     }
 
     botClient = new Client({

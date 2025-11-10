@@ -31,7 +31,7 @@
             <span v-else>Delete All Project Channels</span>
           </button>
         </div>
-        <p class="text-sm mt-2" style="color: #4B5563 !important;">
+        <p class="text-sm mt-2" style="color: #FFFFFF !important;">
           Create or delete Discord categories and channels for all projects in the database
         </p>
         <div v-if="message" class="mt-4 p-4 rounded-lg result-message" :class="{
@@ -242,13 +242,13 @@ const deleteAllChannels = async () => {
   color: #1F2937 !important;
 }
 
-.scipe-page p {
+.scipe-page p.subtitle {
   color: #4B5563 !important;
 }
 
 /* Button Styles with !important to override global styles */
 .button-create {
-  background-color: #4F46E5 !important;
+  background-color: #154734 !important;
   color: white !important;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -257,16 +257,16 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
 .button-create:hover:not(:disabled) {
-  background-color: #4338CA !important;
+  background-color: #0f3f2c !important;
 }
 
 .button-delete {
-  background-color: #EA580C !important;
+  background-color: #DC2626 !important;
   color: white !important;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -275,7 +275,7 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
@@ -284,7 +284,7 @@ const deleteAllChannels = async () => {
 }
 
 .button-diagnostics {
-  background-color: #2563EB !important;
+  background-color: #154734 !important;
   color: white !important;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -293,12 +293,12 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
 .button-diagnostics:hover:not(:disabled) {
-  background-color: #1D4ED8 !important;
+  background-color: #0f3f2c !important;
 }
 
 .button-delete-roles {
@@ -311,7 +311,7 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
@@ -367,17 +367,17 @@ const deleteAllChannels = async () => {
 
 /* SCIPE page specific polish */
 .scipe-card {
-  /* Use fully opaque white to maximize contrast against global background */
-  background: #ffffff !important;
+  /* Use UTD orange background */
+  background: var(--color-utd-orange) !important;
   border-radius: 1rem !important;
   box-shadow: 0 8px 20px rgba(16,24,40,0.08) !important;
   border: 1px solid rgba(16,24,40,0.06) !important;
 }
 
-/* Force readable, dark text inside the card (overrides global beige text) */
+/* Force white text inside the card for contrast on orange background */
 .scipe-card,
 .scipe-card * {
-  color: #0f172a !important; /* dark slate */
+  color: #ffffff !important; /* white text */
 }
 
 .subtitle {

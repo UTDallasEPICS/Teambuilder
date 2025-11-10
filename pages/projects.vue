@@ -46,7 +46,7 @@
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
               template(#value="slotProps") {{ formatTypesFilter(slotProps.value) }}
 
-  .cardRows.relative.teal-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
+  .cardRows.relative.orange-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
     .flex.flex-row.justify-between.gap-10
       .cardTitle(v-if="!isEditing") {{ selectedProject?.name }}
@@ -84,7 +84,7 @@
         input.editBox(v-else v-model="editedProject.repoURL")
 
     .flex-grow.flex.justify-end.items-end
-      ClickableButton(v-if="!isEditing" title="Edit Project" @click="handleEdit")
+      ClickableButton(v-if="!isEditing" title="Edit Project" type="success" @click="handleEdit")
       ClickableButton(v-if="isEditing" title="Save Project" type="success" @click="handleSave")
 </template>
 
@@ -198,6 +198,7 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
   font-size: 2.25rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  margin: 0 auto;
   display: inline-block;
   background: var(--color-utd-orange);
   color: #ffffff;
