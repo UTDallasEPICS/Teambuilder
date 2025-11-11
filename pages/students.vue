@@ -1,23 +1,22 @@
 <template lang="pug">
   .overlay(v-if="selectedStudent" @click="closeModal")
-  .centered-row.shaded-card.p-10.m-10.h-full
-    .centered-col.relative.h-full.gap-4
+  .centered-row.shaded-card.p-10.h-full(style="margin: 2rem 0.5rem; max-width: none;")
+    .centered-col.relative.h-full.gap-4(style="max-width: none;")
       .flex.absolute.top-0.left-0.gap-2
         FileUploadButton(title="Upload Students" @dataParsed="handleParsed") <!--parsing happens HERE thru FileUploadButton.vue-->
         //-changed from fileSelected to dataParsed - successful change, handleParsed now runs
         HelpIcon(:info="helpInfo")
 
-      .text-7xl.embossed.drop-shadow-md Students
+      .project-title Students
       .text-2xl.mt-2 Student count: {{ studentCount }}
-      
-      DataTable.teal-card.px-10.mt-5(
-        :value="studentsWithFullName" 
+
+      DataTable.beige-card.overflow-hidden(
+        :value="studentsWithFullName"
         v-model:filters="filters"
-        scrollable 
+        scrollable
         scrollHeight="80vh"
-        class="h-[80vh]"
-        tableStyle="min-width: 50rem;"
-        dataKey="id" 
+        class="h-[80vh] w-full mt-2 md:mt-5"
+        dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedStudent"
@@ -43,15 +42,17 @@
               // selected value
               template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
 
-        Column(field="status" header="Status" :showFilterMenu="false")
+        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem")
           template(#body="{ data }") 
-            .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
+            .flex.justify-center
+              .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
           template(#filter="{ filterModel, filterCallback }")
-            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
-              template(#option="slotProps")
-                .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
+            .flex.justify-center
+              MultiSelect.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
+                template(#option="slotProps")
+                  .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
 
-  .cardRows.relative.teal-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
+  .cardRows.relative.orange-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
 
     div
@@ -100,19 +101,19 @@
           option(v-for="major in majors" :key="major" :value="major") {{ major }}
 
     .flex-grow.flex.justify-end.items-end
-      ClickableButton(v-if="!isEditing" title="Edit Project" @click="handleEdit")
+      ClickableButton(v-if="!isEditing" title="Edit Project" type="success" @click="handleEdit")
       ClickableButton(v-if="isEditing" title="Save Project" type="success" @click="handleSave")
 
 </template>
 
 <script lang="ts" setup>
 //import { PrismaClient } from "@prisma/client" //added
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import type { Student, Year } from '@prisma/client';
-import { Row } from '#components';
+import { useHead } from '@vueuse/head';
 
 useHead({ title: 'Students' });
 
@@ -168,6 +169,11 @@ const filters = ref({
   year: { value: [], matchMode: FilterMatchMode.IN },
   status: { value: [], matchMode: FilterMatchMode.IN },
 });
+
+const capitalizeFirst = (s: string | undefined | null) => {
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
 
 const formatYearsFilter = (years: Year[] | undefined) => {
   if (!years || years.length === 0) return 'Any';
@@ -257,4 +263,32 @@ const helpInfo = `Upload student information here.`
 select {
   @apply bg-beige text-teal rounded-md p-1
 }
+
+/* Make DataTable wrapper scrollable horizontally */
+:deep(.p-datatable-wrapper) { 
+  overflow-x: auto !important; 
+}
+
+/* Set minimum width for DataTable on larger screens */
+@media (min-width: 768px) {
+  :deep(.p-datatable-scrollable .p-datatable-table) { 
+    min-width: 50rem !important; 
+  }
+}
+
+@media (max-width: 767px) {
+  :deep(.p-datatable-scrollable .p-datatable-table) { 
+    min-width: 20rem !important; 
+  }
+}
+
+/* Allow text wrapping in table cells */
+:deep(.p-datatable td) {
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* colors for pills! */
+.pill.bg-green { background: #77cf77 !important; color: #ffffff !important; }
+.pill.bg-red { background: #eb6464 !important; color: #ffffff !important; }
 </style>

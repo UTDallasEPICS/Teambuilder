@@ -2,14 +2,17 @@
   <div class="min-h-screen bg-gray-100 py-8 px-4 scipe-page">
     <div class="max-w-4xl mx-auto">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2" style="color: #111827 !important;">Discord Bot Management</h1>
-        <p style="color: #4B5563 !important;">Control and monitor the SCIPE Discord bot from here</p>
+        <h1 class="text-4xl font-extrabold mb-2 tracking-tight">Discord Bot Management</h1>
+        <p class="subtitle">Control and monitor the SCIPE Discord bot from here</p>
       </div>
 
       <SCIPEControl />
 
-      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold mb-4" style="color: #1F2937 !important;">Update Discord Channels</h2>
+      <div class="mt-8 scipe-card p-6">
+        <div class="section-title">
+          <span class="section-accent" aria-hidden></span>
+          <h2 class="section-heading">Update Discord Channels</h2>
+        </div>
         <div class="flex gap-3 flex-wrap">
           <button
             @click="updateChannels"
@@ -28,7 +31,7 @@
             <span v-else>Delete All Project Channels</span>
           </button>
         </div>
-        <p class="text-sm mt-2" style="color: #4B5563 !important;">
+        <p class="text-sm mt-2" style="color: #FFFFFF !important;">
           Create or delete Discord categories and channels for all projects in the database
         </p>
         <div v-if="message" class="mt-4 p-4 rounded-lg result-message" :class="{
@@ -59,7 +62,10 @@
           </div>
         </div>
 
-        <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Bot Diagnostics</h2>
+        <div class="section-title mt-8">
+          <span class="section-accent" aria-hidden></span>
+          <h2 class="section-heading">Bot Diagnostics</h2>
+        </div>
         <button
           @click="runDiagnostics"
           :disabled="diagnosticsLoading"
@@ -72,7 +78,10 @@
           <pre class="whitespace-pre-wrap text-gray-900">{{ diagnosticsResult }}</pre>
         </div>
 
-        <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4">Manage Project Roles</h2>
+        <div class="section-title mt-8">
+          <span class="section-accent" aria-hidden></span>
+          <h2 class="section-heading">Manage Project Roles</h2>
+        </div>
         <button
           @click="deleteAllRoles"
           :disabled="loading || deleteLoading"
@@ -233,13 +242,13 @@ const deleteAllChannels = async () => {
   color: #1F2937 !important;
 }
 
-.scipe-page p {
+.scipe-page p.subtitle {
   color: #4B5563 !important;
 }
 
 /* Button Styles with !important to override global styles */
 .button-create {
-  background-color: #4F46E5 !important;
+  background-color: #154734 !important;
   color: white !important;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -248,16 +257,16 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
 .button-create:hover:not(:disabled) {
-  background-color: #4338CA !important;
+  background-color: #0f3f2c !important;
 }
 
 .button-delete {
-  background-color: #EA580C !important;
+  background-color: #DC2626 !important;
   color: white !important;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -266,7 +275,7 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
@@ -275,7 +284,7 @@ const deleteAllChannels = async () => {
 }
 
 .button-diagnostics {
-  background-color: #2563EB !important;
+  background-color: #154734 !important;
   color: white !important;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -284,12 +293,12 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
 .button-diagnostics:hover:not(:disabled) {
-  background-color: #1D4ED8 !important;
+  background-color: #0f3f2c !important;
 }
 
 .button-delete-roles {
@@ -302,7 +311,7 @@ const deleteAllChannels = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  border: 2px solid black !important;
   cursor: pointer;
 }
 
@@ -354,5 +363,59 @@ const deleteAllChannels = async () => {
   font-size: 1rem;
   color: #7f1d1d !important;
   font-weight: bold;
+}
+
+/* SCIPE page specific polish */
+.scipe-card {
+  /* Use UTD orange background */
+  background: var(--color-utd-orange) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 8px 20px rgba(16,24,40,0.08) !important;
+  border: 1px solid rgba(16,24,40,0.06) !important;
+}
+
+/* Force white text inside the card for contrast on orange background */
+.scipe-card,
+.scipe-card * {
+  color: #ffffff !important; /* white text */
+}
+
+.subtitle {
+  color: #4B5563 !important;
+  font-size: 1.05rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-accent {
+  width: 0.5rem;
+  height: 2rem;
+  background: linear-gradient(180deg,#06b6d4,#4f46e5);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 6px rgba(79,70,229,0.12);
+}
+
+.section-heading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827 !important;
+}
+
+/* Make primary action buttons a consistent height and add subtle elevation */
+.button-create, .button-delete, .button-diagnostics, .button-delete-roles {
+  min-height: 2.4rem;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  box-shadow: 0 6px 14px rgba(15,23,42,0.06);
+}
+
+.result-message {
+  font-weight: 600;
+  font-size: 1rem;
 }
 </style>

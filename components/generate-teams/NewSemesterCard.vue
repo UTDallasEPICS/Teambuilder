@@ -1,7 +1,7 @@
 <!-- TODO: add ways to delete semesters? -->
 
 <template lang="pug">
-  .text-3xl.embossed Step 1: Start New Semester
+  .text-3xl.font-semibold.mb-4 Step 1: Start New Semester
   .centered-row.gap-5
     Dropdown(
       v-model="selectedSeason"
@@ -17,19 +17,28 @@
       v-model="selectedYear"
       placeholder="Enter Year"
     )
-  ClickableButton.mt-3(title="Create Semester" @click="handleCreateSemester")
+  ClickableButton.mt-3(title="Create Semester" type="success" @click="handleCreateSemester")
 </template>
 
 <script setup lang="ts">
 import type { Season, Semester } from '@prisma/client';
+import { ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
 
 const emit = defineEmits<{
   (e: 'fetchSemesters'): void
 }>()
+const toast = useToast();
 
-const { successToast, errorToast } = usePrimeVueToast();
+const successToast = (summary: string, detail = '') => {
+  toast.add({ severity: 'success', summary, detail, life: 3000 });
+};
 
-const seasons = ref([
+const errorToast = (summary: string, detail = '') => {
+  toast.add({ severity: 'error', summary, detail, life: 5000 });
+};
+
+const seasons = ref<Season[]>([
   'SPRING',
   'SUMMER',
   'FALL'

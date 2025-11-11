@@ -8,12 +8,12 @@
 
       .project-title Projects
 
-      DataTable.teal-card(
+      DataTable.beige-card.overflow-hidden(
         :value="projects"
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] px-4 md:px-10 mt-2 md:mt-5"
+        class="h-[80vh] w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
@@ -31,7 +31,8 @@
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
         Column(field="status" header="Status" :showFilterMenu="false")
           template(#body="{ data }")
-            .pill(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
+            .flex.justify-center
+              .pill(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="0")
               template(#option="slotProps")
@@ -45,7 +46,7 @@
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
               template(#value="slotProps") {{ formatTypesFilter(slotProps.value) }}
 
-  .cardRows.relative.teal-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
+  .cardRows.relative.orange-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
     .flex.flex-row.justify-between.gap-10
       .cardTitle(v-if="!isEditing") {{ selectedProject?.name }}
@@ -83,7 +84,7 @@
         input.editBox(v-else v-model="editedProject.repoURL")
 
     .flex-grow.flex.justify-end.items-end
-      ClickableButton(v-if="!isEditing" title="Edit Project" @click="handleEdit")
+      ClickableButton(v-if="!isEditing" title="Edit Project" type="success" @click="handleEdit")
       ClickableButton(v-if="isEditing" title="Save Project" type="success" @click="handleSave")
 </template>
 
@@ -98,6 +99,7 @@ import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index
 import { stringifySemesters } from '~/server/services/semesterService';
 import { faker } from '@faker-js/faker';
 import {type ProjectStatus} from '@prisma/client';
+import { useHead } from '@vueuse/head';
 
 useHead({ title: 'Projects' });
 
@@ -192,6 +194,39 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
   word-break: break-word;
 }
 
-.project-title { font-size: 2.25rem; font-weight:600; margin-bottom: 0.5rem; }
-.pill { display:inline-block; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.875rem; background:rgba(0,0,0,0.06); }
+.project-title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin: 0 auto;
+  display: inline-block;
+  background: var(--color-utd-orange);
+  color: #ffffff;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+}
+.pill { display:inline-flex; align-items:center; justify-content:center; padding:0.25rem 0.5rem; border-radius:9999px; font-size:0.875rem; background:rgba(0,0,0,0.06); min-width:5.5rem; white-space:nowrap; line-height:1; }
+
+/* colors for pills! */
+.pill.bg-green { background: var(--color-pill-new) !important; color: #ffffff !important; }
+.pill.bg-orange { background: var(--color-pill-returning) !important; color: #ffffff !important; }
+.pill.bg-lightblue { background: var(--color-pill-complete) !important; color: #ffffff !important; }
+.pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
+.pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
+
+/* make the whole shaded card area use the UTD orange and fill surrounding whitespace */
+.centered-row.shaded-card {
+  background: var(--color-utd-orange) !important;
+  padding: 2rem !important; /* widen the orange frame */
+  border-radius: 0.5rem;
+}
+
+/* keep the primevue DataTable itself white but make the inner area around it orange as well */
+.centered-row.shaded-card > .centered-col {
+  background: var(--color-utd-orange) !important;
+  border-radius: 0.75rem;
+  padding: 1.25rem !important; /* inner inset padding */
+  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  width: 100%;
+}
 </style>
