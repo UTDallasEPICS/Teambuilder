@@ -1,7 +1,7 @@
 <template lang="pug">
   .overlay(v-if="selectedStudent" @click="closeModal")
-  .centered-row.shaded-card.p-10.m-10.h-full
-    .centered-col.relative.h-full.gap-4
+  .centered-row.shaded-card.p-10.h-full(style="margin: 2rem 0.5rem; max-width: none;")
+    .centered-col.relative.h-full.gap-4(style="max-width: none;")
       .flex.absolute.top-0.left-0.gap-2
         FileUploadButton(title="Upload Students" @dataParsed="handleParsed") <!--parsing happens HERE thru FileUploadButton.vue-->
         //-changed from fileSelected to dataParsed - successful change, handleParsed now runs
