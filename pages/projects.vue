@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import {ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import type { ProjectType } from '@prisma/client';
 import { isEqual } from 'lodash';
@@ -98,10 +98,11 @@ import { stringifySemesters } from '~/server/services/semesterService';
 
 useHead({ title: 'Projects' });
 
-const projects = ref<ProjectWithSemestersAndPartner[]>([]);
-onMounted(async () => {
-  projects.value = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
+//useFetch instead of onMounted + $fetch + ref
+const { data: projects } = await useFetch<ProjectWithSemestersAndPartner[]>('api/projects', {
+  default: () => [] as ProjectWithSemestersAndPartner[]
 });
+
 
 const selectedProject = ref<ProjectWithSemestersAndPartner | null>(null);
 const selectedProjectSemesters = computed(() => stringifySemesters(selectedProject.value?.semesters));
@@ -138,6 +139,7 @@ const handleEdit = () => {
 const handleSave = async () => {
   if (selectedProject.value && editedProject.value && !isEqual(selectedProject.value, editedProject.value)) {
     const id = editedProject.value.id;
+    //event-based, stays $fetch
     await $fetch(`api/projects/${id}`, {
       method: 'PUT',
       body: { ...editedProject.value, semesters: undefined, partnerName: undefined }

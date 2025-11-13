@@ -41,46 +41,53 @@
   </template>
   
   <script lang="ts" setup>
-  import { ref, computed } from 'vue';
+  import { ref} from 'vue';
   import { FilterMatchMode } from '@primevue/core/api';
   import type { Partner } from '@prisma/client';
   
   useHead({ title: 'Partners' });
   //usefetch instead of onmounted $fetch
-  const { data: partners } = await useFetch<Partner[]>('/api/partners');
-  const partnerCount = computed(() => partners.value?.length ?? 0);
-  const handleParsed = (uploadedPartners: Partner[]) => {
-    if (!partners.value) {
-      partners.value = [];
-    }
-    partners.value.push(...uploadedPartners);
-  };
+  const { data: partners } = await useFetch<Partner[]>('api/partners', {
+    default: () => [] as Partner[]
+  });
+  const partnerCount = ref(0);
+  partnerCount.value = partners.value.length;
   
+  const handleParsed = (uploadedPartners: Partner[]) =>
+  {
+    partners.value.push(...uploadedPartners);
+    partnerCount.value = partners.value.length;
+  };
   const selectedPartner = ref<Partner | null>(null);
   const editedPartner = ref<Partner | null>(null);
   const isEditing = ref(false);
-  
+
   const filters = ref({
     name: { value: null, matchMode: FilterMatchMode.CONTAINS },
     contactName: { value: null, matchMode: FilterMatchMode.CONTAINS },
     contactEmail: { value: null, matchMode: FilterMatchMode.CONTAINS },
     projectName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
-  
+
   const closeModal = () => {
     selectedPartner.value = null;
     isEditing.value = false;
   };
-  
+
   const handleEdit = () => {
     if (!selectedPartner.value) return;
     isEditing.value = true;
     editedPartner.value = { ...selectedPartner.value };
   };
-  
+
   const handleSave = async () => {
-    if (selectedPartner.value && editedPartner.value && JSON.stringify(editedPartner.value) !== JSON.stringify(selectedPartner.value)) {
+    if (
+      selectedPartner.value &&
+      editedPartner.value &&
+      JSON.stringify(editedPartner.value) !== JSON.stringify(selectedPartner.value)
+    ) {
       const id = editedPartner.value.id;
+      //event-based, stays $fetch
       await $fetch(`api/partners/${id}`, {
         method: 'PUT',
         body: editedPartner.value
@@ -91,10 +98,11 @@
     }
     isEditing.value = false;
   };
-  
-  const helpInfo = `Upload partner contact and organization information here.`;
-  </script>
-  
+
+    
+    const helpInfo = `Upload partner contact and organization information here.`;
+    </script>
+    
   <style scoped>
   .overlay {
     position: fixed;
@@ -103,5 +111,4 @@
     background: rgba(0, 0, 0, 0.5);
     z-index: 98;
   }
-  </style>
-  
+</style>
