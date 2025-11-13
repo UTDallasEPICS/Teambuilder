@@ -41,23 +41,19 @@
   </template>
   
   <script lang="ts" setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, computed } from 'vue';
   import { FilterMatchMode } from '@primevue/core/api';
   import type { Partner } from '@prisma/client';
   
   useHead({ title: 'Partners' });
-  
-  const partners = ref<Partner[]>([]);
-  const partnerCount = ref(0);
-  
-  onMounted(async () => {
-    partners.value = await $fetch<Partner[]>("api/partners");
-    partnerCount.value = partners.value.length;
-  });
-  
+  //usefetch instead of onmounted $fetch
+  const { data: partners } = await useFetch<Partner[]>('/api/partners');
+  const partnerCount = computed(() => partners.value?.length ?? 0);
   const handleParsed = (uploadedPartners: Partner[]) => {
+    if (!partners.value) {
+      partners.value = [];
+    }
     partners.value.push(...uploadedPartners);
-    partnerCount.value = partners.value.length;
   };
   
   const selectedPartner = ref<Partner | null>(null);

@@ -5,7 +5,7 @@
 
       <!---->
       
-      <!-- login(gpt)  -->
+      <!-- login  -->
        <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
           <label class="block text-black mb-1">Email</label>
@@ -19,7 +19,7 @@
           />
         </div>
 
-      <!-- password(gpt)  -->
+      <!-- password  -->
         <div>
           <label class="block text-black mb-1">Password</label>
           <input
