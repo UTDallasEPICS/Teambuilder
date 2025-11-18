@@ -206,6 +206,7 @@ const handleEdit = () => {
 const handleSave = async () => {
   if (selectedStudent.value && editedStudent.value && !isEqual(selectedStudent.value, editedStudent.value)) {
     const id = editedStudent.value.id;
+    //keep as $fetch, event-based
     await $fetch(`api/students/${id}`, {
       method: 'PUT',
       body: {
