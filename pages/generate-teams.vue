@@ -1,3 +1,7 @@
+You said:
+similarly to how you modified my $fetch to usefetch code in my partners.vue, change it for the following generate-teams.vue page. check this code and see if any of the $fetch statments need to be converted into useFetch. If you need more code in order to make a proper judgement, please let me know instead of guessing. make it functional and working with less changes from main if possible. 
+
+
 <template lang="pug">
   .centered-col.shaded-card.mt-10.p-10.gap-10
     .stepCard.gap-5
@@ -12,6 +16,7 @@
 import type { Semester } from '@prisma/client';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import type { StudentWithChoices } from '~/server/api/students/index.get';
+import { onMounted } from 'vue';
 
 useHead({ title: 'Generate Teams' });
 
