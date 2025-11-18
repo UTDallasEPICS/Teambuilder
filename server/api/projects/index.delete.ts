@@ -7,15 +7,12 @@ export default defineEventHandler(async (event) => {
   // Delete all teams that reference projects
   await event.context.client.team.deleteMany({});
   
-  // Delete all projects that reference partners
-  await event.context.client.project.deleteMany({});
-  
-  // Now delete all partners
-  const result = await event.context.client.partner.deleteMany({});
+  // Now delete all projects
+  const result = await event.context.client.project.deleteMany({});
   
   return {
     success: true,
     count: result.count,
-    message: `Deleted ${result.count} partners`
+    message: `Deleted ${result.count} projects`
   };
 });

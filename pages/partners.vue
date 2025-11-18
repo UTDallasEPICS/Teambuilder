@@ -1,12 +1,13 @@
 <template lang="pug">
   .overlay(v-if="selectedPartner" @click="closeModal")
-  .centered-row.shaded-card.p-10.m-10.h-full
+  .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.absolute.top-0.left-0.gap-2
         FileUploadButton(title="Upload Partners" @dataParsed="handleParsed")
+        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
-      .project-title.embossed.drop-shadow-md Partners
+      .mt-20.project-title.embossed.drop-shadow-md Partners
       .text-2xl.mt-2 Partner count: {{ partnerCount }}
       
       DataTable.beige-card.overflow-hidden.px-10.mt-5(
@@ -86,9 +87,69 @@
     partnerCount.value = partners.value.length;
   });
   
-  const handleParsed = (uploadedPartners: Partner[]) => {
-    partners.value.push(...uploadedPartners);
-    partnerCount.value = partners.value.length;
+  const handleParsed = async (uploadedPartners: Partner[]) => {
+    // Delete all existing partners first, then save new ones to database
+    try {
+      // Clear existing partners from database
+      await $fetch('/api/partners', {
+        method: 'DELETE'
+      });
+      
+      // Save new partners to database
+      await $fetch('/api/partners', {
+        method: 'POST',
+        body: uploadedPartners
+      });
+      
+      // Refresh from database to get the saved data
+      partners.value = await $fetch<Partner[]>('/api/partners');
+      partnerCount.value = partners.value.length;
+      console.log('Partners saved to database successfully!');
+    } catch (error) {
+      console.error('Error saving partners to database:', error);
+    }
+  };
+  
+  const resetDatabase = async () => {
+    const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+    if (confirmAvailable) {
+      if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+        return;
+      }
+    }
+    
+    try {
+      await $fetch('/api/database/reset', {
+        method: 'POST'
+      });
+      
+    // Refresh partners from database
+          partners.value = await $fetch<Partner[]>('/api/partners');
+          partnerCount.value = partners.value.length;
+          console.log('Database reset to default data successfully!');
+          (globalThis as any).alert('Database has been reset to default generated data.');
+        } catch (error) {
+      console.error('Error resetting database:', error);
+      (globalThis as any).alert('Failed to reset database. Please check the console for details.');
+    }
+  };
+  
+  const handleClearAll = async () => {
+    if (!(globalThis as any).confirm('Are you sure you want to delete all partners? This cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await $fetch('/api/partners', {
+        method: 'DELETE'
+      });
+      
+      partners.value = [];
+      partnerCount.value = 0;
+      console.log('All partners deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting partners:', error);
+    }
   };
   
   const selectedPartner = ref<Partner | null>(null);
