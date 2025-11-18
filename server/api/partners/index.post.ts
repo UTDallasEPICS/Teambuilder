@@ -1,6 +1,23 @@
-// TODO: Test the Post/Create function
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+  
+  // Handle array of partners (bulk upload)
+  if (Array.isArray(body)) {
+    const createdPartners = await Promise.all(
+      body.map((partner: any) =>
+        event.context.client.partner.create({
+          data: {
+            name: partner.name,
+            contactName: partner.contactName,
+            contactEmail: partner.contactEmail
+          }
+        })
+      )
+    );
+    return createdPartners;
+  }
+
+  // Handle single partner (original behavior)
   const { name, contactName, contactEmail, projectIds } = body;
 
   const newPartner = await event.context.client.partner.create({

@@ -141,7 +141,7 @@ body {
   }
 
   .blue-card {
-    @apply rounded-lg bg-lightblue shadow-lg text-teal;
+    @apply rounded-lg bg-white shadow-lg text-black;
   }
 
   .hover-effect {

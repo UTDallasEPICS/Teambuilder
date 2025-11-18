@@ -1,12 +1,14 @@
 <template lang="pug">
   .overlay(v-if="selectedProject" @click="closeModal")
-  .centered-row.shaded-card.p-10.m-10.h-full
+  .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.absolute.top-0.left-0.gap-2
         FileUploadButton(title="Upload Projects" @dataParsed="handleParsed")
+        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
-      .project-title Projects
+      .mt-20.project-title Projects
+      .text-2xl.mt-2 Project count: {{ projects.length }}
 
       DataTable.beige-card.overflow-hidden(
         :value="projects"
@@ -154,7 +156,87 @@ const handleSave = async () => {
   isEditing.value = false;
 };
 
-const handleParsed = (parsed: any) => { console.log(parsed); };
+const handleParsed = async (parsed: any) => { 
+  console.log('Parsed CSV:', parsed);
+  
+  // Transform CSV data to match Project structure
+  const formattedProjects = parsed.map((proj: any) => {
+    return {
+      name: proj.name || '',
+      description: proj.description || '',
+      type: proj.type?.toUpperCase() || 'SOFTWARE',
+      status: proj.status?.toUpperCase() || 'NEW',
+      repoURL: proj.repoURL || '',
+      partnerName: proj.partnerName || ''
+    };
+  });
+  
+  // Delete all existing projects first, then save new ones to database
+  try {
+    // Clear existing projects from database
+    await $fetch('/api/projects', {
+      method: 'DELETE'
+    });
+    
+    // Save new projects to database
+    await $fetch('/api/projects', {
+      method: 'POST',
+      body: formattedProjects
+    });
+    
+    // Refresh from database to get the saved data
+    projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+    console.log('Projects saved to database successfully!');
+    console.log('Projects table updated! Total projects:', projects.value.length);
+  } catch (error) {
+    console.error('Error saving projects to database:', error);
+  }
+};
+
+const resetDatabase = async () => {
+  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+  if (confirmAvailable) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+      return;
+    }
+  }
+  
+  try {
+    await $fetch('/api/database/reset', {
+      method: 'POST'
+    });
+    
+    // Refresh projects from database
+    projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+    console.log('Database reset to default data successfully!');
+    if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
+      (globalThis as any).alert('Database has been reset to default generated data.');
+    }
+  } catch (error) {
+    console.error('Error resetting database:', error);
+    // Show alert only if running in an environment that provides it (browser)
+    if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
+      (globalThis as any).alert('Failed to reset database. Please check the console for details.');
+    }
+  }
+};
+
+const handleClearAll = async () => {
+  if (!(globalThis as any).confirm('Are you sure you want to delete all projects? This cannot be undone.')) {
+    return;
+  }
+  
+  try {
+    await $fetch('/api/projects', {
+      method: 'DELETE'
+    });
+    
+    projects.value = [];
+    console.log('All projects deleted successfully!');
+  } catch (error) {
+    console.error('Error deleting projects:', error);
+  }
+};
 
 const statusBgColor = (status: string) => ({
   'bg-green': status === 'NEW',

@@ -6,7 +6,7 @@ button.edge.rounded-xl.cursor-pointer.text-beige(:class="edgeClass")
 <script setup lang="ts">
 const props = defineProps<{ 
   title: string
-  type?: 'success' | 'warning';
+  type?: 'success' | 'warning' | 'danger';
 }>();
 
 const type = props.type || 'default';
@@ -41,6 +41,13 @@ const frontClass = type + 'Front';
 .successFront {
   background: #154734 !important; /* UTD green (ensure exact color) */
   color: #ffffff !important; /* ensure white text despite inherited .text-beige */
+}
+.dangerEdge {
+  background: #991B1B !important; /* darker red edge */
+}
+.dangerFront {
+  background: #DC2626 !important; /* red for delete/danger actions */
+  color: #ffffff !important; /* white text */
 }
 .edge:active .front {
   transform: translateY(-2px);

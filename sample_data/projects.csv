@@ -1,0 +1,34 @@
+name,description,type,status,repoURL,partnerName
+Smart Home Automation,Develop IoT system for home automation with mobile app,BOTH,NEW,https://github.com/utdallas/smart-home,Texas Instruments
+Insurance Analytics Dashboard,Build data analytics platform for claims processing,SOFTWARE,RETURNING,https://github.com/utdallas/insurance-analytics,Texas Instruments
+5G Network Optimizer,Optimize network performance using ML algorithms,SOFTWARE,WITHDRAWN,https://github.com/utdallas/5g-optimizer,AT&T
+Radar Signal Processing,Real-time radar signal processing system,BOTH,RETURNING,https://github.com/utdallas/radar-processing,Raytheon
+Cloud Infrastructure Manager,Automated cloud resource management tool,SOFTWARE,COMPLETE,https://github.com/utdallas/cloud-manager,Dell Technologies
+Flight Operations Dashboard,Real-time flight tracking and operations platform,SOFTWARE,NEW,https://github.com/utdallas/flight-ops,American Airlines
+Financial Risk Analysis,Machine learning for financial risk assessment,SOFTWARE,RETURNING,https://github.com/utdallas/risk-analysis,JPMorgan Chase
+Database Performance Monitor,Tool for monitoring and optimizing database performance,SOFTWARE,NEW,https://github.com/utdallas/db-monitor,Oracle
+Satellite Communication System,Ground station control software for satellites,BOTH,HOLD,https://github.com/utdallas/sat-comm,Lockheed Martin
+Mobile Banking App,Next-gen mobile banking application,SOFTWARE,RETURNING,https://github.com/utdallas/mobile-banking,Capital One
+AI Code Assistant,AI-powered code completion and review tool,SOFTWARE,NEW,https://github.com/utdallas/ai-code-assist,Microsoft
+Cloud Migration Platform,Automated cloud migration and optimization system,SOFTWARE,NEW,https://github.com/utdallas/cloud-migrate,Microsoft
+Enterprise Blockchain Solution,Blockchain platform for supply chain management,SOFTWARE,RETURNING,https://github.com/utdallas/blockchain-supply,Microsoft
+Computer Vision Quality Control,ML-based manufacturing quality inspection system,SOFTWARE,NEW,https://github.com/utdallas/cv-qc,Intel
+Network Security Monitor,Real-time network threat detection and response,SOFTWARE,RETURNING,https://github.com/utdallas/net-security,Cisco Systems
+Edge Computing Framework,Edge computing platform for IoT applications,BOTH,NEW,https://github.com/utdallas/edge-framework,Amazon Web Services
+Mobile Health Tracker,Wearable health monitoring application,BOTH,NEW,https://github.com/utdallas/health-tracker,Samsung Electronics
+Kubernetes Dashboard,Enhanced monitoring and management for K8s clusters,SOFTWARE,RETURNING,https://github.com/utdallas/k8s-dashboard,Google Cloud
+Privacy-First Analytics,User analytics platform with differential privacy,SOFTWARE,NEW,https://github.com/utdallas/privacy-analytics,Apple
+Social Media Moderation AI,AI-powered content moderation system,SOFTWARE,RETURNING,https://github.com/utdallas/content-mod,Meta
+GPU Optimization Library,Performance optimization tools for ML workloads,SOFTWARE,NEW,https://github.com/utdallas/gpu-optim,NVIDIA
+Customer Success Platform,AI-driven customer success and retention tool,SOFTWARE,NEW,https://github.com/utdallas/customer-success,Salesforce
+Creative Cloud Automation,Automated workflow tools for creative professionals,SOFTWARE,RETURNING,https://github.com/utdallas/creative-auto,Adobe Systems
+5G Chip Simulator,Hardware simulation for 5G chipset testing,BOTH,NEW,https://github.com/utdallas/5g-chip-sim,Qualcomm
+Fraud Detection System,Real-time payment fraud detection using ML,SOFTWARE,WITHDRAWN,https://github.com/utdallas/fraud-detect,PayPal
+Virtual Desktop Infrastructure,Cloud-based virtual desktop management,SOFTWARE,NEW,https://github.com/utdallas/vdi-platform,VMware
+Digital Transformation Suite,Enterprise digital transformation toolkit,SOFTWARE,NEW,https://github.com/utdallas/digital-transform,Accenture
+Audit Analytics Platform,Automated audit and compliance analysis tool,SOFTWARE,RETURNING,https://github.com/utdallas/audit-analytics,Deloitte
+Tax Optimization Engine,AI-powered tax planning and optimization,SOFTWARE,NEW,https://github.com/utdallas/tax-optim,Ernst & Young
+Risk Management Dashboard,Comprehensive enterprise risk assessment platform,SOFTWARE,RETURNING,https://github.com/utdallas/risk-mgmt,PwC
+Enterprise Data Warehouse,Scalable data warehouse for business intelligence,SOFTWARE,NEW,https://github.com/utdallas/data-warehouse,HP Enterprise
+Quantum Computing Simulator,Quantum algorithm simulation platform,SOFTWARE,NEW,https://github.com/utdallas/quantum-sim,IBM
+Mainframe Modernization,Legacy system migration to cloud architecture,SOFTWARE,RETURNING,https://github.com/utdallas/mainframe-mod,IBM

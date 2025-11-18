@@ -1,16 +1,17 @@
 <template lang="pug">
   .overlay(v-if="selectedStudent" @click="closeModal")
-  .centered-row.shaded-card.p-10.h-full(style="margin: 2rem 0.5rem; max-width: none;")
-    .centered-col.relative.h-full.gap-4(style="max-width: none;")
+  .centered-row.shaded-card.p-5.m-10.min-h-screen
+    .centered-col.relative.h-full.gap-4
       .flex.absolute.top-0.left-0.gap-2
         FileUploadButton(title="Upload Students" @dataParsed="handleParsed") <!--parsing happens HERE thru FileUploadButton.vue-->
         //-changed from fileSelected to dataParsed - successful change, handleParsed now runs
+        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
-      .project-title Students
+      .mt-20.project-title Students
       .text-2xl.mt-2 Student count: {{ studentCount }}
 
-      DataTable.beige-card.overflow-hidden(
+      DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="studentsWithFullName"
         v-model:filters="filters"
         scrollable
@@ -133,29 +134,118 @@ onMounted(async () => { //adds dummy data, students.value is what holds frontend
   studentCount.value = students.value.length; 
 });
 
-const handleParsed = (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
-  //Dummy data already generates stuff as separate fields (first name and last name separately) whereas we have to parse them
-    const formattedStudents = parsed.map((stu : any) =>{
-    const[lastName, firstName] = stu.name.split(', ');
-    return{  //maybe put in FileUploadButton instead, what stu returns for EACH element of students (what it does to each student)
-      netID : stu.id,
+const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
+  // Clear existing students and replace with uploaded data
+  students.value = [];
+  
+  const formattedStudents = parsed.map((stu : any) =>{
+    // Handle both CSV formats:
+    // 1. New format: netID, firstName, lastName (separate fields)
+    // 2. Old format: id, name (comma-separated "lastName, firstName")
+    let firstName, lastName, netID;
+    
+    if (stu.firstName && stu.lastName) {
+      // New CSV format with separate first/last names
+      firstName = stu.firstName;
+      lastName = stu.lastName;
+      netID = stu.netID;
+    } else if (stu.name) {
+      // Old CSV format with combined name
+      const[parsedLastName, parsedFirstName] = stu.name.split(', ');
+      firstName = parsedFirstName;
+      lastName = parsedLastName;
+      netID = stu.id;
+    }
+    
+    return{
+      netID : netID,
       firstName : firstName,
       lastName: lastName,
       email: null,
       github: null,
       discord: null,
       major: stu.major,
-      year: stu.seniority,
+      year: stu.year || stu.seniority, // Support both 'year' and 'seniority' fields
       class: stu.class,
-     // enrollment: null, // not sure what enrollment is
-      status: null
+      status: stu.status || null
     }
   });
-  students.value = formattedStudents;
-  studentCount.value = students.value.length; 
-  console.log(students.value); 
-  console.log('Table updated! :)');
+  
+  // Delete all existing students first, then save new ones to database
+  try {
+    // Clear existing students from database
+    await $fetch('/api/students', {
+      method: 'DELETE'
+    });
+    
+    // Save new students to database
+    await $fetch('/api/students', {
+      method: 'POST',
+      body: formattedStudents
+    });
+    
+    // Refresh from database to get the saved data
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length; 
+    console.log('Students saved to database successfully!');
+    console.log(students.value); 
+  } catch (error) {
+    console.error('Error saving students to database:', error);
+  }
 //database comes later, send it locally to tables to populate the website
+};
+
+const resetDatabase = async () => {
+  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+  if (confirmAvailable) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+      return;
+    }
+  }
+  
+  try {
+    await $fetch('/api/database/reset', {
+      method: 'POST'
+    });
+    
+    // Refresh students from database
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+    console.log('Database reset to default data successfully!');
+    if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
+      (globalThis as any).alert('Database has been reset to default generated data.');
+    } else {
+      console.log('Database has been reset to default generated data.');
+    }
+  } catch (error) {
+    console.error('Error resetting database:', error);
+    if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
+      (globalThis as any).alert('Failed to reset database. Please check the console for details.');
+    } else {
+      console.log('Failed to reset database. Please check the console for details.');
+    }
+  }
+};
+
+const handleClearAll = async () => {
+  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+  if (confirmAvailable) {
+    if (!(globalThis as any).confirm('Are you sure you want to delete all students? This cannot be undone.')) {
+      return;
+    }
+  }
+  
+  try {
+    await $fetch('/api/students', {
+      method: 'DELETE'
+    });
+    
+    students.value = [];
+    studentCount.value = 0;
+    console.log('All students deleted successfully!');
+  } catch (error) {
+    console.error('Error deleting students:', error);
+  }
 };
 
 const selectedStudent = ref<Student | null>(null);
