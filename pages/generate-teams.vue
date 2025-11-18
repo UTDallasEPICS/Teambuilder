@@ -19,7 +19,7 @@ useHead({ title: 'Generate Teams' });
 const semesters = ref<Semester[]>([]);
 const projects = ref<ProjectWithSemesters[]>([]);
 const students = ref<StudentWithChoices[]>([]);
-
+//keep
 onMounted(async () => {
   fetchSemesters();
   fetchProjects();
