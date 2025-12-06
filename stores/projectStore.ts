@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+/*import { defineStore } from 'pinia'
 import { Project } from '../types'
 import { createRandomProjects } from '../server/factories/project'
 
@@ -48,4 +48,4 @@ export const useProjectStore = defineStore('projectStore', {
       return state.projects.find(project => project.id === id);
     },
   }
-})
+})*/

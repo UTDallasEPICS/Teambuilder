@@ -75,7 +75,6 @@
     import { FilterMatchMode } from '@primevue/core/api';
     import type { Partner } from '@prisma/client';
     import { useHead } from '@vueuse/head';
-    import { XCircleIcon } from '@heroicons/vue/24/solid';
     
     useHead({ title: 'Partners' });
   
@@ -83,25 +82,22 @@
   const partnerCount = ref(0);
   
   onMounted(async () => {
-    partners.value = await $fetch<Partner[]>("api/partners");
+    const { data } = await useFetch<Partner[]>('/api/partners');
+    partners.value = data?.value ?? [];
     partnerCount.value = partners.value.length;
   });
   
   const handleParsed = async (uploadedPartners: Partner[]) => {
-    // Delete all existing partners first, then save new ones to database
     try {
-      // Clear existing partners from database
       await $fetch('/api/partners', {
         method: 'DELETE'
       });
       
-      // Save new partners to database
       await $fetch('/api/partners', {
         method: 'POST',
         body: uploadedPartners
       });
       
-      // Refresh from database to get the saved data
       partners.value = await $fetch<Partner[]>('/api/partners');
       partnerCount.value = partners.value.length;
       console.log('Partners saved to database successfully!');
@@ -123,7 +119,6 @@
         method: 'POST'
       });
       
-    // Refresh partners from database
           partners.value = await $fetch<Partner[]>('/api/partners');
           partnerCount.value = partners.value.length;
           console.log('Database reset to default data successfully!');
@@ -221,4 +216,3 @@
   .centered-row.shaded-card { background: var(--color-utd-orange) !important; padding: 2rem !important; border-radius: 0.5rem; }
   .centered-row.shaded-card > .centered-col { background: var(--color-utd-orange) !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: 0 8px 20px rgba(16,24,40,0.06); width: 100%; }
   </style>
-  

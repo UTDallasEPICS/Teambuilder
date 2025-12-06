@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+/*import { defineStore } from 'pinia'
 import { createRandomStudents } from '../server/factories/student'
 import type { Student } from '@prisma/client';
 
@@ -30,9 +30,9 @@ export const useStudentStore = defineStore('studentStore', {
         console.error('Could not find student')
       }
     },
-   /* parseFileData(){
+   parseFileData(){
       this.hasDummyData = false;
-    }*/
+    }
     createDummyData() { //replace this with a parsing method instead
       if (!this.hasDummyData) {
         this.setStudents(createRandomStudents(150))
@@ -54,4 +54,4 @@ export const useStudentStore = defineStore('studentStore', {
       return state.students.find(student => student.id === id);
     },
   }
-})
+})*/

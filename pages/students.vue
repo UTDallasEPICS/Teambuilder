@@ -109,17 +109,18 @@
 
 <script lang="ts" setup>
 //import { PrismaClient } from "@prisma/client" //added
-import { onMounted, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import type { Student, Year } from '@prisma/client';
-import { useHead } from '@vueuse/head';
+//import { useHead } from '@vueuse/head';
 
 useHead({ title: 'Students' });
 
 const students = ref<Student[]>([]);
-const studentCount = ref(0);
+const studentCount = computed(() => students.value.length);
+
 const studentsWithFullName = computed(() => (
   students.value.map((student) => {
     return {
@@ -129,12 +130,10 @@ const studentsWithFullName = computed(() => (
   })
 ))
 
-onMounted(async () => { //adds dummy data, students.value is what holds frontend table data
-  students.value = await $fetch<Student[]>("api/students"); //loads in random starting data
-  studentCount.value = students.value.length; 
-});
+const { data } = await useFetch<Student[]>('/api/students');
+students.value = data?.value ?? [];
 
-const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
+const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed thru FileUploadButtonVue. 
   // Clear existing students and replace with uploaded data
   students.value = [];
   

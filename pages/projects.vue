@@ -91,7 +91,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import type { ProjectType } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
@@ -101,14 +101,12 @@ import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index
 import { stringifySemesters } from '~/server/services/semesterService';
 import { faker } from '@faker-js/faker';
 import {type ProjectStatus} from '@prisma/client';
-import { useHead } from '@vueuse/head';
+//import { useHead } from '@vueuse/head';
 
 useHead({ title: 'Projects' });
 
-const projects = ref<ProjectWithSemestersAndPartner[]>([]);
-onMounted(async () => {
-  projects.value = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
-});
+const { data } = await useFetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+projects.value = data?.value ?? [];
 
 const selectedProject = ref<ProjectWithSemestersAndPartner | null>(null);
 const selectedProjectSemesters = computed(() => stringifySemesters(selectedProject.value?.semesters));

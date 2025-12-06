@@ -31,6 +31,15 @@ model Partner {
   @@map("partners")
 }
 
+model Login
+{
+    id            String        @id @default(uuid())
+    name          String
+    password      String
+    @@map("logins")
+
+}
+
 model Project {
   id            String        @id @default(uuid())
   name          String
