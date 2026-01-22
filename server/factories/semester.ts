@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+// import { faker } from '@faker-js/faker';
 import type { Season, Semester } from "@prisma/client";
 
 export const createSemesters = (): Semester[] => {

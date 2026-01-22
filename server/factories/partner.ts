@@ -1,4 +1,4 @@
-import { faker } from "@faker-js/faker";
+// import { faker } from "@faker-js/faker";
 import type { Partner } from "@prisma/client";
 
 export const createRandomPartner = (): Partner => {
