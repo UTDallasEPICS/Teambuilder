@@ -99,7 +99,7 @@ import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { stringifySemesters } from '~/server/services/semesterService';
-import { faker } from '@faker-js/faker';
+// import { faker } from '@faker-js/faker';
 import {type ProjectStatus} from '@prisma/client';
 import { useHead } from '@vueuse/head';
 
