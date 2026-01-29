@@ -2,12 +2,12 @@
   .overlay(v-if="selectedProject" @click="closeModal")
   .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.absolute.top-0.left-0.gap-2
+      .flex.flex-wrap.items-center.gap-2.self-start
         FileUploadButton(title="Upload Projects" @dataParsed="handleParsed")
         ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
-      .mt-20.project-title Projects
+      .mt-4.project-title.w-full.text-center Projects
       .text-2xl.mt-2 Project count: {{ projects.length }}
 
       DataTable.beige-card.overflow-hidden(

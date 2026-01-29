@@ -1,6 +1,6 @@
 <template lang="pug">
-button.edge.rounded-xl.cursor-pointer.text-beige(:class="edgeClass")
-  .front.px-6.py-3.text-2xl.rounded-xl.embossed(:class="frontClass") {{ title }}
+button.edge.rounded-xl.cursor-pointer.text-beige.max-w-full.shrink(:class="edgeClass")
+  .front.rounded-xl.embossed.whitespace-nowrap(:class="frontClass") {{ title }}
 </template>
     
 <script setup lang="ts">
@@ -22,6 +22,9 @@ const frontClass = type + 'Front';
   display: block;
   transform: translateY(-5px);
   text-shadow: 1px 1px 1px #0000008b;
+  font-size: clamp(0.75rem, 2.2vw, 1.25rem);
+  line-height: 1.2;
+  padding: clamp(0.25rem, 1vw, 0.75rem) clamp(0.5rem, 1.6vw, 1.5rem);
 }
 .defaultEdge {
   background: #c2795d;
