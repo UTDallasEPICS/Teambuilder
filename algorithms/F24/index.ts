@@ -24,6 +24,9 @@ export type Student = {
   choices: string[];        // List of preferred project choices (ordered by preference)
   choicesString: string;    // String representation of choices (Why is there a string list and a string array?)
   class: "2200" | "3200";   // Class level (lower or upper)
+  previousProject?: string; // Project they worked on previously (for returning 3200s)
+  skills?: string[];        // List of skills (e.g., ["Python", "Machine Learning", "Web Dev"])
+  gender?: "Male" | "Female" | "Non-binary" | "Prefer not to say";
 };
 
 // Defines the structure of a Project object, including its name and type.
@@ -31,6 +34,8 @@ export type Project = {
   id: string;
   name: string;
   type: "SW" | "HW" | "Both";
+  requiredSkills?: string[];  // Skills that apply to this project
+  preferredMajors?: string[]; // Preferred majors for this project
 };
 
 // Defines a mapping from project names to lists of students (team assignments).
