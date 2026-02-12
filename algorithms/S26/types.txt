@@ -1,0 +1,105 @@
+This file holds all data structures with information about
+UTD majors and configuration presets
+
+Student structure (I know a schema exists somewhere else, this
+is for the algorithm and so I can customize without messing with
+anything else)
+
+Student:
+    id: unique identifier (string)
+    name: full name (string)
+    major: one of UTD ECS majors or "Other"
+        Biomedical Engineering
+        Computer Engineering
+        Computer Science
+        Data Science
+        Electrical Engineering
+        Mechanical Engineering
+        Software Engineering
+        Systems Engineering
+        Other
+    classLevel:
+        2200
+        3200
+    seniority:
+        Freshman
+        Sophomore
+        Junior
+        Senior
+    preferences: array of selected project names, with rank
+    skills: array of top selected skills, ideally an array of these would be nice
+    gender: yes, it's limited, Andrea wanted it that way so it's like this for now
+        Male
+        Female
+    availableDay:
+        Wednesday
+        Thursday
+    returningToProject: optional project name, only 3200
+  
+    FUTURE FEATURE: 
+        Personal statements
+        projectFitScores: manually map statement to..?
+
+Project:
+    id: unique identifier (string)
+    name: project name (string)
+    projectType:
+        Software
+        Hardware
+        Both
+    meetingDay:
+        Wednesday Thursday
+    requiredSkills: array of skill strings
+    majorRequirements: how many students of each major wanted
+        Example: {"Computer Science": 2, "Electrical Engineering": 1}
+        Means: need at least 2 CS students and 1 EE student
+
+Sort_methods:
+    teamSizeMin: minimum team size (default: 4)
+    teamSizeIdeal: ideal max (default: 6)
+    teamSizeSoftMax: acceptable with light penalty (default: 7)
+    teamSizeHardMax: absolute maximum (default: 10)
+  
+    optimizationMode: 
+        student-first
+        project-first
+        balanced
+        fair-distribution
+  
+    weights: scoring weights object
+        upper3200FirstChoice: how much to value 3200 first choice
+        upper3200SecondChoice: 3200 second choice
+        upper3200ThirdChoice: 3200 third choice
+        lower2200FirstChoice: 2200 first choice
+        lower2200SecondChoice: 2200 second choice
+        lower2200ThirdChoice: 2200 third choice
+        lower2200FourthToSixth: penalty for 2200 getting 4th-6th
+        returningStudentBonus: bonus for returning to same project
+        skillMatchBonus: bonus per matching skill
+        majorMatchBonus: bonus for matching major type
+        genderIsolationPenalty: penalty for 1 person of a gender
+        teamSizeLightPenalty: penalty per student when team = 7
+        teamSizeHeavyPenalty: penalty per student when team >= 8
+        projectActivationBonus: reward for keeping project active
+
+Preset_configurations:
+    studentFirst: maximize student preference satisfaction
+    projectFirst: prioritize project skill/major needs
+    balanced: compromise between student and project
+    fairDistribution: minimize variance in outcomes
+
+Results: to be displayed
+    success: boolean
+    teamAssignments: map of {projectName -> array of Student objects}
+    deactivatedProjects: array of project names with 0 students
+    statistics: object with metrics
+        totalStudents assigned
+        preference satisfaction breakdown
+        average team size
+        constraint violations (if any)
+    score: optimization score achieved
+    solveTime: time taken in seconds
+    status: 
+        optimal
+        feasible
+        infeasible

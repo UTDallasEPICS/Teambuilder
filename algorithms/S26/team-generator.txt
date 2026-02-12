@@ -1,0 +1,279 @@
+This file contains my attempt at a CP-SAT algorithm with my take on
+the contraints and other components
+
+Python CP-SAT solver for team assignment optimization
+Uses Google OR-Tools to assign students to project teams
+
+Main functionality: generate_team_assignments(students, projects, config)
+
+Input:
+    students: array of student objects
+    projects: array of project objects
+    config: configuration object with weights and constraints
+
+Output:
+    result object with team assignments and statistics
+
+ALgorithm flow:
+
+1. Initialize model, get data
+    Create CP-SAT model
+    Create student ID -> student object map
+    Create project name -> project object map
+    Get list of all student IDs
+    Get list of all project names
+
+2. Decision variables
+    For each student S and project P:
+        assignment[S][P]: boolean variable
+            1 = student S assigned to project P
+            0 = student S NOT assigned to project P
+   
+    For each project P:
+        projectIsActive[P]: boolean variable
+            1 = project has students (active)
+            0 = project is deactivated (0 students)
+
+3. Hard constraints (edit later)
+
+    Constraint 3.1: Each student assigned to exactly ONE project
+        For each student S:
+            SUM over all projects P of assignment[S][P] == 1
+   
+    Constraint 3.2: Team sizes must be valid
+        For each project P:
+            teamSize[P] = SUM over all students S of assignment[S][P]
+     
+            If projectIsActive[P] == TRUE:
+                teamSize[P] >= config.teamSizeMin (at least 4 students)
+                teamSize[P] <= config.teamSizeHardMax (at most 10 students)
+     
+            If projectIsActive[P] == FALSE:
+                teamSize[P] == 0 (no students)
+   
+    Constraint 3.3: 3200 students can ONLY get top 3 choices
+        For each student S where S.classLevel == "3200":
+            For each project P:
+                If P is NOT in S.preferences[0:3]:
+                    assignment[S][P] == 0
+   
+    Constraint 3.4: All students can ONLY get top 6 choices
+        For each student S:
+            For each project P:
+                If P is NOT in S.preferences[0:6]:
+                    assignment[S][P] == 0
+   
+    Constraint 3.5: Day matching
+        Students only assigned to projects on their day
+        For each student S:
+            If S has an availableDay:
+                For each project P:
+                    If P has a meetingDay AND P.meetingDay != S.availableDay:
+                        assignment[S][P] == 0
+   
+    Constraint 3.6: Major requirements
+        Projects must get minimum number of each required major
+        For each project P:
+            If P has majorRequirements:
+                For each (major, count) in P.majorRequirements:
+                    studentsWithMajor[P][major] = SUM over students S where S.major == major of assignment[S][P]
+         
+                    If projectIsActive[P] == TRUE:
+                        studentsWithMajor[P][major] >= count
+
+4. Function goal: Maximize total score
+
+    Initialize: totalScore = 0
+   
+    4.1: Preference based satisfaction
+        For each student S:
+            For each project P:
+                If P is in S.preferences:
+                    preferenceRank = index of P in S.preferences (0-5)
+         
+                    Calculate base score based on rank and class level
+                    If S.classLevel == "3200":
+                        If preferenceRank == 0:
+                            baseScore = config.weights.upper3200FirstChoice
+                        Else If preferenceRank == 1:
+                            baseScore = config.weights.upper3200SecondChoice
+                        Else If preferenceRank == 2:
+                            baseScore = config.weights.upper3200ThirdChoice
+         
+                    Else If S.classLevel == "2200":
+                        If preferenceRank == 0:
+                            baseScore = config.weights.lower2200FirstChoice
+                        Else If preferenceRank == 1:
+                            baseScore = config.weights.lower2200SecondChoice
+                        Else If preferenceRank == 2:
+                            baseScore = config.weights.lower2200ThirdChoice
+                        Else If preferenceRank >= 3:
+                            baseScore = config.weights.lower2200FourthToSixth (negative penalty)
+         
+                    totalScore += baseScore * assignment[S][P]
+   
+    4.2: Bonus for returning students
+        For each student S where S has returningToProject:
+            previousProject = S.returningToProject
+            bonus = config.weights.returningStudentBonus
+            totalScore += bonus * assignment[S][previousProject]
+   
+    4.3: Bonus for matching skills
+        For each student S:
+            For each project P:
+                If P has requiredSkills AND S has skills:
+                    matchingSkills = intersection of P.requiredSkills and S.skills
+                    matchCount = count of matchingSkills
+                    bonus = matchCount * config.weights.skillMatchBonus
+                    totalScore += bonus * assignment[S][P]
+   
+    4.4: Bonuss for matched major
+        Define softwareMajors:
+            Computer Science
+            Software Engineering
+            Data Science
+        
+        Define hardwareMajors:
+            Electrical Engineering
+            Mechanical Engineering
+            Biomedical Engineering
+            Computer Engineering
+            Systems Engineering
+   
+        For each student S:
+            For each project P:
+                bonus = 0
+       
+                Direct match with preferred majors
+                If S.major is in P.preferredMajors:
+                    bonus = config.weights.majorMatchBonus
+       
+                Type-based matching
+                Else If P.projectType == "Both":
+                    bonus = config.weights.majorMatchBonus * 0.8
+                Else If P.projectType == "Software" AND S.major in softwareMajors:
+                    bonus = config.weights.majorMatchBonus * 0.6
+                Else If P.projectType == "Hardware" AND S.major in hardwareMajors:
+                    bonus = config.weights.majorMatchBonus * 0.6
+       
+                totalScore += bonus * assignment[S][P]
+   
+    4.5: Gender balance penalty (might remove or minimize)
+        For each project P:
+            Count males and females on this team
+            maleCount[P] = SUM over students S where S.gender == "Male" of assignment[S][P]
+            femaleCount[P] = SUM over students S where S.gender == "Female" of assignment[S][P]
+     
+            Create isolation indicators
+            maleIsIsolated[P] = boolean variable (true if maleCount == 1)
+            femaleIsIsolated[P] = boolean variable (true if femaleCount == 1)
+     
+            Apply penalty for isolation
+            penalty = config.weights.genderIsolationPenalty (negative value)
+            totalScore += penalty * maleIsIsolated[P]
+            totalScore += penalty * femaleIsIsolated[P]
+   
+    4.6: Team size penalty (still looking for good balance, should be over gender)
+        For teams larger than ideal
+        For each project P:
+            teamSize[P] = SUM over all students S of assignment[S][P]
+     
+            Count students beyond ideal size (6)
+            studentsOver6[P] = integer variable representing max(0, teamSize[P] - 6)
+            studentsOver7[P] = integer variable representing max(0, teamSize[P] - 7)
+     
+            Light penalty for 7th student
+            totalScore += config.weights.teamSizeLightPenalty * studentsOver6[P]
+     
+            Heavy penalty for 8th+ students
+            totalScore += config.weights.teamSizeHeavyPenalty * studentsOver7[P]
+   
+    4.7: PROJECT ACTIVATION BONUS
+        For each project P:
+            Reward for keeping projects active
+            bonus = config.weights.projectActivationBonus
+            totalScore += bonus * projectIsActive[P]
+   
+    4.8: SET OBJECTIVE
+        model.Maximize(totalScore)
+
+5. CP-SAT math stuff
+    Create solver
+    Set time limit (30 seconds)
+    Call solver.Solve(model)
+    Check status:
+        Optimal
+        Feasible
+        Infeasible
+
+6. Extract solution data for display
+    If solution found:
+        For each student S:
+            For each project P:
+                If assignment[S][P] == 1 in solution:
+                    Add S to teamAssignments[P]
+     
+        For each project P:
+            If projectIsActive[P] == 0 in solution:
+                Add P to deactivatedProjects
+     
+        Calculate statistics:
+            Count preference satisfaction (how many got 1st, 2nd, etc.)
+            Average team size
+            Gender balance metrics
+            Skill coverage metrics
+     
+        RETURN success result with assignments and stats
+   
+    Else:
+        RETURN failure result with error message
+
+Helper functions:
+
+calculate_statistics(teamAssignments, students, projects):
+    Initialize counters for each preference rank
+    Initialize counters for 3200 vs 2200 satisfaction
+  
+    For each (projectName, studentList) in teamAssignments:
+        For each student in studentList:
+            rank = index of projectName in student.preferences
+      
+            Increment appropriate counter based on rank
+      
+            If student.classLevel == "3200":
+                Increment 3200-specific counters
+            Else:
+                Increment 2200-specific counters
+  
+    Calculate percentages and averages
+    RETURN statistics object
+
+validate_constraints(teamAssignments, students, projects, config):
+    violations = empty list
+  
+    Check: all students assigned
+    If count of assigned students != total students:
+        Add "Not all students assigned" to violations
+  
+    Check: no student assigned twice
+    For each student S:
+        assignmentCount = 0
+        For each team:
+            If S is in team:
+                assignmentCount++
+        If assignmentCount > 1:
+            Add "Student assigned multiple times" to violations
+  
+    Check: team sizes valid
+    For each (projectName, team) in teamAssignments:
+        If team is not empty AND (team.size < config.min OR team.size > config.hardMax):
+            Add "Invalid team size" to violations
+  
+    Check: day matching
+    For each (projectName, team) in teamAssignments:
+        project = find project by name
+        For each student in team:
+            If student.day != project.day:
+                Add "Day mismatch" to violations
+  
+    return violations list

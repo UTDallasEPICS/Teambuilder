@@ -1,0 +1,215 @@
+TypeScript wrapper for Python CP-SAT solver
+Handles process spawning, data serialization, and preset configurations
+
+Main function: generateTeams(students, projects, config)
+
+Input:
+    students: array of Student objects
+    projects: array of Project objects
+    config: Sort_methods configuration object
+
+Output:
+    TeamAssignments: map of {projectName -> Student[]}
+
+Algorithm flow:
+  
+1. Prepare/parse data
+    inputData:
+        students: array of student objects (serialize to JSON-friendly format)
+        projects: array of project objects (serialize to JSON-friendly format)
+        config: configuration object with all weights
+     
+    Convert inputData to JSON string
+  
+2. Python process called
+    Start Python subprocess running "team-generator.py"
+    Set working directory
+     
+    Setup stdout and stderr listeners:
+        Accumulate stdout (will contain JSON result)
+        Accumulate stderr (for error messages)
+  
+3. Send input data to python
+    Write JSON input to Python process stdin
+    Close stdin to signal end of input
+  
+4. Waiting script to avoid errors while Python runs
+    When Python process exits:
+       
+        If exit code != 0:
+            Log stderr
+            Throw error with Python error message
+       
+        Else:
+            Parse stdout as JSON
+         
+            If result.success == false:
+                Throw error with result.error message
+         
+            Else:
+                Convert student IDs back to full student objects
+                Create studentMap = map of {studentId -> student object}
+           
+                finalAssignments = empty map
+           
+                For each (projectName, studentIdArray) in result.teams:
+                    studentObjects = map studentIds to actual student objects using studentMap
+                    finalAssignments[projectName] = studentObjects
+           
+                Log statistics:
+                    Solve time
+                    Optimization score
+                    Status (optimal/feasible)
+                    Deactivated projects
+           
+                RETURN finalAssignments
+  
+5. If there somehow ends up being an error ;-;
+    If Python process fails to start:
+        Throw error "Failed to start Python solver"
+     
+    If JSON parsing fails:
+        Throw error "Failed to parse solver output"
+
+Preset scenario configurations:
+
+getPresetConfig(mode: optimizationMode)
+
+Input:
+    mode:
+        student-first
+        project-first
+        balanced
+        fair-distribution
+
+Output:
+    Sort_methods configuration object
+
+Presets:
+    
+studentFirst:
+    optimizationMode: student-first
+    teamSizeMin: 4
+    teamSizeIdeal: 6
+    teamSizeSoftMax: 7
+    teamSizeHardMax: 10
+    
+    weights:
+        Very high weights for student preferences
+        upper3200FirstChoice: 100000
+        upper3200SecondChoice: 50000
+        upper3200ThirdChoice: 20000
+        lower2200FirstChoice: 5000
+        lower2200SecondChoice: 3000
+        lower2200ThirdChoice: 1500
+        lower2200FourthToSixth: -50000 (strong penalty)
+        
+        Strong returning student preference
+        returningStudentBonus: 500000
+        
+        Lower weights for project needs
+        skillMatchBonus: 50
+        majorMatchBonus: 100
+        
+        Moderate gender balance
+        genderIsolationPenalty: -3000
+        
+        Team size penalties
+        teamSizeLightPenalty: -500 (for 7th student)
+        teamSizeHeavyPenalty: -5000 (for 8th+ student)
+        
+        Keep projects active
+        projectActivationBonus: 5000
+
+projectFirst:
+    optimizationMode: project-first
+    teamSizeMin: 4
+    teamSizeIdeal: 6
+    teamSizeSoftMax: 7
+    teamSizeHardMax: 10
+    
+    weights:
+        Lower weights for student preferences
+        upper3200FirstChoice: 50000
+        upper3200SecondChoice: 30000
+        upper3200ThirdChoice: 15000
+        lower2200FirstChoice: 2000
+        lower2200SecondChoice: 1500
+        lower2200ThirdChoice: 1000
+        lower2200FourthToSixth: -10000 (lighter penalty)
+        
+        Lower returning student weight
+        returningStudentBonus: 100000
+        
+        MUCH higher weights for project needs
+        skillMatchBonus: 5000 (100x higher)
+        majorMatchBonus: 5000 (50x higher)
+        
+        Strong gender balance
+        genderIsolationPenalty: -10000
+        
+        More lenient on team size
+        teamSizeLightPenalty: -200
+        teamSizeHeavyPenalty: -2000
+        
+        Very important to keep projects active
+        projectActivationBonus: 20000
+
+balanced:
+    optimizationMode: balanced
+    teamSizeMin: 4
+    teamSizeIdeal: 6
+    teamSizeSoftMax: 7
+    teamSizeHardMax: 10
+    
+    weights:
+        Moderate weights for everything
+        upper3200FirstChoice: 75000
+        upper3200SecondChoice: 40000
+        upper3200ThirdChoice: 18000
+        lower2200FirstChoice: 3500
+        lower2200SecondChoice: 2250
+        lower2200ThirdChoice: 1250
+        lower2200FourthToSixth: -25000
+        
+        returningStudentBonus: 250000
+        
+        skillMatchBonus: 1000
+        majorMatchBonus: 1000
+        
+        genderIsolationPenalty: -5000
+        
+        teamSizeLightPenalty: -350
+        teamSizeHeavyPenalty: -3500
+        
+        projectActivationBonus: 10000
+
+fairDistribution:
+    optimizationMode: fair-distribution
+    teamSizeMin: 4
+    teamSizeIdeal: 6
+    teamSizeSoftMax: 7
+    teamSizeHardMax: 10
+    
+    weights:
+        Flatter preference curve (reduce variance)
+        upper3200FirstChoice: 80000
+        upper3200SecondChoice: 70000 (closer to first)
+        upper3200ThirdChoice: 60000 (closer to second)
+        lower2200FirstChoice: 4000
+        lower2200SecondChoice: 3500 (closer to first)
+        lower2200ThirdChoice: 3000 (closer to second)
+        lower2200FourthToSixth: -80000 (heavy penalty, avoid at all costs)
+        
+        returningStudentBonus: 300000
+        
+        skillMatchBonus: 500
+        majorMatchBonus: 500
+        
+        Strong gender balance for fairness
+        genderIsolationPenalty: -8000
+        
+        teamSizeLightPenalty: -400
+        teamSizeHeavyPenalty: -4000
+        
+        projectActivationBonus: 8000
