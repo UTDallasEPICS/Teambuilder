@@ -20,6 +20,7 @@
     "@primeuix/themes": "^1.0.0",
     "@prisma/client": "6.17.1",
     "@tailwindcss/typography": "^0.5.15",
+    "@types/node": "^25.2.3",
     "@vueuse/core": "^13.9.0",
     "@vueuse/head": "^2.0.0",
     "axios": "^1.7.9",
@@ -52,7 +53,7 @@
     "prisma": "^6.17.1",
     "tailwindcss": "^3.4.3",
     "ts-node": "^10.9.2",
-    "tsx": "^4.19.3",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.2"
   }
 }
