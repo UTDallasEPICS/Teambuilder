@@ -116,19 +116,19 @@ export async function generateTeamsORTools(
     let stdout = '';
     let stderr = '';
     
-    pythonProcess.stdout.on('data', (data) => {
+    pythonProcess.stdout.on('data', (data: Buffer) => {
       stdout += data.toString();
     });
     
-    pythonProcess.stderr.on('data', (data) => {
+    pythonProcess.stderr.on('data', (data: Buffer) => {
       stderr += data.toString();
     });
     
-    pythonProcess.on('error', (error) => {
+    pythonProcess.on('error', (error: Error) => {
       reject(new Error(`Failed to start Python process: ${error.message}`));
     });
     
-    pythonProcess.on('close', (code) => {
+    pythonProcess.on('close', (code: number | null) => {
       if (code !== 0) {
         console.error('Python stderr:', stderr);
         reject(new Error(`Python process exited with code ${code}: ${stderr}`));
