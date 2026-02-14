@@ -112,11 +112,8 @@ const studentData: Student[] = [
     { id: "98", name: "Tara Foster", major: "ME", seniority: "Senior", choices: ["Project Beta: Medical Imaging System", "Project Gamma: Renewable Energy Device", "Project Epsilon: Smart Home Integration"], class: "2200", choicesString: "Project Beta: Medical Imaging System, Project Gamma: Renewable Energy Device, Project Epsilon: Smart Home Integration" },
     { id: "99", name: "Uma Mitchell", major: "EE", seniority: "Senior", choices: ["Project Delta: Autonomous Vehicle Sensor", "Project Epsilon: Smart Home Integration", "Project Alpha: Data Science Analysis"], class: "3200", choicesString: "Project Delta: Autonomous Vehicle Sensor, Project Epsilon: Smart Home Integration, Project Alpha: Data Science Analysis" },
     { id: "100", name: "Vince Carter", major: "CS", seniority: "Senior", choices: ["Project Alpha: Data Science Analysis", "Project Gamma: Renewable Energy Device", "Project Beta: Medical Imaging System"], class: "2200", choicesString: "Project Alpha: Data Science Analysis, Project Gamma: Renewable Energy Device, Project Beta: Medical Imaging System" }
-  
-
-
- 
 ];
+
 
 const projectData: Project[] = [
   { id: "1", name: "Project Alpha: Data Science Analysis", type: "SW" },

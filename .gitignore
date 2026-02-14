@@ -8,6 +8,7 @@ dist
 
 # Node dependencies
 node_modules
+package-lock.json
 
 # Logs
 logs
@@ -22,9 +23,6 @@ logs
 .env
 .env.*
 !.env.example
-
-# Package.json
-package.json
 
 # Database
 prisma/dev.db
