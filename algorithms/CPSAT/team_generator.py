@@ -77,6 +77,8 @@ def generate_teams(students_data, projects_data, config=None):
         student = students[s_id]
         if student['class'] == '3200':
             top_3_choices = student['choices'][:3]
+            if len(top_3_choices) == 0:
+                continue
             # Block everything except top 3
             for p_name in project_names:
                 if p_name not in top_3_choices:
@@ -86,6 +88,8 @@ def generate_teams(students_data, projects_data, config=None):
     for s_id in student_ids:
         student = students[s_id]
         top_6_choices = student['choices'][:6]
+        if len(top_6_choices) == 0:
+            continue
         for p_name in project_names:
             if p_name not in top_6_choices:
                 model.Add(x[s_id][p_name] == 0)
