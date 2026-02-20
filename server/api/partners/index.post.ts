@@ -4,15 +4,29 @@ export default defineEventHandler(async (event) => {
   // Handle array of partners (bulk upload)
   if (Array.isArray(body)) {
     const createdPartners = await Promise.all(
-      body.map((partner: any) =>
-        event.context.client.partner.create({
+      body.map(async (partner: any) => {
+        const existingPartner = await event.context.client.partner.findFirst({
+          where: { name: partner.name }
+        });
+
+        if (existingPartner) {
+          return event.context.client.partner.update({
+            where: { id: existingPartner.id },
+            data: {
+              contactName: partner.contactName,
+              contactEmail: partner.contactEmail
+            }
+          });
+        }
+
+        return event.context.client.partner.create({
           data: {
             name: partner.name,
             contactName: partner.contactName,
             contactEmail: partner.contactEmail
           }
-        })
-      )
+        });
+      })
     );
     return createdPartners;
   }
