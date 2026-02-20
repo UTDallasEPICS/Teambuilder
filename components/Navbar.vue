@@ -7,6 +7,7 @@
       NuxtLink(to="/partners") Partners
       NuxtLink(to="/students") Students
       NuxtLink(to="/generate-teams") Generate Teams
+      NuxtLink(to="/teams") Teams
       NuxtLink(to="/demographics") Demographics
       NuxtLink(to="/SCIPE") S.C.I.P.E. Bot
     .mt-auto.flex.flex-col.gap-y-4
