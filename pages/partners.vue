@@ -2,8 +2,9 @@
   .overlay(v-if="selectedPartner" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Partners" @dataParsed="handleParsed")
+      .flex.flex-wrap.items-center.gap-2.self-start
+        FileUploadButton(title="Upload Partners (Merge)" @dataParsed="handleParsed")
+        FileUploadButton(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
         ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
@@ -88,14 +89,9 @@
   });
   
   const handleParsed = async (uploadedPartners: Partner[]) => {
-    // Delete all existing partners first, then save new ones to database
+    // Merge uploaded partners with existing records
     try {
-      // Clear existing partners from database
-      await $fetch('/api/partners', {
-        method: 'DELETE'
-      });
-      
-      // Save new partners to database
+      // Save uploaded partners (API upserts by partner name)
       await $fetch('/api/partners', {
         method: 'POST',
         body: uploadedPartners
@@ -107,6 +103,25 @@
       console.log('Partners saved to database successfully!');
     } catch (error) {
       console.error('Error saving partners to database:', error);
+    }
+  };
+
+  const handleParsedReplace = async (uploadedPartners: Partner[]) => {
+    try {
+      await $fetch('/api/partners', {
+        method: 'DELETE'
+      });
+
+      await $fetch('/api/partners', {
+        method: 'POST',
+        body: uploadedPartners
+      });
+
+      partners.value = await $fetch<Partner[]>('/api/partners');
+      partnerCount.value = partners.value.length;
+      console.log('Partners replaced from CSV successfully!');
+    } catch (error) {
+      console.error('Error replacing partners from CSV:', error);
     }
   };
   

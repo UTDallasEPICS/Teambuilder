@@ -2,9 +2,10 @@
   .overlay(v-if="selectedStudent" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Students" @dataParsed="handleParsed") <!--parsing happens HERE thru FileUploadButton.vue-->
-        //-changed from fileSelected to dataParsed - successful change, handleParsed now runs
+      .flex.flex-wrap.items-center.gap-2.self-start
+        FileUploadButton(title="Upload Students (Merge)" @dataParsed="handleParsed")
+        FileUploadButton(title="Replace Students with CSV" @dataParsed="handleParsedReplace")
+        FileUploadButton(title="Upload Bid Responses" @dataParsed="handleBidsParsed")
         ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
@@ -115,8 +116,11 @@ import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import type { Student, Year } from '@prisma/client';
 import { useHead } from '@vueuse/head';
+import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 
 useHead({ title: 'Students' });
+
+const { successToast, errorToast, infoToast } = usePrimeVueToast();
 
 const students = ref<Student[]>([]);
 const studentCount = ref(0);
@@ -134,9 +138,33 @@ onMounted(async () => { //adds dummy data, students.value is what holds frontend
   studentCount.value = students.value.length; 
 });
 
+const handleBidsParsed = async (parsed: any) => {
+  if (!parsed?.length) return;
+  try {
+    const result = await $fetch<{
+      studentsImported: number;
+      choicesCreated: number;
+      skippedStudents: string[];
+      unmatchedProjects: string[];
+    }>('/api/bids', { method: 'POST', body: parsed });
+
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+
+    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices.`;
+    if (result.skippedStudents.length)
+      msg += ` Skipped ${result.skippedStudents.length} rows (no SSO ID).`;
+    if (result.unmatchedProjects.length)
+      msg += ` ${result.unmatchedProjects.length} project name(s) not found in DB: ${result.unmatchedProjects.join('; ')}.`;
+
+    result.unmatchedProjects.length ? infoToast(msg, 10000) : successToast(msg, 7000);
+  } catch (e: any) {
+    errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
+  }
+};
+
 const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
-  // Clear existing students and replace with uploaded data
-  students.value = [];
+  // Merge uploaded students with existing records
   
   const formattedStudents = parsed.map((stu : any) =>{
     // Handle both CSV formats:
@@ -171,14 +199,8 @@ const handleParsed = async (parsed: any) => { //when it reaches here it's alread
     }
   });
   
-  // Delete all existing students first, then save new ones to database
+  // Merge students (API upserts by netID)
   try {
-    // Clear existing students from database
-    await $fetch('/api/students', {
-      method: 'DELETE'
-    });
-    
-    // Save new students to database
     await $fetch('/api/students', {
       method: 'POST',
       body: formattedStudents
@@ -193,6 +215,53 @@ const handleParsed = async (parsed: any) => { //when it reaches here it's alread
     console.error('Error saving students to database:', error);
   }
 //database comes later, send it locally to tables to populate the website
+};
+
+const handleParsedReplace = async (parsed: any) => {
+  const formattedStudents = parsed.map((stu : any) => {
+    let firstName, lastName, netID;
+
+    if (stu.firstName && stu.lastName) {
+      firstName = stu.firstName;
+      lastName = stu.lastName;
+      netID = stu.netID;
+    } else if (stu.name) {
+      const [parsedLastName, parsedFirstName] = stu.name.split(', ');
+      firstName = parsedFirstName;
+      lastName = parsedLastName;
+      netID = stu.id;
+    }
+
+    return {
+      netID : netID,
+      firstName : firstName,
+      lastName: lastName,
+      email: null,
+      github: null,
+      discord: null,
+      major: stu.major,
+      year: stu.year || stu.seniority,
+      class: stu.class,
+      status: stu.status || null
+    }
+  });
+
+  try {
+    await $fetch('/api/students', {
+      method: 'DELETE'
+    });
+
+    await $fetch('/api/students', {
+      method: 'POST',
+      body: formattedStudents
+    });
+
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+    console.log('Students replaced from CSV successfully!');
+  } catch (error) {
+    console.error('Error replacing students from CSV:', error);
+  }
 };
 
 const resetDatabase = async () => {

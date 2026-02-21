@@ -3,7 +3,8 @@
   .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Projects" @dataParsed="handleParsed")
+        FileUploadButton(title="Upload Projects (Merge)" @dataParsed="handleParsed")
+        FileUploadButton(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
         ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
@@ -171,14 +172,9 @@ const handleParsed = async (parsed: any) => {
     };
   });
   
-  // Delete all existing projects first, then save new ones to database
+  // Merge uploaded projects with existing database records
   try {
-    // Clear existing projects from database
-    await $fetch('/api/projects', {
-      method: 'DELETE'
-    });
-    
-    // Save new projects to database
+    // Save uploaded projects (API upserts by project name)
     await $fetch('/api/projects', {
       method: 'POST',
       body: formattedProjects
@@ -190,6 +186,37 @@ const handleParsed = async (parsed: any) => {
     console.log('Projects table updated! Total projects:', projects.value.length);
   } catch (error) {
     console.error('Error saving projects to database:', error);
+  }
+};
+
+const handleParsedReplace = async (parsed: any) => {
+  console.log('Parsed CSV (replace):', parsed);
+
+  const formattedProjects = parsed.map((proj: any) => {
+    return {
+      name: proj.name || '',
+      description: proj.description || '',
+      type: proj.type?.toUpperCase() || 'SOFTWARE',
+      status: proj.status?.toUpperCase() || 'NEW',
+      repoURL: proj.repoURL || '',
+      partnerName: proj.partnerName || ''
+    };
+  });
+
+  try {
+    await $fetch('/api/projects', {
+      method: 'DELETE'
+    });
+
+    await $fetch('/api/projects', {
+      method: 'POST',
+      body: formattedProjects
+    });
+
+    projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+    console.log('Projects replaced successfully!');
+  } catch (error) {
+    console.error('Error replacing projects from CSV:', error);
   }
 };
 
