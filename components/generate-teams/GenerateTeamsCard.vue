@@ -247,5 +247,3 @@ const teamStats = computed(() => {
   @apply text-sm font-semibold text-gray-700 text-center;
 }
 </style>
-}
-</style>
