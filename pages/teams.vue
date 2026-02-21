@@ -4,6 +4,7 @@
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
         NuxtLink.btn(href='/generate-teams') Back
+        ClickableButton(v-if="rows.length > 0" title="Export Teams to CSV" type="success" @click="exportTeamsToCSV")
 
       .mt-4.project-title.w-full.text-center Teams
       .text-2xl.mt-2 Team count: {{ rows.length }}
@@ -54,6 +55,9 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { getDisplayName } from '~/server/services/studentService';
 import { getProjectNameFromId } from '~/server/services/projectService';
+import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
+
+declare const document: any;
 
 useHead({ title: 'Teams' });
 
@@ -65,6 +69,7 @@ interface TeamRow {
   studentNames: string;
 }
 
+const { successToast, errorToast } = usePrimeVueToast();
 const rawAssignments = ref<Record<string, any> | null>(null);
 const projects = ref<any[]>([]);
 const selectedTeam = ref<TeamRow | null>(null);
@@ -97,6 +102,44 @@ const filters = ref({
 });
 
 const closeModal = () => { selectedTeam.value = null; };
+
+const exportTeamsToCSV = async () => {
+  try {
+    if (!rawAssignments.value) {
+      errorToast('No team assignments to export.');
+      return;
+    }
+
+    // Call export API
+    const csv = await $fetch<string>(
+      '/api/teams/export',
+      {
+        method: 'POST',
+        body: {
+          teamAssignments: rawAssignments.value,
+          projects: projects.value
+        }
+      }
+    );
+
+    // Trigger download on client side
+    if (process.client) {
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `team-assignments-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      successToast('Teams exported to CSV successfully!', 5000);
+    }
+  } catch (err: any) {
+    errorToast(err?.data?.message || 'Failed to export teams.');
+  }
+};
 
 onMounted(() => {
   try {
