@@ -49,6 +49,15 @@
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
               template(#value="slotProps") {{ formatTypesFilter(slotProps.value) }}
 
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+          template(#body="{ data }")
+            .flex.justify-center
+              Button.p-button-rounded.p-button-danger.p-button-sm(
+                icon="pi pi-trash" 
+                @click="handleDeleteProject(data)"
+                v-tooltip.top="'Delete project'"
+              )
+
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
     .flex.flex-row.justify-between.gap-10
@@ -103,9 +112,11 @@ import { stringifySemesters } from '~/server/services/semesterService';
 // import { faker } from '@faker-js/faker';
 import {type ProjectStatus} from '@prisma/client';
 import { useHead } from '@vueuse/head';
+import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 
 useHead({ title: 'Projects' });
 
+const { successToast, errorToast } = usePrimeVueToast();
 const projects = ref<ProjectWithSemestersAndPartner[]>([]);
 onMounted(async () => {
   projects.value = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
@@ -217,6 +228,28 @@ const handleParsedReplace = async (parsed: any) => {
     console.log('Projects replaced successfully!');
   } catch (error) {
     console.error('Error replacing projects from CSV:', error);
+  }
+};
+
+const handleDeleteProject = async (project: ProjectWithSemestersAndPartner) => {
+  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+  if (confirmAvailable) {
+    if (!(globalThis as any).confirm(`Are you sure you want to delete "${project.name}"? This cannot be undone.`)) {
+      return;
+    }
+  }
+
+  try {
+    await $fetch(`/api/projects/${project.id}`, {
+      method: 'DELETE'
+    });
+
+    projects.value = projects.value.filter(p => p.id !== project.id);
+    selectedProject.value = null;
+    successToast(`Deleted project "${project.name}"`, 3000);
+  } catch (error: any) {
+    errorToast(error?.data?.message || 'Failed to delete project');
+    console.error('Error deleting project:', error);
   }
 };
 

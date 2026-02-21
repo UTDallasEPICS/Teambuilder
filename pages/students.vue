@@ -54,6 +54,15 @@
                 template(#option="slotProps")
                   .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
 
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+          template(#body="{ data }")
+            .flex.justify-center
+              Button.p-button-rounded.p-button-danger.p-button-sm(
+                icon="pi pi-trash" 
+                @click="handleDeleteStudent(data)"
+                v-tooltip.top="'Delete student'"
+              )
+
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
 
@@ -314,6 +323,29 @@ const handleClearAll = async () => {
     console.log('All students deleted successfully!');
   } catch (error) {
     console.error('Error deleting students:', error);
+  }
+};
+
+const handleDeleteStudent = async (student: Student) => {
+  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+  if (confirmAvailable) {
+    if (!(globalThis as any).confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}? This cannot be undone.`)) {
+      return;
+    }
+  }
+
+  try {
+    await $fetch(`/api/students/${student.id}`, {
+      method: 'DELETE'
+    });
+
+    students.value = students.value.filter(s => s.id !== student.id);
+    studentCount.value = students.value.length;
+    selectedStudent.value = null;
+    successToast(`Deleted ${student.firstName} ${student.lastName}`, 3000);
+  } catch (error: any) {
+    errorToast(error?.data?.message || 'Failed to delete student');
+    console.error('Error deleting student:', error);
   }
 };
 

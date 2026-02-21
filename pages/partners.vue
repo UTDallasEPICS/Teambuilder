@@ -40,6 +40,15 @@
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project")
 
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+          template(#body="{ data }")
+            .flex.justify-center
+              Button.p-button-rounded.p-button-danger.p-button-sm(
+                icon="pi pi-trash" 
+                @click="handleDeletePartner(data)"
+                v-tooltip.top="'Delete partner'"
+              )
+
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedPartner" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
     
@@ -77,9 +86,11 @@
     import type { Partner } from '@prisma/client';
     import { useHead } from '@vueuse/head';
     import { XCircleIcon } from '@heroicons/vue/24/solid';
+    import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
     
     useHead({ title: 'Partners' });
-  
+
+  const { successToast, errorToast } = usePrimeVueToast();
   const partners = ref<Partner[]>([]);
   const partnerCount = ref(0);
   
@@ -164,6 +175,29 @@
       console.log('All partners deleted successfully!');
     } catch (error) {
       console.error('Error deleting partners:', error);
+    }
+  };
+
+  const handleDeletePartner = async (partner: Partner) => {
+    const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+    if (confirmAvailable) {
+      if (!(globalThis as any).confirm(`Are you sure you want to delete "${partner.name}"? This cannot be undone.`)) {
+        return;
+      }
+    }
+
+    try {
+      await $fetch(`/api/partners/${partner.id}`, {
+        method: 'DELETE'
+      } as any);
+
+      partners.value = partners.value.filter(p => p.id !== partner.id);
+      partnerCount.value = partners.value.length;
+      selectedPartner.value = null;
+      successToast(`Deleted partner "${partner.name}"`, 3000);
+    } catch (error: any) {
+      errorToast(error?.data?.message || 'Failed to delete partner');
+      console.error('Error deleting partner:', error);
     }
   };
   

@@ -20,6 +20,35 @@
   .overlay(v-if="showOverlay" @click="closeModal")
   .orange-card.p-15.modal.gap-2.overflow-y-auto.max-h-screen.m-10(v-if="showOverlay")
     .text-5xl.font-bold.mb-5.text-center.text-white Generated Teams
+    
+    // Statistics section
+    .beige-card.p-6.mb-8(v-if="teamStats")
+      .text-2xl.font-bold.text-center.mb-4.text-orange-700 Summary Statistics
+      .grid.grid-cols-2.gap-4.lg:grid-cols-4
+        .stat-box
+          .stat-number {{ teamStats.totalTeams }}
+          .stat-label Total Teams
+        .stat-box
+          .stat-number {{ teamStats.totalStudents }}
+          .stat-label Total Assigned
+        .stat-box
+          .stat-number {{ teamStats.avgTeamSize }}
+          .stat-label Avg Team Size
+        .stat-box
+          .stat-number {{ teamStats.minTeamSize }}-{{ teamStats.maxTeamSize }}
+          .stat-label Team Size Range
+      .border-t.border-gray-300.mt-4.pt-4
+      .grid.grid-cols-2.gap-4.lg:grid-cols-3
+        .stat-box
+          .stat-number {{ teamStats.juniorCount }}
+          .stat-label 2200
+        .stat-box
+          .stat-number {{ teamStats.seniorCount }}
+          .stat-label 3200
+        .stat-box
+          .stat-number {{ teamStats.choiceQualityPct }}%
+          .stat-label Top-3 Preference
+    
     .grid.grid-cols-4
       div(v-for="(students, projectId) in teamAssignments" :key="projectId" class="mb-8")
         h2.text-xl.font-semibold.text-white {{ getProjectNameFromId(projectId, activeProjects) }} ({{ getProjectTeamSize(projectId) }})
@@ -145,6 +174,49 @@ const getStudentColor = (student: StudentWithChoices) => {
     return 'text-amber-500'
   }
 }
+
+const teamStats = computed(() => {
+  if (!teamAssignments.value) return null;
+
+  const allStudents: StudentWithChoices[] = [];
+  const teamSizes: number[] = [];
+  let topChoiceCount = 0;
+
+  // Flatten all students from all teams
+  for (const [projectId, students] of Object.entries(teamAssignments.value)) {
+    const stus = students as StudentWithChoices[];
+    allStudents.push(...stus);
+    teamSizes.push(stus.length);
+
+    // Count how many got this project in their top 3 choices
+    for (const student of stus) {
+      const projectRank = getProjectRankForStudent(projectId, student);
+      if (projectRank && (projectRank === 1 || projectRank === 2 || projectRank === 3)) {
+        topChoiceCount++;
+      }
+    }
+  }
+
+  const totalStudents = allStudents.length;
+  const avgSize = totalStudents > 0 ? (totalStudents / teamSizes.length).toFixed(1) : '0';
+  const minSize = teamSizes.length > 0 ? Math.min(...teamSizes) : 0;
+  const maxSize = teamSizes.length > 0 ? Math.max(...teamSizes) : 0;
+  
+  const juniorCount = allStudents.filter(s => s.class === '3200').length;
+  const seniorCount = totalStudents - juniorCount;
+  const choiceQualityPct = totalStudents > 0 ? Math.round((topChoiceCount / totalStudents) * 100) : 0;
+
+  return {
+    totalTeams: teamSizes.length,
+    totalStudents,
+    avgTeamSize: avgSize,
+    minTeamSize: minSize,
+    maxTeamSize: maxSize,
+    juniorCount,
+    seniorCount,
+    choiceQualityPct
+  };
+});
 </script>
 
 <style scoped>
@@ -164,5 +236,16 @@ const getStudentColor = (student: StudentWithChoices) => {
   transform: translate(-50%, -50%);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 99;
+}
+.stat-box {
+  @apply flex flex-col items-center p-4 rounded-lg bg-orange-50 border-2 border-orange-200;
+}
+.stat-number {
+  @apply text-3xl font-bold text-orange-700 mb-2;
+}
+.stat-label {
+  @apply text-sm font-semibold text-gray-700 text-center;
+}
+</style>
 }
 </style>
