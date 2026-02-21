@@ -2,7 +2,8 @@
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "strict": true,
-    "types": ["nuxt", "node"]
+    "types": ["nuxt", "node"],
+    "lib": ["esnext", "dom", "dom.iterable"]
   }
   ,
   "include": ["types/**/*.d.ts"]
