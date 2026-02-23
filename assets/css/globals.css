@@ -34,9 +34,15 @@
 
 body {
   color-scheme: light !important;
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  height: 100vh;
+  background: linear-gradient(180deg, var(--color-card-bg) 0%, var(--color-beige-light) 100%) !important;
+  background-color: var(--color-card-bg) !important;
+  min-height: 100vh;
+}
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
