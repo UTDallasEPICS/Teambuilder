@@ -41,14 +41,24 @@
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
     .cardTitle {{ selectedTeam.projectName }}
     .text-lg.mt-1.text-gray-500 Team size: {{ selectedTeam.teamSize }}
+    .flex.items-center.justify-between.mt-2
+      ClickableButton(:title="isEditing ? 'Done Editing' : 'Edit Members'" type="success" @click="toggleEditMode")
     div.mt-4
       .cardSubTitle Members:
       ul.list-disc.pl-5.mt-2
-        li.cardText.py-1(v-for="(member, idx) in selectedTeam.students" :key="idx") {{ member.name }} - {{ member.major }}
+        li.cardText.py-1(v-for="(member, idx) in selectedTeam.students" :key="idx")
+          template(v-if="!isEditing") {{ member.name }} - {{ member.major }}
+          .member-row(v-else)
+            span {{ member.name }} - {{ member.major }}
+            .member-actions
+              select.member-select(v-model="moveTargets[member.id]")
+                option(value="") Select destination
+                option(v-for="project in destinationProjects" :key="project.id" :value="project.id") {{ project.name }}
+              button.member-move-btn(@click="moveMember(member.id)") Move
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useHead } from 'nuxt/app';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
@@ -64,7 +74,7 @@ interface TeamRow {
   projectId: string;
   projectName: string;
   teamSize: number;
-  students: Array<{ name: string; major: string }>;
+  students: Array<{ id: string; name: string; major: string }>;
   studentNames: string;
 }
 
@@ -72,6 +82,9 @@ const { successToast, errorToast } = usePrimeVueToast();
 const rawAssignments = ref<Record<string, any> | null>(null);
 const projects = ref<any[]>([]);
 const selectedTeam = ref<TeamRow | null>(null);
+const isEditing = ref(false);
+const moveTargets = ref<Record<string, string>>({});
+const savedSemester = ref<any | null>(null);
 
 const getProjectName = (projectId: string) => {
   const p = projects.value.find(pr => pr.id === projectId);
@@ -84,6 +97,7 @@ const rows = computed<TeamRow[]>(() => {
   if (!rawAssignments.value) return [];
   return Object.entries(rawAssignments.value).map(([projectId, students]) => {
     const members = (students as any[]).map(s => ({
+      id: s?.id ?? '',
       name: getDisplayName(s),
       major: s?.major ?? 'Unknown'
     }));
@@ -104,6 +118,76 @@ const filters = ref({
 });
 
 const closeModal = () => { selectedTeam.value = null; };
+
+const destinationProjects = computed(() => {
+  if (!selectedTeam.value) return [];
+  return rows.value
+    .filter(row => row.projectId !== selectedTeam.value?.projectId)
+    .map(row => ({ id: row.projectId, name: row.projectName }));
+});
+
+const persistAssignments = () => {
+  if (!process.client || !rawAssignments.value) return;
+  localStorage.setItem('lastTeamAssignments', JSON.stringify({
+    teamAssignments: rawAssignments.value,
+    projects: projects.value,
+    semester: savedSemester.value,
+  }));
+};
+
+const refreshSelectedTeam = () => {
+  if (!selectedTeam.value) return;
+  const updatedTeam = rows.value.find(row => row.projectId === selectedTeam.value?.projectId) || null;
+  selectedTeam.value = updatedTeam;
+};
+
+const toggleEditMode = () => {
+  isEditing.value = !isEditing.value;
+  if (!isEditing.value) {
+    moveTargets.value = {};
+  }
+};
+
+const moveMember = (studentId: string) => {
+  if (!rawAssignments.value || !selectedTeam.value) return;
+  const destinationProjectId = moveTargets.value[studentId];
+  const sourceProjectId = selectedTeam.value.projectId;
+
+  if (!destinationProjectId) {
+    errorToast('Select a destination team first.');
+    return;
+  }
+  if (destinationProjectId === sourceProjectId) {
+    errorToast('Destination must be a different team.');
+    return;
+  }
+
+  const sourceStudents = (rawAssignments.value[sourceProjectId] || []) as any[];
+  const destinationStudents = (rawAssignments.value[destinationProjectId] || []) as any[];
+  const sourceIndex = sourceStudents.findIndex((s: any) => s.id === studentId);
+
+  if (sourceIndex < 0) {
+    errorToast('Could not find that member in this team.');
+    return;
+  }
+
+  const [student] = sourceStudents.splice(sourceIndex, 1);
+  destinationStudents.push(student);
+  rawAssignments.value[destinationProjectId] = destinationStudents;
+  rawAssignments.value[sourceProjectId] = sourceStudents;
+
+  persistAssignments();
+  refreshSelectedTeam();
+  moveTargets.value[studentId] = '';
+  successToast('Member moved successfully.');
+};
+
+watch(selectedTeam, (newTeam) => {
+  if (!newTeam) {
+    isEditing.value = false;
+    moveTargets.value = {};
+  }
+});
 
 const exportTeamsToCSV = async () => {
   try {
@@ -150,6 +234,7 @@ onMounted(() => {
       const parsed = JSON.parse(raw);
       rawAssignments.value = parsed.teamAssignments || null;
       projects.value = parsed.projects || [];
+      savedSemester.value = parsed.semester || null;
     }
   } catch (e) {
     rawAssignments.value = null;
@@ -194,5 +279,32 @@ onMounted(() => {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99;
+}
+.member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.member-select {
+  min-width: 12rem;
+  border: 1px solid var(--color-teal);
+  border-radius: 0.375rem;
+  padding: 0.3rem 0.5rem;
+  background: var(--color-beige);
+  color: var(--color-teal);
+}
+.member-move-btn {
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0.35rem 0.7rem;
+  background: var(--color-teal);
+  color: #fff;
+  cursor: pointer;
 }
 </style>
