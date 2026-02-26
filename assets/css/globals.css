@@ -34,9 +34,15 @@
 
 body {
   color-scheme: light !important;
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  height: 100vh;
+  background: linear-gradient(180deg, var(--color-card-bg) 0%, var(--color-beige-light) 100%) !important;
+  background-color: var(--color-card-bg) !important;
+  min-height: 100vh;
+}
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -483,4 +489,36 @@ select,
   outline: none;
   box-shadow: 0 8px 20px rgba(0,0,0,0.12), 0 0 0 4px rgba(255,255,255,0.06) inset;
   border-radius: 0.75rem;
+}
+
+/* Toast readability + app color scheme */
+.p-toast .p-toast-message {
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15) !important;
+}
+
+.p-toast .p-toast-message .p-toast-message-content,
+.p-toast .p-toast-message .p-toast-summary,
+.p-toast .p-toast-message .p-toast-detail,
+.p-toast .p-toast-message .p-toast-close-button {
+  color: var(--color-text-dark) !important;
+}
+
+/* Keep success/info in a readable green family to match the site */
+.p-toast .p-toast-message.p-toast-message-success,
+.p-toast .p-toast-message.p-toast-message-info {
+  background: #ecfdf5 !important;
+  border-left: 6px solid var(--color-accent-green) !important;
+}
+
+.p-toast .p-toast-message.p-toast-message-success .p-toast-summary,
+.p-toast .p-toast-message.p-toast-message-info .p-toast-summary {
+  color: var(--color-accent-utd-green) !important;
+  font-weight: 700 !important;
+}
+
+.p-toast .p-toast-message.p-toast-message-error {
+  background: #fef2f2 !important;
+  border-left: 6px solid #ef4444 !important;
 }

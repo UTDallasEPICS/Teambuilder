@@ -2,8 +2,9 @@
   .overlay(v-if="selectedPartner" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Partners" @dataParsed="handleParsed")
+      .flex.flex-wrap.items-center.gap-2.self-start
+        FileUploadButton(title="Upload Partners (Merge)" @dataParsed="handleParsed")
+        FileUploadButton(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
         ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
@@ -38,6 +39,15 @@
         Column(field="projectName" header="Projects" :showFilterMenu="false")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project")
+
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+          template(#body="{ data }")
+            .flex.justify-center
+              Button.p-button-rounded.p-button-danger.p-button-sm(
+                icon="pi pi-trash" 
+                @click="handleDeletePartner(data)"
+                v-tooltip.top="'Delete partner'"
+              )
 
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedPartner" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
@@ -76,9 +86,11 @@
     import type { Partner } from '@prisma/client';
     import { useHead } from '@vueuse/head';
     import { XCircleIcon } from '@heroicons/vue/24/solid';
+    import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
     
     useHead({ title: 'Partners' });
-  
+
+  const { successToast, errorToast } = usePrimeVueToast();
   const partners = ref<Partner[]>([]);
   const partnerCount = ref(0);
   
@@ -88,14 +100,9 @@
   });
   
   const handleParsed = async (uploadedPartners: Partner[]) => {
-    // Delete all existing partners first, then save new ones to database
+    // Merge uploaded partners with existing records
     try {
-      // Clear existing partners from database
-      await $fetch('/api/partners', {
-        method: 'DELETE'
-      });
-      
-      // Save new partners to database
+      // Save uploaded partners (API upserts by partner name)
       await $fetch('/api/partners', {
         method: 'POST',
         body: uploadedPartners
@@ -107,6 +114,25 @@
       console.log('Partners saved to database successfully!');
     } catch (error) {
       console.error('Error saving partners to database:', error);
+    }
+  };
+
+  const handleParsedReplace = async (uploadedPartners: Partner[]) => {
+    try {
+      await $fetch('/api/partners', {
+        method: 'DELETE'
+      });
+
+      await $fetch('/api/partners', {
+        method: 'POST',
+        body: uploadedPartners
+      });
+
+      partners.value = await $fetch<Partner[]>('/api/partners');
+      partnerCount.value = partners.value.length;
+      console.log('Partners replaced from CSV successfully!');
+    } catch (error) {
+      console.error('Error replacing partners from CSV:', error);
     }
   };
   
@@ -149,6 +175,29 @@
       console.log('All partners deleted successfully!');
     } catch (error) {
       console.error('Error deleting partners:', error);
+    }
+  };
+
+  const handleDeletePartner = async (partner: Partner) => {
+    const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+    if (confirmAvailable) {
+      if (!(globalThis as any).confirm(`Are you sure you want to delete "${partner.name}"? This cannot be undone.`)) {
+        return;
+      }
+    }
+
+    try {
+      await $fetch(`/api/partners/${partner.id}`, {
+        method: 'DELETE'
+      } as any);
+
+      partners.value = partners.value.filter(p => p.id !== partner.id);
+      partnerCount.value = partners.value.length;
+      selectedPartner.value = null;
+      successToast(`Deleted partner "${partner.name}"`, 3000);
+    } catch (error: any) {
+      errorToast(error?.data?.message || 'Failed to delete partner');
+      console.error('Error deleting partner:', error);
     }
   };
   

@@ -16,19 +16,17 @@ export const useProjectStore = defineStore('projectStore', {
     },
     archiveProject(id: string) {
       const project = this.getProjectById(id);
-      if (project) {
-        project.status = 'archived';
-      } else {
-        console.error('Could not find project')
+      if (!project) {
+        throw new Error(`Project with id ${id} not found`);
       }
+      project.status = 'archived';
     },
     restoreProject(id: string) {
       const project = this.getProjectById(id);
-      if (project) {
-        project.status = 'returning';
-      } else {
-        console.error('Could not find project')
+      if (!project) {
+        throw new Error(`Project with id ${id} not found`);
       }
+      project.status = 'returning';
     },
     createDummyData() {
       if (!this.hasDummyData) {

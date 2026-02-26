@@ -39,19 +39,37 @@ export default defineEventHandler(async event => {
         partnerId = defaultPartner.id;
       }
       
-      const createdProject = await event.context.client.project.create({
-        data: {
-          name: project.name,
-          description: project.description,
-          type: project.type || 'SOFTWARE',
-          status: project.status || 'NEW',
-          repoURL: project.repoURL,
-          partnerId: partnerId
-        },
-        include: {
-          partner: true
-        }
+      const existingProject = await event.context.client.project.findFirst({
+        where: { name: project.name }
       });
+
+      const createdProject = existingProject
+        ? await event.context.client.project.update({
+            where: { id: existingProject.id },
+            data: {
+              description: project.description,
+              type: project.type || 'SOFTWARE',
+              status: project.status || 'NEW',
+              repoURL: project.repoURL,
+              partnerId: partnerId
+            },
+            include: {
+              partner: true
+            }
+          })
+        : await event.context.client.project.create({
+            data: {
+              name: project.name,
+              description: project.description,
+              type: project.type || 'SOFTWARE',
+              status: project.status || 'NEW',
+              repoURL: project.repoURL,
+              partnerId: partnerId
+            },
+            include: {
+              partner: true
+            }
+          });
       
       createdProjects.push(createdProject);
     }

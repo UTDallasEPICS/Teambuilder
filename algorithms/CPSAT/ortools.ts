@@ -1,11 +1,9 @@
 //typeScript wrapper for Google OR-Tools Python CP-SAT solver
-import { spawn, execFile } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
+import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname, join, resolve } from 'path';
 import type { TeamAssignments } from '../F24/index';
-
-const execFileAsync = promisify(execFile);
 
 export type Student = {
   id: string;
@@ -70,6 +68,17 @@ export async function generateTeamsORTools(
   const startTime = Date.now();
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
+
+  const pythonScriptCandidates = [
+    resolve(process.cwd(), 'algorithms', 'CPSAT', 'team_generator.py'),
+    resolve(process.cwd(), 'Teambuilder', 'algorithms', 'CPSAT', 'team_generator.py'),
+    join(__dirname, 'team_generator.py'),
+  ];
+  const pythonScriptPath = pythonScriptCandidates.find(candidate => existsSync(candidate));
+
+  if (!pythonScriptPath) {
+    throw new Error(`team_generator.py not found. Tried: ${pythonScriptCandidates.join(', ')}`);
+  }
   
   // Prepare input data
   const inputData = {
@@ -109,8 +118,8 @@ export async function generateTeamsORTools(
   
   return new Promise((resolve, reject) => {
     // Spawn Python process
-    const pythonProcess = spawn('python', ['team_generator.py'], {
-      cwd: __dirname,
+    const pythonProcess = spawn('python', [pythonScriptPath], {
+      cwd: dirname(pythonScriptPath),
     });
     
     let stdout = '';
