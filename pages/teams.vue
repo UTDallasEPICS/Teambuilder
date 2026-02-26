@@ -44,7 +44,7 @@
     div.mt-4
       .cardSubTitle Members:
       ul.list-disc.pl-5.mt-2
-        li.cardText.py-1(v-for="(name, idx) in selectedTeam.students" :key="idx") {{ name }}
+        li.cardText.py-1(v-for="(member, idx) in selectedTeam.students" :key="idx") {{ member.name }} - {{ member.major }}
 </template>
 
 <script setup lang="ts">
@@ -64,7 +64,7 @@ interface TeamRow {
   projectId: string;
   projectName: string;
   teamSize: number;
-  students: string[];
+  students: Array<{ name: string; major: string }>;
   studentNames: string;
 }
 
@@ -83,13 +83,16 @@ const getProjectName = (projectId: string) => {
 const rows = computed<TeamRow[]>(() => {
   if (!rawAssignments.value) return [];
   return Object.entries(rawAssignments.value).map(([projectId, students]) => {
-    const names = (students as any[]).map(s => getDisplayName(s));
+    const members = (students as any[]).map(s => ({
+      name: getDisplayName(s),
+      major: s?.major ?? 'Unknown'
+    }));
     return {
       projectId,
       projectName: getProjectName(projectId),
       teamSize: (students as any[]).length,
-      students: names,
-      studentNames: names.join(', ')
+      students: members,
+      studentNames: members.map(m => m.name).join(', ')
     };
   });
 });
