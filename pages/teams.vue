@@ -3,7 +3,6 @@
   .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
-        NuxtLink.btn(href='/generate-teams') Back
         ClickableButton(v-if="rows.length > 0" title="Export Teams to CSV" type="success" @click="exportTeamsToCSV")
 
       .mt-4.project-title.w-full.text-center Teams
@@ -158,4 +157,39 @@ onMounted(() => {
 <style scoped>
 .centered-row { display:flex; justify-content:center; }
 .centered-col { display:flex; flex-direction:column; max-width:1100px; width:100%; }
+.cardRows {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.cardTitle {
+  text-shadow: 1px 1px 1px #0000008b;
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));
+}
+.cardSubTitle {
+  text-shadow: 1px 1px 1px #0000008b;
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+.cardText {
+  font-size: 1.25rem;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 98;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99;
+}
 </style>

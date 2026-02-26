@@ -24,7 +24,7 @@
     // Statistics section
     .beige-card.p-6.mb-8(v-if="teamStats")
       .text-2xl.font-bold.text-center.mb-4.text-orange-700 Summary Statistics
-      .grid.grid-cols-2.gap-4.lg:grid-cols-4
+      .grid.grid-cols-2.gap-4(class="lg:grid-cols-4")
         .stat-box
           .stat-number {{ teamStats.totalTeams }}
           .stat-label Total Teams
@@ -38,7 +38,7 @@
           .stat-number {{ teamStats.minTeamSize }}-{{ teamStats.maxTeamSize }}
           .stat-label Team Size Range
       .border-t.border-gray-300.mt-4.pt-4
-      .grid.grid-cols-2.gap-4.lg:grid-cols-3
+      .grid.grid-cols-2.gap-4(class="lg:grid-cols-3")
         .stat-box
           .stat-number {{ teamStats.juniorCount }}
           .stat-label 2200
@@ -238,12 +238,26 @@ const teamStats = computed(() => {
   z-index: 99;
 }
 .stat-box {
-  @apply flex flex-col items-center p-4 rounded-lg bg-orange-50 border-2 border-orange-200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-beige);
+  color: var(--color-teal);
+  border: 2px solid currentColor;
 }
 .stat-number {
-  @apply text-3xl font-bold text-orange-700 mb-2;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 .stat-label {
-  @apply text-sm font-semibold text-gray-700 text-center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-align: center;
 }
 </style>
