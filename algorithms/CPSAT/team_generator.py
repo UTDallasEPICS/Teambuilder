@@ -73,16 +73,17 @@ def generate_teams(students_data, projects_data, config=None):
     # Returning students who list their previous project as #1 get it guaranteed
     # Non-returning 3200 students also get their #1 choice guaranteed
     # But allow fallback to top 3 if needed for feasibility
-    for s_id in student_ids:
-        student = students[s_id]
-        if student['class'] == '3200':
-            top_3_choices = student['choices'][:3]
-            if len(top_3_choices) == 0:
-                continue
-            # Block everything except top 3
-            for p_name in project_names:
-                if p_name not in top_3_choices:
-                    model.Add(x[s_id][p_name] == 0)
+    if config.get('prioritize_3200_first_choice', True):
+        for s_id in student_ids:
+            student = students[s_id]
+            if student['class'] == '3200':
+                top_3_choices = student['choices'][:3]
+                if len(top_3_choices) == 0:
+                    continue
+                # Block everything except top 3
+                for p_name in project_names:
+                    if p_name not in top_3_choices:
+                        model.Add(x[s_id][p_name] == 0)
     
     # CONSTRAINT 4: All students can only be assigned to their top 6 choices
     for s_id in student_ids:
@@ -144,7 +145,8 @@ def generate_teams(students_data, projects_data, config=None):
                 
                 # Multipliers for 3200 students (heavily prioritize first choice)
                 if is_3200:
-                    base_score *= 100  # 100x multiplier for 3200 students
+                    if config.get('prioritize_3200_first_choice', True):
+                        base_score *= 100  # 100x multiplier for 3200 students
                 else:
                     # For 2200 students: strongly boost early choices, use MASSIVE penalties for late
                     if config.get('prefer_2200_early_choices', True):
@@ -164,7 +166,7 @@ def generate_teams(students_data, projects_data, config=None):
                 # Returning student bonus: 3200 students CAN choose any project, but if they
                 # include their previous project in their choices, give huge priority bonus
                 # This ensures returning to same project is strongly preferred (but optional)
-                if is_returning and student['previousProject'] == p_name:
+                if config.get('prioritize_returning_students', True) and is_returning and student['previousProject'] == p_name:
                     base_score += 500000  # Massive priority for returning to same project
                 
                 # Skills matching bonus

@@ -7,6 +7,7 @@
 
 import { generateTeamsORTools } from '~/algorithms/CPSAT/ortools'
 import type { Student as CPSATStudent, Project as CPSATProject } from '~/algorithms/CPSAT/ortools'
+import type { CPSATConfig } from '~/algorithms/CPSAT/ortools'
 import type { Year, ProjectType, Student, Choice, Project } from '@prisma/client'
 
 type StudentWithChoices = Student & { choices: Choice[] }
@@ -31,7 +32,7 @@ const mapProjectType = (type: ProjectType): CPSATProject['type'] => {
 }
 
 export default defineEventHandler(async (event) => {
-  const { semesterId } = await readBody<{ semesterId: string }>(event)
+  const { semesterId, config } = await readBody<{ semesterId: string; config?: CPSATConfig }>(event)
 
   if (!semesterId) {
     throw createError({ statusCode: 400, message: 'semesterId is required.' })
@@ -97,7 +98,7 @@ export default defineEventHandler(async (event) => {
   }))
 
   // Run the CP-SAT algorithm (spawns a Python process)
-  const cpsatResult = await generateTeamsORTools(cpsatStudents, cpsatProjects)
+  const cpsatResult = await generateTeamsORTools(cpsatStudents, cpsatProjects, config)
 
   // cpsatResult keys are project names; convert back to projectId → StudentWithChoices[]
   const nameToId = new Map<string, string>(projects.map((p: Project) => [p.name, p.id] as const))

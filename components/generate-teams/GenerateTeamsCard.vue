@@ -15,6 +15,34 @@
     .font-semibold.text-amber-700.mb-2 ⚠️ Data Issues Found:
     ul.list-disc.pl-5.gap-1
       li.text-sm.text-amber-600(v-for="(warning, idx) in validationWarnings" :key="idx") {{ warning }}
+
+  .beige-card.p-4.mt-4
+    .text-xl.font-semibold.mb-3.text-teal Algorithm Options
+    .grid.grid-cols-1.gap-3(class="md:grid-cols-2")
+      label.option-row
+        span.option-label Min Team Size
+        input.option-input(type="number" min="1" v-model.number="algorithmConfig.min_team_size")
+      label.option-row
+        span.option-label Max Team Size
+        input.option-input(type="number" min="1" v-model.number="algorithmConfig.max_team_size")
+      label.option-row
+        span.option-label Prioritize Returning Students
+        input(type="checkbox" v-model="algorithmConfig.prioritize_returning_students")
+      label.option-row
+        span.option-label Prioritize 3200 First Choice
+        input(type="checkbox" v-model="algorithmConfig.prioritize_3200_first_choice")
+      label.option-row
+        span.option-label Prefer Major Diversity
+        input(type="checkbox" v-model="algorithmConfig.prefer_major_diversity")
+      label.option-row
+        span.option-label Match Skills
+        input(type="checkbox" v-model="algorithmConfig.match_skills")
+      label.option-row
+        span.option-label Balance Gender
+        input(type="checkbox" v-model="algorithmConfig.balance_gender")
+      label.option-row
+        span.option-label Prefer 2200 Early Choices
+        input(type="checkbox" v-model="algorithmConfig.prefer_2200_early_choices")
   
   ClickableButton.mt-5(title="Generate Teams" type="success" :loading="loading" @click="handleGenerateTeamAssignments")
   .overlay(v-if="showOverlay" @click="closeModal")
@@ -71,6 +99,17 @@ import { getDisplayName, getProjectRankForStudent } from '~/server/services/stud
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 import { computed } from 'vue';
 
+type AlgorithmConfig = {
+  min_team_size: number;
+  max_team_size: number;
+  prioritize_returning_students: boolean;
+  prioritize_3200_first_choice: boolean;
+  prefer_major_diversity: boolean;
+  match_skills: boolean;
+  balance_gender: boolean;
+  prefer_2200_early_choices: boolean;
+}
+
 const { projects, semesters, students } = defineProps<{
   projects: ProjectWithSemesters[]
   semesters: Semester[]
@@ -83,6 +122,16 @@ const showOverlay = ref<boolean>(false);
 const loading = ref(false);
 const teamAssignments = ref<Record<string, StudentWithChoices[]> | null>(null);
 const activeProjects = ref<Project[]>([]);
+const algorithmConfig = ref<AlgorithmConfig>({
+  min_team_size: 4,
+  max_team_size: 6,
+  prioritize_returning_students: true,
+  prioritize_3200_first_choice: true,
+  prefer_major_diversity: true,
+  match_skills: true,
+  balance_gender: true,
+  prefer_2200_early_choices: true,
+});
 
 const closeModal = () => {
   showOverlay.value = false;
@@ -133,11 +182,22 @@ const handleGenerateTeamAssignments = async () => {
     return;
   }
 
+  if (algorithmConfig.value.min_team_size > algorithmConfig.value.max_team_size) {
+    errorToast('Min team size cannot be greater than max team size.');
+    return;
+  }
+
   loading.value = true;
   try {
     const result = await $fetch<{ teamAssignments: Record<string, StudentWithChoices[]>, projects: Project[] }>(
       '/api/teams/generate',
-      { method: 'POST', body: { semesterId: selectedSemester.value.id } }
+      {
+        method: 'POST',
+        body: {
+          semesterId: selectedSemester.value.id,
+          config: algorithmConfig.value,
+        }
+      }
     );
 
     teamAssignments.value = result.teamAssignments;
@@ -259,5 +319,23 @@ const teamStats = computed(() => {
   font-weight: 600;
   color: #6b7280;
   text-align: center;
+}
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.option-label {
+  font-weight: 600;
+  color: var(--color-teal);
+}
+.option-input {
+  width: 6rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-teal);
+  border-radius: 0.375rem;
+  background: var(--color-beige);
+  color: var(--color-teal);
 }
 </style>
