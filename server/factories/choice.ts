@@ -1,4 +1,3 @@
-// import { faker } from "@faker-js/faker";
 import type { Semester, Student, Team } from "@prisma/client";
 
 export const createChoicesForSemester = (students: Student[], teams: Team[], semester: Semester) => {
@@ -19,7 +18,7 @@ export const createChoicesForSemester = (students: Student[], teams: Team[], sem
     // take the first 6
     return projectIdsForSemester.slice(0, 6).map((projectId, idx) => (
       {
-        id: faker.string.uuid(),
+        id: crypto.randomUUID(),
         rank: idx+1,
         studentId: student.id,
         projectId,
