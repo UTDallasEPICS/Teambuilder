@@ -1,11 +1,10 @@
-import { faker } from "@faker-js/faker";
 import type { Project, Semester, Team } from "@prisma/client";
 
 export const createRandomTeams = (projects: Project[], semesters: Semester[]): Team[] => {
   return semesters.flatMap((semester) => {
     // include a project in a semester 20% of the time
     const randomizedProjects = projects.filter(
-      project => faker.number.float({ min: 0, max: 1 }) < 0.2
+      _project => Math.random() < 0.2
     )
     return createTeamsForSemester(randomizedProjects, semester)
   })
@@ -16,7 +15,7 @@ export const createTeamsForSemester = (projects: Project[], semester: Semester):
 
   return projects.map(project => (
     {
-      id: faker.string.uuid(),
+      id: crypto.randomUUID(),
       projectId: project.id,
       semesterId: semester.id,
       createdAt: now,

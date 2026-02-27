@@ -1,18 +1,28 @@
-import { faker } from '@faker-js/faker';
 import { getRandomElement } from './helpers';
 import type { Student, StudentStatus } from '@prisma/client';
 
+const FIRST_NAMES = ['Alex','Jordan','Taylor','Morgan','Casey','Drew','Riley','Avery','Quinn','Peyton','Blake','Reese','Skyler','Cameron','Logan'];
+const LAST_NAMES = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Wilson','Moore','Anderson','Thomas','Jackson','White','Harris'];
+
+const randomAlpha = (length: number) =>
+  Array.from({ length }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+
+const randomNumeric = (length: number) =>
+  Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
+
 export const createRandomStudent = (): Student => {
   const now = new Date();
+  const firstName = getRandomElement(FIRST_NAMES);
+  const lastName = getRandomElement(LAST_NAMES);
 
   return {
-    id: faker.string.uuid(),
+    id: crypto.randomUUID(),
     netID: getRandomNetID(),
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
-    github: faker.internet.username(),
-    discord: faker.internet.username(),
+    firstName,
+    lastName,
+    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+    github: `${firstName.toLowerCase()}${randomNumeric(4)}`,
+    discord: `${firstName.toLowerCase()}_${randomNumeric(4)}`,
     major: getRandomMajor(),
     year: getRandomSeniority(),
     class: getRandomClass(),
@@ -33,8 +43,8 @@ export const createRandomStudents = (numStudents: number): Student[] => {
 }
 
 const getRandomNetID = () => {
-  const initials = faker.string.alpha({ length: 3, casing: 'lower' });
-  const numbers = faker.string.numeric(6);
+  const initials = randomAlpha(3);
+  const numbers = randomNumeric(6);
   return initials + numbers;
 }
 
@@ -50,8 +60,7 @@ const getRandomSeniority = () => {
 
 // 20% chance for 3200, 80% chance for 2200
 const getRandomClass = () => {
-  const rand = faker.number.float({ min: 0, max: 1 });
-  return rand < 0.2 ? '3200' : '2200';
+  return Math.random() < 0.2 ? '3200' : '2200';
 }
 
 const createRandomStatus = (): StudentStatus => {
