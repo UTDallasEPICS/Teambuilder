@@ -9,7 +9,7 @@ interface TeamToStudent {
   };
 }
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL })
 
 /**
  * On guild member add, syncs the mesmber's role and nickname with the data.json file.
