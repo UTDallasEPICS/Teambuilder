@@ -6,7 +6,7 @@ import { createSemesters } from "~/server/factories/semester";
 import { createRandomStudents } from "~/server/factories/student";
 import { createRandomTeams } from "~/server/factories/team";
 
-const client = new PrismaClient();
+const client = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL });
 
 export default defineEventHandler(async (event) => {
   try {

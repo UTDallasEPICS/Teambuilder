@@ -20,7 +20,7 @@ export const createRandomStudent = (): Student => {
     netID: getRandomNetID(),
     firstName,
     lastName,
-    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${randomNumeric(3)}@example.com`,
     github: `${firstName.toLowerCase()}${randomNumeric(4)}`,
     discord: `${firstName.toLowerCase()}_${randomNumeric(4)}`,
     major: getRandomMajor(),

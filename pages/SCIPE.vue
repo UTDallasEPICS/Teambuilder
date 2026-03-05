@@ -74,8 +74,40 @@
           <span v-if="diagnosticsLoading" class="loading-spinner"></span>
           <span v-else>Run Diagnostics</span>
         </button>
-        <div v-if="diagnosticsResult" class="mt-4 p-4 rounded-lg bg-gray-50 text-sm">
-          <pre class="whitespace-pre-wrap text-gray-900">{{ diagnosticsResult }}</pre>
+        <div v-if="diagnosticsResult" class="mt-4 p-4 rounded-lg bg-gray-50 text-sm text-gray-900 space-y-3">
+          <div v-if="diagnosticsResult.error" class="text-red-600 font-semibold">{{ diagnosticsResult.error }}</div>
+          <template v-else>
+            <div class="flex flex-wrap gap-6">
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Bot</p>
+                <p>{{ diagnosticsResult.bot?.tag }}</p>
+                <p :class="diagnosticsResult.bot?.isReady ? 'text-green-600' : 'text-red-600'">{{ diagnosticsResult.bot?.isReady ? 'Ready' : 'Not Ready' }}</p>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Guild</p>
+                <p>{{ diagnosticsResult.guild?.name }}</p>
+                <p>{{ diagnosticsResult.guild?.memberCount }} members</p>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Channels</p>
+                <p>{{ diagnosticsResult.channels?.total }} total ({{ diagnosticsResult.channels?.remaining }} remaining)</p>
+                <p>{{ diagnosticsResult.channels?.categories }} categories · {{ diagnosticsResult.channels?.text }} text · {{ diagnosticsResult.channels?.voice }} voice</p>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Roles</p>
+                <p>{{ diagnosticsResult.roles?.total }} total · {{ diagnosticsResult.roles?.projectRoles }} project roles</p>
+                <p :class="diagnosticsResult.roles?.hasAdminRole ? 'text-green-600' : 'text-yellow-600'">Admin role {{ diagnosticsResult.roles?.hasAdminRole ? 'present' : 'missing' }}</p>
+              </div>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Permissions</p>
+              <div class="flex gap-4">
+                <span :class="diagnosticsResult.permissions?.manageChannels ? 'text-green-600' : 'text-red-600'">Manage Channels: {{ diagnosticsResult.permissions?.manageChannels ? '✓' : '✗' }}</span>
+                <span :class="diagnosticsResult.permissions?.manageRoles ? 'text-green-600' : 'text-red-600'">Manage Roles: {{ diagnosticsResult.permissions?.manageRoles ? '✓' : '✗' }}</span>
+                <span :class="diagnosticsResult.permissions?.viewChannel ? 'text-green-600' : 'text-red-600'">View Channels: {{ diagnosticsResult.permissions?.viewChannel ? '✓' : '✗' }}</span>
+              </div>
+            </div>
+          </template>
         </div>
 
         <div class="section-title mt-8">
@@ -142,7 +174,7 @@ const deletedChannels = ref<string[]>([]);
 const deleteChannelsErrors = ref<Array<{ channel: string; error: string }>>([]);
 
 const diagnosticsLoading = ref(false);
-const diagnosticsResult = ref('');
+const diagnosticsResult = ref<any>(null);
 
 const updateChannels = async () => {
   loading.value = true;
@@ -194,12 +226,11 @@ const deleteAllRoles = async () => {
 
 const runDiagnostics = async () => {
   diagnosticsLoading.value = true;
-  diagnosticsResult.value = '';
+  diagnosticsResult.value = null;
   try {
-    const response = await $fetch('/api/discord/diagnostics') as any;
-    diagnosticsResult.value = JSON.stringify(response, null, 2);
+    diagnosticsResult.value = await $fetch('/api/discord/diagnostics') as any;
   } catch (error: any) {
-    diagnosticsResult.value = `Error: ${error?.data?.message || error?.message || 'Failed to run diagnostics'}`;
+    diagnosticsResult.value = { error: error?.data?.message || error?.message || 'Failed to run diagnostics' };
   } finally {
     diagnosticsLoading.value = false;
   }

@@ -114,5 +114,19 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Persist student assignments to the database
+  await Promise.all(
+    Object.entries(teamAssignments).map(async ([projectId, assignedStudents]) => {
+      await event.context.client.team.update({
+        where: { projectId_semesterId: { projectId, semesterId } },
+        data: {
+          students: {
+            set: assignedStudents.map(s => ({ id: s.id })),
+          },
+        },
+      })
+    })
+  )
+
   return { teamAssignments, projects }
 })

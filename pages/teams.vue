@@ -148,7 +148,7 @@ const toggleEditMode = () => {
   }
 };
 
-const moveMember = (studentId: string) => {
+const moveMember = async (studentId: string) => {
   if (!rawAssignments.value || !selectedTeam.value) return;
   const destinationProjectId = moveTargets.value[studentId];
   const sourceProjectId = selectedTeam.value.projectId;
@@ -179,7 +179,35 @@ const moveMember = (studentId: string) => {
   persistAssignments();
   refreshSelectedTeam();
   moveTargets.value[studentId] = '';
-  successToast('Member moved successfully.');
+
+  // Persist move to database
+  if (savedSemester.value?.id) {
+    try {
+      await Promise.all([
+        $fetch('/api/teams/assign', {
+          method: 'POST',
+          body: {
+            semesterId: savedSemester.value.id,
+            projectId: sourceProjectId,
+            studentIds: (rawAssignments.value[sourceProjectId] as any[]).map((s: any) => s.id),
+          },
+        }),
+        $fetch('/api/teams/assign', {
+          method: 'POST',
+          body: {
+            semesterId: savedSemester.value.id,
+            projectId: destinationProjectId,
+            studentIds: (rawAssignments.value[destinationProjectId] as any[]).map((s: any) => s.id),
+          },
+        }),
+      ]);
+      successToast('Member moved and saved successfully.');
+    } catch (e) {
+      successToast('Member moved locally. Database save failed — changes are in localStorage only.');
+    }
+  } else {
+    successToast('Member moved successfully.');
+  }
 };
 
 watch(selectedTeam, (newTeam) => {
@@ -227,7 +255,8 @@ const exportTeamsToCSV = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  // First, restore semester/project metadata from localStorage
   try {
     const raw = localStorage.getItem('lastTeamAssignments');
     if (raw) {
@@ -238,6 +267,24 @@ onMounted(() => {
     }
   } catch (e) {
     rawAssignments.value = null;
+  }
+
+  // Then, load authoritative assignments from the database
+  if (savedSemester.value?.id) {
+    try {
+      const result = await $fetch<{ teamAssignments: Record<string, any[]>, projects: any[] }>(
+        `/api/teams?semesterId=${savedSemester.value.id}`
+      );
+      // Only override if the DB actually has student assignments saved
+      const hasAssignments = Object.values(result.teamAssignments).some(s => s.length > 0);
+      if (hasAssignments) {
+        rawAssignments.value = result.teamAssignments;
+        projects.value = result.projects;
+        persistAssignments();
+      }
+    } catch (e) {
+      // DB fetch failed — fall back to localStorage data already loaded above
+    }
   }
 });
 </script>
