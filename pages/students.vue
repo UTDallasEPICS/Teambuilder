@@ -17,7 +17,7 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"

@@ -16,7 +16,7 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
@@ -365,10 +365,10 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 
 /* keep the primevue DataTable itself white but make the inner area around it orange as well */
 .centered-row.shaded-card > .centered-col {
-  background: var(--color-utd-orange) !important;
+  background: transparent !important;
   border-radius: 0.75rem;
   padding: 1.25rem !important; /* inner inset padding */
-  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  box-shadow: none;
   width: 100%;
 }
 </style>

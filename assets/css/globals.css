@@ -387,10 +387,10 @@ select,
 }
 
 .centered-row.shaded-card > .centered-col {
-  background: var(--color-utd-orange) !important;
+  background: transparent !important;
   border-radius: 0.75rem;
   padding: 1.25rem !important;
-  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  box-shadow: none;
   width: 100%;
 }
 
