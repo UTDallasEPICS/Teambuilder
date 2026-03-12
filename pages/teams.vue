@@ -23,15 +23,15 @@
         selectionMode="single"
         v-model:selection="selectedTeam"
       )
-        Column(field="projectName" header="Project" :showFilterMenu="false")
+        Column(field="projectName" header="Project" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project" :showClear="true")
-        Column(field="teamSize" header="Team Size" :showFilterMenu="false" style="width:130px")
+        Column(field="teamSize" header="Team Size" :showFilterMenu="false" style="width:130px" :sortable="true")
           template(#body="{ data }")
             .text-center {{ data.teamSize }}
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Size" :showClear="true")
-        Column(field="studentNames" header="Members" :showFilterMenu="false")
+        Column(field="studentNames" header="Members" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }")
             span.text-sm.text-gray-700 {{ data.studentNames }}
           template(#filter="{ filterModel, filterCallback }")

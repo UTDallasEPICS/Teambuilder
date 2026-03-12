@@ -23,19 +23,19 @@
         selectionMode="single"
         v-model:selection="selectedStudent"
       )
-        Column(field="fullName" header="Name" :showFilterMenu="false")
+        Column(field="fullName" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
 
-        Column(field="netID" header="NetID" :showFilterMenu="false")
+        Column(field="netID" header="NetID" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by NetID" :showClear="true")
 
-        Column(field="major" header="Major" :showFilterMenu="false")
+        Column(field="major" header="Major" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="majors" placeholder="Any" :maxSelectedLabels="1")
 
-        Column(field="year" header="Year" :showFilterMenu="false")
+        Column(field="year" header="Year" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }") {{ capitalizeFirst(data.year) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="years" placeholder="Any" :maxSelectedLabels="1")
@@ -44,7 +44,7 @@
               // selected value
               template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
 
-        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem")
+        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem" :sortable="true")
           template(#body="{ data }") 
             .flex.justify-center
               .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
