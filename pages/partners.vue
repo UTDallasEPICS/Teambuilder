@@ -24,23 +24,23 @@
         v-model:selection="selectedPartner"
       )
 
-        Column(field="name" header="Name" :showFilterMenu="false")
+        Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name")
 
-        Column(field="contactName" header="Contact Name" :showFilterMenu="false")
+        Column(field="contactName" header="Contact Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by contact name")
 
-        Column(field="contactEmail" header="Contact Email" :showFilterMenu="false")
+        Column(field="contactEmail" header="Contact Email" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by contact email")
 
-        Column(field="projectName" header="Projects" :showFilterMenu="false")
+        Column(field="projectName" header="Projects" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project")
 
-        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
           template(#body="{ data }")
             .flex.justify-center
               Button.p-button-rounded.p-button-danger.p-button-sm(

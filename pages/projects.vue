@@ -22,17 +22,17 @@
         selectionMode="single"
         v-model:selection="selectedProject"
       )
-        Column(field="name" header="Name" :showFilterMenu="false")
+        Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
-        Column(field="description" header="Description" :showFilterMenu="false")
+        Column(field="description" header="Description" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
         // hide this column on small screens (partner is lower priority)
-        Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell")
+        Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
-        Column(field="status" header="Status" :showFilterMenu="false")
+        Column(field="status" header="Status" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }")
             .flex.justify-center
               .pill(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
@@ -41,7 +41,7 @@
               template(#option="slotProps")
                 .pill(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
         // hide type on small screens
-        Column(field="type" header="Type" :showFilterMenu="false" class="hidden lg:table-cell")
+        Column(field="type" header="Type" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
           template(#body="{ data }")
             .text-center {{ capitalizeFirst(data.type) }}
           template(#filter="{ filterModel, filterCallback }")
@@ -49,7 +49,7 @@
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
               template(#value="slotProps") {{ formatTypesFilter(slotProps.value) }}
 
-        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
           template(#body="{ data }")
             .flex.justify-center
               Button.p-button-rounded.p-button-danger.p-button-sm(

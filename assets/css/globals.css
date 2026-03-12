@@ -8,7 +8,7 @@
 
 /* color palette */
 :root {
-  --color-frame-orange: #c97500; /* page frame / accent */
+  --color-frame-orange: #d3830a; /* page frame / accent */
   --color-beige: #fcf5dc; /* main table background */
   --color-beige-light: #fff6e2; /* header / inputs */
   --color-pill-new: #34d399; /* NEW */
@@ -20,7 +20,7 @@
   --color-card-bg: #ffffff; /* card background */
   --color-accent-green: #10b981; /* success / accents */
   --color-accent-utd-green: #154734; /* UTD green accent */
-  --color-utd-orange: #e87500; /* UTD orange accent */
+  --color-utd-orange: #d3830a; /* UTD orange accent */
   --color-nav-bg: #e6e6e6; /* neutral grey for left navigation */
   --color-nav-text: #5b5f63; /* neutral grey for nav text */
 }
