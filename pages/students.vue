@@ -460,19 +460,6 @@ select {
   overflow-x: auto !important; 
 }
 
-/* Set minimum width for DataTable on larger screens */
-@media (min-width: 768px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { 
-    min-width: 50rem !important; 
-  }
-}
-
-@media (max-width: 767px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { 
-    min-width: 20rem !important; 
-  }
-}
-
 /* Allow text wrapping in table cells */
 :deep(.p-datatable td) {
   white-space: normal;

@@ -249,17 +249,37 @@ body,
   overflow-x: auto;
 }*/
 
-@media (min-width: 1056px) {
+@media (min-width: 1280px) {
   .p-datatable-scrollable .p-datatable-table {
     min-width: 50rem !important;
   }
 }
 
-@media (max-width: 1055px) {
+@media (min-width: 768px) and (max-width: 1279px) {
   .p-datatable-scrollable .p-datatable-table {
-    min-width: 20rem !important;
+    min-width: 34rem !important;
   }
-  
+
+  .p-datatable th,
+  .p-datatable td {
+    padding: 0.5rem 0.625rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .p-datatable-scrollable .p-datatable-table {
+    min-width: 100% !important;
+  }
+
+  .p-datatable {
+    font-size: 0.85rem;
+  }
+
+  .p-datatable th,
+  .p-datatable td {
+    padding: 0.375rem 0.5rem !important;
+  }
+
   .project-title {
     font-size: 1.25rem;
   }

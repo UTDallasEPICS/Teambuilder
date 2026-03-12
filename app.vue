@@ -18,9 +18,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 const sidebarOpen = ref(true);
+const MOBILE_SIDEBAR_BREAKPOINT = 1280;
+let lastWindowWidth = MOBILE_SIDEBAR_BREAKPOINT;
 
 const toggleSidebar = () => {
   sidebarOpen.value = !sidebarOpen.value;
@@ -29,6 +31,31 @@ const toggleSidebar = () => {
 const closeSidebar = () => {
   sidebarOpen.value = false;
 };
+
+const handleResize = () => {
+  const currentWidth = window.innerWidth;
+  const crossedToSmallScreen = lastWindowWidth >= MOBILE_SIDEBAR_BREAKPOINT && currentWidth < MOBILE_SIDEBAR_BREAKPOINT;
+
+  if (crossedToSmallScreen) {
+    closeSidebar();
+  }
+
+  lastWindowWidth = currentWidth;
+};
+
+onMounted(() => {
+  lastWindowWidth = window.innerWidth;
+
+  if (lastWindowWidth < MOBILE_SIDEBAR_BREAKPOINT) {
+    closeSidebar();
+  }
+
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
 </script>
 
 <style>

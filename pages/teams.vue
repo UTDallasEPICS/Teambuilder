@@ -354,4 +354,34 @@ onMounted(async () => {
   color: #fff;
   cursor: pointer;
 }
+
+@media (max-width: 1024px) {
+  :deep(.p-datatable) {
+    font-size: 0.92rem;
+  }
+
+  :deep(.p-datatable th),
+  :deep(.p-datatable td) {
+    padding: 0.5rem 0.625rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .project-title {
+    font-size: 1.25rem;
+  }
+
+  :deep(.p-datatable) {
+    font-size: 0.85rem;
+  }
+
+  :deep(.p-datatable-scrollable .p-datatable-table) {
+    min-width: 100% !important;
+  }
+
+  :deep(.p-datatable th),
+  :deep(.p-datatable td) {
+    padding: 0.375rem 0.5rem !important;
+  }
+}
 </style>

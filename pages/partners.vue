@@ -17,7 +17,6 @@
         scrollable
         scrollHeight="80vh"
         class="w-full mt-2 md:mt-5"
-        tableStyle="min-width: 50rem;"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
@@ -253,8 +252,7 @@
 
   :deep(.p-datatable-wrapper) { overflow-x: auto !important; }
 
-  @media (min-width: 768px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 50rem !important; } }
-  @media (max-width: 767px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 20rem !important; } .project-title { font-size: 1.25rem; } }
+  @media (max-width: 767px) { .project-title { font-size: 1.25rem; } }
 
   :deep(.p-datatable td) { white-space: normal; word-break: break-word; }
 

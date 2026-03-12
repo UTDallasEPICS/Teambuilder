@@ -323,11 +323,7 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 
 :deep(.p-datatable-wrapper) { overflow-x: auto !important; }
 
-@media (min-width: 768px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 50rem !important; }
-}
 @media (max-width: 767px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 20rem !important; }
   .project-title { font-size: 1.25rem; }
 }
 
