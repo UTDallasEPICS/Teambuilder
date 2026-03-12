@@ -54,7 +54,7 @@
                 template(#option="slotProps")
                   .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
 
-        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
           template(#body="{ data }")
             .flex.justify-center
               Button.p-button-rounded.p-button-danger.p-button-sm(
