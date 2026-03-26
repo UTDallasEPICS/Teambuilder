@@ -12,16 +12,15 @@
       .text-2xl.mt-2 Project count: {{ projects.length }}
 
       DataTable.beige-card.overflow-hidden(
-       :value="projects"
+        :value="projects"
         v-model:filters="filters"
-        selectionMode="single"
-        v-model:selection="selectedProject"
+        scrollable
+        scrollHeight="80vh"
+        class="h-[80vh] w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
-        :paginator="true"
-        :rows="5"
-        :rowsPerPageOptions="[5,10,20, 25]"
-        class="w-full mt-2 md:mt-5" 
+        selectionMode="single"
+        v-model:selection="selectedProject"
       )
         Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")

@@ -574,6 +574,7 @@ select,
   color: var(--color-text-dark) !important;
 }
 
+/* Strong override: cover overlay-rooted dropdowns/overlaypanels (popper/floating UI) */
 body .p-dropdown-panel,
 body .p-overlaypanel,
 body .p-connected-overlay,
@@ -598,7 +599,7 @@ body .p-dropdown-items .p-dropdown-item {
   color: var(--color-text-dark) !important;
 }
 
-/* Remove any semi transparent backgrounds applied deeper in the tree */
+/* Remove any semi-transparent backgrounds applied deeper in the tree */
 body .p-dropdown-panel *,
 body .p-overlaypanel *,
 body .p-connected-overlay * {

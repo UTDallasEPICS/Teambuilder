@@ -12,19 +12,18 @@
       .mt-20.project-title Students
       .text-2xl.mt-2 Student count: {{ studentCount }}
 
-       DataTable.beige-card.overflow-hidden.px-10.mt-5(
+      DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="studentsWithFullName"
-        v-model:filters="filters"
-        selectionMode="single"
-        v-model:selection="selectedStudent"
-        dataKey="id"
-        filterDisplay="row"
-        :paginator="true"
-        :rows="5"
-        :rowsPerPageOptions="[5,10,20, 25]"
-        class="w-full mt-2 md:mt-5" 
+  v-model:filters="filters"
+  selectionMode="single"
+  v-model:selection="selectedStudent"
+  dataKey="id"
+  filterDisplay="row"
+  :paginator="true"                <!-- enable pagination -->
+  :rows="10"                       <!-- default rows per page -->
+  :rowsPerPageOptions="[5,10,20]"  <!-- allow user to choose rows per page -->
+  class="h-full w-full mt-2 md:mt-5"
       ) 
-
 
       
         Column(field="fullName" header="Name" :showFilterMenu="false" :sortable="true")

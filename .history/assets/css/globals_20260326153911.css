@@ -546,18 +546,19 @@ select,
   font-weight: 600;
 }
 
+/* Active/selected page uses site red */
 .p-paginator .p-paginator-page.p-highlight,
 .p-paginator .p-paginator-page.p-highlight a {
   color: var(--color-accent-red) !important;
 }
 
-/* Hover state for the page numbers */
+/* Hover state for page numbers */
 .p-paginator .p-paginator-page:hover,
 .p-paginator .p-paginator-page a:hover {
   color: var(--color-accent-red) !important;
 }
 
-/* dropdown panels and items use white background and dark text */
+/* Ensure all PrimeVue dropdown panels and items use white background and dark text */
 .p-dropdown-panel,
 .p-dropdown-items,
 .p-dropdown-item,
@@ -568,12 +569,14 @@ select,
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
 }
 
+/* Specificity for paginator dropdowns and datatable-scoped dropdowns */
 .p-paginator .p-dropdown-panel,
 .p-datatable .p-dropdown-panel {
   background-color: #ffffff !important;
   color: var(--color-text-dark) !important;
 }
 
+/* Strong override: cover overlay-rooted dropdowns/overlaypanels (popper/floating UI) */
 body .p-dropdown-panel,
 body .p-overlaypanel,
 body .p-connected-overlay,
@@ -598,7 +601,7 @@ body .p-dropdown-items .p-dropdown-item {
   color: var(--color-text-dark) !important;
 }
 
-/* Remove any semi transparent backgrounds applied deeper in the tree */
+/* Remove any semi-transparent backgrounds applied deeper in the tree */
 body .p-dropdown-panel *,
 body .p-overlaypanel *,
 body .p-connected-overlay * {

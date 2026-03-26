@@ -20,8 +20,8 @@
         dataKey="id"
         filterDisplay="row"
         :paginator="true"
-        :rows="5"
-        :rowsPerPageOptions="[5,10,20, 25]"
+        :rows="10"
+        :rowsPerPageOptions="[5,10,20]"
         class="w-full mt-2 md:mt-5" 
       ) 
 

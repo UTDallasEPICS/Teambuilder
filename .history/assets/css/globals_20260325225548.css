@@ -523,7 +523,9 @@ select,
   border-left: 6px solid #ef4444 !important;
 }
 
-/* makes the paginator background white */
+/* datatable paginator styling */ 
+
+/* Make PrimeVue datatable paginator background white for better contrast */
 .p-paginator {
   background-color: #ffffff !important;
   color: var(--color-text-dark) !important;
@@ -540,68 +542,21 @@ select,
   background: transparent !important;
 }
 
-
+/* Page number colors */
 .p-paginator .p-paginator-page {
   color: var(--color-text-dark) !important;
   font-weight: 600;
 }
 
+/* Active/selected page uses site red */
 .p-paginator .p-paginator-page.p-highlight,
 .p-paginator .p-paginator-page.p-highlight a {
   color: var(--color-accent-red) !important;
 }
 
-/* Hover state for the page numbers */
+/* Hover state for page numbers */
 .p-paginator .p-paginator-page:hover,
 .p-paginator .p-paginator-page a:hover {
   color: var(--color-accent-red) !important;
-}
-
-/* dropdown panels and items use white background and dark text */
-.p-dropdown-panel,
-.p-dropdown-items,
-.p-dropdown-item,
-.p-multiselect-panel {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  color: var(--color-text-dark) !important;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
-}
-
-.p-paginator .p-dropdown-panel,
-.p-datatable .p-dropdown-panel {
-  background-color: #ffffff !important;
-  color: var(--color-text-dark) !important;
-}
-
-body .p-dropdown-panel,
-body .p-overlaypanel,
-body .p-connected-overlay,
-body [class*="p-dropdown"],
-body [class*="p-overlaypanel"],
-body [class*="p-connected-overlay"] {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  color: var(--color-text-dark) !important;
-  background-image: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06) !important;
-}
-
-/* makes sure items inside overlays are white with dark text */
-body .p-dropdown-panel .p-dropdown-item,
-body .p-overlaypanel .p-dropdown-item,
-body .p-connected-overlay .p-dropdown-item,
-body .p-dropdown-items .p-dropdown-item {
-  background-color: #ffffff !important;
-  color: var(--color-text-dark) !important;
-}
-
-/* Remove any semi transparent backgrounds applied deeper in the tree */
-body .p-dropdown-panel *,
-body .p-overlaypanel *,
-body .p-connected-overlay * {
-  background: transparent none !important;
 }
 

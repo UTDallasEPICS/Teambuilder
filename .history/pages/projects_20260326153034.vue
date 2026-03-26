@@ -12,14 +12,14 @@
       .text-2xl.mt-2 Project count: {{ projects.length }}
 
       DataTable.beige-card.overflow-hidden(
-       :value="projects"
+       :value="studentsWithFullName"
         v-model:filters="filters"
         selectionMode="single"
-        v-model:selection="selectedProject"
+        v-model:selection="selectedStudent"
         dataKey="id"
         filterDisplay="row"
         :paginator="true"
-        :rows="5"
+        :rows="10"
         :rowsPerPageOptions="[5,10,20, 25]"
         class="w-full mt-2 md:mt-5" 
       )

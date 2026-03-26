@@ -14,15 +14,15 @@
 
        DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="studentsWithFullName"
-        v-model:filters="filters"
-        selectionMode="single"
-        v-model:selection="selectedStudent"
-        dataKey="id"
-        filterDisplay="row"
-        :paginator="true"
-        :rows="5"
-        :rowsPerPageOptions="[5,10,20, 25]"
-        class="w-full mt-2 md:mt-5" 
+  v-model:filters="filters"
+  selectionMode="single"
+  v-model:selection="selectedStudent"
+  dataKey="id"
+  filterDisplay="row"
+  :paginator="true"
+  :rows="10"
+  :rowsPerPageOptions="[5,10,20]"
+  class="w-full mt-2 md:mt-5" 
       ) 
 
 

@@ -523,85 +523,39 @@ select,
   border-left: 6px solid #ef4444 !important;
 }
 
-/* makes the paginator background white */
+/* datatable paginator styling */ 
+/* Paginator background */
 .p-paginator {
-  background-color: #ffffff !important;
-  color: var(--color-text-dark) !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: none;
+  background-color: #ffffff; /* white background */
 }
 
-/* Keep internal paginator controls transparent so buttons inherit the paginator background */
-.p-paginator .p-paginator-pages,
-.p-paginator .p-paginator-prev,
-.p-paginator .p-paginator-next,
-.p-paginator .p-paginator-rpp-options,
-.p-paginator .p-dropdown {
-  background: transparent !important;
-}
-
-
+/* Page numbers */
 .p-paginator .p-paginator-page {
-  color: var(--color-text-dark) !important;
+  background-color: #ffffff; /* same as paginator */
+  color: #000000;            /* black text */
+  border-radius: 0.25rem;
+  margin: 0 0.125rem;
+}
+
+/* Active page number */
+.p-paginator .p-paginator-page.p-highlight {
+  background-color: #ffffff; /* keep white */
+  color: #000000;            /* black text */
   font-weight: 600;
+  border-radius: 0.25rem;
 }
 
-.p-paginator .p-paginator-page.p-highlight,
-.p-paginator .p-paginator-page.p-highlight a {
-  color: var(--color-accent-red) !important;
+/* Navigation arrows */
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next {
+  color: #000000; /* black arrows */
 }
 
-/* Hover state for the page numbers */
-.p-paginator .p-paginator-page:hover,
-.p-paginator .p-paginator-page a:hover {
-  color: var(--color-accent-red) !important;
+/* Rows-per-page dropdown */
+.p-paginator .p-paginator-rpp-options {
+  background-color: #ffffff; /* white background */
+  color: #000000;            /* black text */
+  border: 1px solid #ccc;    /* light border */
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.5rem;
 }
-
-/* dropdown panels and items use white background and dark text */
-.p-dropdown-panel,
-.p-dropdown-items,
-.p-dropdown-item,
-.p-multiselect-panel {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  color: var(--color-text-dark) !important;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
-}
-
-.p-paginator .p-dropdown-panel,
-.p-datatable .p-dropdown-panel {
-  background-color: #ffffff !important;
-  color: var(--color-text-dark) !important;
-}
-
-body .p-dropdown-panel,
-body .p-overlaypanel,
-body .p-connected-overlay,
-body [class*="p-dropdown"],
-body [class*="p-overlaypanel"],
-body [class*="p-connected-overlay"] {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  color: var(--color-text-dark) !important;
-  background-image: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06) !important;
-}
-
-/* makes sure items inside overlays are white with dark text */
-body .p-dropdown-panel .p-dropdown-item,
-body .p-overlaypanel .p-dropdown-item,
-body .p-connected-overlay .p-dropdown-item,
-body .p-dropdown-items .p-dropdown-item {
-  background-color: #ffffff !important;
-  color: var(--color-text-dark) !important;
-}
-
-/* Remove any semi transparent backgrounds applied deeper in the tree */
-body .p-dropdown-panel *,
-body .p-overlaypanel *,
-body .p-connected-overlay * {
-  background: transparent none !important;
-}
-

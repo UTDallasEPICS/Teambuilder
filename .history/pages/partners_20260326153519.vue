@@ -14,6 +14,17 @@
       DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="partners"
         v-model:filters="filters"
+        scrollable
+        scrollHeight="80vh"
+        class="h-[80vh] w-full mt-2 md:mt-5"
+        tableStyle="min-width: 50rem;"
+        dataKey="id"
+        filterDisplay="row"
+        selectionMode="single"
+        v-model:selection="selectedPartner"
+
+        :value="partners"
+        v-model:filters="filters"
         selectionMode="single"
         v-model:selection="selectedPartner"
         dataKey="id"
