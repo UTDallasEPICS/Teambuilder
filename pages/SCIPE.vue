@@ -114,6 +114,32 @@
           <span class="section-accent" aria-hidden></span>
           <h2 class="section-heading">Manage Project Roles</h2>
         </div>
+        <div class="flex gap-3 flex-wrap items-center">
+          <select v-model="selectedSemesterId" class="semester-select" :disabled="assignRolesLoading || loading || deleteLoading">
+            <option value="">Latest semester</option>
+            <option v-for="semester in semesters" :key="semester.id" :value="semester.id">
+              {{ semester.season }} {{ semester.year }}
+            </option>
+          </select>
+          <button
+            @click="assignProjectRoles"
+            :disabled="assignRolesLoading || loading || deleteLoading"
+            class="button-create disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="assignRolesLoading" class="loading-spinner"></span>
+            <span v-else>Assign Project Roles from Discord Usernames</span>
+          </button>
+        </div>
+        <div v-if="assignRolesMessage" class="mt-4 p-4 rounded-lg result-message" :class="{
+          'result-success': assignRolesMessageType === 'success',
+          'result-error': assignRolesMessageType === 'error',
+          'result-info': assignRolesMessageType === 'info'
+        }">
+          {{ assignRolesMessage }}
+          <div v-if="assignRolesErrors.length" class="mt-2 result-error-list">
+            <div v-for="err in assignRolesErrors" :key="err">{{ err }}</div>
+          </div>
+        </div>
         <button
           @click="deleteAllRoles"
           :disabled="loading || deleteLoading"
@@ -154,7 +180,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+
+interface Semester {
+  id: string;
+  year: number;
+  season: string;
+}
 
 const loading = ref(false);
 const message = ref('');
@@ -175,6 +207,12 @@ const deleteChannelsErrors = ref<Array<{ channel: string; error: string }>>([]);
 
 const diagnosticsLoading = ref(false);
 const diagnosticsResult = ref<any>(null);
+const semesters = ref<Semester[]>([]);
+const selectedSemesterId = ref('');
+const assignRolesLoading = ref(false);
+const assignRolesMessage = ref('');
+const assignRolesMessageType = ref<'success' | 'error' | 'info'>('info');
+const assignRolesErrors = ref<string[]>([]);
 
 const updateChannels = async () => {
   loading.value = true;
@@ -259,6 +297,37 @@ const deleteAllChannels = async () => {
     deleteChannelsLoading.value = false;
   }
 };
+
+const assignProjectRoles = async () => {
+  assignRolesLoading.value = true;
+  assignRolesMessage.value = '';
+  assignRolesErrors.value = [];
+  try {
+    const response = await $fetch('/api/discord/assign-project-roles', {
+      method: 'POST',
+      body: {
+        semesterId: selectedSemesterId.value || undefined,
+      },
+    }) as any;
+
+    assignRolesMessage.value = response.message || 'Role assignment completed.';
+    assignRolesMessageType.value = response.success ? 'success' : 'error';
+    assignRolesErrors.value = response.errors || [];
+  } catch (error: any) {
+    assignRolesMessage.value = error?.data?.message || 'Failed to assign project roles.';
+    assignRolesMessageType.value = 'error';
+  } finally {
+    assignRolesLoading.value = false;
+  }
+};
+
+onMounted(async () => {
+  try {
+    semesters.value = await $fetch<Semester[]>('/api/semesters');
+  } catch {
+    semesters.value = [];
+  }
+});
 
 </script>
 <style scoped>
@@ -348,6 +417,19 @@ const deleteAllChannels = async () => {
 
 .button-delete-roles:hover:not(:disabled) {
   background-color: #B91C1C !important;
+}
+
+.semester-select {
+  border: 1px solid #9ca3af;
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.6rem;
+  min-width: 14rem;
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.semester-select option {
+  color: #111827 !important;
 }
 
 .loading-spinner {

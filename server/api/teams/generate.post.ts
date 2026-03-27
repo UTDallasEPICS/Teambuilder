@@ -114,6 +114,75 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Post-processing: Randomize students with no valid choices into teams that need more people
+  // and match their major when possible
+  const studentsWithNoChoices = students.filter(s => s.choices.length === 0)
+  if (studentsWithNoChoices.length > 0) {
+    // Identify which teams need more people (below max team size)
+    const projectIdToTeamSize = new Map<string, number>()
+    const projectIdToMajors = new Map<string, Map<string, number>>() // projectId -> { major: count }
+    
+    // Count current team sizes and major distributions
+    for (const [projectId, assignedStudents] of Object.entries(teamAssignments)) {
+      projectIdToTeamSize.set(projectId, assignedStudents.length)
+      
+      const majorCounts = new Map<string, number>()
+      for (const student of assignedStudents) {
+        const major = student.major ?? 'Other'
+        majorCounts.set(major, (majorCounts.get(major) ?? 0) + 1)
+      }
+      projectIdToMajors.set(projectId, majorCounts)
+    }
+
+    // Re-assign students with no choices
+    for (const studentWithNoChoices of studentsWithNoChoices) {
+      // Find teams that need more people
+      const projectsNeedingPeople = projects
+        .filter(p => (projectIdToTeamSize.get(p.id) ?? 0) < 6) // Below max team size
+        .sort((a, b) => {
+          const sizeA = projectIdToTeamSize.get(a.id) ?? 0
+          const sizeB = projectIdToTeamSize.get(b.id) ?? 0
+          
+          // Prioritize teams that are smaller (need more people)
+          if (sizeA !== sizeB) return sizeA - sizeB
+          
+          // Tiebreaker: prioritize teams with matching major
+          const majorCountsA = projectIdToMajors.get(a.id) ?? new Map()
+          const majorCountsB = projectIdToMajors.get(b.id) ?? new Map()
+          
+          const countA = majorCountsA.get(studentWithNoChoices.major ?? 'Other') ?? 0
+          const countB = majorCountsB.get(studentWithNoChoices.major ?? 'Other') ?? 0
+          
+          return countB - countA // Higher major match count first
+        })
+
+      if (projectsNeedingPeople.length > 0) {
+        // Randomly pick from top 3 teams (or fewer if not available) to balance distribution
+        const topCandidates = projectsNeedingPeople.slice(0, 3)
+        const randomProject = topCandidates[Math.floor(Math.random() * topCandidates.length)]
+        
+        // Find current project this student was assigned to and move them
+        for (const [currentProjectId, assignedStudents] of Object.entries(teamAssignments)) {
+          const studentIndex = assignedStudents.findIndex(s => s.id === studentWithNoChoices.id)
+          if (studentIndex !== -1) {
+            // Remove from current project
+            assignedStudents.splice(studentIndex, 1)
+            break
+          }
+        }
+        
+        // Add to new project
+        if (!teamAssignments[randomProject.id]) {
+          teamAssignments[randomProject.id] = []
+        }
+        teamAssignments[randomProject.id].push(studentWithNoChoices)
+        
+        // Update size map
+        projectIdToTeamSize.set(randomProject.id, (projectIdToTeamSize.get(randomProject.id) ?? 0) + 1)
+      }
+    }
+  }
+
   // Persist student assignments to the database
   await Promise.all(
     Object.entries(teamAssignments).map(async ([projectId, assignedStudents]) => {

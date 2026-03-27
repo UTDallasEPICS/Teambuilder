@@ -5,7 +5,7 @@
       .flex.flex-wrap.items-center.gap-2.self-start
         FileUploadButton(title="Upload Partners (Merge)" @dataParsed="handleParsed")
         FileUploadButton(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-20.project-title.embossed.drop-shadow-md Partners
@@ -16,8 +16,7 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
-        tableStyle="min-width: 50rem;"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
@@ -139,7 +138,7 @@
   const resetDatabase = async () => {
     const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
     if (confirmAvailable) {
-      if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+      if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
         return;
       }
     }
@@ -152,8 +151,8 @@
     // Refresh partners from database
           partners.value = await $fetch<Partner[]>('/api/partners');
           partnerCount.value = partners.value.length;
-          console.log('Database reset to default data successfully!');
-          (globalThis as any).alert('Database has been reset to default generated data.');
+          console.log('Database cleared successfully!');
+          (globalThis as any).alert('Database has been cleared.');
         } catch (error) {
       console.error('Error resetting database:', error);
       (globalThis as any).alert('Failed to reset database. Please check the console for details.');
@@ -253,8 +252,7 @@
 
   :deep(.p-datatable-wrapper) { overflow-x: auto !important; }
 
-  @media (min-width: 768px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 50rem !important; } }
-  @media (max-width: 767px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 20rem !important; } .project-title { font-size: 1.25rem; } }
+  @media (max-width: 767px) { .project-title { font-size: 1.25rem; } }
 
   :deep(.p-datatable td) { white-space: normal; word-break: break-word; }
 
@@ -268,6 +266,6 @@
   .pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
 
   .centered-row.shaded-card { background: var(--color-utd-orange) !important; padding: 2rem !important; border-radius: 0.5rem; }
-  .centered-row.shaded-card > .centered-col { background: var(--color-utd-orange) !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: 0 8px 20px rgba(16,24,40,0.06); width: 100%; }
+  .centered-row.shaded-card > .centered-col { background: transparent !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: none; width: 100%; }
   </style>
   
