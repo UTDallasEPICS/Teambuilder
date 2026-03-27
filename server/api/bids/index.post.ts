@@ -65,6 +65,7 @@ function normalizeProjectText(input: string): string {
 
 export default defineEventHandler(async (event) => {
   const rows: any[] = await readBody(event);
+  const merge = getQuery(event).merge === 'true'; // If true, keep existing choices; if false (default), replace
 
   if (!Array.isArray(rows) || rows.length === 0) {
     throw createError({ statusCode: 400, message: 'Expected a non-empty array of bid rows.' });
@@ -72,13 +73,85 @@ export default defineEventHandler(async (event) => {
 
   const client = event.context.client;
 
+  // Extract semester from choice format (e.g., "S26" from "S26 - ProjectName")
+  let semesterCode = '';
+  for (const row of rows) {
+    for (let i = 1; i <= 6; i++) {
+      const choice = row[`Choice ${i}`]?.trim();
+      if (choice) {
+        const match = choice.match(/^([SF]\d{2,4})/);
+        if (match) {
+          semesterCode = match[1];
+          break;
+        }
+      }
+    }
+    if (semesterCode) break;
+  }
+
+  // Parse semester code (S26 = Spring 2026, F25 = Fall 2025)
+  let semesterId = '';
+  if (semesterCode) {
+    const season = semesterCode[0] === 'S' ? 'SPRING' : 'FALL';
+    const year = 2000 + parseInt(semesterCode.slice(1), 10);
+
+    const semester = await client.semester.upsert({
+      where: { year_season: { year, season: season as any } },
+      update: {},
+      create: { year, season: season as any },
+    });
+    semesterId = semester.id;
+  }
+
+  // Create default partner if needed
+  let defaultPartner = await client.partner.findFirst();
+  if (!defaultPartner) {
+    defaultPartner = await client.partner.create({
+      data: {
+        name: 'UTDesign EPICS',
+        contactName: 'EPICS',
+        contactEmail: 'epics@utdallas.edu',
+      },
+    });
+  }
+
   // Fetch all projects once so we can match by name
-  const allProjects = await client.project.findMany({ select: { id: true, name: true } });
+  let allProjects = await client.project.findMany({ select: { id: true, name: true } });
 
   // Build a normalized name → id lookup for fast matching
-  const projectLookup = new Map<string, string>(
+  let projectLookup = new Map<string, string>(
     allProjects.map((p: { id: string; name: string }) => [normalizeProjectText(p.name), p.id])
   );
+
+  // Helper to get or create project
+  const getOrCreateProject = async (projectName: string): Promise<string | null> => {
+    if (!projectName) return null;
+    const normalized = normalizeProjectText(projectName);
+    
+    // Check in existing lookup
+    if (projectLookup.has(normalized)) {
+      return projectLookup.get(normalized)!;
+    }
+
+    // Create new project
+    try {
+      const created = await client.project.create({
+        data: {
+          name: projectName,
+          description: projectName,
+          type: 'SOFTWARE',
+          status: 'NEW',
+          repoURL: '',
+          partnerId: defaultPartner.id,
+        },
+      });
+      projectLookup.set(normalized, created.id);
+      return created.id;
+    } catch (err) {
+      console.error(`Failed to create project "${projectName}":`, err);
+      return null;
+    }
+  };
 
   const aliasLookup = new Map<string, string>([
     ['mlk', 'friends of mlk'],
@@ -90,8 +163,8 @@ export default defineEventHandler(async (event) => {
     ['tejiendo alianzas xuchil', 'tejiendo alianzas'],
   ]);
 
-  // Fuzzy fallback: find the first project whose name contains the search string
-  const findProjectId = (choiceRaw: string): string | null => {
+  // Fuzzy fallback: find or create the first project whose name matches
+  const findOrCreateProjectId = async (choiceRaw: string): Promise<string | null> => {
     if (!choiceRaw?.trim()) return null;
     const stripped = stripSemesterPrefix(choiceRaw);
     const [orgPartSource = stripped, projectPartSource = ''] = stripped.split(':').map(p => p.trim());
@@ -107,6 +180,7 @@ export default defineEventHandler(async (event) => {
       .map(c => normalizeProjectText(c))
       .filter(Boolean);
 
+    // Check existing projects first
     for (const candidate of candidates) {
       if (projectLookup.has(candidate)) return projectLookup.get(candidate)!;
     }
@@ -117,7 +191,8 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    return null;
+    // Not found—create it using the full stripped name
+    return await getOrCreateProject(stripped);
   };
 
   let studentsImported = 0;
@@ -158,14 +233,17 @@ export default defineEventHandler(async (event) => {
     const student = await client.student.findUnique({ where: { netID }, select: { id: true } });
     if (!student) continue;
 
-    // Delete previous choices for this student so re-uploads are idempotent
-    await client.choice.deleteMany({ where: { studentId: student.id } });
+    // Delete previous choices for this student only in replace mode.
+    // In merge mode, keep existing choices and add new ones.
+    if (!merge) {
+      await client.choice.deleteMany({ where: { studentId: student.id } });
+    }
 
     for (let i = 0; i < choiceKeys.length; i++) {
       const raw = row[choiceKeys[i]]?.trim();
       if (!raw) continue;
 
-      const projectId = findProjectId(raw);
+      const projectId = await findOrCreateProjectId(raw);
       if (!projectId) {
         const stripped = stripSemesterPrefix(raw);
         if (!unmatchedProjects.includes(stripped)) unmatchedProjects.push(stripped);
