@@ -5,7 +5,7 @@
       .flex.flex-wrap.items-center.gap-2.self-start
         FileUploadButton(title="Upload Projects (Merge)" @dataParsed="handleParsed")
         FileUploadButton(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Projects
@@ -256,7 +256,7 @@ const handleDeleteProject = async (project: ProjectWithSemestersAndPartner) => {
 const resetDatabase = async () => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
       return;
     }
   }
@@ -268,9 +268,9 @@ const resetDatabase = async () => {
     
     // Refresh projects from database
     projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
-    console.log('Database reset to default data successfully!');
+    console.log('Database cleared successfully!');
     if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Database has been reset to default generated data.');
+      (globalThis as any).alert('Database has been cleared.');
     }
   } catch (error) {
     console.error('Error resetting database:', error);

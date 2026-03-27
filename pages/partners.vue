@@ -5,7 +5,7 @@
       .flex.flex-wrap.items-center.gap-2.self-start
         FileUploadButton(title="Upload Partners (Merge)" @dataParsed="handleParsed")
         FileUploadButton(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-20.project-title.embossed.drop-shadow-md Partners
@@ -138,7 +138,7 @@
   const resetDatabase = async () => {
     const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
     if (confirmAvailable) {
-      if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+      if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
         return;
       }
     }
@@ -151,8 +151,8 @@
     // Refresh partners from database
           partners.value = await $fetch<Partner[]>('/api/partners');
           partnerCount.value = partners.value.length;
-          console.log('Database reset to default data successfully!');
-          (globalThis as any).alert('Database has been reset to default generated data.');
+          console.log('Database cleared successfully!');
+          (globalThis as any).alert('Database has been cleared.');
         } catch (error) {
       console.error('Error resetting database:', error);
       (globalThis as any).alert('Failed to reset database. Please check the console for details.');

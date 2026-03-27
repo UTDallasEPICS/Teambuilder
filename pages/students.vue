@@ -3,10 +3,9 @@
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Students (Merge)" @dataParsed="handleParsed")
-        FileUploadButton(title="Replace Students with CSV" @dataParsed="handleParsedReplace")
-        FileUploadButton(title="Upload Bid Responses" @dataParsed="handleBidsParsed")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+        FileUploadButton(title="Upload Bid Responses (Replace)" @dataParsed="handleBidsParsedReplace")
+        FileUploadButton(title="Merge Bid Responses" @dataParsed="handleBidsParsedMerge")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-20.project-title Students
@@ -147,7 +146,7 @@ onMounted(async () => { //adds dummy data, students.value is what holds frontend
   studentCount.value = students.value.length; 
 });
 
-const handleBidsParsed = async (parsed: any) => {
+const handleBidsParsedReplace = async (parsed: any) => {
   if (!parsed?.length) return;
   try {
     const result = await $fetch<{
@@ -155,7 +154,7 @@ const handleBidsParsed = async (parsed: any) => {
       choicesCreated: number;
       skippedStudents: string[];
       unmatchedProjects: string[];
-    }>('/api/bids', { method: 'POST', body: parsed });
+    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'false' } });
 
     students.value = await $fetch<Student[]>('/api/students');
     studentCount.value = students.value.length;
@@ -171,7 +170,30 @@ const handleBidsParsed = async (parsed: any) => {
     errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
   }
 };
+const handleBidsParsedMerge = async (parsed: any) => {
+  if (!parsed?.length) return;
+  try {
+    const result = await $fetch<{
+      studentsImported: number;
+      choicesCreated: number;
+      skippedStudents: string[];
+      unmatchedProjects: string[];
+    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'true' } });
 
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+
+    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices (merged).`;
+    if (result.skippedStudents.length)
+      msg += ` Skipped ${result.skippedStudents.length} rows (no SSO ID).`;
+    if (result.unmatchedProjects.length)
+      msg += ` ${result.unmatchedProjects.length} project name(s) not found in DB: ${result.unmatchedProjects.join('; ')}.`;
+
+    result.unmatchedProjects.length ? infoToast(msg, 10000) : successToast(msg, 7000);
+  } catch (e: any) {
+    errorToast(e?.data?.message ?? e?.message ?? 'Failed to merge bid responses.');
+  }
+};
 const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
   // Merge uploaded students with existing records
   
@@ -273,10 +295,15 @@ const handleParsedReplace = async (parsed: any) => {
   }
 };
 
+const loadStudents = async () => {
+  students.value = await $fetch<Student[]>('/api/students');
+  studentCount.value = students.value.length;
+};
+
 const resetDatabase = async () => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
       return;
     }
   }
@@ -289,11 +316,11 @@ const resetDatabase = async () => {
     // Refresh students from database
     students.value = await $fetch<Student[]>('/api/students');
     studentCount.value = students.value.length;
-    console.log('Database reset to default data successfully!');
+    console.log('Database cleared successfully!');
     if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Database has been reset to default generated data.');
+      (globalThis as any).alert('Database has been cleared.');
     } else {
-      console.log('Database has been reset to default generated data.');
+      console.log('Database has been cleared.');
     }
   } catch (error) {
     console.error('Error resetting database:', error);

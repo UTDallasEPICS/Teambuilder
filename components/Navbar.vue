@@ -15,6 +15,7 @@
       NuxtLink(to="/teams" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/teams') }") Teams
       NuxtLink(to="/demographics" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/demographics') }") Demographics
       NuxtLink(to="/SCIPE" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/SCIPE') }") S.C.I.P.E. Bot
+      NuxtLink(to="/github" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/github') }") GitHub Bot
     .mt-auto.flex.flex-col.gap-y-4
       NuxtLink(to="https://discord.gg/UyPg3ykKq3")
         img.size-8(alt="Discord Logo" src="/discord.svg")
