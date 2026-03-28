@@ -33,6 +33,8 @@ const mapProjectType = (type: ProjectType): CPSATProject['type'] => {
 
 export default defineEventHandler(async (event) => {
   const { semesterId, config } = await readBody<{ semesterId: string; config?: CPSATConfig }>(event)
+  const minTeamSize = Math.max(1, config?.min_team_size ?? 4)
+  const maxTeamSize = Math.max(minTeamSize, config?.max_team_size ?? 6)
 
   if (!semesterId) {
     throw createError({ statusCode: 400, message: 'semesterId is required.' })
@@ -61,32 +63,29 @@ export default defineEventHandler(async (event) => {
   }
 
   const projectIdToName = new Map<string, string>(projects.map((p: Project) => [p.id, p.name] as const))
-  const allActiveProjectNames = projects.map((p: Project) => p.name)
+  const mappedChoicesByStudentId = new Map<string, string[]>(
+    students.map((s: StudentWithChoices) => {
+      const mapped = s.choices
+        .slice()
+        .sort((a: Choice, b: Choice) => a.rank - b.rank)
+        .map((c: Choice) => projectIdToName.get(c.projectId))
+        .filter((name): name is string => !!name)
+      return [s.id, mapped] as const
+    })
+  )
 
   // Map Prisma students → CPSAT Student type
   const cpsatStudents: CPSATStudent[] = students.map((s: StudentWithChoices) => ({
     // CPSAT expects project NAMES in choices (not IDs)
     // Keep only choices that map to currently active semester projects.
-    // If a student has no valid active choices, allow all active projects as fallback
-    // so the model remains feasible.
+    // If no valid active choices remain, leave choices empty so this student
+    // is treated as fallback during assignment/rebalancing.
     id: s.id,
     name: `${s.firstName} ${s.lastName}`,
     major: (s.major as CPSATStudent['major']) ?? 'Other',
     seniority: mapYear(s.year),
-    choices: (() => {
-      const mapped = s.choices
-        .sort((a: Choice, b: Choice) => a.rank - b.rank)
-        .map((c: Choice) => projectIdToName.get(c.projectId))
-        .filter((name): name is string => !!name)
-      return mapped.length > 0 ? mapped : allActiveProjectNames
-    })(),
-    choicesString: (() => {
-      const mapped = s.choices
-      .sort((a: Choice, b: Choice) => a.rank - b.rank)
-      .map((c: Choice) => projectIdToName.get(c.projectId))
-      .filter((name): name is string => !!name)
-      return (mapped.length > 0 ? mapped : allActiveProjectNames).join(',')
-    })(),
+    choices: mappedChoicesByStudentId.get(s.id) ?? [],
+    choicesString: (mappedChoicesByStudentId.get(s.id) ?? []).join(','),
     class: s.class as '2200' | '3200',
   }))
 
@@ -104,7 +103,9 @@ export default defineEventHandler(async (event) => {
   const nameToId = new Map<string, string>(projects.map((p: Project) => [p.name, p.id] as const))
   const idToStudent = new Map<string, StudentWithChoices>(students.map((s: StudentWithChoices) => [s.id, s] as const))
 
-  const teamAssignments: Record<string, StudentWithChoices[]> = {}
+  const teamAssignments: Record<string, StudentWithChoices[]> = Object.fromEntries(
+    projects.map((p: Project) => [p.id, [] as StudentWithChoices[]])
+  )
   for (const [projectName, cpsatStudentArr] of Object.entries(cpsatResult)) {
     const projectId = nameToId.get(projectName)
     if (projectId) {
@@ -114,9 +115,11 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // Post-processing: Randomize students with no valid choices into teams that need more people
+  // Post-processing: Randomize students with no valid active choices into teams that need more people
   // and match their major when possible
-  const studentsWithNoChoices = students.filter(s => s.choices.length === 0)
+  const studentsWithNoChoices = students.filter(
+    s => (mappedChoicesByStudentId.get(s.id)?.length ?? 0) === 0
+  )
   if (studentsWithNoChoices.length > 0) {
     // Identify which teams need more people (below max team size)
     const projectIdToTeamSize = new Map<string, number>()
@@ -138,7 +141,9 @@ export default defineEventHandler(async (event) => {
     for (const studentWithNoChoices of studentsWithNoChoices) {
       // Find teams that need more people
       const projectsNeedingPeople = projects
-        .filter(p => (projectIdToTeamSize.get(p.id) ?? 0) < 6) // Below max team size
+        // Only consider currently active teams to avoid creating new undersized teams.
+        .filter(p => (projectIdToTeamSize.get(p.id) ?? 0) > 0)
+        .filter(p => (projectIdToTeamSize.get(p.id) ?? 0) < maxTeamSize)
         .sort((a, b) => {
           const sizeA = projectIdToTeamSize.get(a.id) ?? 0
           const sizeB = projectIdToTeamSize.get(b.id) ?? 0
@@ -162,25 +167,92 @@ export default defineEventHandler(async (event) => {
         const randomProject = topCandidates[Math.floor(Math.random() * topCandidates.length)]
         
         // Find current project this student was assigned to and move them
+        let sourceProjectId: string | null = null
         for (const [currentProjectId, assignedStudents] of Object.entries(teamAssignments)) {
           const studentIndex = assignedStudents.findIndex(s => s.id === studentWithNoChoices.id)
           if (studentIndex !== -1) {
+            if (currentProjectId === randomProject.id) {
+              sourceProjectId = null
+              break
+            }
+            // Never reduce a team to below minimum via post-processing.
+            if (assignedStudents.length <= minTeamSize) {
+              sourceProjectId = null
+              break
+            }
             // Remove from current project
             assignedStudents.splice(studentIndex, 1)
+            sourceProjectId = currentProjectId
             break
           }
         }
         
-        // Add to new project
-        if (!teamAssignments[randomProject.id]) {
-          teamAssignments[randomProject.id] = []
+        // Add to new project only if we safely removed from a source team.
+        if (sourceProjectId) {
+          if (!teamAssignments[randomProject.id]) {
+            teamAssignments[randomProject.id] = []
+          }
+          teamAssignments[randomProject.id].push(studentWithNoChoices)
+
+          // Update size map
+          projectIdToTeamSize.set(sourceProjectId, Math.max(0, (projectIdToTeamSize.get(sourceProjectId) ?? 0) - 1))
+          projectIdToTeamSize.set(randomProject.id, (projectIdToTeamSize.get(randomProject.id) ?? 0) + 1)
         }
-        teamAssignments[randomProject.id].push(studentWithNoChoices)
-        
-        // Update size map
-        projectIdToTeamSize.set(randomProject.id, (projectIdToTeamSize.get(randomProject.id) ?? 0) + 1)
       }
     }
+  }
+
+  // Rebalance any non-empty teams that are still below min size by borrowing from large teams.
+  const rebalanceUndersizedTeams = () => {
+    let moved = true
+
+    while (moved) {
+      moved = false
+
+      const undersizedTeamIds = Object.entries(teamAssignments)
+        .filter(([, assignedStudents]) => assignedStudents.length > 0 && assignedStudents.length < minTeamSize)
+        .sort((a, b) => a[1].length - b[1].length)
+        .map(([projectId]) => projectId)
+
+      for (const targetProjectId of undersizedTeamIds) {
+        const targetTeam = teamAssignments[targetProjectId]
+
+        while (targetTeam.length > 0 && targetTeam.length < minTeamSize) {
+          const donorEntry = Object.entries(teamAssignments)
+            .filter(([projectId, assignedStudents]) => projectId !== targetProjectId && assignedStudents.length > minTeamSize)
+            .sort((a, b) => b[1].length - a[1].length)[0]
+
+          if (!donorEntry) {
+            break
+          }
+
+          const donorTeam = donorEntry[1]
+          const movedStudent = donorTeam.pop()
+          if (!movedStudent) {
+            break
+          }
+
+          targetTeam.push(movedStudent)
+          moved = true
+        }
+      }
+    }
+  }
+
+  rebalanceUndersizedTeams()
+
+  const undersizedTeams = Object.entries(teamAssignments)
+    .filter(([, assignedStudents]) => assignedStudents.length > 0 && assignedStudents.length < minTeamSize)
+    .map(([projectId, assignedStudents]) => {
+      const projectName = projects.find((p: Project) => p.id === projectId)?.name ?? projectId
+      return `${projectName} (${assignedStudents.length})`
+    })
+
+  if (undersizedTeams.length > 0) {
+    throw createError({
+      statusCode: 400,
+      message: `Unable to satisfy minimum team size ${minTeamSize} for: ${undersizedTeams.join(', ')}`,
+    })
   }
 
   // Persist student assignments to the database
