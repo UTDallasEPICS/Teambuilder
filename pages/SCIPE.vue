@@ -493,6 +493,13 @@ onMounted(async () => {
   color: #ffffff !important; /* white text */
 }
 
+/* Keep semester dropdown readable inside the white-text card. */
+.scipe-card .semester-select,
+.scipe-card .semester-select option {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+
 .subtitle {
   color: #4B5563 !important;
   font-size: 1.05rem;
