@@ -1,15 +1,15 @@
 <template>
-  <div class="discord-bot-control scipe-card bg-white rounded-lg shadow-md p-6 max-w-2xl">
+  <div class="discord-bot-control rounded-xl bg-white p-6 shadow-inner w-full text-gray-800">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold text-gray-800">SCIPE Discord Bot Control</h2>
+      <h2 class="text-xl font-bold text-white">S.C.I.P.E. Discord Bot Control</h2>
       <div class="flex items-center gap-2">
         <div 
           class="w-3 h-3 rounded-full"
           :class="{
-            'bg-green-500 animate-pulse': botStatus === 'running',
-            'bg-red-500': botStatus === 'stopped',
-            'bg-yellow-500 animate-pulse': botStatus === 'error',
-            'bg-gray-400': botStatus === 'loading'
+            'bg-green-400 animate-pulse': botStatus === 'running',
+            'bg-red-400': botStatus === 'stopped',
+            'bg-yellow-400 animate-pulse': botStatus === 'error',
+            'bg-white/40': botStatus === 'loading'
           }"
         ></div>
         <span class="text-sm font-medium text-gray-600 capitalize">{{ botStatus }}</span>
@@ -17,20 +17,16 @@
     </div>
 
     <!-- Bot Info -->
-    <div v-if="statusData" class="bg-gray-50 rounded-lg p-4 mb-4">
+    <div v-if="statusData" class="rounded-lg bg-black/15 p-4 mb-4">
       <div class="grid grid-cols-2 gap-4">
-        <div>
-          <p class="text-sm text-gray-600">Status</p>
-          <p class="font-semibold text-gray-800 capitalize">{{ statusData.status }}</p>
-        </div>
         <div v-if="statusData.uptimeFormatted">
-          <p class="text-sm text-gray-600">Uptime</p>
-          <p class="font-semibold text-gray-800">{{ statusData.uptimeFormatted }}</p>
+          <p class="text-xs text-white/60">Uptime</p>
+          <p class="font-semibold text-white">{{ statusData.uptimeFormatted }}</p>
         </div>
       </div>
       
-      <div v-if="statusData.error" class="mt-3 p-3 bg-red-50 border border-red-200 rounded">
-        <p class="text-sm text-red-800">
+      <div v-if="statusData.error" class="mt-3 p-3 bg-red-900/40 border border-red-400/40 rounded">
+        <p class="text-sm text-red-200">
           <span class="font-semibold">Error:</span> {{ statusData.error }}
         </p>
       </div>
@@ -104,12 +100,7 @@
     <button
       @click="fetchStatus"
       :disabled="loading"
-      class="mt-4 w-full text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
-      :style="{ 
-        backgroundColor: loading ? '#F3F4F6' : '#D1D5DB',
-        border: '2px solid black',
-        cursor: loading ? 'not-allowed' : 'pointer'
-      }"
+      class="mt-4 w-full text-black font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2 bg-gray-200 hover:bg-white/25 border-2 border-black/20 disabled:cursor-not-allowed disabled:opacity-50"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -249,15 +240,13 @@ onUnmounted(() => {
   animation: spin 0.6s linear infinite;
 }
 
+.discord-bot-control *:not(button):not(button *) {
+  color: #1f2937 !important;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
-}
-</style>
-<style scoped>
-.discord-bot-control,
-.discord-bot-control * {
-  color: #0f172a !important;
 }
 </style>
