@@ -47,9 +47,20 @@
       .cardSubTitle Members:
       ul.list-disc.pl-5.mt-2
         li.cardText.py-1(v-for="(member, idx) in selectedTeam.students" :key="idx")
-          template(v-if="!isEditing") {{ member.name }} - {{ member.major }}
+          template(v-if="!isEditing")
+            .member-details
+              span {{ member.name }} - {{ member.major }}
+              .member-extra(v-if="member.github || member.discord")
+                span(v-if="member.github") GitHub: {{ member.github }}
+                span(v-if="member.github && member.discord") •
+                span(v-if="member.discord") Discord: {{ member.discord }}
           .member-row(v-else)
-            span {{ member.name }} - {{ member.major }}
+            .member-details
+              span {{ member.name }} - {{ member.major }}
+              .member-extra(v-if="member.github || member.discord")
+                span(v-if="member.github") GitHub: {{ member.github }}
+                span(v-if="member.github && member.discord") •
+                span(v-if="member.discord") Discord: {{ member.discord }}
             .member-actions
               select.member-select(v-model="moveTargets[member.id]")
                 option(value="") Select destination
@@ -74,7 +85,7 @@ interface TeamRow {
   projectId: string;
   projectName: string;
   teamSize: number;
-  students: Array<{ id: string; name: string; major: string }>;
+  students: Array<{ id: string; name: string; major: string; github?: string | null; discord?: string | null }>;
   studentNames: string;
 }
 
@@ -99,7 +110,9 @@ const rows = computed<TeamRow[]>(() => {
     const members = (students as any[]).map(s => ({
       id: s?.id ?? '',
       name: getDisplayName(s),
-      major: s?.major ?? 'Unknown'
+      major: s?.major ?? 'Unknown',
+      github: s?.github ?? null,
+      discord: s?.discord ?? null,
     }));
     return {
       projectId,
@@ -332,6 +345,18 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+.member-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.member-extra {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 .member-actions {
   display: flex;
