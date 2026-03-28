@@ -17,21 +17,21 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
+        class="w-full mt-2 md:mt-5"
         dataKey="projectId"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedTeam"
       )
-        Column(field="projectName" header="Project" :showFilterMenu="false")
+        Column(field="projectName" header="Project" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project" :showClear="true")
-        Column(field="teamSize" header="Team Size" :showFilterMenu="false" style="width:130px")
+        Column(field="teamSize" header="Team Size" :showFilterMenu="false" style="width:130px" :sortable="true")
           template(#body="{ data }")
             .text-center {{ data.teamSize }}
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Size" :showClear="true")
-        Column(field="studentNames" header="Members" :showFilterMenu="false")
+        Column(field="studentNames" header="Members" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }")
             span.text-sm.text-gray-700 {{ data.studentNames }}
           template(#filter="{ filterModel, filterCallback }")
@@ -148,7 +148,7 @@ const toggleEditMode = () => {
   }
 };
 
-const moveMember = (studentId: string) => {
+const moveMember = async (studentId: string) => {
   if (!rawAssignments.value || !selectedTeam.value) return;
   const destinationProjectId = moveTargets.value[studentId];
   const sourceProjectId = selectedTeam.value.projectId;
@@ -179,7 +179,35 @@ const moveMember = (studentId: string) => {
   persistAssignments();
   refreshSelectedTeam();
   moveTargets.value[studentId] = '';
-  successToast('Member moved successfully.');
+
+  // Persist move to database
+  if (savedSemester.value?.id) {
+    try {
+      await Promise.all([
+        $fetch('/api/teams/assign', {
+          method: 'POST',
+          body: {
+            semesterId: savedSemester.value.id,
+            projectId: sourceProjectId,
+            studentIds: (rawAssignments.value[sourceProjectId] as any[]).map((s: any) => s.id),
+          },
+        }),
+        $fetch('/api/teams/assign', {
+          method: 'POST',
+          body: {
+            semesterId: savedSemester.value.id,
+            projectId: destinationProjectId,
+            studentIds: (rawAssignments.value[destinationProjectId] as any[]).map((s: any) => s.id),
+          },
+        }),
+      ]);
+      successToast('Member moved and saved successfully.');
+    } catch (e) {
+      successToast('Member moved locally. Database save failed — changes are in localStorage only.');
+    }
+  } else {
+    successToast('Member moved successfully.');
+  }
 };
 
 watch(selectedTeam, (newTeam) => {
@@ -227,7 +255,8 @@ const exportTeamsToCSV = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
+  // First, restore semester/project metadata from localStorage
   try {
     const raw = localStorage.getItem('lastTeamAssignments');
     if (raw) {
@@ -238,6 +267,24 @@ onMounted(() => {
     }
   } catch (e) {
     rawAssignments.value = null;
+  }
+
+  // Then, load authoritative assignments from the database
+  if (savedSemester.value?.id) {
+    try {
+      const result = await $fetch<{ teamAssignments: Record<string, any[]>, projects: any[] }>(
+        `/api/teams?semesterId=${savedSemester.value.id}`
+      );
+      // Only override if the DB actually has student assignments saved
+      const hasAssignments = Object.values(result.teamAssignments).some(s => s.length > 0);
+      if (hasAssignments) {
+        rawAssignments.value = result.teamAssignments;
+        projects.value = result.projects;
+        persistAssignments();
+      }
+    } catch (e) {
+      // DB fetch failed — fall back to localStorage data already loaded above
+    }
   }
 });
 </script>
@@ -306,5 +353,35 @@ onMounted(() => {
   background: var(--color-teal);
   color: #fff;
   cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  :deep(.p-datatable) {
+    font-size: 0.92rem;
+  }
+
+  :deep(.p-datatable th),
+  :deep(.p-datatable td) {
+    padding: 0.5rem 0.625rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .project-title {
+    font-size: 1.25rem;
+  }
+
+  :deep(.p-datatable) {
+    font-size: 0.85rem;
+  }
+
+  :deep(.p-datatable-scrollable .p-datatable-table) {
+    min-width: 100% !important;
+  }
+
+  :deep(.p-datatable th),
+  :deep(.p-datatable td) {
+    padding: 0.375rem 0.5rem !important;
+  }
 }
 </style>

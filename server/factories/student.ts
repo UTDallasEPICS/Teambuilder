@@ -20,7 +20,7 @@ export const createRandomStudent = (): Student => {
     netID: getRandomNetID(),
     firstName,
     lastName,
-    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${randomNumeric(3)}@example.com`,
     github: `${firstName.toLowerCase()}${randomNumeric(4)}`,
     discord: `${firstName.toLowerCase()}_${randomNumeric(4)}`,
     major: getRandomMajor(),
@@ -35,9 +35,29 @@ export const createRandomStudent = (): Student => {
 }
 
 export const createRandomStudents = (numStudents: number): Student[] => {
-  const arr = [];
+  const arr: Student[] = [];
+  const usedNetIDs = new Set<string>();
+  const usedEmails = new Set<string>();
+  const usedGithubs = new Set<string>();
+  const usedDiscords = new Set<string>();
+
   for (let i = 0; i < numStudents; i++) {
-    arr.push(createRandomStudent())
+    let student = createRandomStudent();
+    // Ensure deterministic uniqueness for fields with DB unique constraints.
+    while (
+      usedNetIDs.has(student.netID) ||
+      (student.email !== null && usedEmails.has(student.email)) ||
+      (student.github !== null && usedGithubs.has(student.github)) ||
+      (student.discord !== null && usedDiscords.has(student.discord))
+    ) {
+      student = createRandomStudent();
+    }
+
+    usedNetIDs.add(student.netID);
+    if (student.email) usedEmails.add(student.email);
+    if (student.github) usedGithubs.add(student.github);
+    if (student.discord) usedDiscords.add(student.discord);
+    arr.push(student);
   }
   return arr;
 }

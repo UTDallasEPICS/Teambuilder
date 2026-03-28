@@ -2,10 +2,11 @@ import { Octokit } from "@octokit/rest";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";
+import { pathToFileURL } from "url";
 
 dotenv.config();
 
-class GitHubManager {
+export class GitHubManager {
   private octokit: Octokit;
 
   constructor() {
@@ -55,6 +56,7 @@ class GitHubManager {
       console.log(`Repository created: ${response.data.html_url}`);
     } catch (error) {
       console.error("Error creating repository:", error);
+      throw error;
     }
   }
 
@@ -70,6 +72,7 @@ class GitHubManager {
       console.log(`User ${username} added to ${owner}/${repoName} with push permission.`);
     } catch (error) {
       console.error(`Error adding user ${username} to repository:`, error);
+      throw error;
     }
   }
 
@@ -84,6 +87,7 @@ class GitHubManager {
       console.log(`User ${username} removed from ${owner}/${repoName}.`);
     } catch (error) {
       console.error(`Error removing user ${username} from repository:`, error);
+      throw error;
     }
   }
 
@@ -115,7 +119,7 @@ const promptFilePath = async (query: string): Promise<string> => {
 };
 
 // Main Function
-(async () => {
+const runCli = async () => {
   const manager = new GitHubManager();
   const username = await manager.getAuthenticatedUsername();
 
@@ -186,4 +190,8 @@ const promptFilePath = async (query: string): Promise<string> => {
   }
 
   console.log("Program completed.");
-})();
+};
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  runCli();
+}

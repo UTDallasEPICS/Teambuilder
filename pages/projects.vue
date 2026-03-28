@@ -5,7 +5,7 @@
       .flex.flex-wrap.items-center.gap-2.self-start
         FileUploadButton(title="Upload Projects (Merge)" @dataParsed="handleParsed")
         FileUploadButton(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Projects
@@ -16,23 +16,23 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedProject"
       )
-        Column(field="name" header="Name" :showFilterMenu="false")
+        Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
-        Column(field="description" header="Description" :showFilterMenu="false")
+        Column(field="description" header="Description" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
         // hide this column on small screens (partner is lower priority)
-        Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell")
+        Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
-        Column(field="status" header="Status" :showFilterMenu="false")
+        Column(field="status" header="Status" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }")
             .flex.justify-center
               .pill(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
@@ -41,7 +41,7 @@
               template(#option="slotProps")
                 .pill(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
         // hide type on small screens
-        Column(field="type" header="Type" :showFilterMenu="false" class="hidden lg:table-cell")
+        Column(field="type" header="Type" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
           template(#body="{ data }")
             .text-center {{ capitalizeFirst(data.type) }}
           template(#filter="{ filterModel, filterCallback }")
@@ -49,7 +49,7 @@
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
               template(#value="slotProps") {{ formatTypesFilter(slotProps.value) }}
 
-        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
           template(#body="{ data }")
             .flex.justify-center
               Button.p-button-rounded.p-button-danger.p-button-sm(
@@ -256,7 +256,7 @@ const handleDeleteProject = async (project: ProjectWithSemestersAndPartner) => {
 const resetDatabase = async () => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
       return;
     }
   }
@@ -268,9 +268,9 @@ const resetDatabase = async () => {
     
     // Refresh projects from database
     projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
-    console.log('Database reset to default data successfully!');
+    console.log('Database cleared successfully!');
     if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Database has been reset to default generated data.');
+      (globalThis as any).alert('Database has been cleared.');
     }
   } catch (error) {
     console.error('Error resetting database:', error);
@@ -323,11 +323,7 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 
 :deep(.p-datatable-wrapper) { overflow-x: auto !important; }
 
-@media (min-width: 768px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 50rem !important; }
-}
 @media (max-width: 767px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 20rem !important; }
   .project-title { font-size: 1.25rem; }
 }
 
@@ -365,10 +361,10 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 
 /* keep the primevue DataTable itself white but make the inner area around it orange as well */
 .centered-row.shaded-card > .centered-col {
-  background: var(--color-utd-orange) !important;
+  background: transparent !important;
   border-radius: 0.75rem;
   padding: 1.25rem !important; /* inner inset padding */
-  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  box-shadow: none;
   width: 100%;
 }
 </style>

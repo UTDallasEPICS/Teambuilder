@@ -2,10 +2,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-
-const router = useRouter();
-router.push('/projects');
+await navigateTo('/projects', { redirectCode: 301 });
 </script>
 
 <!-- Disabling the Login page for now, leaving the original code hrer for later:

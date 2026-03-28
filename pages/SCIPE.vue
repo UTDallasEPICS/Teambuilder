@@ -90,16 +90,48 @@
           <span class="h-6 w-1 rounded-full bg-black/60"></span>
           <h2 class="text-lg font-bold text-black">Bot Diagnostics</h2>
         </div>
-        <p class="text-sm text-black/80">Run a health check and inspect the current bot status.</p>
-        <div>
-          <button
-            @click="runDiagnostics"
-            :disabled="diagnosticsLoading"
-            class="flex items-center gap-2 rounded-lg border-2 border-black/20 bg-[#154734] px-4 py-2 text-sm font-semibold text-white shadow transition hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <span v-if="diagnosticsLoading" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-            <span v-else>Run Diagnostics</span>
-          </button>
+        <button
+          @click="runDiagnostics"
+          :disabled="diagnosticsLoading"
+          class="button-diagnostics disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span v-if="diagnosticsLoading" class="loading-spinner"></span>
+          <span v-else>Run Diagnostics</span>
+        </button>
+        <div v-if="diagnosticsResult" class="mt-4 p-4 rounded-lg bg-gray-50 text-sm text-gray-900 space-y-3">
+          <div v-if="diagnosticsResult.error" class="text-red-600 font-semibold">{{ diagnosticsResult.error }}</div>
+          <template v-else>
+            <div class="flex flex-wrap gap-6">
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Bot</p>
+                <p>{{ diagnosticsResult.bot?.tag }}</p>
+                <p :class="diagnosticsResult.bot?.isReady ? 'text-green-600' : 'text-red-600'">{{ diagnosticsResult.bot?.isReady ? 'Ready' : 'Not Ready' }}</p>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Guild</p>
+                <p>{{ diagnosticsResult.guild?.name }}</p>
+                <p>{{ diagnosticsResult.guild?.memberCount }} members</p>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Channels</p>
+                <p>{{ diagnosticsResult.channels?.total }} total ({{ diagnosticsResult.channels?.remaining }} remaining)</p>
+                <p>{{ diagnosticsResult.channels?.categories }} categories · {{ diagnosticsResult.channels?.text }} text · {{ diagnosticsResult.channels?.voice }} voice</p>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Roles</p>
+                <p>{{ diagnosticsResult.roles?.total }} total · {{ diagnosticsResult.roles?.projectRoles }} project roles</p>
+                <p :class="diagnosticsResult.roles?.hasAdminRole ? 'text-green-600' : 'text-yellow-600'">Admin role {{ diagnosticsResult.roles?.hasAdminRole ? 'present' : 'missing' }}</p>
+              </div>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-500 uppercase tracking-wide text-xs mb-1">Permissions</p>
+              <div class="flex gap-4">
+                <span :class="diagnosticsResult.permissions?.manageChannels ? 'text-green-600' : 'text-red-600'">Manage Channels: {{ diagnosticsResult.permissions?.manageChannels ? '✓' : '✗' }}</span>
+                <span :class="diagnosticsResult.permissions?.manageRoles ? 'text-green-600' : 'text-red-600'">Manage Roles: {{ diagnosticsResult.permissions?.manageRoles ? '✓' : '✗' }}</span>
+                <span :class="diagnosticsResult.permissions?.viewChannel ? 'text-green-600' : 'text-red-600'">View Channels: {{ diagnosticsResult.permissions?.viewChannel ? '✓' : '✗' }}</span>
+              </div>
+            </div>
+          </template>
         </div>
         <div v-if="diagnosticsResult" class="max-h-80 overflow-y-auto rounded-lg bg-black/20 p-4">
           <pre class="whitespace-pre-wrap font-mono text-xs text-white">{{ diagnosticsResult }}</pre>
@@ -112,19 +144,43 @@
           <span class="h-6 w-1 rounded-full bg-black/60"></span>
           <h2 class="text-lg font-bold text-black">Manage Project Roles</h2>
         </div>
-        <p class="text-sm text-black/80">
-          Delete all Discord roles ending with <span class="font-mono">" - Current"</span> across the server.
-        </p>
-        <div>
+        <div class="flex gap-3 flex-wrap items-center">
+          <select v-model="selectedSemesterId" class="semester-select" :disabled="assignRolesLoading || loading || deleteLoading">
+            <option value="">Latest semester</option>
+            <option v-for="semester in semesters" :key="semester.id" :value="semester.id">
+              {{ semester.season }} {{ semester.year }}
+            </option>
+          </select>
           <button
-            @click="deleteAllRoles"
-            :disabled="loading || deleteLoading"
-            class="flex items-center gap-2 rounded-lg border-2 border-black/20 !bg-red px-4 py-2 text-sm font-semibold text-white shadow transition hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+            @click="assignProjectRoles"
+            :disabled="assignRolesLoading || loading || deleteLoading"
+            class="button-create disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="deleteLoading" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-            <span v-else>Delete All Project Roles</span>
+            <span v-if="assignRolesLoading" class="loading-spinner"></span>
+            <span v-else>Assign Project Roles from Discord Usernames</span>
           </button>
         </div>
+        <div v-if="assignRolesMessage" class="mt-4 p-4 rounded-lg result-message" :class="{
+          'result-success': assignRolesMessageType === 'success',
+          'result-error': assignRolesMessageType === 'error',
+          'result-info': assignRolesMessageType === 'info'
+        }">
+          {{ assignRolesMessage }}
+          <div v-if="assignRolesErrors.length" class="mt-2 result-error-list">
+            <div v-for="err in assignRolesErrors" :key="err">{{ err }}</div>
+          </div>
+        </div>
+        <button
+          @click="deleteAllRoles"
+          :disabled="loading || deleteLoading"
+          class="button-delete-roles disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span v-if="deleteLoading" class="loading-spinner"></span>
+          <span v-else>Delete All Project Roles</span>
+        </button>
+        <p class="text-sm text-gray-600 mt-2">
+          This will delete all Discord roles ending with " - Current"
+        </p>
 
         <div v-if="deleteMessage" class="rounded-lg p-3 text-sm font-semibold" :class="{
           'bg-emerald-100 border border-emerald-400 text-emerald-800': deleteMessageType === 'success',
@@ -162,7 +218,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+
+interface Semester {
+  id: string;
+  year: number;
+  season: string;
+}
 
 const globalError = ref('');  // For the discord bot running or not notification
 const loading = ref(false);
@@ -183,7 +245,13 @@ const deletedChannels = ref<string[]>([]);
 const deleteChannelsErrors = ref<Array<{ channel: string; error: string }>>([]);
 
 const diagnosticsLoading = ref(false);
-const diagnosticsResult = ref('');
+const diagnosticsResult = ref<any>(null);
+const semesters = ref<Semester[]>([]);
+const selectedSemesterId = ref('');
+const assignRolesLoading = ref(false);
+const assignRolesMessage = ref('');
+const assignRolesMessageType = ref<'success' | 'error' | 'info'>('info');
+const assignRolesErrors = ref<string[]>([]);
 
 const showError = (msg: string) => {
   globalError.value = msg;
@@ -239,12 +307,11 @@ const deleteAllRoles = async () => {
 
 const runDiagnostics = async () => {
   diagnosticsLoading.value = true;
-  diagnosticsResult.value = '';
+  diagnosticsResult.value = null;
   try {
-    const response = await $fetch('/api/discord/diagnostics') as any;
-    diagnosticsResult.value = JSON.stringify(response, null, 2);
+    diagnosticsResult.value = await $fetch('/api/discord/diagnostics') as any;
   } catch (error: any) {
-    showError(error?.data?.message || error?.message || 'Failed to run diagnostics');
+    diagnosticsResult.value = { error: error?.data?.message || error?.message || 'Failed to run diagnostics' };
   } finally {
     diagnosticsLoading.value = false;
   }
@@ -274,9 +341,238 @@ const deleteAllChannels = async () => {
   }
 };
 
+const assignProjectRoles = async () => {
+  assignRolesLoading.value = true;
+  assignRolesMessage.value = '';
+  assignRolesErrors.value = [];
+  try {
+    const response = await $fetch('/api/discord/assign-project-roles', {
+      method: 'POST',
+      body: {
+        semesterId: selectedSemesterId.value || undefined,
+      },
+    }) as any;
+
+    assignRolesMessage.value = response.message || 'Role assignment completed.';
+    assignRolesMessageType.value = response.success ? 'success' : 'error';
+    assignRolesErrors.value = response.errors || [];
+  } catch (error: any) {
+    assignRolesMessage.value = error?.data?.message || 'Failed to assign project roles.';
+    assignRolesMessageType.value = 'error';
+  } finally {
+    assignRolesLoading.value = false;
+  }
+};
+
+onMounted(async () => {
+  try {
+    semesters.value = await $fetch<Semester[]>('/api/semesters');
+  } catch {
+    semesters.value = [];
+  }
+});
+
 </script>
 
 <style scoped>
-.toast-enter-active, .toast-leave-active { transition: all 0.3s ease; }
-.toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(1rem); }
+/* Override global beige text color */
+.scipe-page * {
+  color: inherit !important;
+}
+
+.scipe-page h1,
+.scipe-page h2,
+.scipe-page h3 {
+  color: #1F2937 !important;
+}
+
+.scipe-page p.subtitle {
+  color: #4B5563 !important;
+}
+
+/* Button Styles with !important to override global styles */
+.button-create {
+  background-color: #154734 !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid black !important;
+  cursor: pointer;
+}
+
+.button-create:hover:not(:disabled) {
+  background-color: #0f3f2c !important;
+}
+
+.button-delete {
+  background-color: #DC2626 !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid black !important;
+  cursor: pointer;
+}
+
+.button-delete:hover:not(:disabled) {
+  background-color: #C2410C !important;
+}
+
+.button-diagnostics {
+  background-color: #154734 !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid black !important;
+  cursor: pointer;
+}
+
+.button-diagnostics:hover:not(:disabled) {
+  background-color: #0f3f2c !important;
+}
+
+.button-delete-roles {
+  background-color: #DC2626 !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid black !important;
+  cursor: pointer;
+}
+
+.button-delete-roles:hover:not(:disabled) {
+  background-color: #B91C1C !important;
+}
+
+.semester-select {
+  border: 1px solid #9ca3af;
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.6rem;
+  min-width: 14rem;
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.semester-select option {
+  color: #111827 !important;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.result-message {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.result-success {
+  background: #d1fae5 !important;
+  border: 2px solid #10b981 !important;
+  color: #065f46 !important;
+}
+
+.result-error {
+  background: #fee2e2 !important;
+  border: 2px solid #ef4444 !important;
+  color: #7f1d1d !important;
+}
+
+.result-info {
+  background: #dbeafe !important;
+  border: 2px solid #3b82f6 !important;
+  color: #1e3a8a !important;
+}
+
+.result-error-list {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #7f1d1d !important;
+  font-weight: bold;
+}
+
+/* SCIPE page specific polish */
+.scipe-card {
+  /* Use UTD orange background */
+  background: var(--color-utd-orange) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 8px 20px rgba(16,24,40,0.08) !important;
+  border: 1px solid rgba(16,24,40,0.06) !important;
+}
+
+/* Force white text inside the card for contrast on orange background */
+.scipe-card,
+.scipe-card * {
+  color: #ffffff !important; /* white text */
+}
+
+.subtitle {
+  color: #4B5563 !important;
+  font-size: 1.05rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-accent {
+  width: 0.5rem;
+  height: 2rem;
+  background: linear-gradient(180deg,#06b6d4,#4f46e5);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 6px rgba(79,70,229,0.12);
+}
+
+.section-heading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827 !important;
+}
+
+/* Make primary action buttons a consistent height and add subtle elevation */
+.button-create, .button-delete, .button-diagnostics, .button-delete-roles {
+  min-height: 2.4rem;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  box-shadow: 0 6px 14px rgba(15,23,42,0.06);
+}
+
+.result-message {
+  font-weight: 600;
+  font-size: 1rem;
+}
 </style>

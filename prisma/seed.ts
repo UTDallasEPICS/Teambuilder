@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { PrismaClient } from "@prisma/client"
 import { createChoicesForSemester } from "~/server/factories/choice";
 import { createRandomPartners } from "~/server/factories/partner";
@@ -6,7 +7,7 @@ import { createSemesters } from "~/server/factories/semester";
 import { createRandomStudents } from "~/server/factories/student";
 import { createRandomTeams } from "~/server/factories/team";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL })
 
 const main = async () => {
     try {

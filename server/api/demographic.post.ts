@@ -3,7 +3,7 @@
 
 import { PrismaClient } from "@prisma/client"
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL })
 
 export default defineEventHandler(async (event) => {
   try {

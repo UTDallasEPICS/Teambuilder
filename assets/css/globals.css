@@ -8,7 +8,7 @@
 
 /* color palette */
 :root {
-  --color-frame-orange: #c97500; /* page frame / accent */
+  --color-frame-orange: #d3830a; /* page frame / accent */
   --color-beige: #fcf5dc; /* main table background */
   --color-beige-light: #fff6e2; /* header / inputs */
   --color-pill-new: #34d399; /* NEW */
@@ -20,7 +20,7 @@
   --color-card-bg: #ffffff; /* card background */
   --color-accent-green: #10b981; /* success / accents */
   --color-accent-utd-green: #154734; /* UTD green accent */
-  --color-utd-orange: #e87500; /* UTD orange accent */
+  --color-utd-orange: #d3830a; /* UTD orange accent */
   --color-nav-bg: #e6e6e6; /* neutral grey for left navigation */
   --color-nav-text: #5b5f63; /* neutral grey for nav text */
 }
@@ -249,17 +249,37 @@ body,
   overflow-x: auto;
 }*/
 
-@media (min-width: 1056px) {
+@media (min-width: 1280px) {
   .p-datatable-scrollable .p-datatable-table {
     min-width: 50rem !important;
   }
 }
 
-@media (max-width: 1055px) {
+@media (min-width: 768px) and (max-width: 1279px) {
   .p-datatable-scrollable .p-datatable-table {
-    min-width: 20rem !important;
+    min-width: 34rem !important;
   }
-  
+
+  .p-datatable th,
+  .p-datatable td {
+    padding: 0.5rem 0.625rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .p-datatable-scrollable .p-datatable-table {
+    min-width: 100% !important;
+  }
+
+  .p-datatable {
+    font-size: 0.85rem;
+  }
+
+  .p-datatable th,
+  .p-datatable td {
+    padding: 0.375rem 0.5rem !important;
+  }
+
   .project-title {
     font-size: 1.25rem;
   }
@@ -387,10 +407,10 @@ select,
 }
 
 .centered-row.shaded-card > .centered-col {
-  background: var(--color-utd-orange) !important;
+  background: transparent !important;
   border-radius: 0.75rem;
   padding: 1.25rem !important;
-  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  box-shadow: none;
   width: 100%;
 }
 

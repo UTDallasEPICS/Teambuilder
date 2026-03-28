@@ -3,10 +3,9 @@
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Students (Merge)" @dataParsed="handleParsed")
-        FileUploadButton(title="Replace Students with CSV" @dataParsed="handleParsedReplace")
-        FileUploadButton(title="Upload Bid Responses" @dataParsed="handleBidsParsed")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+        FileUploadButton(title="Upload Bid Responses (Replace)" @dataParsed="handleBidsParsedReplace")
+        FileUploadButton(title="Merge Bid Responses" @dataParsed="handleBidsParsedMerge")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-20.project-title Students
@@ -17,25 +16,25 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedStudent"
       )
-        Column(field="fullName" header="Name" :showFilterMenu="false")
+        Column(field="fullName" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
 
-        Column(field="netID" header="NetID" :showFilterMenu="false")
+        Column(field="netID" header="NetID" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by NetID" :showClear="true")
 
-        Column(field="major" header="Major" :showFilterMenu="false")
+        Column(field="major" header="Major" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="majors" placeholder="Any" :maxSelectedLabels="1")
 
-        Column(field="year" header="Year" :showFilterMenu="false")
+        Column(field="year" header="Year" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }") {{ capitalizeFirst(data.year) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="years" placeholder="Any" :maxSelectedLabels="1")
@@ -44,7 +43,7 @@
               // selected value
               template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
 
-        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem")
+        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem" :sortable="true")
           template(#body="{ data }") 
             .flex.justify-center
               .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
@@ -54,7 +53,7 @@
                 template(#option="slotProps")
                   .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
 
-        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 80px")
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
           template(#body="{ data }")
             .flex.justify-center
               Button.p-button-rounded.p-button-danger.p-button-sm(
@@ -147,7 +146,7 @@ onMounted(async () => { //adds dummy data, students.value is what holds frontend
   studentCount.value = students.value.length; 
 });
 
-const handleBidsParsed = async (parsed: any) => {
+const handleBidsParsedReplace = async (parsed: any) => {
   if (!parsed?.length) return;
   try {
     const result = await $fetch<{
@@ -155,7 +154,7 @@ const handleBidsParsed = async (parsed: any) => {
       choicesCreated: number;
       skippedStudents: string[];
       unmatchedProjects: string[];
-    }>('/api/bids', { method: 'POST', body: parsed });
+    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'false' } });
 
     students.value = await $fetch<Student[]>('/api/students');
     studentCount.value = students.value.length;
@@ -171,7 +170,30 @@ const handleBidsParsed = async (parsed: any) => {
     errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
   }
 };
+const handleBidsParsedMerge = async (parsed: any) => {
+  if (!parsed?.length) return;
+  try {
+    const result = await $fetch<{
+      studentsImported: number;
+      choicesCreated: number;
+      skippedStudents: string[];
+      unmatchedProjects: string[];
+    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'true' } });
 
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+
+    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices (merged).`;
+    if (result.skippedStudents.length)
+      msg += ` Skipped ${result.skippedStudents.length} rows (no SSO ID).`;
+    if (result.unmatchedProjects.length)
+      msg += ` ${result.unmatchedProjects.length} project name(s) not found in DB: ${result.unmatchedProjects.join('; ')}.`;
+
+    result.unmatchedProjects.length ? infoToast(msg, 10000) : successToast(msg, 7000);
+  } catch (e: any) {
+    errorToast(e?.data?.message ?? e?.message ?? 'Failed to merge bid responses.');
+  }
+};
 const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
   // Merge uploaded students with existing records
   
@@ -273,10 +295,15 @@ const handleParsedReplace = async (parsed: any) => {
   }
 };
 
+const loadStudents = async () => {
+  students.value = await $fetch<Student[]>('/api/students');
+  studentCount.value = students.value.length;
+};
+
 const resetDatabase = async () => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
       return;
     }
   }
@@ -289,11 +316,11 @@ const resetDatabase = async () => {
     // Refresh students from database
     students.value = await $fetch<Student[]>('/api/students');
     studentCount.value = students.value.length;
-    console.log('Database reset to default data successfully!');
+    console.log('Database cleared successfully!');
     if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Database has been reset to default generated data.');
+      (globalThis as any).alert('Database has been cleared.');
     } else {
-      console.log('Database has been reset to default generated data.');
+      console.log('Database has been cleared.');
     }
   } catch (error) {
     console.error('Error resetting database:', error);
@@ -458,19 +485,6 @@ select {
 /* Make DataTable wrapper scrollable horizontally */
 :deep(.p-datatable-wrapper) { 
   overflow-x: auto !important; 
-}
-
-/* Set minimum width for DataTable on larger screens */
-@media (min-width: 768px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { 
-    min-width: 50rem !important; 
-  }
-}
-
-@media (max-width: 767px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { 
-    min-width: 20rem !important; 
-  }
 }
 
 /* Allow text wrapping in table cells */
