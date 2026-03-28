@@ -88,6 +88,41 @@
           </button>
         </div>
 
+        <div v-if="selectedSemesterId" class="mt-4">
+          <p class="text-sm text-gray-700 mb-2">
+            Specific teams (optional). Leave empty to process all teams in the semester.
+          </p>
+          <select
+            v-model="selectedProjectIds"
+            multiple
+            class="team-select"
+            :disabled="loading || teamOptions.length === 0"
+          >
+            <option v-for="team in teamOptions" :key="team.id" :value="team.id">
+              {{ team.name }}
+            </option>
+          </select>
+          <div class="flex gap-2 mt-2">
+            <button
+              class="button-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="loading || teamOptions.length === 0"
+              @click="selectAllTeams"
+            >
+              Select All
+            </button>
+            <button
+              class="button-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="loading || selectedProjectIds.length === 0"
+              @click="clearSelectedTeams"
+            >
+              Clear Selection
+            </button>
+            <span class="text-xs text-gray-700 self-center" v-if="selectedProjectIds.length">
+              {{ selectedProjectIds.length }} selected
+            </span>
+          </div>
+        </div>
+
         <div v-if="message" class="result-message mt-4" :class="{
           'result-success': messageType === 'success',
           'result-error': messageType === 'error',
@@ -117,7 +152,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useHead } from 'nuxt/app';
 
 useHead({ title: 'GitHub Bot' });
@@ -143,15 +178,57 @@ interface RepoResult {
   error?: string;
 }
 
+interface TeamOption {
+  id: string;
+  name: string;
+}
+
 const loading = ref(false);
 const pendingAction = ref<'connect' | 'disconnect' | 'create' | ''>('');
 const status = ref<'connected' | 'disconnected' | 'error' | 'loading'>('disconnected');
 const statusData = ref<GitHubStatus | null>(null);
 const semesters = ref<Semester[]>([]);
 const selectedSemesterId = ref('');
+const teamOptions = ref<TeamOption[]>([]);
+const selectedProjectIds = ref<string[]>([]);
 const message = ref('');
 const messageType = ref<'success' | 'error' | 'info'>('info');
 const results = ref<RepoResult[]>([]);
+
+const loadTeamOptions = async () => {
+  if (!selectedSemesterId.value) {
+    teamOptions.value = [];
+    selectedProjectIds.value = [];
+    return;
+  }
+
+  try {
+    const res = await $fetch<{ projects: Array<{ id: string; name: string }> }>(
+      `/api/teams?semesterId=${selectedSemesterId.value}`
+    );
+
+    const deduped = new Map<string, TeamOption>();
+    for (const project of res.projects || []) {
+      if (project?.id && project?.name) {
+        deduped.set(project.id, { id: project.id, name: project.name });
+      }
+    }
+
+    teamOptions.value = Array.from(deduped.values()).sort((a, b) => a.name.localeCompare(b.name));
+    selectedProjectIds.value = selectedProjectIds.value.filter(id => deduped.has(id));
+  } catch {
+    teamOptions.value = [];
+    selectedProjectIds.value = [];
+  }
+};
+
+const selectAllTeams = () => {
+  selectedProjectIds.value = teamOptions.value.map(team => team.id);
+};
+
+const clearSelectedTeams = () => {
+  selectedProjectIds.value = [];
+};
 
 const refreshStatus = async () => {
   try {
@@ -214,7 +291,10 @@ const createRepos = async () => {
       results: RepoResult[];
     }>('/api/github/create-repos', {
       method: 'POST',
-      body: { semesterId: selectedSemesterId.value },
+      body: {
+        semesterId: selectedSemesterId.value,
+        projectIds: selectedProjectIds.value.length > 0 ? selectedProjectIds.value : undefined,
+      },
     });
 
     message.value = res.message;
@@ -236,6 +316,10 @@ onMounted(async () => {
   } catch {
     semesters.value = [];
   }
+});
+
+watch(selectedSemesterId, async () => {
+  await loadTeamOptions();
 });
 </script>
 
@@ -337,6 +421,18 @@ onMounted(async () => {
   color: #111827;
 }
 
+.team-select {
+  border: 1px solid #9ca3af;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.6rem;
+  min-width: 20rem;
+  min-height: 7.5rem;
+  width: 100%;
+  max-width: 32rem;
+  background: #ffffff;
+  color: #111827;
+}
+
 .button-create,
 .button-delete {
   border-radius: 0.5rem;
@@ -367,6 +463,20 @@ onMounted(async () => {
 
 .button-delete:hover:not(:disabled) {
   background: #C2410C;
+}
+
+.button-secondary {
+  border-radius: 0.4rem;
+  border: 1px solid #9ca3af;
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+}
+
+.button-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
 }
 
 .loading-spinner {

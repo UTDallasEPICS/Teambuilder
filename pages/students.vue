@@ -5,6 +5,7 @@
       .flex.flex-wrap.items-center.gap-2.self-start
         FileUploadButton(title="Upload Bid Responses (Replace)" @dataParsed="handleBidsParsedReplace")
         FileUploadButton(title="Merge Bid Responses" @dataParsed="handleBidsParsedMerge")
+        ClickableButton(v-if="studentsWithFullName.length > 0" title="Export Students to CSV" type="success" @click="exportStudentsToCSV")
         ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
@@ -83,6 +84,18 @@
         template(v-if="!isEditing") {{ selectedStudent?.netID }}
         input.editBox(v-else v-model="editedStudent.netID")
 
+    div(v-if="selectedStudent?.github || isEditing")
+      span.cardSubTitle GitHub:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.github }}
+        input.editBox(v-else v-model="editedStudent.github" placeholder="GitHub username")
+
+    div(v-if="selectedStudent?.discord || isEditing")
+      span.cardSubTitle Discord:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.discord }}
+        input.editBox(v-else v-model="editedStudent.discord" placeholder="Discord username")
+
     div
       span.cardSubTitle Class:
       span.cardText
@@ -122,9 +135,12 @@ import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
+import Papa from 'papaparse';
 import type { Student, Year } from '@prisma/client';
 import { useHead } from '@vueuse/head';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
+
+declare const document: any;
 
 useHead({ title: 'Students' });
 
@@ -438,6 +454,47 @@ const handleSave = async () => {
     students.value[index] = editedStudent.value;
   }
   isEditing.value = false;
+}
+
+const exportStudentsToCSV = () => {
+  try {
+    if (!studentsWithFullName.value.length) {
+      errorToast('No students to export.');
+      return;
+    }
+
+    const csvRows = studentsWithFullName.value.map(student => ({
+      Name: student.fullName,
+      NetID: student.netID,
+      Major: student.major,
+      Year: capitalizeFirst(student.year),
+      Status: capitalizeFirst(student.status),
+      Class: student.class,
+      Email: student.email ?? '',
+      GitHub: student.github ?? '',
+      Discord: student.discord ?? ''
+    }));
+
+    const csv = Papa.unparse(csvRows);
+
+    if (process.client) {
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute('href', url);
+      link.setAttribute('download', `students-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      successToast('Students exported to CSV successfully!', 5000);
+    }
+  } catch (error: any) {
+    errorToast(error?.message || 'Failed to export students.');
+  }
 }
 
 const helpInfo = `Upload student information here.`
