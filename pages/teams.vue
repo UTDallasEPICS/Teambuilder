@@ -13,19 +13,33 @@
         )
 
       .mt-4.project-title.w-full.text-center Teams
-      .text-2xl.mt-2 Team count: {{ rows.length }}
+      .text-2xl.mt-2 Team count ({{ activeDayLabel }}): {{ filteredRows.length }}
+
+      .day-tabs(v-if="rows.length > 0")
+        button.day-tab-btn(
+          :class="{ active: selectedDayFilter === 'ALL' }"
+          @click="selectedDayFilter = 'ALL'"
+        ) All
+        button.day-tab-btn(
+          :class="{ active: selectedDayFilter === 'WEDNESDAY' }"
+          @click="selectedDayFilter = 'WEDNESDAY'"
+        ) Wednesday
+        button.day-tab-btn(
+          :class="{ active: selectedDayFilter === 'THURSDAY' }"
+          @click="selectedDayFilter = 'THURSDAY'"
+        ) Thursday
 
       template(v-if="rows.length === 0")
         .beige-card.p-6.text-center.mt-4 No generated teams found. Generate teams on the Generate Teams page first.
 
       DataTable.beige-card.overflow-hidden(
         v-else
-        :value="rows"
+        :value="filteredRows"
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
         class="w-full mt-2 md:mt-5"
-        dataKey="projectId"
+        dataKey="teamId"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedTeam"
@@ -70,7 +84,7 @@
     .mt-4(v-if="assignmentMetrics.underMinTeams.length > 0")
       .text-base.font-semibold.text-red-700 Teams below 4 members:
       ul.list-disc.pl-5.mt-1
-        li(v-for="team in assignmentMetrics.underMinTeams" :key="team.projectId")
+        li(v-for="team in assignmentMetrics.underMinTeams" :key="`${team.projectId}-${team.projectName}`")
           | {{ team.projectName }} ({{ team.teamSize }})
 
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedTeam" class="w-[50vw]")
@@ -102,6 +116,7 @@
                 option(value="") Select destination
                 option(v-for="project in destinationProjects" :key="project.id" :value="project.id") {{ project.name }}
               button.member-move-btn(@click="moveMember(member.id)") Move
+              button.member-remove-btn(@click="removeMember(member.id)") Remove
 </template>
 
 <script setup lang="ts">
@@ -118,8 +133,10 @@ declare const document: any;
 useHead({ title: 'Teams' });
 
 interface TeamRow {
+  teamId: string;
   projectId: string;
   projectName: string;
+  meetingDay: string | null;
   teamSize: number;
   students: Array<{
     id: string;
@@ -148,10 +165,14 @@ interface AssignmentMetrics {
   underMinTeams: Array<{ projectId: string; projectName: string; teamSize: number }>;
 }
 
+type DayFilter = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
+
 const { successToast, errorToast } = usePrimeVueToast();
 const rawAssignments = ref<Record<string, any> | null>(null);
+const teamMeta = ref<Record<string, { projectId: string; meetingDay: string; projectName: string }>>({});
 const projects = ref<any[]>([]);
 const selectedTeam = ref<TeamRow | null>(null);
+const selectedDayFilter = ref<DayFilter>('ALL');
 const isEditing = ref(false);
 const moveTargets = ref<Record<string, string>>({});
 const savedSemester = ref<any | null>(null);
@@ -191,13 +212,35 @@ const getProjectName = (projectId: string) => {
   catch (e) { return projectId }
 };
 
+const getTeamContext = (teamKey: string) => {
+  const meta = teamMeta.value[teamKey]
+  if (meta) {
+    return {
+      teamId: teamKey,
+      projectId: meta.projectId,
+      projectName: `${meta.projectName} (${meta.meetingDay === 'WEDNESDAY' ? 'Wednesday' : 'Thursday'})`,
+      meetingDay: meta.meetingDay,
+    }
+  }
+
+  return {
+    teamId: teamKey,
+    projectId: teamKey,
+    projectName: getProjectName(teamKey),
+    meetingDay: null,
+  }
+}
+
 const rows = computed<TeamRow[]>(() => {
   if (!rawAssignments.value) return [];
-  const activeProjectIds = new Set(Object.keys(rawAssignments.value));
+  const activeProjectIds = new Set(
+    Object.keys(rawAssignments.value).map((teamKey) => getTeamContext(teamKey).projectId)
+  );
 
-  return Object.entries(rawAssignments.value).map(([projectId, students]) => {
+  return Object.entries(rawAssignments.value).map(([teamKey, students]) => {
+    const context = getTeamContext(teamKey)
     const members = (students as any[]).map(s => ({
-      ...getChoiceInfo(s, projectId, activeProjectIds),
+      ...getChoiceInfo(s, context.projectId, activeProjectIds),
       id: s?.id ?? '',
       name: getDisplayName(s),
       major: s?.major ?? 'Unknown',
@@ -206,8 +249,10 @@ const rows = computed<TeamRow[]>(() => {
       discord: s?.discord ?? null,
     }));
     return {
-      projectId,
-      projectName: getProjectName(projectId),
+      teamId: context.teamId,
+      projectId: context.projectId,
+      projectName: context.projectName,
+      meetingDay: context.meetingDay,
       teamSize: (students as any[]).length,
       students: members,
       studentNames: members.map(m => m.name).join(', ')
@@ -215,10 +260,29 @@ const rows = computed<TeamRow[]>(() => {
   });
 });
 
+const filteredRows = computed<TeamRow[]>(() => {
+  if (selectedDayFilter.value === 'ALL') {
+    return rows.value;
+  }
+
+  return rows.value.filter((row) => row.meetingDay === selectedDayFilter.value);
+});
+
+const activeDayLabel = computed(() => {
+  const labels: Record<string, string> = {
+    ALL: 'All',
+    WEDNESDAY: 'Wednesday',
+    THURSDAY: 'Thursday',
+  };
+  return labels[selectedDayFilter.value] ?? 'All';
+});
+
 const assignmentMetrics = computed<AssignmentMetrics | null>(() => {
   if (!rawAssignments.value) return null;
 
-  const activeProjectIds = new Set(Object.keys(rawAssignments.value));
+  const activeProjectIds = new Set(
+    Object.keys(rawAssignments.value).map((teamKey) => getTeamContext(teamKey).projectId)
+  );
   let studentsAssigned = 0;
   let noValidChoices = 0;
   let top1Count = 0;
@@ -226,7 +290,8 @@ const assignmentMetrics = computed<AssignmentMetrics | null>(() => {
   let top3Count = 0;
   let top4Count = 0;
 
-  for (const [projectId, assignedStudents] of Object.entries(rawAssignments.value)) {
+  for (const [teamKey, assignedStudents] of Object.entries(rawAssignments.value)) {
+    const { projectId } = getTeamContext(teamKey)
     for (const student of assignedStudents as any[]) {
       studentsAssigned += 1;
       const rankedChoices = (student?.choices ?? [])
@@ -279,9 +344,9 @@ const closeModal = () => { selectedTeam.value = null; };
 
 const destinationProjects = computed(() => {
   if (!selectedTeam.value) return [];
-  return rows.value
-    .filter(row => row.projectId !== selectedTeam.value?.projectId)
-    .map(row => ({ id: row.projectId, name: row.projectName }));
+  return filteredRows.value
+    .filter(row => row.teamId !== selectedTeam.value?.teamId)
+    .map(row => ({ id: row.teamId, name: row.projectName }));
 });
 
 const persistAssignments = () => {
@@ -289,15 +354,26 @@ const persistAssignments = () => {
   localStorage.setItem('lastTeamAssignments', JSON.stringify({
     teamAssignments: rawAssignments.value,
     projects: projects.value,
+    teamMeta: teamMeta.value,
     semester: savedSemester.value,
   }));
 };
 
 const refreshSelectedTeam = () => {
   if (!selectedTeam.value) return;
-  const updatedTeam = rows.value.find(row => row.projectId === selectedTeam.value?.projectId) || null;
+  const updatedTeam = filteredRows.value.find(row => row.teamId === selectedTeam.value?.teamId)
+    || rows.value.find(row => row.teamId === selectedTeam.value?.teamId)
+    || null;
   selectedTeam.value = updatedTeam;
 };
+
+watch(selectedDayFilter, () => {
+  if (!selectedTeam.value) return;
+  const stillVisible = filteredRows.value.some((row) => row.teamId === selectedTeam.value?.teamId);
+  if (!stillVisible) {
+    closeModal();
+  }
+});
 
 const toggleEditMode = () => {
   isEditing.value = !isEditing.value;
@@ -308,20 +384,20 @@ const toggleEditMode = () => {
 
 const moveMember = async (studentId: string) => {
   if (!rawAssignments.value || !selectedTeam.value) return;
-  const destinationProjectId = moveTargets.value[studentId];
-  const sourceProjectId = selectedTeam.value.projectId;
+  const destinationTeamId = moveTargets.value[studentId];
+  const sourceTeamId = selectedTeam.value.teamId;
 
-  if (!destinationProjectId) {
+  if (!destinationTeamId) {
     errorToast('Select a destination team first.');
     return;
   }
-  if (destinationProjectId === sourceProjectId) {
+  if (destinationTeamId === sourceTeamId) {
     errorToast('Destination must be a different team.');
     return;
   }
 
-  const sourceStudents = (rawAssignments.value[sourceProjectId] || []) as any[];
-  const destinationStudents = (rawAssignments.value[destinationProjectId] || []) as any[];
+  const sourceStudents = (rawAssignments.value[sourceTeamId] || []) as any[];
+  const destinationStudents = (rawAssignments.value[destinationTeamId] || []) as any[];
   const sourceIndex = sourceStudents.findIndex((s: any) => s.id === studentId);
 
   if (sourceIndex < 0) {
@@ -331,8 +407,8 @@ const moveMember = async (studentId: string) => {
 
   const [student] = sourceStudents.splice(sourceIndex, 1);
   destinationStudents.push(student);
-  rawAssignments.value[destinationProjectId] = destinationStudents;
-  rawAssignments.value[sourceProjectId] = sourceStudents;
+  rawAssignments.value[destinationTeamId] = destinationStudents;
+  rawAssignments.value[sourceTeamId] = sourceStudents;
 
   persistAssignments();
   refreshSelectedTeam();
@@ -345,17 +421,15 @@ const moveMember = async (studentId: string) => {
         $fetch('/api/teams/assign', {
           method: 'POST',
           body: {
-            semesterId: savedSemester.value.id,
-            projectId: sourceProjectId,
-            studentIds: (rawAssignments.value[sourceProjectId] as any[]).map((s: any) => s.id),
+            teamId: sourceTeamId,
+            studentIds: (rawAssignments.value[sourceTeamId] as any[]).map((s: any) => s.id),
           },
         }),
         $fetch('/api/teams/assign', {
           method: 'POST',
           body: {
-            semesterId: savedSemester.value.id,
-            projectId: destinationProjectId,
-            studentIds: (rawAssignments.value[destinationProjectId] as any[]).map((s: any) => s.id),
+            teamId: destinationTeamId,
+            studentIds: (rawAssignments.value[destinationTeamId] as any[]).map((s: any) => s.id),
           },
         }),
       ]);
@@ -365,6 +439,43 @@ const moveMember = async (studentId: string) => {
     }
   } else {
     successToast('Member moved successfully.');
+  }
+};
+
+const removeMember = async (studentId: string) => {
+  if (!rawAssignments.value || !selectedTeam.value) return;
+
+  const sourceTeamId = selectedTeam.value.teamId;
+  const sourceStudents = (rawAssignments.value[sourceTeamId] || []) as any[];
+  const sourceIndex = sourceStudents.findIndex((s: any) => s.id === studentId);
+
+  if (sourceIndex < 0) {
+    errorToast('Could not find that member in this team.');
+    return;
+  }
+
+  sourceStudents.splice(sourceIndex, 1);
+  rawAssignments.value[sourceTeamId] = sourceStudents;
+
+  persistAssignments();
+  refreshSelectedTeam();
+  moveTargets.value[studentId] = '';
+
+  if (savedSemester.value?.id) {
+    try {
+      await $fetch('/api/teams/assign', {
+        method: 'POST',
+        body: {
+          teamId: sourceTeamId,
+          studentIds: (rawAssignments.value[sourceTeamId] as any[]).map((s: any) => s.id),
+        },
+      });
+      successToast('Member removed and saved successfully.');
+    } catch (e) {
+      successToast('Member removed locally. Database save failed — changes are in localStorage only.');
+    }
+  } else {
+    successToast('Member removed successfully.');
   }
 };
 
@@ -389,7 +500,8 @@ const exportTeamsToCSV = async () => {
         method: 'POST',
         body: {
           teamAssignments: rawAssignments.value,
-          projects: projects.value
+          projects: projects.value,
+          teamMeta: teamMeta.value,
         }
       }
     );
@@ -421,6 +533,7 @@ onMounted(async () => {
       const parsed = JSON.parse(raw);
       rawAssignments.value = parsed.teamAssignments || null;
       projects.value = parsed.projects || [];
+      teamMeta.value = parsed.teamMeta || {};
       savedSemester.value = parsed.semester || null;
     }
   } catch (e) {
@@ -430,7 +543,11 @@ onMounted(async () => {
   // Then, load authoritative assignments from the database
   if (savedSemester.value?.id) {
     try {
-      const result = await $fetch<{ teamAssignments: Record<string, any[]>, projects: any[] }>(
+      const result = await $fetch<{
+        teamAssignments: Record<string, any[]>;
+        projects: any[];
+        teamMeta?: Record<string, { projectId: string; meetingDay: string; projectName: string }>;
+      }>(
         `/api/teams?semesterId=${savedSemester.value.id}`
       );
       // Only override if the DB actually has student assignments saved
@@ -438,6 +555,7 @@ onMounted(async () => {
       if (hasAssignments) {
         rawAssignments.value = result.teamAssignments;
         projects.value = result.projects;
+        teamMeta.value = result.teamMeta || {};
         persistAssignments();
       }
     } catch (e) {
@@ -485,6 +603,27 @@ onMounted(async () => {
 .metric-item .metric-label,
 .metric-item .metric-value {
   color: #111827;
+}
+.day-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 0.65rem;
+  padding: 0.25rem;
+}
+.day-tab-btn {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.day-tab-btn.active {
+  background: #ffffff;
+  color: var(--color-teal);
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;
@@ -552,6 +691,14 @@ onMounted(async () => {
   border-radius: 0.375rem;
   padding: 0.35rem 0.7rem;
   background: var(--color-teal);
+  color: #fff;
+  cursor: pointer;
+}
+.member-remove-btn {
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0.35rem 0.7rem;
+  background: #b91c1c;
   color: #fff;
   cursor: pointer;
 }
