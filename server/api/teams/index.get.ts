@@ -1,7 +1,7 @@
 /**
  * GET /api/teams?semesterId=...
  * Returns all teams for a semester with their assigned students and project info.
- * Response: { teamAssignments: Record<projectId, Student[]>, projects: Project[] }
+ * Response: { teamAssignments: Record<teamId, Student[]>, projects: Project[], teamMeta: Record<teamId, ...> }
  */
 
 export default defineEventHandler(async (event) => {
@@ -22,11 +22,23 @@ export default defineEventHandler(async (event) => {
   })
 
   const teamAssignments: Record<string, any[]> = {}
+  const teamMeta: Record<string, { projectId: string; meetingDay: string; projectName: string }> = {}
   for (const team of teams) {
-    teamAssignments[team.projectId] = team.students
+    teamAssignments[team.id] = team.students
+    teamMeta[team.id] = {
+      projectId: team.projectId,
+      meetingDay: String(team.meetingDay ?? 'THURSDAY'),
+      projectName: team.project.name,
+    }
   }
 
-  const projects = teams.map(t => t.project)
+  const projectsById = new Map<string, any>()
+  for (const team of teams) {
+    if (!projectsById.has(team.project.id)) {
+      projectsById.set(team.project.id, team.project)
+    }
+  }
+  const projects = Array.from(projectsById.values())
 
-  return { teamAssignments, projects }
+  return { teamAssignments, projects, teamMeta }
 })

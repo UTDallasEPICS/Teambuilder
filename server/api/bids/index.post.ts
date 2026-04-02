@@ -66,6 +66,13 @@ function normalizeProjectText(input: string): string {
 export default defineEventHandler(async (event) => {
   const rows: any[] = await readBody(event);
   const merge = getQuery(event).merge === 'true'; // If true, keep existing choices; if false (default), replace
+  const rawMeetingDay = getQuery(event).meetingDay;
+  const meetingDay =
+    typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'WEDNESDAY'
+      ? 'WEDNESDAY'
+      : typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'THURSDAY'
+        ? 'THURSDAY'
+        : null;
 
   if (!Array.isArray(rows) || rows.length === 0) {
     throw createError({ statusCode: 400, message: 'Expected a non-empty array of bid rows.' });
@@ -217,11 +224,30 @@ export default defineEventHandler(async (event) => {
     const major     = extractMajor(row['School and Major'] ?? '');
     const status    = 'ACTIVE' as const;
 
+    const updateData: any = { firstName, lastName, email, year, class: cls, major, status };
+    const createData: any = {
+      netID,
+      firstName,
+      lastName,
+      email,
+      year,
+      class: cls,
+      major,
+      status,
+      github: null,
+      discord: null,
+      enrollment: row['Enrollment']?.trim() ?? null,
+    };
+
+    if (meetingDay) {
+      updateData.meetingDay = meetingDay;
+      createData.meetingDay = meetingDay;
+    }
+
     await client.student.upsert({
       where: { netID },
-      update:  { firstName, lastName, email, year, class: cls, major, status },
-      create:  { netID, firstName, lastName, email, year, class: cls, major, status,
-                 github: null, discord: null, enrollment: row['Enrollment']?.trim() ?? null },
+      update: updateData,
+      create: createData,
     });
     studentsImported++;
 

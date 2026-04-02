@@ -1,5 +1,35 @@
 export default defineEventHandler(async event => {
   const body = await readBody(event);
+  type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH'
+
+  const normalizeMeetingDay = (value: unknown): MeetingDay | null => {
+    if (typeof value !== 'string') return null;
+    const cleaned = value.trim().toUpperCase().replace(/\s+/g, '');
+    if (
+      cleaned === 'BOTH' ||
+      cleaned === 'WEDNESDAY,THURSDAY' ||
+      cleaned === 'THURSDAY,WEDNESDAY' ||
+      cleaned === 'WEDNESDAY/THURSDAY' ||
+      cleaned === 'THURSDAY/WEDNESDAY' ||
+      cleaned === 'WEDNESDAY&THURSDAY' ||
+      cleaned === 'THURSDAY&WEDNESDAY' ||
+      cleaned === 'WEDTHU' ||
+      cleaned === 'THUWED'
+    ) {
+      return 'BOTH';
+    }
+    if (cleaned === 'WEDNESDAY' || cleaned === 'WED') return 'WEDNESDAY';
+    if (cleaned === 'THURSDAY' || cleaned === 'THU' || cleaned === 'THURS') return 'THURSDAY';
+    return null;
+  };
+
+  const mergeMeetingDay = (existingDay: MeetingDay | null, incomingDay: MeetingDay | null): MeetingDay | null => {
+    if (!incomingDay) return existingDay;
+    if (!existingDay) return incomingDay;
+    if (existingDay === 'BOTH' || incomingDay === 'BOTH') return 'BOTH';
+    if (existingDay === incomingDay) return existingDay;
+    return 'BOTH';
+  };
   
   // Handle array of projects (bulk upload)
   if (Array.isArray(body)) {
@@ -42,6 +72,7 @@ export default defineEventHandler(async event => {
       const existingProject = await event.context.client.project.findFirst({
         where: { name: project.name }
       });
+      const incomingMeetingDay = normalizeMeetingDay(project.meetingDay ?? project.day)
 
       const createdProject = existingProject
         ? await event.context.client.project.update({
@@ -50,6 +81,7 @@ export default defineEventHandler(async event => {
               description: project.description,
               type: project.type || 'SOFTWARE',
               status: project.status || 'NEW',
+              meetingDay: mergeMeetingDay((existingProject.meetingDay as MeetingDay | null) ?? null, incomingMeetingDay),
               repoURL: project.repoURL,
               partnerId: partnerId
             },
@@ -63,6 +95,7 @@ export default defineEventHandler(async event => {
               description: project.description,
               type: project.type || 'SOFTWARE',
               status: project.status || 'NEW',
+              meetingDay: incomingMeetingDay,
               repoURL: project.repoURL,
               partnerId: partnerId
             },
@@ -78,11 +111,12 @@ export default defineEventHandler(async event => {
   }
   
   // Handle single project (original behavior)
-  const { name, description, partnerId } = body;
+  const { name, description, partnerId, meetingDay } = body;
   const postProject = await event.context.client.project.create({
     data: {
       name,
       description,
+      meetingDay: normalizeMeetingDay(meetingDay),
       Partner: {
         connect: { id: partnerId }
       }
