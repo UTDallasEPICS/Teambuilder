@@ -61,6 +61,10 @@ function normalizeProjectText(input: string): string {
     .trim();
 }
 
+function normalizeProjectKey(input: string): string {
+  return normalizeProjectText(input).replace(/\s+/g, '');
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default defineEventHandler(async (event) => {
@@ -127,13 +131,13 @@ export default defineEventHandler(async (event) => {
 
   // Build a normalized name → id lookup for fast matching
   let projectLookup = new Map<string, string>(
-    allProjects.map((p: { id: string; name: string }) => [normalizeProjectText(p.name), p.id])
+    allProjects.map((p: { id: string; name: string }) => [normalizeProjectKey(p.name), p.id])
   );
 
   // Helper to get or create project
   const getOrCreateProject = async (projectName: string): Promise<string | null> => {
     if (!projectName) return null;
-    const normalized = normalizeProjectText(projectName);
+    const normalized = normalizeProjectKey(projectName);
     
     // Check in existing lookup
     if (projectLookup.has(normalized)) {
@@ -184,7 +188,7 @@ export default defineEventHandler(async (event) => {
     const projectPart = aliasLookup.get(projectPartRaw) ?? projectPartRaw;
 
     const candidates = [normalizedFull, orgPart, projectPart]
-      .map(c => normalizeProjectText(c))
+      .map(c => normalizeProjectKey(c))
       .filter(Boolean);
 
     // Check existing projects first

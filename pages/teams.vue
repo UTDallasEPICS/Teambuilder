@@ -5,6 +5,11 @@
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
         ClickableButton(v-if="rows.length > 0" title="Export Teams to CSV" type="success" @click="exportTeamsToCSV")
+        FileUploadButton(
+          v-if="rows.length > 0"
+          title="Replace Teams from CSV"
+          @dataParsed="handleParsedReplaceTeams"
+        )
         ClickableButton(
           v-if="assignmentMetrics"
           title="Show Metrics"
@@ -87,7 +92,7 @@
         li(v-for="team in assignmentMetrics.underMinTeams" :key="`${team.projectId}-${team.projectName}`")
           | {{ team.projectName }} ({{ team.teamSize }})
 
-  .cardRows.relative.orange-card.p-15.modal(v-if="selectedTeam" class="w-[50vw]")
+  .cardRows.relative.orange-card.p-15.modal.teams-modal(v-if="selectedTeam")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
     .cardTitle {{ selectedTeam.projectName }}
     .text-lg.mt-1.text-gray-500 Team size: {{ selectedTeam.teamSize }}
@@ -312,8 +317,9 @@ const assignmentMetrics = computed<AssignmentMetrics | null>(() => {
     }
   }
 
+  const studentsWithValidChoices = Math.max(0, studentsAssigned - noValidChoices);
   const pct = (count: number) =>
-    studentsAssigned > 0 ? Number(((count / studentsAssigned) * 100).toFixed(2)) : 0;
+    studentsWithValidChoices > 0 ? Number(((count / studentsWithValidChoices) * 100).toFixed(2)) : 0;
 
   const underMinTeams = rows.value
     .filter(row => row.teamSize > 0 && row.teamSize < 4)
@@ -525,6 +531,137 @@ const exportTeamsToCSV = async () => {
   }
 };
 
+const normalizeMemberName = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/,/g, ' ')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const handleParsedReplaceTeams = async (parsedRows: any[]) => {
+  if (!savedSemester.value?.id) {
+    errorToast('No semester selected. Generate or load teams before replacing.');
+    return;
+  }
+  if (!rawAssignments.value || Object.keys(rawAssignments.value).length === 0) {
+    errorToast('No current teams found to replace.');
+    return;
+  }
+  if (!Array.isArray(parsedRows) || parsedRows.length === 0) {
+    errorToast('Uploaded CSV is empty.');
+    return;
+  }
+
+  const confirmed = process.client
+    ? window.confirm('Replace all current team assignments with uploaded CSV? This will overwrite every team on this page.')
+    : true;
+
+  if (!confirmed) return;
+
+  const allStudents = Object.values(rawAssignments.value)
+    .flatMap((students) => students as any[])
+    .filter((student, index, arr) => arr.findIndex((s) => s.id === student.id) === index);
+
+  const studentById = new Map(allStudents.map((student: any) => [student.id, student] as const));
+  const studentLookup = new Map<string, string[]>();
+
+  for (const student of allStudents) {
+    const firstLast = normalizeMemberName(`${student.firstName ?? ''} ${student.lastName ?? ''}`);
+    const lastFirst = normalizeMemberName(`${student.lastName ?? ''}, ${student.firstName ?? ''}`);
+    for (const key of [firstLast, lastFirst]) {
+      if (!key) continue;
+      const list = studentLookup.get(key) ?? [];
+      if (!list.includes(student.id)) list.push(student.id);
+      studentLookup.set(key, list);
+    }
+  }
+
+  const teamIdByLabel = new Map(rows.value.map((row) => [row.projectName.trim(), row.teamId] as const));
+  const teamIdByNormalizedLabel = new Map(
+    rows.value.map((row) => [normalizeMemberName(row.projectName), row.teamId] as const)
+  );
+
+  const unknownProjects: string[] = [];
+  const unknownMembers: string[] = [];
+  const ambiguousMembers: string[] = [];
+
+  const newAssignmentsByTeamId: Record<string, string[]> = Object.fromEntries(
+    Object.keys(rawAssignments.value).map((teamId) => [teamId, [] as string[]])
+  );
+
+  for (const row of parsedRows) {
+    const projectLabel = String(row.Project ?? row.project ?? '').trim();
+    if (!projectLabel) continue;
+
+    const exactTeamId = teamIdByLabel.get(projectLabel);
+    const teamId = exactTeamId ?? teamIdByNormalizedLabel.get(normalizeMemberName(projectLabel));
+
+    if (!teamId) {
+      unknownProjects.push(projectLabel);
+      continue;
+    }
+
+    const membersRaw = String(row.Members ?? row.members ?? '').trim();
+    const memberNames = membersRaw
+      ? membersRaw.split(';').map((name) => name.trim()).filter(Boolean)
+      : [];
+
+    const targetIds: string[] = [];
+    for (const memberName of memberNames) {
+      const lookupIds = studentLookup.get(normalizeMemberName(memberName)) ?? [];
+      if (lookupIds.length === 0) {
+        unknownMembers.push(`${projectLabel}: ${memberName}`);
+        continue;
+      }
+      if (lookupIds.length > 1) {
+        ambiguousMembers.push(`${projectLabel}: ${memberName}`);
+        continue;
+      }
+      targetIds.push(lookupIds[0]);
+    }
+
+    newAssignmentsByTeamId[teamId] = [...new Set(targetIds)];
+  }
+
+  if (unknownProjects.length || unknownMembers.length || ambiguousMembers.length) {
+    const issues = [
+      unknownProjects.length ? `Unknown projects: ${unknownProjects.slice(0, 3).join(', ')}` : null,
+      unknownMembers.length ? `Unknown members: ${unknownMembers.slice(0, 3).join(', ')}` : null,
+      ambiguousMembers.length ? `Ambiguous members: ${ambiguousMembers.slice(0, 3).join(', ')}` : null,
+    ].filter(Boolean).join(' | ');
+    errorToast(`Replace aborted. ${issues}`);
+    return;
+  }
+
+  try {
+    await Promise.all(
+      Object.entries(newAssignmentsByTeamId).map(([teamId, studentIds]) =>
+        $fetch('/api/teams/assign', {
+          method: 'POST',
+          body: { teamId, studentIds },
+        })
+      )
+    );
+
+    const replacedAssignments: Record<string, any[]> = Object.fromEntries(
+      Object.entries(newAssignmentsByTeamId).map(([teamId, studentIds]) => [
+        teamId,
+        studentIds
+          .map((studentId) => studentById.get(studentId))
+          .filter((student): student is any => !!student),
+      ])
+    );
+
+    rawAssignments.value = replacedAssignments;
+    persistAssignments();
+    refreshSelectedTeam();
+    successToast('Teams replaced from CSV successfully.');
+  } catch (err: any) {
+    errorToast(err?.data?.message || 'Failed to replace teams from CSV.');
+  }
+};
+
 onMounted(async () => {
   // First, restore semester/project metadata from localStorage
   try {
@@ -657,7 +794,7 @@ onMounted(async () => {
 }
 .member-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
 }
@@ -665,6 +802,8 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
 }
 .member-extra {
   font-size: 0.95rem;
@@ -677,20 +816,22 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 .member-select {
-  min-width: 12rem;
-  border: 1px solid var(--color-teal);
+  width: 18rem;
+  max-width: 42vw;
+  border: 1px solid var(--color-accent-utd-green);
   border-radius: 0.375rem;
   padding: 0.3rem 0.5rem;
-  background: var(--color-beige);
-  color: var(--color-teal);
+  background: #fff;
+  color: #111827;
 }
 .member-move-btn {
   border: 0;
   border-radius: 0.375rem;
   padding: 0.35rem 0.7rem;
-  background: var(--color-teal);
+  background: var(--color-accent-utd-green);
   color: #fff;
   cursor: pointer;
 }
@@ -701,6 +842,11 @@ onMounted(async () => {
   background: #b91c1c;
   color: #fff;
   cursor: pointer;
+}
+.teams-modal {
+  width: min(96vw, 980px);
+  max-height: 85vh;
+  overflow: auto;
 }
 
 @media (max-width: 1024px) {
@@ -715,6 +861,21 @@ onMounted(async () => {
 }
 
 @media (max-width: 767px) {
+  .member-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .member-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .member-select {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .project-title {
     font-size: 1.25rem;
   }
