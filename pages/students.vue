@@ -623,7 +623,7 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.18);
   border-radius: 0.65rem;
   padding: 0.25rem;
 }
@@ -633,14 +633,16 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   border-radius: 0.5rem;
   padding: 0.4rem 0.75rem;
   background: transparent;
-  color: #ffffff;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .day-tab-btn.active {
-  background: #ffffff;
-  color: var(--color-teal);
+  background: var(--color-accent-utd-green);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) inset;
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;

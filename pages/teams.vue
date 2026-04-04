@@ -63,33 +63,46 @@
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by member" :showClear="true")
 
-  .cardRows.relative.orange-card.p-8.modal.metrics-modal(v-if="showMetrics && assignmentMetrics")
+  .cardRows.relative.orange-card.p-8.modal.metrics-modal(v-if="showMetrics && displayedMetrics")
     XCircleIcon.absolute.top-4.right-4.size-7.cursor-pointer(@click="showMetrics = false")
     .text-2xl.font-semibold.mb-4 Assignment Metrics
+    .day-tabs.mb-4
+      button.day-tab-btn(
+        :class="{ active: selectedMetricsDay === 'ALL' }"
+        @click="selectedMetricsDay = 'ALL'"
+      ) All
+      button.day-tab-btn(
+        :class="{ active: selectedMetricsDay === 'WEDNESDAY' }"
+        @click="selectedMetricsDay = 'WEDNESDAY'"
+      ) Wednesday
+      button.day-tab-btn(
+        :class="{ active: selectedMetricsDay === 'THURSDAY' }"
+        @click="selectedMetricsDay = 'THURSDAY'"
+      ) Thursday
     .metrics-grid
       .metric-item
         .metric-label Students Assigned
-        .metric-value {{ assignmentMetrics.studentsAssigned }}
+        .metric-value {{ displayedMetrics.studentsAssigned }}
       .metric-item
         .metric-label Top 1
-        .metric-value {{ assignmentMetrics.top1Count }} ({{ assignmentMetrics.top1Pct }}%)
+        .metric-value {{ displayedMetrics.top1Count }} ({{ displayedMetrics.top1Pct }}%)
       .metric-item
         .metric-label Top 2
-        .metric-value {{ assignmentMetrics.top2Count }} ({{ assignmentMetrics.top2Pct }}%)
+        .metric-value {{ displayedMetrics.top2Count }} ({{ displayedMetrics.top2Pct }}%)
       .metric-item
         .metric-label Top 3
-        .metric-value {{ assignmentMetrics.top3Count }} ({{ assignmentMetrics.top3Pct }}%)
+        .metric-value {{ displayedMetrics.top3Count }} ({{ displayedMetrics.top3Pct }}%)
       .metric-item
         .metric-label Top 4
-        .metric-value {{ assignmentMetrics.top4Count }} ({{ assignmentMetrics.top4Pct }}%)
+        .metric-value {{ displayedMetrics.top4Count }} ({{ displayedMetrics.top4Pct }}%)
       .metric-item
         .metric-label No Valid Choices
-        .metric-value {{ assignmentMetrics.noValidChoices }}
+        .metric-value {{ displayedMetrics.noValidChoices }}
 
-    .mt-4(v-if="assignmentMetrics.underMinTeams.length > 0")
+    .mt-4(v-if="displayedMetrics.underMinTeams.length > 0")
       .text-base.font-semibold.text-red-700 Teams below 4 members:
       ul.list-disc.pl-5.mt-1
-        li(v-for="team in assignmentMetrics.underMinTeams" :key="`${team.projectId}-${team.projectName}`")
+        li(v-for="team in displayedMetrics.underMinTeams" :key="`${team.projectId}-${team.projectName}`")
           | {{ team.projectName }} ({{ team.teamSize }})
 
   .cardRows.relative.orange-card.p-15.modal.teams-modal(v-if="selectedTeam")
@@ -178,6 +191,7 @@ const teamMeta = ref<Record<string, { projectId: string; meetingDay: string; pro
 const projects = ref<any[]>([]);
 const selectedTeam = ref<TeamRow | null>(null);
 const selectedDayFilter = ref<DayFilter>('ALL');
+const selectedMetricsDay = ref<DayFilter>('ALL');
 const isEditing = ref(false);
 const moveTargets = ref<Record<string, string>>({});
 const savedSemester = ref<any | null>(null);
@@ -282,12 +296,18 @@ const activeDayLabel = computed(() => {
   return labels[selectedDayFilter.value] ?? 'All';
 });
 
-const assignmentMetrics = computed<AssignmentMetrics | null>(() => {
+const computeAssignmentMetrics = (dayFilter: DayFilter): AssignmentMetrics | null => {
   if (!rawAssignments.value) return null;
 
+  const teamEntries = Object.entries(rawAssignments.value).filter(([teamKey]) => {
+    if (dayFilter === 'ALL') return true;
+    return getTeamContext(teamKey).meetingDay === dayFilter;
+  });
+
   const activeProjectIds = new Set(
-    Object.keys(rawAssignments.value).map((teamKey) => getTeamContext(teamKey).projectId)
+    teamEntries.map(([teamKey]) => getTeamContext(teamKey).projectId)
   );
+
   let studentsAssigned = 0;
   let noValidChoices = 0;
   let top1Count = 0;
@@ -295,7 +315,7 @@ const assignmentMetrics = computed<AssignmentMetrics | null>(() => {
   let top3Count = 0;
   let top4Count = 0;
 
-  for (const [teamKey, assignedStudents] of Object.entries(rawAssignments.value)) {
+  for (const [teamKey, assignedStudents] of teamEntries) {
     const { projectId } = getTeamContext(teamKey)
     for (const student of assignedStudents as any[]) {
       studentsAssigned += 1;
@@ -321,9 +341,17 @@ const assignmentMetrics = computed<AssignmentMetrics | null>(() => {
   const pct = (count: number) =>
     studentsWithValidChoices > 0 ? Number(((count / studentsWithValidChoices) * 100).toFixed(2)) : 0;
 
-  const underMinTeams = rows.value
-    .filter(row => row.teamSize > 0 && row.teamSize < 4)
-    .map(row => ({ projectId: row.projectId, projectName: row.projectName, teamSize: row.teamSize }));
+  const underMinTeams = teamEntries
+    .map(([teamKey, assignedStudents]) => {
+      const context = getTeamContext(teamKey);
+      const teamSize = (assignedStudents as any[]).length;
+      return {
+        projectId: context.projectId,
+        projectName: context.projectName,
+        teamSize,
+      };
+    })
+    .filter(team => team.teamSize > 0 && team.teamSize < 4);
 
   return {
     studentsAssigned,
@@ -338,7 +366,10 @@ const assignmentMetrics = computed<AssignmentMetrics | null>(() => {
     top4Pct: pct(top4Count),
     underMinTeams,
   };
-});
+};
+
+const assignmentMetrics = computed<AssignmentMetrics | null>(() => computeAssignmentMetrics('ALL'));
+const displayedMetrics = computed<AssignmentMetrics | null>(() => computeAssignmentMetrics(selectedMetricsDay.value));
 
 const filters = ref({
   projectName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -745,7 +776,7 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.18);
   border-radius: 0.65rem;
   padding: 0.25rem;
 }
@@ -754,13 +785,15 @@ onMounted(async () => {
   border-radius: 0.5rem;
   padding: 0.4rem 0.75rem;
   background: transparent;
-  color: #ffffff;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 .day-tab-btn.active {
-  background: #ffffff;
-  color: var(--color-teal);
+  background: var(--color-accent-utd-green);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) inset;
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;
