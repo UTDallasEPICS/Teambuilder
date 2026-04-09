@@ -7,15 +7,15 @@ datasource db {
   url      = env("PRISMA_DB_URL")
 }
 
-model User {
-  id          String     @id @default(uuid())
-  email       String     @unique
+// model User {
+//   id          String     @id @default(uuid())
+//   email       String     @unique
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+//   createdAt   DateTime   @default(now())
+//   updatedAt   DateTime   @updatedAt
 
-  @@map("users")
-}
+//   @@map("users")
+// }
 
 model Partner {
   id             String      @id @default(uuid())
@@ -120,7 +120,7 @@ model Semester {
   @@unique([year, season])
 }
 
-model BaUser {
+model user {
   id            String    @id
   name          String
   email         String    @unique
@@ -128,13 +128,13 @@ model BaUser {
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  sessions      BaSession[]
-  accounts      BaAccount[]
+  sessions      session[]
+  accounts      account[]
 
   @@map("ba_users")
 }
 
-model BaSession {
+model session {
   id          String    @id
   expiresAt   DateTime
   token       String    @unique
@@ -143,17 +143,17 @@ model BaSession {
   ipAddress   String?
   userAgent   String?
   userId      String
-  user        BaUser    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("ba_sessions")
 }
 
-model BaAccount {
+model account {
   id                    String    @id
   accountId             String
   providerId            String
   userId                String
-  user                  BaUser    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -167,7 +167,7 @@ model BaAccount {
   @@map("ba_accounts")
 }
 
-model BaVerification {
+model verification {
   id          String    @id
   identifier  String
   value       String

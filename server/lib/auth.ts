@@ -4,7 +4,7 @@ import { magicLink } from "better-auth/plugins"
 import { PrismaClient } from "@prisma/client"
 import nodemailer from "nodemailer"
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL })
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -19,6 +19,7 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
   database: prismaAdapter(prisma, { provider: "sqlite" }),
+  // add book object
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {

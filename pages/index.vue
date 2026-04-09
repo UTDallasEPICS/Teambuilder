@@ -2,7 +2,8 @@
 </template>
 
 <script setup lang="ts">
-const { data: session } = await useFetch('/api/auth/get-session')
+const { refresh, data: session } = await useFetch('/api/auth/get-session')
+await refresh()
 if (!session.value) {
   await navigateTo('/login')
 } else {
