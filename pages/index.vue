@@ -2,10 +2,10 @@
 </template>
 
 <script setup lang="ts">
-const { data: session } = await useFetch("/api/auth/get-session")
+const { data: session } = await useFetch('/api/auth/get-session')
 if (!session.value) {
-  await navigateTo("/login")
+  await navigateTo('/login')
 } else {
-  await navigateTo("/projects")
+  await navigateTo('/projects')
 }
 </script>

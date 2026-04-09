@@ -3,13 +3,13 @@
   .flex.flex-row.min-h-screen.w-full.items-start
     button.fixed.top-4.left-4.z-50.px-3.py-2.rounded-md(
       class="md:border md:border-gray-200"
-      v-if="$route.name !== 'index'"
+      v-if="$route.name !== 'index' && $route.name !== 'login'"
       @click="toggleSidebar"
       aria-label="Toggle sidebar"
       style="background: var(--color-nav-bg); color: var(--color-nav-text);"
     ) ☰
     Navbar(
-      v-if="$route.name !== 'index'"
+      v-if="$route.name !== 'index' && $route.name !== 'login'"
       :is-open="sidebarOpen"
       @close="closeSidebar"
     )
