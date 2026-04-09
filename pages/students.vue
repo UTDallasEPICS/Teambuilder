@@ -2,10 +2,11 @@
   .overlay(v-if="selectedStudent" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Students" @dataParsed="handleParsed") <!--parsing happens HERE thru FileUploadButton.vue-->
-        //-changed from fileSelected to dataParsed - successful change, handleParsed now runs
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+      .flex.flex-wrap.items-center.gap-2.self-start
+        FileUploadButton(title="Upload Bid Responses (Replace)" @dataParsed="handleBidsParsedReplace")
+        FileUploadButton(title="Merge Bid Responses" @dataParsed="handleBidsParsedMerge")
+        ClickableButton(v-if="studentsWithFullName.length > 0" title="Export Students to CSV" type="success" @click="exportStudentsToCSV")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-20.project-title Students
@@ -16,25 +17,25 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedStudent"
       )
-        Column(field="fullName" header="Name" :showFilterMenu="false")
+        Column(field="fullName" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
 
-        Column(field="netID" header="NetID" :showFilterMenu="false")
+        Column(field="netID" header="NetID" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by NetID" :showClear="true")
 
-        Column(field="major" header="Major" :showFilterMenu="false")
+        Column(field="major" header="Major" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="majors" placeholder="Any" :maxSelectedLabels="1")
 
-        Column(field="year" header="Year" :showFilterMenu="false")
+        Column(field="year" header="Year" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }") {{ capitalizeFirst(data.year) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="years" placeholder="Any" :maxSelectedLabels="1")
@@ -43,7 +44,7 @@
               // selected value
               template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
 
-        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem")
+        Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem" :sortable="true")
           template(#body="{ data }") 
             .flex.justify-center
               .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
@@ -52,6 +53,15 @@
               MultiSelect.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="statuses" placeholder="Any" :maxSelectedLabels="1")
                 template(#option="slotProps")
                   .pill.w-20(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
+
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
+          template(#body="{ data }")
+            .flex.justify-center
+              Button.p-button-rounded.p-button-danger.p-button-sm(
+                icon="pi pi-trash" 
+                @click="handleDeleteStudent(data)"
+                v-tooltip.top="'Delete student'"
+              )
 
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedStudent" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
@@ -73,6 +83,18 @@
       span.cardText
         template(v-if="!isEditing") {{ selectedStudent?.netID }}
         input.editBox(v-else v-model="editedStudent.netID")
+
+    div(v-if="selectedStudent?.github || isEditing")
+      span.cardSubTitle GitHub:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.github }}
+        input.editBox(v-else v-model="editedStudent.github" placeholder="GitHub username")
+
+    div(v-if="selectedStudent?.discord || isEditing")
+      span.cardSubTitle Discord:
+      span.cardText
+        template(v-if="!isEditing") {{ selectedStudent?.discord }}
+        input.editBox(v-else v-model="editedStudent.discord" placeholder="Discord username")
 
     div
       span.cardSubTitle Class:
@@ -113,10 +135,16 @@ import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
+import Papa from 'papaparse';
 import type { Student, Year } from '@prisma/client';
 import { useHead } from '@vueuse/head';
+import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
+
+declare const document: any;
 
 useHead({ title: 'Students' });
+
+const { successToast, errorToast, infoToast } = usePrimeVueToast();
 
 const students = ref<Student[]>([]);
 const studentCount = ref(0);
@@ -134,9 +162,56 @@ onMounted(async () => { //adds dummy data, students.value is what holds frontend
   studentCount.value = students.value.length; 
 });
 
+const handleBidsParsedReplace = async (parsed: any) => {
+  if (!parsed?.length) return;
+  try {
+    const result = await $fetch<{
+      studentsImported: number;
+      choicesCreated: number;
+      skippedStudents: string[];
+      unmatchedProjects: string[];
+    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'false' } });
+
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+
+    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices.`;
+    if (result.skippedStudents.length)
+      msg += ` Skipped ${result.skippedStudents.length} rows (no SSO ID).`;
+    if (result.unmatchedProjects.length)
+      msg += ` ${result.unmatchedProjects.length} project name(s) not found in DB: ${result.unmatchedProjects.join('; ')}.`;
+
+    result.unmatchedProjects.length ? infoToast(msg, 10000) : successToast(msg, 7000);
+  } catch (e: any) {
+    errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
+  }
+};
+const handleBidsParsedMerge = async (parsed: any) => {
+  if (!parsed?.length) return;
+  try {
+    const result = await $fetch<{
+      studentsImported: number;
+      choicesCreated: number;
+      skippedStudents: string[];
+      unmatchedProjects: string[];
+    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'true' } });
+
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+
+    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices (merged).`;
+    if (result.skippedStudents.length)
+      msg += ` Skipped ${result.skippedStudents.length} rows (no SSO ID).`;
+    if (result.unmatchedProjects.length)
+      msg += ` ${result.unmatchedProjects.length} project name(s) not found in DB: ${result.unmatchedProjects.join('; ')}.`;
+
+    result.unmatchedProjects.length ? infoToast(msg, 10000) : successToast(msg, 7000);
+  } catch (e: any) {
+    errorToast(e?.data?.message ?? e?.message ?? 'Failed to merge bid responses.');
+  }
+};
 const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
-  // Clear existing students and replace with uploaded data
-  students.value = [];
+  // Merge uploaded students with existing records
   
   const formattedStudents = parsed.map((stu : any) =>{
     // Handle both CSV formats:
@@ -171,14 +246,8 @@ const handleParsed = async (parsed: any) => { //when it reaches here it's alread
     }
   });
   
-  // Delete all existing students first, then save new ones to database
+  // Merge students (API upserts by netID)
   try {
-    // Clear existing students from database
-    await $fetch('/api/students', {
-      method: 'DELETE'
-    });
-    
-    // Save new students to database
     await $fetch('/api/students', {
       method: 'POST',
       body: formattedStudents
@@ -195,10 +264,62 @@ const handleParsed = async (parsed: any) => { //when it reaches here it's alread
 //database comes later, send it locally to tables to populate the website
 };
 
+const handleParsedReplace = async (parsed: any) => {
+  const formattedStudents = parsed.map((stu : any) => {
+    let firstName, lastName, netID;
+
+    if (stu.firstName && stu.lastName) {
+      firstName = stu.firstName;
+      lastName = stu.lastName;
+      netID = stu.netID;
+    } else if (stu.name) {
+      const [parsedLastName, parsedFirstName] = stu.name.split(', ');
+      firstName = parsedFirstName;
+      lastName = parsedLastName;
+      netID = stu.id;
+    }
+
+    return {
+      netID : netID,
+      firstName : firstName,
+      lastName: lastName,
+      email: null,
+      github: null,
+      discord: null,
+      major: stu.major,
+      year: stu.year || stu.seniority,
+      class: stu.class,
+      status: stu.status || null
+    }
+  });
+
+  try {
+    await $fetch('/api/students', {
+      method: 'DELETE'
+    });
+
+    await $fetch('/api/students', {
+      method: 'POST',
+      body: formattedStudents
+    });
+
+    students.value = await $fetch<Student[]>('/api/students');
+    studentCount.value = students.value.length;
+    console.log('Students replaced from CSV successfully!');
+  } catch (error) {
+    console.error('Error replacing students from CSV:', error);
+  }
+};
+
+const loadStudents = async () => {
+  students.value = await $fetch<Student[]>('/api/students');
+  studentCount.value = students.value.length;
+};
+
 const resetDatabase = async () => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
       return;
     }
   }
@@ -211,11 +332,11 @@ const resetDatabase = async () => {
     // Refresh students from database
     students.value = await $fetch<Student[]>('/api/students');
     studentCount.value = students.value.length;
-    console.log('Database reset to default data successfully!');
+    console.log('Database cleared successfully!');
     if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Database has been reset to default generated data.');
+      (globalThis as any).alert('Database has been cleared.');
     } else {
-      console.log('Database has been reset to default generated data.');
+      console.log('Database has been cleared.');
     }
   } catch (error) {
     console.error('Error resetting database:', error);
@@ -245,6 +366,29 @@ const handleClearAll = async () => {
     console.log('All students deleted successfully!');
   } catch (error) {
     console.error('Error deleting students:', error);
+  }
+};
+
+const handleDeleteStudent = async (student: Student) => {
+  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+  if (confirmAvailable) {
+    if (!(globalThis as any).confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}? This cannot be undone.`)) {
+      return;
+    }
+  }
+
+  try {
+    await $fetch(`/api/students/${student.id}`, {
+      method: 'DELETE'
+    });
+
+    students.value = students.value.filter(s => s.id !== student.id);
+    studentCount.value = students.value.length;
+    selectedStudent.value = null;
+    successToast(`Deleted ${student.firstName} ${student.lastName}`, 3000);
+  } catch (error: any) {
+    errorToast(error?.data?.message || 'Failed to delete student');
+    console.error('Error deleting student:', error);
   }
 };
 
@@ -312,6 +456,47 @@ const handleSave = async () => {
   isEditing.value = false;
 }
 
+const exportStudentsToCSV = () => {
+  try {
+    if (!studentsWithFullName.value.length) {
+      errorToast('No students to export.');
+      return;
+    }
+
+    const csvRows = studentsWithFullName.value.map(student => ({
+      Name: student.fullName,
+      NetID: student.netID,
+      Major: student.major,
+      Year: capitalizeFirst(student.year),
+      Status: capitalizeFirst(student.status),
+      Class: student.class,
+      Email: student.email ?? '',
+      GitHub: student.github ?? '',
+      Discord: student.discord ?? ''
+    }));
+
+    const csv = Papa.unparse(csvRows);
+
+    if (process.client) {
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute('href', url);
+      link.setAttribute('download', `students-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      successToast('Students exported to CSV successfully!', 5000);
+    }
+  } catch (error: any) {
+    errorToast(error?.message || 'Failed to export students.');
+  }
+}
+
 const helpInfo = `Upload student information here.`
 </script>
 
@@ -357,19 +542,6 @@ select {
 /* Make DataTable wrapper scrollable horizontally */
 :deep(.p-datatable-wrapper) { 
   overflow-x: auto !important; 
-}
-
-/* Set minimum width for DataTable on larger screens */
-@media (min-width: 768px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { 
-    min-width: 50rem !important; 
-  }
-}
-
-@media (max-width: 767px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { 
-    min-width: 20rem !important; 
-  }
 }
 
 /* Allow text wrapping in table cells */

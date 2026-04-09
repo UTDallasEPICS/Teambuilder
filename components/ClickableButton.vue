@@ -39,18 +39,18 @@ const frontClass = type + 'Front';
   background: #eb6464;
 }
 .successEdge {
-  background: #0f3f2c !important; /* stronger UTD darker edge */
+  background: #003500 !important;
 }
 .successFront {
-  background: #154734 !important; /* UTD green (ensure exact color) */
-  color: #ffffff !important; /* ensure white text despite inherited .text-beige */
+  background: #004500 !important;
+  color: #ffffff !important;
 }
 .dangerEdge {
-  background: #991B1B !important; /* darker red edge */
+  background: #7a2e2e !important;
 }
 .dangerFront {
-  background: #DC2626 !important; /* red for delete/danger actions */
-  color: #ffffff !important; /* white text */
+  background: #a94b4b !important;
+  color: #ffffff !important;
 }
 .edge:active .front {
   transform: translateY(-2px);

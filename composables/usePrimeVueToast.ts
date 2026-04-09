@@ -3,30 +3,30 @@ import { useToast } from 'primevue/usetoast';
 export const usePrimeVueToast = () => {
   const toast = useToast();
 
-  const successToast = (detail: string) => {
+  const successToast = (detail: string, life = 3000) => {
     toast.add({ 
       severity: 'success',
       summary: 'Success!',
       detail,
-      life: 3000 
+      life
     });
   }
 
-  const errorToast = (detail: string) => {
+  const errorToast = (detail: string, life = 3000) => {
     toast.add({ 
       severity: 'error', 
       summary: 'Error',
       detail,
-      life: 3000 
+      life
     });
   }
 
-  const infoToast = (detail: string) => {
+  const infoToast = (detail: string, life = 3000) => {
     toast.add({ 
       severity: 'info', 
       summary: 'Info',
       detail,
-      life: 3000 
+      life
     });
   }
 

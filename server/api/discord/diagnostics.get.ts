@@ -61,11 +61,9 @@ export default defineEventHandler(async (event) => {
       success: true,
       bot: {
         tag: client.user?.tag,
-        id: client.user?.id,
         isReady: client.isReady(),
       },
       guild: {
-        id: guild.id,
         name: guild.name,
         memberCount: guild.memberCount,
       },
@@ -73,20 +71,17 @@ export default defineEventHandler(async (event) => {
         manageChannels: hasManageChannels,
         manageRoles: hasManageRoles,
         viewChannel: hasViewChannels,
-        all: botMember.permissions.toArray(),
       },
       channels: {
         total: totalChannels,
         categories,
         text: textChannels,
         voice: voiceChannels,
-        limit: 500,
         remaining: 500 - totalChannels,
       },
       roles: {
         total: roles.size,
         projectRoles: projectRoles.size,
-        projectRoleNames: projectRoles.map(r => r.name),
         hasAdminRole,
       },
     };

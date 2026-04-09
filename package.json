@@ -10,12 +10,10 @@
     "start": "nuxt start",
     "lint": "eslint . --ext .js,.vue,.ts"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.2.0",
+    "@octokit/rest": "^22.0.1",
     "@pinia/nuxt": "^0.10.1",
     "@primeuix/themes": "^1.0.0",
     "@prisma/client": "6.17.1",

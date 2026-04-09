@@ -1,9 +1,22 @@
 {
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "strict": true,
-    "types": ["nuxt", "node"]
+    "types": ["nuxt", "node"],
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    }
   }
   ,
-  "include": ["types/**/*.d.ts"]
+  "include": [
+    "types/**/*.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.vue",
+    ".nuxt/**/*.ts"
+  ]
 }

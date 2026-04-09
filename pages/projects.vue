@@ -3,8 +3,9 @@
   .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Projects" @dataParsed="handleParsed")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+        FileUploadButton(title="Upload Projects (Merge)" @dataParsed="handleParsed")
+        FileUploadButton(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Projects
@@ -15,23 +16,23 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedProject"
       )
-        Column(field="name" header="Name" :showFilterMenu="false")
+        Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
-        Column(field="description" header="Description" :showFilterMenu="false")
+        Column(field="description" header="Description" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
         // hide this column on small screens (partner is lower priority)
-        Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell")
+        Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
-        Column(field="status" header="Status" :showFilterMenu="false")
+        Column(field="status" header="Status" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }")
             .flex.justify-center
               .pill(:class="statusBgColor(data.status)") {{ data.status.toUpperCase() }}
@@ -40,13 +41,22 @@
               template(#option="slotProps")
                 .pill(:class="statusBgColor(slotProps.option)") {{ slotProps.option }}
         // hide type on small screens
-        Column(field="type" header="Type" :showFilterMenu="false" class="hidden lg:table-cell")
+        Column(field="type" header="Type" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
           template(#body="{ data }")
             .text-center {{ capitalizeFirst(data.type) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="types" placeholder="Any" :maxSelectedLabels="1")
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
               template(#value="slotProps") {{ formatTypesFilter(slotProps.value) }}
+
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
+          template(#body="{ data }")
+            .flex.justify-center
+              Button.p-button-rounded.p-button-danger.p-button-sm(
+                icon="pi pi-trash" 
+                @click="handleDeleteProject(data)"
+                v-tooltip.top="'Delete project'"
+              )
 
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedProject" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
@@ -102,9 +112,11 @@ import { stringifySemesters } from '~/server/services/semesterService';
 // import { faker } from '@faker-js/faker';
 import {type ProjectStatus} from '@prisma/client';
 import { useHead } from '@vueuse/head';
+import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 
 useHead({ title: 'Projects' });
 
+const { successToast, errorToast } = usePrimeVueToast();
 const projects = ref<ProjectWithSemestersAndPartner[]>([]);
 onMounted(async () => {
   projects.value = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
@@ -171,14 +183,9 @@ const handleParsed = async (parsed: any) => {
     };
   });
   
-  // Delete all existing projects first, then save new ones to database
+  // Merge uploaded projects with existing database records
   try {
-    // Clear existing projects from database
-    await $fetch('/api/projects', {
-      method: 'DELETE'
-    });
-    
-    // Save new projects to database
+    // Save uploaded projects (API upserts by project name)
     await $fetch('/api/projects', {
       method: 'POST',
       body: formattedProjects
@@ -193,10 +200,63 @@ const handleParsed = async (parsed: any) => {
   }
 };
 
+const handleParsedReplace = async (parsed: any) => {
+  console.log('Parsed CSV (replace):', parsed);
+
+  const formattedProjects = parsed.map((proj: any) => {
+    return {
+      name: proj.name || '',
+      description: proj.description || '',
+      type: proj.type?.toUpperCase() || 'SOFTWARE',
+      status: proj.status?.toUpperCase() || 'NEW',
+      repoURL: proj.repoURL || '',
+      partnerName: proj.partnerName || ''
+    };
+  });
+
+  try {
+    await $fetch('/api/projects', {
+      method: 'DELETE'
+    });
+
+    await $fetch('/api/projects', {
+      method: 'POST',
+      body: formattedProjects
+    });
+
+    projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+    console.log('Projects replaced successfully!');
+  } catch (error) {
+    console.error('Error replacing projects from CSV:', error);
+  }
+};
+
+const handleDeleteProject = async (project: ProjectWithSemestersAndPartner) => {
+  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+  if (confirmAvailable) {
+    if (!(globalThis as any).confirm(`Are you sure you want to delete "${project.name}"? This cannot be undone.`)) {
+      return;
+    }
+  }
+
+  try {
+    await $fetch(`/api/projects/${project.id}`, {
+      method: 'DELETE'
+    });
+
+    projects.value = projects.value.filter(p => p.id !== project.id);
+    selectedProject.value = null;
+    successToast(`Deleted project "${project.name}"`, 3000);
+  } catch (error: any) {
+    errorToast(error?.data?.message || 'Failed to delete project');
+    console.error('Error deleting project:', error);
+  }
+};
+
 const resetDatabase = async () => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
       return;
     }
   }
@@ -208,9 +268,9 @@ const resetDatabase = async () => {
     
     // Refresh projects from database
     projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
-    console.log('Database reset to default data successfully!');
+    console.log('Database cleared successfully!');
     if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Database has been reset to default generated data.');
+      (globalThis as any).alert('Database has been cleared.');
     }
   } catch (error) {
     console.error('Error resetting database:', error);
@@ -263,11 +323,7 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 
 :deep(.p-datatable-wrapper) { overflow-x: auto !important; }
 
-@media (min-width: 768px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 50rem !important; }
-}
 @media (max-width: 767px) {
-  :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 20rem !important; }
   .project-title { font-size: 1.25rem; }
 }
 
@@ -305,10 +361,10 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 
 /* keep the primevue DataTable itself white but make the inner area around it orange as well */
 .centered-row.shaded-card > .centered-col {
-  background: var(--color-utd-orange) !important;
+  background: transparent !important;
   border-radius: 0.75rem;
   padding: 1.25rem !important; /* inner inset padding */
-  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  box-shadow: none;
   width: 100%;
 }
 </style>

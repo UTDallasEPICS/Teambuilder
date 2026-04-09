@@ -2,9 +2,10 @@
   .overlay(v-if="selectedPartner" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.absolute.top-0.left-0.gap-2
-        FileUploadButton(title="Upload Partners" @dataParsed="handleParsed")
-        ClickableButton(title="Reset to Default Data" type="danger" @click="resetDatabase")
+      .flex.flex-wrap.items-center.gap-2.self-start
+        FileUploadButton(title="Upload Partners (Merge)" @dataParsed="handleParsed")
+        FileUploadButton(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
+        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-20.project-title.embossed.drop-shadow-md Partners
@@ -15,29 +16,37 @@
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
-        class="h-[80vh] w-full mt-2 md:mt-5"
-        tableStyle="min-width: 50rem;"
+        class="w-full mt-2 md:mt-5"
         dataKey="id"
         filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedPartner"
       )
 
-        Column(field="name" header="Name" :showFilterMenu="false")
+        Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name")
 
-        Column(field="contactName" header="Contact Name" :showFilterMenu="false")
+        Column(field="contactName" header="Contact Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by contact name")
 
-        Column(field="contactEmail" header="Contact Email" :showFilterMenu="false")
+        Column(field="contactEmail" header="Contact Email" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by contact email")
 
-        Column(field="projectName" header="Projects" :showFilterMenu="false")
+        Column(field="projectName" header="Projects" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by project")
+
+        Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
+          template(#body="{ data }")
+            .flex.justify-center
+              Button.p-button-rounded.p-button-danger.p-button-sm(
+                icon="pi pi-trash" 
+                @click="handleDeletePartner(data)"
+                v-tooltip.top="'Delete partner'"
+              )
 
   .cardRows.relative.orange-card.p-15.modal(v-if="selectedPartner" class="w-[50vw]")
     XCircleIcon.absolute.top-5.right-5.size-8.cursor-pointer(@click="closeModal")
@@ -76,9 +85,11 @@
     import type { Partner } from '@prisma/client';
     import { useHead } from '@vueuse/head';
     import { XCircleIcon } from '@heroicons/vue/24/solid';
+    import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
     
     useHead({ title: 'Partners' });
-  
+
+  const { successToast, errorToast } = usePrimeVueToast();
   const partners = ref<Partner[]>([]);
   const partnerCount = ref(0);
   
@@ -88,14 +99,9 @@
   });
   
   const handleParsed = async (uploadedPartners: Partner[]) => {
-    // Delete all existing partners first, then save new ones to database
+    // Merge uploaded partners with existing records
     try {
-      // Clear existing partners from database
-      await $fetch('/api/partners', {
-        method: 'DELETE'
-      });
-      
-      // Save new partners to database
+      // Save uploaded partners (API upserts by partner name)
       await $fetch('/api/partners', {
         method: 'POST',
         body: uploadedPartners
@@ -109,11 +115,30 @@
       console.error('Error saving partners to database:', error);
     }
   };
+
+  const handleParsedReplace = async (uploadedPartners: Partner[]) => {
+    try {
+      await $fetch('/api/partners', {
+        method: 'DELETE'
+      });
+
+      await $fetch('/api/partners', {
+        method: 'POST',
+        body: uploadedPartners
+      });
+
+      partners.value = await $fetch<Partner[]>('/api/partners');
+      partnerCount.value = partners.value.length;
+      console.log('Partners replaced from CSV successfully!');
+    } catch (error) {
+      console.error('Error replacing partners from CSV:', error);
+    }
+  };
   
   const resetDatabase = async () => {
     const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
     if (confirmAvailable) {
-      if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and restore the default generated data. Are you sure?')) {
+      if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
         return;
       }
     }
@@ -126,8 +151,8 @@
     // Refresh partners from database
           partners.value = await $fetch<Partner[]>('/api/partners');
           partnerCount.value = partners.value.length;
-          console.log('Database reset to default data successfully!');
-          (globalThis as any).alert('Database has been reset to default generated data.');
+          console.log('Database cleared successfully!');
+          (globalThis as any).alert('Database has been cleared.');
         } catch (error) {
       console.error('Error resetting database:', error);
       (globalThis as any).alert('Failed to reset database. Please check the console for details.');
@@ -149,6 +174,29 @@
       console.log('All partners deleted successfully!');
     } catch (error) {
       console.error('Error deleting partners:', error);
+    }
+  };
+
+  const handleDeletePartner = async (partner: Partner) => {
+    const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
+    if (confirmAvailable) {
+      if (!(globalThis as any).confirm(`Are you sure you want to delete "${partner.name}"? This cannot be undone.`)) {
+        return;
+      }
+    }
+
+    try {
+      await $fetch(`/api/partners/${partner.id}`, {
+        method: 'DELETE'
+      } as any);
+
+      partners.value = partners.value.filter(p => p.id !== partner.id);
+      partnerCount.value = partners.value.length;
+      selectedPartner.value = null;
+      successToast(`Deleted partner "${partner.name}"`, 3000);
+    } catch (error: any) {
+      errorToast(error?.data?.message || 'Failed to delete partner');
+      console.error('Error deleting partner:', error);
     }
   };
   
@@ -204,8 +252,7 @@
 
   :deep(.p-datatable-wrapper) { overflow-x: auto !important; }
 
-  @media (min-width: 768px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 50rem !important; } }
-  @media (max-width: 767px) { :deep(.p-datatable-scrollable .p-datatable-table) { min-width: 20rem !important; } .project-title { font-size: 1.25rem; } }
+  @media (max-width: 767px) { .project-title { font-size: 1.25rem; } }
 
   :deep(.p-datatable td) { white-space: normal; word-break: break-word; }
 
@@ -219,6 +266,6 @@
   .pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
 
   .centered-row.shaded-card { background: var(--color-utd-orange) !important; padding: 2rem !important; border-radius: 0.5rem; }
-  .centered-row.shaded-card > .centered-col { background: var(--color-utd-orange) !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: 0 8px 20px rgba(16,24,40,0.06); width: 100%; }
+  .centered-row.shaded-card > .centered-col { background: transparent !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: none; width: 100%; }
   </style>
   
