@@ -13,7 +13,7 @@
       NuxtLink(to="/students" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/students') }") Students
       NuxtLink(to="/generate-teams" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/generate-teams') }") Generate Teams
       NuxtLink(to="/teams" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/teams') }") Teams
-      NuxtLink(to="/demographics" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/demographics') }") Demographics
+      NuxtLink(to="/newDemographics" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/newDemographics') }") Demographics
       NuxtLink(to="/SCIPE" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/SCIPE') }") S.C.I.P.E. Bot
       NuxtLink(to="/github" @click="closeOnMobile" :class="{ 'router-link-active': isActive('/github') }") GitHub Bot
     .mt-auto.flex.flex-col.gap-y-4
