@@ -31,6 +31,9 @@ export type Project = {
 export interface CPSATConfig {
   min_team_size?: number;
   max_team_size?: number;
+  allow_overflow_if_needed?: boolean;
+  overflow_per_team?: number;
+  overflow_penalty?: number;
   prioritize_returning_students?: boolean;
   prioritize_3200_first_choice?: boolean;
   prefer_major_diversity?: boolean;
@@ -46,6 +49,7 @@ export interface CPSATResult {
   solve_time?: number;
   status?: string;
   error?: string;
+  warning?: string;
   deactivated_projects?: string[];
 }
 
@@ -105,6 +109,9 @@ export async function generateTeamsORTools(
     config: config || {
       min_team_size: 4,
       max_team_size: 6,
+      allow_overflow_if_needed: true,
+      overflow_per_team: 1,
+      overflow_penalty: 20000,
       prioritize_returning_students: true,
       prioritize_3200_first_choice: true,
       prefer_major_diversity: true,
@@ -155,6 +162,9 @@ export async function generateTeamsORTools(
         
         console.log(`\nSolution found in ${result.solve_time?.toFixed(3)}s`);
         console.log(`Status: ${result.status}`);
+        if (result.warning) {
+          console.warn(`⚠️  Warning: ${result.warning}`);
+        }
         console.log(`Score: ${result.score}`);
         if (result.deactivated_projects && result.deactivated_projects.length > 0) {
           console.log(`Deactivated Projects (${result.deactivated_projects.length}): ${result.deactivated_projects.join(', ')}`);

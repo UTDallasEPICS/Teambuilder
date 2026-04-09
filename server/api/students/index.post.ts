@@ -8,6 +8,27 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
+
+  const normalizeMeetingDay = (value: unknown): MeetingDay | null => {
+    if (value == null) return null;
+    const cleaned = String(value).trim().toUpperCase();
+
+    if (cleaned === 'WEDNESDAY' || cleaned === 'WED') return 'WEDNESDAY';
+    if (cleaned === 'THURSDAY' || cleaned === 'THU' || cleaned === 'THURS') return 'THURSDAY';
+    if (
+      cleaned === 'BOTH' ||
+      cleaned === 'WEDNESDAY,THURSDAY' ||
+      cleaned === 'THURSDAY,WEDNESDAY' ||
+      cleaned === 'WEDNESDAY/THURSDAY' ||
+      cleaned === 'THURSDAY/WEDNESDAY' ||
+      cleaned === 'WEDNESDAY&THURSDAY' ||
+      cleaned === 'THURSDAY&WEDNESDAY'
+    ) return 'BOTH';
+
+    return null;
+  };
+
   // Create all students in the database
   const createdStudents = await Promise.all(
     students.map((student: any) =>
@@ -22,6 +43,7 @@ export default defineEventHandler(async (event) => {
           major: student.major,
           year: student.year,
           class: student.class,
+          meetingDay: normalizeMeetingDay(student.meetingDay ?? student.day ?? student.meeting_day),
           status: student.status
         },
         create: {
@@ -34,6 +56,7 @@ export default defineEventHandler(async (event) => {
           major: student.major,
           year: student.year,
           class: student.class,
+          meetingDay: normalizeMeetingDay(student.meetingDay ?? student.day ?? student.meeting_day),
           status: student.status
         }
       })

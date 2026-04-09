@@ -5,6 +5,7 @@ import type { StudentWithChoices } from '../students/index.get';
 export interface ExportTeamsRequest {
   teamAssignments: Record<string, StudentWithChoices[]>;
   projects: Array<{ id: string; name: string }>;
+  teamMeta?: Record<string, { projectId: string; meetingDay: string; projectName: string }>;
   semesterName?: string;
 }
 
@@ -21,9 +22,12 @@ export default defineEventHandler(async (event) => {
   // Transform into CSV rows
   const csvRows: Array<{ Project: string; 'Team Size': number; Members: string }> = [];
 
-  for (const [projectId, students] of Object.entries(body.teamAssignments)) {
-    const project = body.projects.find(p => p.id === projectId);
-    const projectName = project?.name || projectId;
+  for (const [teamKey, students] of Object.entries(body.teamAssignments)) {
+    const meta = body.teamMeta?.[teamKey];
+    const project = body.projects.find(p => p.id === (meta?.projectId ?? teamKey));
+    const projectName = meta
+      ? `${meta.projectName} (${meta.meetingDay === 'WEDNESDAY' ? 'Wednesday' : 'Thursday'})`
+      : (project?.name || teamKey);
     
     const memberNames = (students as StudentWithChoices[])
       .map(s => `${s.firstName} ${s.lastName}`)

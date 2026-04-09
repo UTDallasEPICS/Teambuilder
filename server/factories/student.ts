@@ -26,6 +26,7 @@ export const createRandomStudent = (): Student => {
     major: getRandomMajor(),
     year: getRandomSeniority(),
     class: getRandomClass(),
+    meetingDay: getRandomMeetingDay(),
     // not sure what enrollment is
     enrollment: '',
     status: createRandomStatus(),
@@ -87,3 +88,7 @@ const createRandomStatus = (): StudentStatus => {
   const statuses: StudentStatus[] = ['ACTIVE', 'INACTIVE'];
   return statuses[Math.floor(Math.random() * statuses.length)];
 }
+
+const getRandomMeetingDay = (): Student['meetingDay'] => (
+  Math.random() < 0.5 ? 'WEDNESDAY' : 'THURSDAY'
+)

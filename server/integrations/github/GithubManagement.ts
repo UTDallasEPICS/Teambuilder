@@ -22,7 +22,11 @@ export class GitHubManager {
     try {
       const response = await this.octokit.users.getAuthenticated();
       return response.data.login;
-    } catch (error) {
+    } catch (error: any) {
+      const isBadCredentials = error?.status === 401 || /bad credentials/i.test(String(error?.message ?? ''));
+      if (isBadCredentials) {
+        throw new Error('GitHub authentication failed: invalid or expired GITHUB_TOKEN.');
+      }
       console.error("Error fetching authenticated username:", error);
       throw error;
     }
@@ -192,6 +196,12 @@ const runCli = async () => {
   console.log("Program completed.");
 };
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  runCli();
+const isDirectExecution = !!process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+const isCliEnabled = process.env.GITHUB_MANAGER_CLI === 'true';
+
+if (isDirectExecution && isCliEnabled) {
+  runCli().catch((error) => {
+    console.error('GitHubManager CLI failed:', error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  });
 }

@@ -3,16 +3,37 @@
   .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Projects (Merge)" @dataParsed="handleParsed")
-        FileUploadButton(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
+        template(v-if="selectedDayTab === 'ALL'")
+          FileUploadButton(title="Upload Projects (Merge)" @dataParsed="handleParsed")
+          FileUploadButton(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
+        template(v-else-if="selectedDayTab === 'WEDNESDAY'")
+          FileUploadButton(title="Upload Wednesday Projects (Merge)" @dataParsed="handleParsedWednesday")
+          FileUploadButton(title="Replace Wednesday Projects with CSV" @dataParsed="handleParsedReplaceWednesday")
+        template(v-else)
+          FileUploadButton(title="Upload Thursday Projects (Merge)" @dataParsed="handleParsedThursday")
+          FileUploadButton(title="Replace Thursday Projects with CSV" @dataParsed="handleParsedReplaceThursday")
         ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Projects
-      .text-2xl.mt-2 Project count: {{ projects.length }}
+      .text-2xl.mt-2 Project count ({{ activeTabLabel }}): {{ visibleProjects.length }}
+
+      .day-tabs
+        button.day-tab-btn(
+          :class="{ active: selectedDayTab === 'ALL' }"
+          @click="selectedDayTab = 'ALL'"
+        ) All
+        button.day-tab-btn(
+          :class="{ active: selectedDayTab === 'WEDNESDAY' }"
+          @click="selectedDayTab = 'WEDNESDAY'"
+        ) Wednesday
+        button.day-tab-btn(
+          :class="{ active: selectedDayTab === 'THURSDAY' }"
+          @click="selectedDayTab = 'THURSDAY'"
+        ) Thursday
 
       DataTable.beige-card.overflow-hidden(
-        :value="projects"
+        :value="visibleProjects"
         v-model:filters="filters"
         scrollable
         scrollHeight="80vh"
@@ -32,6 +53,13 @@
         Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
+        Column(field="meetingDay" header="Day" :showFilterMenu="false" :sortable="true" style="width: 160px")
+          template(#body="{ data }")
+            .text-center {{ formatMeetingDay(data.meetingDay) }}
+          template(#filter="{ filterModel, filterCallback }")
+            MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="meetingDayOptions" placeholder="Any" :maxSelectedLabels="1")
+              template(#option="slotProps") {{ formatMeetingDay(slotProps.option) }}
+              template(#value="slotProps") {{ formatMeetingDayFilter(slotProps.value) }}
         Column(field="status" header="Status" :showFilterMenu="false" :sortable="true")
           template(#body="{ data }")
             .flex.justify-center
@@ -90,6 +118,14 @@
           option(v-for="type in types" :key="type" :value="type") {{ capitalizeFirst(type) }}
 
     div
+      span.cardSubTitle Meeting Day:
+      span.cardText
+        template(v-if="!isEditing") {{ formatMeetingDay(selectedProject?.meetingDay) }}
+        select(v-else v-model="editedProject.meetingDay")
+          option(:value="null") Unspecified
+          option(v-for="meetingDay in meetingDayOptions" :key="meetingDay" :value="meetingDay") {{ formatMeetingDay(meetingDay) }}
+
+    div
       span.cardSubTitle Repo:
       span.cardText
         a(v-if="!isEditing" :href="selectedProject?.repoURL" target="_blank") {{ selectedProject?.repoURL }}
@@ -110,7 +146,6 @@ import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { stringifySemesters } from '~/server/services/semesterService';
 // import { faker } from '@faker-js/faker';
-import {type ProjectStatus} from '@prisma/client';
 import { useHead } from '@vueuse/head';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 
@@ -118,8 +153,38 @@ useHead({ title: 'Projects' });
 
 const { successToast, errorToast } = usePrimeVueToast();
 const projects = ref<ProjectWithSemestersAndPartner[]>([]);
+
+type DayTab = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
+type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
+const selectedDayTab = ref<DayTab>('ALL');
+
+const getMeetingDay = (project: ProjectWithSemestersAndPartner): MeetingDay | null => {
+  const day = project.meetingDay as MeetingDay | null | undefined;
+  return day ?? null;
+};
+
 onMounted(async () => {
   projects.value = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
+});
+
+const visibleProjects = computed(() => {
+  if (selectedDayTab.value === 'ALL') return projects.value;
+  if (selectedDayTab.value === 'THURSDAY') {
+    return projects.value.filter(project => {
+      const day = getMeetingDay(project);
+      return day === 'THURSDAY' || day === 'BOTH' || day == null;
+    });
+  }
+  return projects.value.filter(project => {
+    const day = getMeetingDay(project);
+    return day === 'WEDNESDAY' || day === 'BOTH';
+  });
+});
+
+const activeTabLabel = computed(() => {
+  if (selectedDayTab.value === 'WEDNESDAY') return 'Wednesday';
+  if (selectedDayTab.value === 'THURSDAY') return 'Thursday';
+  return 'All';
 });
 
 const selectedProject = ref<ProjectWithSemestersAndPartner | null>(null);
@@ -131,6 +196,7 @@ const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   description: { value: null, matchMode: FilterMatchMode.CONTAINS },
   type: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  meetingDay: { value: [], matchMode: FilterMatchMode.IN },
   status: { value: [], matchMode: FilterMatchMode.IN },
   semester: { value: [], matchMode: FilterMatchMode.IN },
   partnerName: { value: null, matchMode: FilterMatchMode.CONTAINS }
@@ -144,6 +210,40 @@ const formatTypesFilter = (types: ProjectType[] | undefined) => {
 
 const statuses = ref(['NEW', 'RETURNING', 'COMPLETE', 'WITHDRAWN', 'HOLD']);
 const types = ref(['SOFTWARE', 'HARDWARE', 'BOTH']);
+const meetingDayOptions = ref<MeetingDay[]>(['WEDNESDAY', 'THURSDAY', 'BOTH']);
+
+const normalizeMeetingDay = (rawValue: unknown, forcedDay?: 'WEDNESDAY' | 'THURSDAY'): MeetingDay | null => {
+  if (forcedDay) return forcedDay;
+  if (typeof rawValue !== 'string') return null;
+  const value = rawValue.trim().toUpperCase().replace(/\s+/g, '');
+  if (
+    value === 'BOTH' ||
+    value === 'WEDNESDAY,THURSDAY' ||
+    value === 'THURSDAY,WEDNESDAY' ||
+    value === 'WEDNESDAY/THURSDAY' ||
+    value === 'THURSDAY/WEDNESDAY' ||
+    value === 'WEDNESDAY&THURSDAY' ||
+    value === 'THURSDAY&WEDNESDAY' ||
+    value === 'WEDTHU' ||
+    value === 'THUWED'
+  ) return 'BOTH';
+  if (value === 'WEDNESDAY' || value === 'WED') return 'WEDNESDAY';
+  if (value === 'THURSDAY' || value === 'THU' || value === 'THURS') return 'THURSDAY';
+  return null;
+};
+
+const formatMeetingDay = (day: MeetingDay | null | undefined) => {
+  if (day === 'WEDNESDAY') return 'Wednesday';
+  if (day === 'THURSDAY') return 'Thursday';
+  if (day === 'BOTH') return 'Wednesday + Thursday';
+  return 'Unspecified';
+};
+
+const formatMeetingDayFilter = (days: MeetingDay[] | undefined) => {
+  if (!days || days.length === 0) return 'Any';
+  if (days.length !== 1) return `${days.length} selected`;
+  return formatMeetingDay(days[0]);
+};
 
 const selectProject = (project: ProjectWithSemestersAndPartner) => { selectedProject.value = project; };
 const closeModal = () => { selectedProject.value = null; isEditing.value = false; };
@@ -168,68 +268,95 @@ const handleSave = async () => {
   isEditing.value = false;
 };
 
-const handleParsed = async (parsed: any) => { 
+const mapProjectsFromCsv = (parsed: any[], forcedDay?: 'WEDNESDAY' | 'THURSDAY') => (
+  parsed.map((proj: any) => ({
+    name: proj.name || '',
+    description: proj.description || '',
+    type: proj.type?.toUpperCase() || 'SOFTWARE',
+    status: proj.status?.toUpperCase() || 'NEW',
+    meetingDay: normalizeMeetingDay(proj.meetingDay ?? proj.day, forcedDay),
+    repoURL: proj.repoURL || '',
+    partnerName: proj.partnerName || ''
+  }))
+);
+
+const refreshProjects = async () => {
+  projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+};
+
+const handleParsed = async (parsed: any, forcedDay?: 'WEDNESDAY' | 'THURSDAY') => {
   console.log('Parsed CSV:', parsed);
-  
-  // Transform CSV data to match Project structure
-  const formattedProjects = parsed.map((proj: any) => {
-    return {
-      name: proj.name || '',
-      description: proj.description || '',
-      type: proj.type?.toUpperCase() || 'SOFTWARE',
-      status: proj.status?.toUpperCase() || 'NEW',
-      repoURL: proj.repoURL || '',
-      partnerName: proj.partnerName || ''
-    };
-  });
-  
-  // Merge uploaded projects with existing database records
+  const formattedProjects = mapProjectsFromCsv(parsed, forcedDay);
+
   try {
-    // Save uploaded projects (API upserts by project name)
     await $fetch('/api/projects', {
       method: 'POST',
       body: formattedProjects
     });
-    
-    // Refresh from database to get the saved data
-    projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+
+    await refreshProjects();
     console.log('Projects saved to database successfully!');
     console.log('Projects table updated! Total projects:', projects.value.length);
+    successToast('Projects uploaded successfully.');
   } catch (error) {
     console.error('Error saving projects to database:', error);
+    errorToast('Failed to upload projects.');
   }
 };
 
-const handleParsedReplace = async (parsed: any) => {
+const handleParsedReplace = async (parsed: any, forcedDay?: 'WEDNESDAY' | 'THURSDAY') => {
   console.log('Parsed CSV (replace):', parsed);
 
-  const formattedProjects = parsed.map((proj: any) => {
-    return {
-      name: proj.name || '',
-      description: proj.description || '',
-      type: proj.type?.toUpperCase() || 'SOFTWARE',
-      status: proj.status?.toUpperCase() || 'NEW',
-      repoURL: proj.repoURL || '',
-      partnerName: proj.partnerName || ''
-    };
-  });
+  const formattedProjects = mapProjectsFromCsv(parsed, forcedDay);
 
   try {
-    await $fetch('/api/projects', {
-      method: 'DELETE'
-    });
+    if (forcedDay) {
+      const oppositeDay: MeetingDay = forcedDay === 'WEDNESDAY' ? 'THURSDAY' : 'WEDNESDAY';
+
+      // Keep projects that are BOTH by downgrading them to the opposite day.
+      const toDowngrade = projects.value.filter(project => getMeetingDay(project) === 'BOTH');
+      await Promise.all(
+        toDowngrade.map(project =>
+          $fetch(`/api/projects/${project.id}`, {
+            method: 'PUT',
+            body: {
+              ...project,
+              meetingDay: oppositeDay,
+              semesters: undefined,
+              partnerName: undefined,
+            },
+          })
+        )
+      );
+
+      const toDelete = projects.value.filter(project => getMeetingDay(project) === forcedDay);
+      await Promise.all(
+        toDelete.map(project => $fetch(`/api/projects/${project.id}`, { method: 'DELETE' }))
+      );
+    } else {
+      await $fetch('/api/projects', {
+        method: 'DELETE'
+      });
+    }
 
     await $fetch('/api/projects', {
       method: 'POST',
       body: formattedProjects
     });
 
-    projects.value = await $fetch<ProjectWithSemestersAndPartner[]>('/api/projects');
+    await refreshProjects();
     console.log('Projects replaced successfully!');
+    successToast('Projects replaced successfully.');
   } catch (error) {
     console.error('Error replacing projects from CSV:', error);
+    errorToast('Failed to replace projects from CSV.');
   }
 };
+
+const handleParsedWednesday = async (parsed: any) => handleParsed(parsed, 'WEDNESDAY');
+const handleParsedThursday = async (parsed: any) => handleParsed(parsed, 'THURSDAY');
+const handleParsedReplaceWednesday = async (parsed: any) => handleParsedReplace(parsed, 'WEDNESDAY');
+const handleParsedReplaceThursday = async (parsed: any) => handleParsedReplace(parsed, 'THURSDAY');
 
 const handleDeleteProject = async (project: ProjectWithSemestersAndPartner) => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
@@ -351,6 +478,32 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
 .pill.bg-lightblue { background: var(--color-pill-complete) !important; color: #ffffff !important; }
 .pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
 .pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
+
+.day-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 0.65rem;
+  padding: 0.25rem;
+}
+
+.day-tab-btn {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.day-tab-btn.active {
+  background: var(--color-accent-utd-green);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) inset;
+}
 
 /* make the whole shaded card area use the UTD orange and fill surrounding whitespace */
 .centered-row.shaded-card {

@@ -13,13 +13,39 @@ export const createRandomTeams = (projects: Project[], semesters: Semester[]): T
 export const createTeamsForSemester = (projects: Project[], semester: Semester): Team[] => {
   const now = new Date();
 
-  return projects.map(project => (
-    {
-      id: crypto.randomUUID(),
-      projectId: project.id,
-      semesterId: semester.id,
-      createdAt: now,
-      updatedAt: now
+  return projects.flatMap(project => {
+    const day = project.meetingDay ?? 'THURSDAY'
+
+    if (day === 'BOTH') {
+      return [
+        {
+          id: crypto.randomUUID(),
+          projectId: project.id,
+          semesterId: semester.id,
+          meetingDay: 'WEDNESDAY',
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: crypto.randomUUID(),
+          projectId: project.id,
+          semesterId: semester.id,
+          meetingDay: 'THURSDAY',
+          createdAt: now,
+          updatedAt: now
+        }
+      ]
     }
-  ))
+
+    return [
+      {
+        id: crypto.randomUUID(),
+        projectId: project.id,
+        semesterId: semester.id,
+        meetingDay: day,
+        createdAt: now,
+        updatedAt: now
+      }
+    ]
+  })
 }

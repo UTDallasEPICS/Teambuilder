@@ -37,6 +37,7 @@ model Project {
   description   String
   type          ProjectType
   status        ProjectStatus
+  meetingDay    ProjectMeetingDay? @map("meeting_day")
   repoURL       String        @map("repo_url")
 
   partnerId     String        @map("partner_id")
@@ -58,6 +59,7 @@ model Team {
   project     Project    @relation(fields: [projectId], references: [id])
   semesterId  String     @map("semester_id")
   semester    Semester   @relation(fields: [semesterId], references: [id])
+  meetingDay  ProjectMeetingDay @default(THURSDAY) @map("meeting_day")
 
   students    Student[]
 
@@ -65,7 +67,7 @@ model Team {
   updatedAt   DateTime   @updatedAt
 
   @@map("teams")
-  @@unique([projectId, semesterId])
+  @@unique([projectId, semesterId, meetingDay])
 }
 
 model Student {
@@ -80,6 +82,7 @@ model Student {
   year          Year
   class         String
   enrollment    String?
+  meetingDay    ProjectMeetingDay? @map("meeting_day")
   status        StudentStatus
 
   teams         Team[]
@@ -145,6 +148,12 @@ enum ProjectStatus {
   COMPLETE
   WITHDRAWN
   HOLD
+}
+
+enum ProjectMeetingDay {
+  WEDNESDAY
+  THURSDAY
+  BOTH
 }
 
 enum StudentStatus {
