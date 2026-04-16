@@ -4,7 +4,7 @@
     <input
       ref="fileInputRef"
       type="file"
-      accept=".xlsx,.xls,.csv"
+      accept=".xlsx,.xls,.csv,.json"
       style="display: none"
       @change="$emit('file-selected', $event)"
     />
