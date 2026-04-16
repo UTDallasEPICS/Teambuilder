@@ -33,15 +33,16 @@
         ) Thursday
 
       DataTable.beige-card.overflow-hidden(
-        :value="visibleProjects"
+        :value="projects"
         v-model:filters="filters"
-        scrollable
-        scrollHeight="80vh"
-        class="w-full mt-2 md:mt-5"
-        dataKey="id"
-        filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedProject"
+        dataKey="id"
+        filterDisplay="row"
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[5,10, 20, 25]"
+        class
       )
         Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
