@@ -58,16 +58,14 @@
           template(#body="{ data }") {{ capitalizeFirst(data.year) }}
           template(#filter="{ filterModel, filterCallback }")
             MultiSelect.w-full.font-normal(v-model="filterModel.value" @change="filterCallback()" :options="years" placeholder="Any" :maxSelectedLabels="1")
-              // dropdown options
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
-              // selected value
               template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
 
         Column(field="meetingDay" header="Day" :showFilterMenu="false" :sortable="true" style="width: 10rem")
           template(#body="{ data }") {{ formatStudentDay(data.meetingDay) }}
 
         Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem" :sortable="true")
-          template(#body="{ data }") 
+          template(#body="{ data }")
             .flex.justify-center
               .pill.w-20(:class="statusBgColor(data.status)") {{ data.status }}
           template(#filter="{ filterModel, filterCallback }")
@@ -80,7 +78,7 @@
           template(#body="{ data }")
             .flex.justify-center
               Button.p-button-rounded.p-button-danger.p-button-sm(
-                icon="pi pi-trash" 
+                icon="pi pi-trash"
                 @click="handleDeleteStudent(data)"
                 v-tooltip.top="'Delete student'"
               )
@@ -91,32 +89,32 @@
     div
       span.cardSubTitle First Name:
       span.cardText
-        template(v-if="!isEditing") {{ selectedStudent?.firstName }}
-        input.editBox(v-else v-model="editedStudent.firstName")
+        template(v-if="!isEditing") {{ selectedStudent?.person?.firstName }}
+        input.editBox(v-else v-model="editedStudent.person.firstName")
 
     div
       span.cardSubTitle Last Name:
       span.cardText
-        template(v-if="!isEditing") {{ selectedStudent?.lastName }}
-        input.editBox(v-else v-model="editedStudent.lastName")
+        template(v-if="!isEditing") {{ selectedStudent?.person?.lastName }}
+        input.editBox(v-else v-model="editedStudent.person.lastName")
 
     div
       span.cardSubTitle netID:
       span.cardText
-        template(v-if="!isEditing") {{ selectedStudent?.netID }}
-        input.editBox(v-else v-model="editedStudent.netID")
+        template(v-if="!isEditing") {{ selectedStudent?.person?.netID }}
+        input.editBox(v-else v-model="editedStudent.person.netID")
 
-    div(v-if="selectedStudent?.github || isEditing")
+    div(v-if="selectedStudent?.person?.github || isEditing")
       span.cardSubTitle GitHub:
       span.cardText
-        template(v-if="!isEditing") {{ selectedStudent?.github }}
-        input.editBox(v-else v-model="editedStudent.github" placeholder="GitHub username")
+        template(v-if="!isEditing") {{ selectedStudent?.person?.github }}
+        input.editBox(v-else v-model="editedStudent.person.github" placeholder="GitHub username")
 
-    div(v-if="selectedStudent?.discord || isEditing")
+    div(v-if="selectedStudent?.person?.discord || isEditing")
       span.cardSubTitle Discord:
       span.cardText
-        template(v-if="!isEditing") {{ selectedStudent?.discord }}
-        input.editBox(v-else v-model="editedStudent.discord" placeholder="Discord username")
+        template(v-if="!isEditing") {{ selectedStudent?.person?.discord }}
+        input.editBox(v-else v-model="editedStudent.person.discord" placeholder="Discord username")
 
     div
       span.cardSubTitle Class:
@@ -166,7 +164,7 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import Papa from 'papaparse';
-import type { Student, Year } from '@prisma/client';
+import type { Student, Person, Year } from '@prisma/client';
 import { useHead } from '@vueuse/head';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 
@@ -179,28 +177,23 @@ const { successToast, errorToast, infoToast } = usePrimeVueToast();
 type DayTab = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
 type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
 type TabMeetingDay = 'WEDNESDAY' | 'THURSDAY';
-type StudentRow = Student & { meetingDay?: MeetingDay | null };
+
+// student now includes a nested person object from the API
+type StudentRow = Student & {
+  person: Person;
+  meetingDay?: MeetingDay | null;
+};
 
 const students = ref<StudentRow[]>([]);
 const studentCount = ref(0);
 const selectedDayTab = ref<DayTab>('ALL');
 const studentDays: TabMeetingDay[] = ['WEDNESDAY', 'THURSDAY'];
 
-const getStudentMeetingDay = (student: StudentRow | null | undefined): MeetingDay | null => {
-  const day = student?.meetingDay as MeetingDay | null | undefined;
-  return day ?? null;
-};
-
 const visibleStudents = computed<StudentRow[]>(() => {
   if (selectedDayTab.value === 'ALL') return students.value;
-
   return students.value.filter((student) => {
-    const day = getStudentMeetingDay(student);
-
-    if (selectedDayTab.value === 'WEDNESDAY') {
-      return day === 'WEDNESDAY' || day === 'BOTH';
-    }
-
+    const day = student.meetingDay ?? null;
+    if (selectedDayTab.value === 'WEDNESDAY') return day === 'WEDNESDAY' || day === 'BOTH';
     return day === 'THURSDAY' || day === 'BOTH' || day == null;
   });
 });
@@ -211,22 +204,25 @@ const activeTabLabel = computed(() => {
   return 'All';
 });
 
-const studentsWithFullName = computed(() => (
-  visibleStudents.value.map((student) => {
-    return {
-      ...student,
-      fullName: student.lastName + ', ' + student.firstName
-    }
-  })
-))
+// fullName is built from person.lastName and person.firstName
+const studentsWithFullName = computed(() =>
+  visibleStudents.value.map((student) => ({
+    ...student,
+    // expose person fields at the top level for table column sorting/filtering
+    netID: student.person?.netID,
+    firstName: student.person?.firstName,
+    lastName: student.person?.lastName,
+    fullName: `${student.person?.lastName ?? ''}, ${student.person?.firstName ?? ''}`,
+  }))
+);
 
 watchEffect(() => {
   studentCount.value = visibleStudents.value.length;
 });
 
-onMounted(async () => { //adds dummy data, students.value is what holds frontend table data
-  students.value = await $fetch<StudentRow[]>("api/students"); //loads in random starting data
-  studentCount.value = students.value.length; 
+onMounted(async () => {
+  students.value = await $fetch<StudentRow[]>('api/students');
+  studentCount.value = students.value.length;
 });
 
 const handleBidsParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
@@ -260,6 +256,7 @@ const handleBidsParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) =
     errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
   }
 };
+
 const handleBidsParsedMerge = async (parsed: any, forcedDay?: TabMeetingDay) => {
   if (!parsed?.length) return;
   try {
@@ -297,125 +294,13 @@ const handleBidsParsedMergeWednesday = async (parsed: any) => handleBidsParsedMe
 const handleBidsParsedReplaceThursday = async (parsed: any) => handleBidsParsedReplace(parsed, 'THURSDAY');
 const handleBidsParsedMergeThursday = async (parsed: any) => handleBidsParsedMerge(parsed, 'THURSDAY');
 
-const handleParsed = async (parsed: any, forcedDay?: TabMeetingDay) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
-  // Merge uploaded students with existing records
-  
-  const formattedStudents = parsed.map((stu : any) =>{
-    // Handle both CSV formats:
-    // 1. New format: netID, firstName, lastName (separate fields)
-    // 2. Old format: id, name (comma-separated "lastName, firstName")
-    let firstName, lastName, netID;
-    
-    if (stu.firstName && stu.lastName) {
-      // New CSV format with separate first/last names
-      firstName = stu.firstName;
-      lastName = stu.lastName;
-      netID = stu.netID;
-    } else if (stu.name) {
-      // Old CSV format with combined name
-      const[parsedLastName, parsedFirstName] = stu.name.split(', ');
-      firstName = parsedFirstName;
-      lastName = parsedLastName;
-      netID = stu.id;
-    }
-    
-    return{
-      netID : netID,
-      firstName : firstName,
-      lastName: lastName,
-      email: null,
-      github: null,
-      discord: null,
-      major: stu.major,
-      year: stu.year || stu.seniority, // Support both 'year' and 'seniority' fields
-      class: stu.class,
-      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
-      status: stu.status || null
-    }
-  });
-  
-  // Merge students (API upserts by netID)
-  try {
-    await $fetch('/api/students', {
-      method: 'POST',
-      body: formattedStudents
-    });
-    
-    // Refresh from database to get the saved data
-    students.value = await $fetch<StudentRow[]>('/api/students');
-    studentCount.value = students.value.length; 
-    console.log('Students saved to database successfully!');
-    console.log(students.value); 
-  } catch (error) {
-    console.error('Error saving students to database:', error);
-  }
-//database comes later, send it locally to tables to populate the website
-};
-
-const handleParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
-  const formattedStudents = parsed.map((stu : any) => {
-    let firstName, lastName, netID;
-
-    if (stu.firstName && stu.lastName) {
-      firstName = stu.firstName;
-      lastName = stu.lastName;
-      netID = stu.netID;
-    } else if (stu.name) {
-      const [parsedLastName, parsedFirstName] = stu.name.split(', ');
-      firstName = parsedFirstName;
-      lastName = parsedLastName;
-      netID = stu.id;
-    }
-
-    return {
-      netID : netID,
-      firstName : firstName,
-      lastName: lastName,
-      email: null,
-      github: null,
-      discord: null,
-      major: stu.major,
-      year: stu.year || stu.seniority,
-      class: stu.class,
-      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
-      status: stu.status || null
-    }
-  });
-
-  try {
-    await $fetch('/api/students', {
-      method: 'DELETE',
-      query: forcedDay ? { meetingDay: forcedDay } : undefined
-    });
-
-    await $fetch('/api/students', {
-      method: 'POST',
-      body: formattedStudents
-    });
-
-    students.value = await $fetch<StudentRow[]>('/api/students');
-    studentCount.value = students.value.length;
-    console.log('Students replaced from CSV successfully!');
-  } catch (error) {
-    console.error('Error replacing students from CSV:', error);
-  }
-};
-
-const handleParsedWednesday = async (parsed: any) => handleParsed(parsed, 'WEDNESDAY');
-const handleParsedThursday = async (parsed: any) => handleParsed(parsed, 'THURSDAY');
-const handleParsedReplaceWednesday = async (parsed: any) => handleParsedReplace(parsed, 'WEDNESDAY');
-const handleParsedReplaceThursday = async (parsed: any) => handleParsedReplace(parsed, 'THURSDAY');
-
 const normalizeMeetingDay = (rawValue: unknown, forcedDay?: TabMeetingDay): MeetingDay | null => {
   if (forcedDay) return forcedDay;
   if (rawValue == null) return null;
-
   const value = String(rawValue).trim().toUpperCase();
-
-  if (value === 'BOTH' || value === 'WEDNESDAY/THURSDAY' || value === 'THURSDAY/WEDNESDAY' || value === 'WEDNESDAY,THURSDAY' || value === 'THURSDAY,WEDNESDAY') return 'BOTH';
+  if (value === 'BOTH' || value === 'WEDNESDAY/THURSDAY' || value === 'THURSDAY/WEDNESDAY') return 'BOTH';
   if (value === 'WEDNESDAY' || value === 'WED') return 'WEDNESDAY';
   if (value === 'THURSDAY' || value === 'THU' || value === 'THURS') return 'THURSDAY';
-
   return null;
 };
 
@@ -426,59 +311,15 @@ const formatStudentDay = (day: MeetingDay | null | undefined) => {
   return 'Unassigned';
 };
 
-const loadStudents = async () => {
-  students.value = await $fetch<StudentRow[]>('/api/students');
-  studentCount.value = students.value.length;
-};
-
-const resetDatabase = async () => {
-  const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
-  if (confirmAvailable) {
-    if (!(globalThis as any).confirm('This will delete ALL data (students, partners, projects, teams) and will not repopulate defaults. Are you sure?')) {
-      return;
-    }
-  }
-  
-  try {
-    await $fetch('/api/database/reset', {
-      method: 'POST'
-    });
-    
-    // Refresh students from database
-    students.value = await $fetch<StudentRow[]>('/api/students');
-    studentCount.value = students.value.length;
-    console.log('Database cleared successfully!');
-    if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Database has been cleared.');
-    } else {
-      console.log('Database has been cleared.');
-    }
-  } catch (error) {
-    console.error('Error resetting database:', error);
-    if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
-      (globalThis as any).alert('Failed to reset database. Please check the console for details.');
-    } else {
-      console.log('Failed to reset database. Please check the console for details.');
-    }
-  }
-};
-
 const handleClearAll = async () => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm('Are you sure you want to delete all students? This cannot be undone.')) {
-      return;
-    }
+    if (!(globalThis as any).confirm('Are you sure you want to delete all students? This cannot be undone.')) return;
   }
-  
   try {
-    await $fetch('/api/students', {
-      method: 'DELETE'
-    });
-    
+    await $fetch('/api/students', { method: 'DELETE' });
     students.value = [];
     studentCount.value = 0;
-    console.log('All students deleted successfully!');
   } catch (error) {
     console.error('Error deleting students:', error);
   }
@@ -487,28 +328,21 @@ const handleClearAll = async () => {
 const handleDeleteStudent = async (student: StudentRow) => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
-    if (!(globalThis as any).confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}? This cannot be undone.`)) {
-      return;
-    }
+    if (!(globalThis as any).confirm(`Are you sure you want to delete ${student.person?.firstName} ${student.person?.lastName}? This cannot be undone.`)) return;
   }
-
   try {
-    await $fetch(`/api/students/${student.id}`, {
-      method: 'DELETE'
-    });
-
+    await $fetch(`/api/students/${student.id}`, { method: 'DELETE' });
     students.value = students.value.filter(s => s.id !== student.id);
     studentCount.value = students.value.length;
     selectedStudent.value = null;
-    successToast(`Deleted ${student.firstName} ${student.lastName}`, 3000);
+    successToast(`Deleted ${student.person?.firstName} ${student.person?.lastName}`, 3000);
   } catch (error: any) {
     errorToast(error?.data?.message || 'Failed to delete student');
-    console.error('Error deleting student:', error);
   }
 };
 
 const selectedStudent = ref<StudentRow | null>(null);
-const editedStudent = ref<StudentRow | null>(null);
+const editedStudent = ref<any>(null);
 const isEditing = ref(false);
 
 const filters = ref({
@@ -522,54 +356,63 @@ const filters = ref({
 const capitalizeFirst = (s: string | undefined | null) => {
   if (!s) return '';
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-}
+};
 
 const formatYearsFilter = (years: Year[] | undefined) => {
   if (!years || years.length === 0) return 'Any';
-  if (years.length !== 1) return `${years.length} items selected`
+  if (years.length !== 1) return `${years.length} items selected`;
   return capitalizeFirst(years[0]);
-}
+};
 
 const statuses = ref(['ACTIVE', 'INACTIVE']);
 const majors = ref(['CS', 'SE', 'EE', 'ME', 'BME', 'DS', 'CE', 'Systems', 'Other']);
 const years = ref(['FRESHMAN', 'SOPHOMORE', 'JUNIOR', 'SENIOR']);
 
-const selectStudent = (student: StudentRow) => {
-  selectedStudent.value = student;
-}
-
 const statusBgColor = (status: string) => ({
-  "bg-green": status === "ACTIVE",
-  "bg-red": status === "INACTIVE",
+  'bg-green': status === 'ACTIVE',
+  'bg-red': status === 'INACTIVE',
 });
 
 const closeModal = () => {
   selectedStudent.value = null;
   isEditing.value = false;
-}
+};
 
 const handleEdit = () => {
   if (!selectedStudent.value) return;
   isEditing.value = true;
-  editedStudent.value = { ...selectedStudent.value };
-}
+  // deep clone so edits don't affect the table immediately
+  editedStudent.value = JSON.parse(JSON.stringify(selectedStudent.value));
+};
 
 const handleSave = async () => {
   if (selectedStudent.value && editedStudent.value && !isEqual(selectedStudent.value, editedStudent.value)) {
     const id = editedStudent.value.id;
+    // send both student fields and person fields — the API handles splitting them
     await $fetch(`api/students/${id}`, {
       method: 'PUT',
       body: {
-        ...editedStudent.value,
-        fullName: undefined
+        // student fields
+        major: editedStudent.value.major,
+        year: editedStudent.value.year,
+        class: editedStudent.value.class,
+        status: editedStudent.value.status,
+        meetingDay: editedStudent.value.meetingDay,
+        // person fields
+        firstName: editedStudent.value.person?.firstName,
+        lastName: editedStudent.value.person?.lastName,
+        netID: editedStudent.value.person?.netID,
+        email: editedStudent.value.person?.email,
+        github: editedStudent.value.person?.github,
+        discord: editedStudent.value.person?.discord,
       }
     });
     selectedStudent.value = editedStudent.value;
-    const index = students.value.findIndex((student) => student.id === id);
+    const index = students.value.findIndex((s) => s.id === id);
     students.value[index] = editedStudent.value;
   }
   isEditing.value = false;
-}
+};
 
 const exportStudentsToCSV = () => {
   try {
@@ -577,43 +420,38 @@ const exportStudentsToCSV = () => {
       errorToast('No students to export.');
       return;
     }
-
     const csvRows = studentsWithFullName.value.map(student => ({
       Name: student.fullName,
-      NetID: student.netID,
+      NetID: student.person?.netID,
       Major: student.major,
       Year: capitalizeFirst(student.year),
       Day: formatStudentDay(student.meetingDay),
       Status: capitalizeFirst(student.status),
       Class: student.class,
-      Email: student.email ?? '',
-      GitHub: student.github ?? '',
-      Discord: student.discord ?? ''
+      Email: student.person?.email ?? '',
+      GitHub: student.person?.github ?? '',
+      Discord: student.person?.discord ?? '',
     }));
 
     const csv = Papa.unparse(csvRows);
-
     if (process.client) {
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
-
       link.setAttribute('href', url);
       link.setAttribute('download', `students-${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
-
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
       successToast('Students exported to CSV successfully!', 5000);
     }
   } catch (error: any) {
     errorToast(error?.message || 'Failed to export students.');
   }
-}
+};
 
-const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-specific student CSVs.`
+const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-specific student CSVs.`;
 </script>
 
 <style scoped>
@@ -628,7 +466,6 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   border-radius: 0.65rem;
   padding: 0.25rem;
 }
-
 .day-tab-btn {
   border: 0;
   border-radius: 0.5rem;
@@ -639,7 +476,6 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
-
 .day-tab-btn.active {
   background: var(--color-accent-utd-green);
   color: #ffffff;
@@ -675,23 +511,16 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
 .editBox {
   @apply text-teal rounded-md bg-beige p-1
 }
-/* TODO: move this styling to primevue's tokens in nuxt.config.ts */
 select {
   @apply bg-beige text-teal rounded-md p-1
 }
-
-/* Make DataTable wrapper scrollable horizontally */
-:deep(.p-datatable-wrapper) { 
-  overflow-x: auto !important; 
+:deep(.p-datatable-wrapper) {
+  overflow-x: auto !important;
 }
-
-/* Allow text wrapping in table cells */
 :deep(.p-datatable td) {
   white-space: normal;
   word-break: break-word;
 }
-
-/* colors for pills! */
 .pill.bg-green { background: #77cf77 !important; color: #ffffff !important; }
 .pill.bg-red { background: #eb6464 !important; color: #ffffff !important; }
 </style>

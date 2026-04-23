@@ -1,6 +1,7 @@
 /**
- * PUT /api/teams/assign
- * Updates the student members of a team identified by teamId.
+ * POST /api/teams/assign
+ * Updates the student members of a team.
+ * The frontend now sends teamId directly instead of projectId + semesterId.
  * Body: { teamId: string, studentIds: string[] }
  */
 
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
         set: studentIds.map(id => ({ id })),
       },
     },
-    include: { students: true },
+    include: { students: { include: { person: true } } },
   })
 
   return updated

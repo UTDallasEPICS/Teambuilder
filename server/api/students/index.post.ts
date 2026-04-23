@@ -8,60 +8,50 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
+  const client = event.context.client;
 
-  const normalizeMeetingDay = (value: unknown): MeetingDay | null => {
-    if (value == null) return null;
-    const cleaned = String(value).trim().toUpperCase();
-
-    if (cleaned === 'WEDNESDAY' || cleaned === 'WED') return 'WEDNESDAY';
-    if (cleaned === 'THURSDAY' || cleaned === 'THU' || cleaned === 'THURS') return 'THURSDAY';
-    if (
-      cleaned === 'BOTH' ||
-      cleaned === 'WEDNESDAY,THURSDAY' ||
-      cleaned === 'THURSDAY,WEDNESDAY' ||
-      cleaned === 'WEDNESDAY/THURSDAY' ||
-      cleaned === 'THURSDAY/WEDNESDAY' ||
-      cleaned === 'WEDNESDAY&THURSDAY' ||
-      cleaned === 'THURSDAY&WEDNESDAY'
-    ) return 'BOTH';
-
-    return null;
-  };
-
-  // Create all students in the database
-  const createdStudents = await Promise.all(
-    students.map((student: any) =>
-      event.context.client.student.upsert({
+  const created = await Promise.all(
+    students.map(async (student: any) => {
+      // upsert the Person record first using netID as the unique key
+      const person = await client.person.upsert({
         where: { netID: student.netID },
         update: {
           firstName: student.firstName,
           lastName: student.lastName,
-          email: student.email,
-          github: student.github,
-          discord: student.discord,
-          major: student.major,
-          year: student.year,
-          class: student.class,
-          meetingDay: normalizeMeetingDay(student.meetingDay ?? student.day ?? student.meeting_day),
-          status: student.status
+          email: student.email ?? undefined,
+          github: student.github ?? undefined,
+          discord: student.discord ?? undefined,
         },
         create: {
           netID: student.netID,
           firstName: student.firstName,
           lastName: student.lastName,
-          email: student.email,
-          github: student.github,
-          discord: student.discord,
+          email: student.email ?? null,
+          github: student.github ?? null,
+          discord: student.discord ?? null,
+        },
+      });
+
+      // upsert the Student record linked to the Person
+      return client.student.upsert({
+        where: { personId: person.id },
+        update: {
           major: student.major,
           year: student.year,
           class: student.class,
-          meetingDay: normalizeMeetingDay(student.meetingDay ?? student.day ?? student.meeting_day),
-          status: student.status
-        }
-      })
-    )
+          status: student.status,
+        },
+        create: {
+          personId: person.id,
+          major: student.major,
+          year: student.year,
+          class: student.class,
+          status: student.status,
+          enrollment: student.enrollment ?? null,
+        },
+      });
+    })
   );
 
-  return createdStudents;
+  return created;
 });

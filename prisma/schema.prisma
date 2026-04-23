@@ -7,122 +7,153 @@ datasource db {
   url      = env("PRISMA_DB_URL")
 }
 
-// model User {
-//   id          String     @id @default(uuid())
-//   email       String     @unique
+// base record for every real person in the system
+// netID is required because it is the unique key used for all upserts
+// everything else is optional so existing data does not break
+model Person {
+  id        String  @id @default(uuid())
+  netID     String  @unique @map("net_id")
+  firstName String? @map("first_name")
+  lastName  String? @map("last_name")
+  email     String? @unique
+  github    String? @unique
+  discord   String? @unique
+  image     String?
 
-//   createdAt   DateTime   @default(now())
-//   updatedAt   DateTime   @updatedAt
+  // a person can be a student, personnel, or both
+  student   Student?
+  personnel Personnel?
 
-//   @@map("users")
-// }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("persons")
+}
+
+// anyone who can log into the site
+// role is required so we always know what they can access
+model Personnel {
+  id       String        @id @default(uuid())
+  role     PersonnelRole
+
+  personId String        @unique @map("person_id")
+  person   Person        @relation(fields: [personId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("personnel")
+}
+
+// student data used by the algorithm and the site
+// links back to Person so if a student becomes staff their record stays
+// major year class are required because the algorithm needs them
+model Student {
+  id         String             @id @default(uuid())
+  major      String?
+  year       Year?
+  class      String?
+  status     StudentStatus?
+  enrollment String?
+  meetingDay ProjectMeetingDay? @map("meeting_day")
+  gender     String?
+
+  personId String @unique @map("person_id")
+  person   Person @relation(fields: [personId], references: [id])
+
+  teams   Team[]
+  choices Choice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("students")
+}
 
 model Partner {
-  id             String      @id @default(uuid())
-  name           String
-  contactName    String      @map("contact_name")
-  contactEmail   String      @map("contact_email")
+  id           String @id @default(uuid())
+  name         String
+  contactName  String @map("contact_name")
+  contactEmail String @map("contact_email")
 
-  projects       Project[]   
-  
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  projects Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("partners")
 }
 
 model Project {
-  id            String        @id @default(uuid())
-  name          String
-  description   String
-  type          ProjectType
-  status        ProjectStatus
-  meetingDay    ProjectMeetingDay? @map("meeting_day")
-  repoURL       String        @map("repo_url")
+  id          String             @id @default(uuid())
+  name        String
+  description String
+  type        ProjectType
+  status      ProjectStatus
+  meetingDay  ProjectMeetingDay? @map("meeting_day")
+  repoURL     String             @map("repo_url")
 
-  partnerId     String        @map("partner_id")
-  partner       Partner       @relation(fields: [partnerId], references: [id])
+  partnerId String  @map("partner_id")
+  partner   Partner @relation(fields: [partnerId], references: [id])
 
-  teams         Team[]
-  choices       Choice[]
+  teams   Team[]
+  choices Choice[]
 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("projects")
 }
 
 model Team {
-  id          String     @id @default(uuid())
-  
-  projectId   String     @map("project_id")
-  project     Project    @relation(fields: [projectId], references: [id])
-  semesterId  String     @map("semester_id")
-  semester    Semester   @relation(fields: [semesterId], references: [id])
-  meetingDay  ProjectMeetingDay @default(THURSDAY) @map("meeting_day")
+  id         String            @id @default(uuid())
+  meetingDay ProjectMeetingDay @default(THURSDAY) @map("meeting_day")
 
-  students    Student[]
+  projectId  String   @map("project_id")
+  project    Project  @relation(fields: [projectId], references: [id])
+  semesterId String   @map("semester_id")
+  semester   Semester @relation(fields: [semesterId], references: [id])
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  students Student[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("teams")
   @@unique([projectId, semesterId, meetingDay])
 }
 
-model Student {
-  id            String      @id @default(uuid())
-  github        String?     @unique
-  discord       String?     @unique
-  email         String?     @unique
-  netID         String      @map("net_id") @unique
-  firstName     String      @map("first_name")
-  lastName      String      @map("last_name")
-  major         String 
-  year          Year
-  class         String
-  enrollment    String?
-  meetingDay    ProjectMeetingDay? @map("meeting_day")
-  status        StudentStatus
-
-  teams         Team[]
-  choices       Choice[]
-
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@map("students")
-}
-
 model Choice {
-  id            String       @id @default(uuid())
-  rank          Int
+  id   String @id @default(uuid())
+  rank Int
 
-  studentId     String       @map("student_id")
-  student       Student      @relation(fields: [studentId], references: [id])
-  projectId     String       @map("project_id")
-  project       Project      @relation(fields: [projectId], references: [id])
+  studentId String  @map("student_id")
+  student   Student @relation(fields: [studentId], references: [id])
+  projectId String  @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id])
 
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("choices")
 }
 
 model Semester {
-  id            String       @id @default(uuid())
-  year          Int
-  season        Season
+  id     String @id @default(uuid())
+  year   Int
+  season Season
 
-  teams         Team[]
+  teams Team[]
 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("semesters")
   @@unique([year, season])
 }
 
+// better-auth tables below
+// do not rename or restructure these - better-auth manages them
 model user {
   id            String    @id
   name          String
@@ -138,15 +169,15 @@ model user {
 }
 
 model session {
-  id          String    @id
-  expiresAt   DateTime
-  token       String    @unique
-  createdAt   DateTime
-  updatedAt   DateTime
-  ipAddress   String?
-  userAgent   String?
-  userId      String
-  user        user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("ba_sessions")
 }
@@ -171,14 +202,21 @@ model account {
 }
 
 model verification {
-  id          String    @id
-  identifier  String
-  value       String
-  expiresAt   DateTime
-  createdAt   DateTime?
-  updatedAt   DateTime?
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
 
   @@map("ba_verifications")
+}
+
+// ADMIN can access the user management page
+// STAFF can access everything else
+enum PersonnelRole {
+  ADMIN
+  STAFF
 }
 
 enum Year {
@@ -215,6 +253,6 @@ enum ProjectMeetingDay {
 }
 
 enum StudentStatus {
-  ACTIVE 
+  ACTIVE
   INACTIVE
 }
