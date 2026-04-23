@@ -23,8 +23,10 @@ const handleFile = (event: Event) => {
 
   if (file) {
     Papa.parse(file, {
+      encoding: "utf-8",
       header: true,
       skipEmptyLines: true,
+
       /*transform: function(value, header){
         switch (header){
           case "id":{
