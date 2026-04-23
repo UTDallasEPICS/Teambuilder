@@ -25,7 +25,20 @@ export default defineEventHandler(async (event) => {
         where: { id },
         data: updatedProject,
       })
-    case 'DELETE':
-      return project.delete({ where: { id } });
+    case 'DELETE': {
+      const existing = await project.findUnique({ where: { id }, select: { id: true } });
+      if (!existing) {
+        throw createError({ statusCode: 404, message: 'Project not found.' });
+      }
+
+      await client.$transaction(async (tx) => {
+        // Remove dependents first to satisfy SQLite foreign keys.
+        await tx.choice.deleteMany({ where: { projectId: id } });
+        await tx.team.deleteMany({ where: { projectId: id } });
+        await tx.project.delete({ where: { id } });
+      });
+
+      return { success: true };
+    }
   }
 });

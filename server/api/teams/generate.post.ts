@@ -11,6 +11,7 @@ import type { CPSATConfig } from '~/algorithms/CPSAT/ortools'
 import type { Year, ProjectType, Student, Choice, Project } from '@prisma/client'
 
 type StudentWithChoices = Student & { choices: Choice[] }
+type MeetingDay = 'WEDNESDAY' | 'THURSDAY'
 
 const mapYear = (year: Year): CPSATStudent['seniority'] => {
   const map: Record<Year, CPSATStudent['seniority']> = {
@@ -32,7 +33,7 @@ const mapProjectType = (type: ProjectType): CPSATProject['type'] => {
 }
 
 export default defineEventHandler(async (event) => {
-  const { semesterId, config } = await readBody<{ semesterId: string; config?: CPSATConfig }>(event)
+  const { semesterId, day, config } = await readBody<{ semesterId: string; day?: MeetingDay; config?: CPSATConfig }>(event)
   const minTeamSize = Math.max(1, config?.min_team_size ?? 4)
   const maxTeamSize = Math.max(minTeamSize, config?.max_team_size ?? 6)
 
@@ -40,20 +41,47 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'semesterId is required.' })
   }
 
+  if (day && day !== 'WEDNESDAY' && day !== 'THURSDAY') {
+    throw createError({ statusCode: 400, message: 'day must be WEDNESDAY or THURSDAY when provided.' })
+  }
+
+  const studentDayWhere = day
+    ? day === 'WEDNESDAY'
+      ? {
+          OR: [
+            { meetingDay: 'WEDNESDAY' as const },
+            { meetingDay: 'BOTH' as const },
+          ],
+        }
+      : {
+          OR: [
+            { meetingDay: 'THURSDAY' as const },
+            { meetingDay: 'BOTH' as const },
+            { meetingDay: null },
+          ],
+        }
+    : {}
+
   // Fetch active students with their choices
   const students: StudentWithChoices[] = await event.context.client.student.findMany({
-    where: { status: 'ACTIVE' },
+    where: {
+      status: 'ACTIVE',
+      ...studentDayWhere,
+    },
     include: { choices: true },
   })
 
   // Fetch active projects for this semester (those with a team in this semester)
-  const projects: Project[] = await event.context.client.project.findMany({
+  const teamsForRun = await event.context.client.team.findMany({
     where: {
-      teams: {
-        some: { semesterId },
-      },
+      semesterId,
+      meetingDay: day,
+    },
+    include: {
+      project: true,
     },
   })
+  const projects: Project[] = teamsForRun.map((team) => team.project)
 
   if (!students.length) {
     throw createError({ statusCode: 400, message: 'No active students found.' })
@@ -63,6 +91,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const projectIdToName = new Map<string, string>(projects.map((p: Project) => [p.id, p.name] as const))
+  const projectIdToTeamId = new Map<string, string>(teamsForRun.map((team) => [team.projectId, team.id] as const))
   const mappedChoicesByStudentId = new Map<string, string[]>(
     students.map((s: StudentWithChoices) => {
       const mapped = s.choices
@@ -87,6 +116,7 @@ export default defineEventHandler(async (event) => {
     choices: mappedChoicesByStudentId.get(s.id) ?? [],
     choicesString: (mappedChoicesByStudentId.get(s.id) ?? []).join(','),
     class: s.class as '2200' | '3200',
+    day: s.meetingDay === 'WEDNESDAY' ? 'Wednesday' : s.meetingDay === 'THURSDAY' ? 'Thursday' : undefined,
   }))
 
   // Map Prisma projects → CPSAT Project type
@@ -103,13 +133,13 @@ export default defineEventHandler(async (event) => {
   const nameToId = new Map<string, string>(projects.map((p: Project) => [p.name, p.id] as const))
   const idToStudent = new Map<string, StudentWithChoices>(students.map((s: StudentWithChoices) => [s.id, s] as const))
 
-  const teamAssignments: Record<string, StudentWithChoices[]> = Object.fromEntries(
+  const assignmentsByProjectId: Record<string, StudentWithChoices[]> = Object.fromEntries(
     projects.map((p: Project) => [p.id, [] as StudentWithChoices[]])
   )
   for (const [projectName, cpsatStudentArr] of Object.entries(cpsatResult)) {
     const projectId = nameToId.get(projectName)
     if (projectId) {
-      teamAssignments[projectId] = cpsatStudentArr
+      assignmentsByProjectId[projectId] = cpsatStudentArr
         .map((cs: CPSATStudent) => idToStudent.get(cs.id))
         .filter((s): s is StudentWithChoices => s !== undefined)
     }
@@ -126,7 +156,7 @@ export default defineEventHandler(async (event) => {
     const projectIdToMajors = new Map<string, Map<string, number>>() // projectId -> { major: count }
     
     // Count current team sizes and major distributions
-    for (const [projectId, assignedStudents] of Object.entries(teamAssignments)) {
+    for (const [projectId, assignedStudents] of Object.entries(assignmentsByProjectId)) {
       projectIdToTeamSize.set(projectId, assignedStudents.length)
       
       const majorCounts = new Map<string, number>()
@@ -168,7 +198,7 @@ export default defineEventHandler(async (event) => {
         
         // Find current project this student was assigned to and move them
         let sourceProjectId: string | null = null
-        for (const [currentProjectId, assignedStudents] of Object.entries(teamAssignments)) {
+        for (const [currentProjectId, assignedStudents] of Object.entries(assignmentsByProjectId)) {
           const studentIndex = assignedStudents.findIndex(s => s.id === studentWithNoChoices.id)
           if (studentIndex !== -1) {
             if (currentProjectId === randomProject.id) {
@@ -189,10 +219,10 @@ export default defineEventHandler(async (event) => {
         
         // Add to new project only if we safely removed from a source team.
         if (sourceProjectId) {
-          if (!teamAssignments[randomProject.id]) {
-            teamAssignments[randomProject.id] = []
+          if (!assignmentsByProjectId[randomProject.id]) {
+            assignmentsByProjectId[randomProject.id] = []
           }
-          teamAssignments[randomProject.id].push(studentWithNoChoices)
+          assignmentsByProjectId[randomProject.id].push(studentWithNoChoices)
 
           // Update size map
           projectIdToTeamSize.set(sourceProjectId, Math.max(0, (projectIdToTeamSize.get(sourceProjectId) ?? 0) - 1))
@@ -209,16 +239,16 @@ export default defineEventHandler(async (event) => {
     while (moved) {
       moved = false
 
-      const undersizedTeamIds = Object.entries(teamAssignments)
+      const undersizedTeamIds = Object.entries(assignmentsByProjectId)
         .filter(([, assignedStudents]) => assignedStudents.length > 0 && assignedStudents.length < minTeamSize)
         .sort((a, b) => a[1].length - b[1].length)
         .map(([projectId]) => projectId)
 
       for (const targetProjectId of undersizedTeamIds) {
-        const targetTeam = teamAssignments[targetProjectId]
+        const targetTeam = assignmentsByProjectId[targetProjectId]
 
         while (targetTeam.length > 0 && targetTeam.length < minTeamSize) {
-          const donorEntry = Object.entries(teamAssignments)
+          const donorEntry = Object.entries(assignmentsByProjectId)
             .filter(([projectId, assignedStudents]) => projectId !== targetProjectId && assignedStudents.length > minTeamSize)
             .sort((a, b) => b[1].length - a[1].length)[0]
 
@@ -241,7 +271,7 @@ export default defineEventHandler(async (event) => {
 
   rebalanceUndersizedTeams()
 
-  const undersizedTeams = Object.entries(teamAssignments)
+  const undersizedTeams = Object.entries(assignmentsByProjectId)
     .filter(([, assignedStudents]) => assignedStudents.length > 0 && assignedStudents.length < minTeamSize)
     .map(([projectId, assignedStudents]) => {
       const projectName = projects.find((p: Project) => p.id === projectId)?.name ?? projectId
@@ -257,9 +287,12 @@ export default defineEventHandler(async (event) => {
 
   // Persist student assignments to the database
   await Promise.all(
-    Object.entries(teamAssignments).map(async ([projectId, assignedStudents]) => {
+    Object.entries(assignmentsByProjectId).map(async ([projectId, assignedStudents]) => {
+      const teamId = projectIdToTeamId.get(projectId)
+      if (!teamId) return
+
       await event.context.client.team.update({
-        where: { projectId_semesterId: { projectId, semesterId } },
+        where: { id: teamId },
         data: {
           students: {
             set: assignedStudents.map(s => ({ id: s.id })),
@@ -269,5 +302,18 @@ export default defineEventHandler(async (event) => {
     })
   )
 
-  return { teamAssignments, projects }
+  const teamAssignments: Record<string, StudentWithChoices[]> = Object.fromEntries(
+    Object.entries(assignmentsByProjectId)
+      .map(([projectId, assignedStudents]) => {
+        const teamId = projectIdToTeamId.get(projectId)
+        return teamId ? ([teamId, assignedStudents] as const) : null
+      })
+      .filter((entry): entry is readonly [string, StudentWithChoices[]] => entry !== null)
+  )
+
+  const teamMeta: Record<string, { projectId: string; meetingDay: MeetingDay; projectName: string }> = Object.fromEntries(
+    teamsForRun.map((team) => [team.id, { projectId: team.projectId, meetingDay: day, projectName: team.project.name }])
+  )
+
+  return { teamAssignments, projects, teamMeta }
 })

@@ -3,25 +3,44 @@
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Bid Responses (Replace)" @dataParsed="handleBidsParsedReplace")
-        FileUploadButton(title="Merge Bid Responses" @dataParsed="handleBidsParsedMerge")
+        template(v-if="selectedDayTab === 'WEDNESDAY'")
+          FileUploadButton(title="Upload Wednesday Bid Responses (Replace)" @dataParsed="handleBidsParsedReplaceWednesday")
+          FileUploadButton(title="Merge Wednesday Bid Responses" @dataParsed="handleBidsParsedMergeWednesday")
+        template(v-else-if="selectedDayTab === 'THURSDAY'")
+          FileUploadButton(title="Upload Thursday Bid Responses (Replace)" @dataParsed="handleBidsParsedReplaceThursday")
+          FileUploadButton(title="Merge Thursday Bid Responses" @dataParsed="handleBidsParsedMergeThursday")
         ClickableButton(v-if="studentsWithFullName.length > 0" title="Export Students to CSV" type="success" @click="exportStudentsToCSV")
-        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
+        ClickableButton(title="Clear Students" type="danger" @click="handleClearAll")
         HelpIcon(:info="helpInfo")
 
-      .mt-20.project-title Students
-      .text-2xl.mt-2 Student count: {{ studentCount }}
+      .mt-4.project-title.w-full.text-center Students
+      .text-2xl.mt-2 Student count ({{ activeTabLabel }}): {{ studentCount }}
+
+      .day-tabs
+        button.day-tab-btn(
+          :class="{ active: selectedDayTab === 'ALL' }"
+          @click="selectedDayTab = 'ALL'"
+        ) All
+        button.day-tab-btn(
+          :class="{ active: selectedDayTab === 'WEDNESDAY' }"
+          @click="selectedDayTab = 'WEDNESDAY'"
+        ) Wednesday
+        button.day-tab-btn(
+          :class="{ active: selectedDayTab === 'THURSDAY' }"
+          @click="selectedDayTab = 'THURSDAY'"
+        ) Thursday
 
       DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="studentsWithFullName"
         v-model:filters="filters"
-        scrollable
-        scrollHeight="80vh"
-        class="w-full mt-2 md:mt-5"
-        dataKey="id"
-        filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedStudent"
+        dataKey="id"
+        filterDisplay="row"
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[5,10, 20, 25]"
+        class="w-full mt-2 md:mt-5"
       )
         Column(field="fullName" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
@@ -43,6 +62,9 @@
               template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
               // selected value
               template(#value="slotProps") {{ formatYearsFilter(slotProps.value) }}
+
+        Column(field="meetingDay" header="Day" :showFilterMenu="false" :sortable="true" style="width: 10rem")
+          template(#body="{ data }") {{ formatStudentDay(data.meetingDay) }}
 
         Column(field="status" header="Status" :showFilterMenu="false" headerClass="text-center" bodyClass="text-center" style="width: 8rem" :sortable="true")
           template(#body="{ data }") 
@@ -123,15 +145,23 @@
         select(v-else v-model="editedStudent.major")
           option(v-for="major in majors" :key="major" :value="major") {{ major }}
 
+    div
+      span.cardSubTitle Day:
+      span.cardText
+        template(v-if="!isEditing") {{ formatStudentDay(selectedStudent?.meetingDay) }}
+        select(v-else v-model="editedStudent.meetingDay")
+          option(:value="null") Unassigned
+          option(:value="'BOTH'") Wednesday + Thursday
+          option(v-for="day in studentDays" :key="day" :value="day") {{ formatStudentDay(day) }}
+
     .flex-grow.flex.justify-end.items-end
-      ClickableButton(v-if="!isEditing" title="Edit Project" type="success" @click="handleEdit")
-      ClickableButton(v-if="isEditing" title="Save Project" type="success" @click="handleSave")
+      ClickableButton(v-if="!isEditing" title="Edit Student" type="success" @click="handleEdit")
+      ClickableButton(v-if="isEditing" title="Save Student" type="success" @click="handleSave")
 
 </template>
 
 <script lang="ts" setup>
-//import { PrismaClient } from "@prisma/client" //added
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watchEffect } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
@@ -146,10 +176,43 @@ useHead({ title: 'Students' });
 
 const { successToast, errorToast, infoToast } = usePrimeVueToast();
 
-const students = ref<Student[]>([]);
+type DayTab = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
+type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
+type TabMeetingDay = 'WEDNESDAY' | 'THURSDAY';
+type StudentRow = Student & { meetingDay?: MeetingDay | null };
+
+const students = ref<StudentRow[]>([]);
 const studentCount = ref(0);
+const selectedDayTab = ref<DayTab>('ALL');
+const studentDays: TabMeetingDay[] = ['WEDNESDAY', 'THURSDAY'];
+
+const getStudentMeetingDay = (student: StudentRow | null | undefined): MeetingDay | null => {
+  const day = student?.meetingDay as MeetingDay | null | undefined;
+  return day ?? null;
+};
+
+const visibleStudents = computed<StudentRow[]>(() => {
+  if (selectedDayTab.value === 'ALL') return students.value;
+
+  return students.value.filter((student) => {
+    const day = getStudentMeetingDay(student);
+
+    if (selectedDayTab.value === 'WEDNESDAY') {
+      return day === 'WEDNESDAY' || day === 'BOTH';
+    }
+
+    return day === 'THURSDAY' || day === 'BOTH' || day == null;
+  });
+});
+
+const activeTabLabel = computed(() => {
+  if (selectedDayTab.value === 'WEDNESDAY') return 'Wednesday';
+  if (selectedDayTab.value === 'THURSDAY') return 'Thursday';
+  return 'All';
+});
+
 const studentsWithFullName = computed(() => (
-  students.value.map((student) => {
+  visibleStudents.value.map((student) => {
     return {
       ...student,
       fullName: student.lastName + ', ' + student.firstName
@@ -157,12 +220,16 @@ const studentsWithFullName = computed(() => (
   })
 ))
 
+watchEffect(() => {
+  studentCount.value = visibleStudents.value.length;
+});
+
 onMounted(async () => { //adds dummy data, students.value is what holds frontend table data
-  students.value = await $fetch<Student[]>("api/students"); //loads in random starting data
+  students.value = await $fetch<StudentRow[]>("api/students"); //loads in random starting data
   studentCount.value = students.value.length; 
 });
 
-const handleBidsParsedReplace = async (parsed: any) => {
+const handleBidsParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
   if (!parsed?.length) return;
   try {
     const result = await $fetch<{
@@ -170,9 +237,16 @@ const handleBidsParsedReplace = async (parsed: any) => {
       choicesCreated: number;
       skippedStudents: string[];
       unmatchedProjects: string[];
-    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'false' } });
+    }>('/api/bids', {
+      method: 'POST',
+      body: parsed,
+      query: {
+        merge: 'false',
+        ...(forcedDay ? { meetingDay: forcedDay } : {}),
+      },
+    });
 
-    students.value = await $fetch<Student[]>('/api/students');
+    students.value = await $fetch<StudentRow[]>('/api/students');
     studentCount.value = students.value.length;
 
     let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices.`;
@@ -186,7 +260,7 @@ const handleBidsParsedReplace = async (parsed: any) => {
     errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
   }
 };
-const handleBidsParsedMerge = async (parsed: any) => {
+const handleBidsParsedMerge = async (parsed: any, forcedDay?: TabMeetingDay) => {
   if (!parsed?.length) return;
   try {
     const result = await $fetch<{
@@ -194,9 +268,16 @@ const handleBidsParsedMerge = async (parsed: any) => {
       choicesCreated: number;
       skippedStudents: string[];
       unmatchedProjects: string[];
-    }>('/api/bids', { method: 'POST', body: parsed, query: { merge: 'true' } });
+    }>('/api/bids', {
+      method: 'POST',
+      body: parsed,
+      query: {
+        merge: 'true',
+        ...(forcedDay ? { meetingDay: forcedDay } : {}),
+      },
+    });
 
-    students.value = await $fetch<Student[]>('/api/students');
+    students.value = await $fetch<StudentRow[]>('/api/students');
     studentCount.value = students.value.length;
 
     let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices (merged).`;
@@ -210,7 +291,13 @@ const handleBidsParsedMerge = async (parsed: any) => {
     errorToast(e?.data?.message ?? e?.message ?? 'Failed to merge bid responses.');
   }
 };
-const handleParsed = async (parsed: any) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
+
+const handleBidsParsedReplaceWednesday = async (parsed: any) => handleBidsParsedReplace(parsed, 'WEDNESDAY');
+const handleBidsParsedMergeWednesday = async (parsed: any) => handleBidsParsedMerge(parsed, 'WEDNESDAY');
+const handleBidsParsedReplaceThursday = async (parsed: any) => handleBidsParsedReplace(parsed, 'THURSDAY');
+const handleBidsParsedMergeThursday = async (parsed: any) => handleBidsParsedMerge(parsed, 'THURSDAY');
+
+const handleParsed = async (parsed: any, forcedDay?: TabMeetingDay) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
   // Merge uploaded students with existing records
   
   const formattedStudents = parsed.map((stu : any) =>{
@@ -242,6 +329,7 @@ const handleParsed = async (parsed: any) => { //when it reaches here it's alread
       major: stu.major,
       year: stu.year || stu.seniority, // Support both 'year' and 'seniority' fields
       class: stu.class,
+      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
       status: stu.status || null
     }
   });
@@ -254,7 +342,7 @@ const handleParsed = async (parsed: any) => { //when it reaches here it's alread
     });
     
     // Refresh from database to get the saved data
-    students.value = await $fetch<Student[]>('/api/students');
+    students.value = await $fetch<StudentRow[]>('/api/students');
     studentCount.value = students.value.length; 
     console.log('Students saved to database successfully!');
     console.log(students.value); 
@@ -264,7 +352,7 @@ const handleParsed = async (parsed: any) => { //when it reaches here it's alread
 //database comes later, send it locally to tables to populate the website
 };
 
-const handleParsedReplace = async (parsed: any) => {
+const handleParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
   const formattedStudents = parsed.map((stu : any) => {
     let firstName, lastName, netID;
 
@@ -289,13 +377,15 @@ const handleParsedReplace = async (parsed: any) => {
       major: stu.major,
       year: stu.year || stu.seniority,
       class: stu.class,
+      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
       status: stu.status || null
     }
   });
 
   try {
     await $fetch('/api/students', {
-      method: 'DELETE'
+      method: 'DELETE',
+      query: forcedDay ? { meetingDay: forcedDay } : undefined
     });
 
     await $fetch('/api/students', {
@@ -303,7 +393,7 @@ const handleParsedReplace = async (parsed: any) => {
       body: formattedStudents
     });
 
-    students.value = await $fetch<Student[]>('/api/students');
+    students.value = await $fetch<StudentRow[]>('/api/students');
     studentCount.value = students.value.length;
     console.log('Students replaced from CSV successfully!');
   } catch (error) {
@@ -311,8 +401,33 @@ const handleParsedReplace = async (parsed: any) => {
   }
 };
 
+const handleParsedWednesday = async (parsed: any) => handleParsed(parsed, 'WEDNESDAY');
+const handleParsedThursday = async (parsed: any) => handleParsed(parsed, 'THURSDAY');
+const handleParsedReplaceWednesday = async (parsed: any) => handleParsedReplace(parsed, 'WEDNESDAY');
+const handleParsedReplaceThursday = async (parsed: any) => handleParsedReplace(parsed, 'THURSDAY');
+
+const normalizeMeetingDay = (rawValue: unknown, forcedDay?: TabMeetingDay): MeetingDay | null => {
+  if (forcedDay) return forcedDay;
+  if (rawValue == null) return null;
+
+  const value = String(rawValue).trim().toUpperCase();
+
+  if (value === 'BOTH' || value === 'WEDNESDAY/THURSDAY' || value === 'THURSDAY/WEDNESDAY' || value === 'WEDNESDAY,THURSDAY' || value === 'THURSDAY,WEDNESDAY') return 'BOTH';
+  if (value === 'WEDNESDAY' || value === 'WED') return 'WEDNESDAY';
+  if (value === 'THURSDAY' || value === 'THU' || value === 'THURS') return 'THURSDAY';
+
+  return null;
+};
+
+const formatStudentDay = (day: MeetingDay | null | undefined) => {
+  if (day === 'WEDNESDAY') return 'Wednesday';
+  if (day === 'THURSDAY') return 'Thursday';
+  if (day === 'BOTH') return 'Wednesday + Thursday';
+  return 'Unassigned';
+};
+
 const loadStudents = async () => {
-  students.value = await $fetch<Student[]>('/api/students');
+  students.value = await $fetch<StudentRow[]>('/api/students');
   studentCount.value = students.value.length;
 };
 
@@ -330,7 +445,7 @@ const resetDatabase = async () => {
     });
     
     // Refresh students from database
-    students.value = await $fetch<Student[]>('/api/students');
+    students.value = await $fetch<StudentRow[]>('/api/students');
     studentCount.value = students.value.length;
     console.log('Database cleared successfully!');
     if (typeof globalThis !== 'undefined' && typeof (globalThis as any).alert === 'function') {
@@ -369,7 +484,7 @@ const handleClearAll = async () => {
   }
 };
 
-const handleDeleteStudent = async (student: Student) => {
+const handleDeleteStudent = async (student: StudentRow) => {
   const confirmAvailable = typeof globalThis !== 'undefined' && typeof (globalThis as any).confirm === 'function';
   if (confirmAvailable) {
     if (!(globalThis as any).confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}? This cannot be undone.`)) {
@@ -392,8 +507,8 @@ const handleDeleteStudent = async (student: Student) => {
   }
 };
 
-const selectedStudent = ref<Student | null>(null);
-const editedStudent = ref<Student | null>(null);
+const selectedStudent = ref<StudentRow | null>(null);
+const editedStudent = ref<StudentRow | null>(null);
 const isEditing = ref(false);
 
 const filters = ref({
@@ -419,7 +534,7 @@ const statuses = ref(['ACTIVE', 'INACTIVE']);
 const majors = ref(['CS', 'SE', 'EE', 'ME', 'BME', 'DS', 'CE', 'Systems', 'Other']);
 const years = ref(['FRESHMAN', 'SOPHOMORE', 'JUNIOR', 'SENIOR']);
 
-const selectStudent = (student: Student) => {
+const selectStudent = (student: StudentRow) => {
   selectedStudent.value = student;
 }
 
@@ -468,6 +583,7 @@ const exportStudentsToCSV = () => {
       NetID: student.netID,
       Major: student.major,
       Year: capitalizeFirst(student.year),
+      Day: formatStudentDay(student.meetingDay),
       Status: capitalizeFirst(student.status),
       Class: student.class,
       Email: student.email ?? '',
@@ -497,12 +613,37 @@ const exportStudentsToCSV = () => {
   }
 }
 
-const helpInfo = `Upload student information here.`
+const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-specific student CSVs.`
 </script>
 
 <style scoped>
 .cardRows {
   @apply flex flex-col gap-5
+}
+.day-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 0.65rem;
+  padding: 0.25rem;
+}
+
+.day-tab-btn {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.day-tab-btn.active {
+  background: var(--color-accent-utd-green);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) inset;
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;

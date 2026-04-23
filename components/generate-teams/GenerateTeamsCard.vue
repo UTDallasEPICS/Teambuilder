@@ -44,7 +44,9 @@
         span.option-label Prefer 2200 Early Choices
         input(type="checkbox" v-model="algorithmConfig.prefer_2200_early_choices")
   
-  ClickableButton.mt-5(title="Generate Teams" type="success" :loading="loading" @click="handleGenerateTeamAssignments")
+  .flex.flex-wrap.gap-3.mt-5
+    ClickableButton(title="Generate Wednesday Teams" type="success" :loading="loading" @click="handleGenerateTeamAssignments('WEDNESDAY')")
+    ClickableButton(title="Generate Thursday Teams" type="success" :loading="loading" @click="handleGenerateTeamAssignments('THURSDAY')")
   .overlay(v-if="showOverlay" @click="closeModal")
   .orange-card.p-15.modal.gap-2.overflow-y-auto.max-h-screen.m-10(v-if="showOverlay")
     .text-5xl.font-bold.mb-5.text-center.text-white Generated Teams
@@ -78,13 +80,13 @@
           .stat-label Top-3 Preference
     
     .grid.grid-cols-4
-      div(v-for="(students, projectId) in teamAssignments" :key="projectId" class="mb-8")
-        h2.text-xl.font-semibold.text-white {{ getProjectNameFromId(projectId, activeProjects) }} ({{ getProjectTeamSize(projectId) }})
+      div(v-for="(students, teamId) in teamAssignments" :key="teamId" class="mb-8")
+        h2.text-xl.font-semibold.text-white {{ getTeamDisplayName(teamId) }} ({{ getProjectTeamSize(teamId) }})
         div(
           v-for="(student, index) in students" 
           :key="index"
           :class="getStudentColor(student)"
-        ) {{ getDisplayName(student) }} ({{ getProjectRankForStudent(projectId, student) }})
+        ) {{ getDisplayName(student) }} ({{ getProjectRankForStudent(getBaseProjectId(teamId), student) }})
 </template>
 
 <script setup lang="ts">
@@ -93,7 +95,6 @@ import { useRouter } from 'vue-router';
 import type { Project, Semester } from '@prisma/client';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import type { StudentWithChoices } from '~/server/api/students/index.get';
-import { getProjectNameFromId } from '~/server/services/projectService';
 import { displaySemester } from '~/server/services/semesterService';
 import { getDisplayName, getProjectRankForStudent } from '~/server/services/studentService';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
@@ -110,6 +111,8 @@ type AlgorithmConfig = {
   prefer_2200_early_choices: boolean;
 }
 
+type MeetingDay = 'WEDNESDAY' | 'THURSDAY';
+
 const { projects, semesters, students } = defineProps<{
   projects: ProjectWithSemesters[]
   semesters: Semester[]
@@ -122,6 +125,7 @@ const showOverlay = ref<boolean>(false);
 const loading = ref(false);
 const teamAssignments = ref<Record<string, StudentWithChoices[]> | null>(null);
 const activeProjects = ref<Project[]>([]);
+const generatedTeamMeta = ref<Record<string, { projectId: string; meetingDay: 'WEDNESDAY' | 'THURSDAY'; projectName: string }>>({});
 const algorithmConfig = ref<AlgorithmConfig>({
   min_team_size: 4,
   max_team_size: 6,
@@ -145,6 +149,36 @@ const validationWarnings = computed<string[]>(() => {
   const warnings: string[] = [];
   const semesterId = selectedSemester.value.id;
 
+  const isProjectActiveForDay = (project: ProjectWithSemesters, day: MeetingDay) => {
+    const semesterList = (project as ProjectWithSemesters).semesters ?? [];
+    const inSelectedSemester = semesterList.some((projectSemester: Semester) => projectSemester.id === semesterId);
+    if (!inSelectedSemester) return false;
+
+    return !project.meetingDay || project.meetingDay === 'BOTH' || project.meetingDay === day;
+  };
+
+  const isStudentEligibleForDay = (student: StudentWithChoices, day: MeetingDay) => {
+    if (day === 'WEDNESDAY') {
+      return student.meetingDay === 'WEDNESDAY' || student.meetingDay === 'BOTH';
+    }
+
+    return student.meetingDay === 'THURSDAY' || student.meetingDay === 'BOTH' || student.meetingDay === null;
+  };
+
+  const warningsForDay = (day: MeetingDay) => {
+    const activeProjectIds = new Set(
+      projects.filter(project => isProjectActiveForDay(project, day)).map(project => project.id)
+    );
+
+    return students
+      .filter(student => isStudentEligibleForDay(student, day))
+      .filter(student => {
+        const choices = student.choices?.filter(choice => activeProjectIds.has(choice.projectId)) || [];
+        return choices.length === 0;
+      })
+      .map(student => `${student.firstName} ${student.lastName}`);
+  };
+
   // Check for projects with no partner assigned
   const projectsWithoutPartner = projects
     .filter(p => {
@@ -158,25 +192,21 @@ const validationWarnings = computed<string[]>(() => {
   }
 
   // Check for students with zero valid choices
-  const studentsWithoutChoices = students
-    .filter(s => {
-      const choices = s.choices?.filter(c => {
-        const project = projects.find(p => p.id === c.projectId);
-        const isActive = project?.semesters?.some(ps => ps.id === semesterId);
-        return isActive;
-      }) || [];
-      return choices.length === 0;
-    })
-    .map(s => `${s.firstName} ${s.lastName}`);
+  const wednesdayStudentsWithoutChoices = warningsForDay('WEDNESDAY');
+  const thursdayStudentsWithoutChoices = warningsForDay('THURSDAY');
 
-  if (studentsWithoutChoices.length > 0) {
-    warnings.push(`${studentsWithoutChoices.length} student(s) have no valid project choices: ${studentsWithoutChoices.slice(0, 3).join(', ')}${studentsWithoutChoices.length > 3 ? '...' : ''}`);
+  if (wednesdayStudentsWithoutChoices.length > 0) {
+    warnings.push(`Wednesday: ${wednesdayStudentsWithoutChoices.length} student(s) have no valid project choices: ${wednesdayStudentsWithoutChoices.slice(0, 3).join(', ')}${wednesdayStudentsWithoutChoices.length > 3 ? '...' : ''}`);
+  }
+
+  if (thursdayStudentsWithoutChoices.length > 0) {
+    warnings.push(`Thursday: ${thursdayStudentsWithoutChoices.length} student(s) have no valid project choices: ${thursdayStudentsWithoutChoices.slice(0, 3).join(', ')}${thursdayStudentsWithoutChoices.length > 3 ? '...' : ''}`);
   }
 
   return warnings;
 });
 
-const handleGenerateTeamAssignments = async () => {
+const handleGenerateTeamAssignments = async (day: MeetingDay) => {
   if (!selectedSemester.value) {
     errorToast('Please select a semester before generating teams.');
     return;
@@ -189,12 +219,17 @@ const handleGenerateTeamAssignments = async () => {
 
   loading.value = true;
   try {
-    const result = await $fetch<{ teamAssignments: Record<string, StudentWithChoices[]>, projects: Project[] }>(
+    const result = await $fetch<{
+      teamAssignments: Record<string, StudentWithChoices[]>;
+      projects: Project[];
+      teamMeta?: Record<string, { projectId: string; meetingDay: 'WEDNESDAY' | 'THURSDAY'; projectName: string }>;
+    }>(
       '/api/teams/generate',
       {
         method: 'POST',
         body: {
           semesterId: selectedSemester.value.id,
+          day,
           config: algorithmConfig.value,
         }
       }
@@ -202,13 +237,16 @@ const handleGenerateTeamAssignments = async () => {
 
     teamAssignments.value = result.teamAssignments;
     activeProjects.value = result.projects;
+    generatedTeamMeta.value = result.teamMeta || {};
 
     // persist results for Teams page
     try {
       localStorage.setItem('lastTeamAssignments', JSON.stringify({
         teamAssignments: result.teamAssignments,
         projects: result.projects,
-        semester: selectedSemester.value
+        semester: selectedSemester.value,
+        day,
+        teamMeta: result.teamMeta || {},
       }));
     } catch (e) {
       // ignore storage errors
@@ -217,7 +255,7 @@ const handleGenerateTeamAssignments = async () => {
     // navigate to Teams page to view assignments
     await router.push('/teams');
   } catch (err: any) {
-    errorToast(err?.data?.message || err?.message || 'Failed to generate teams. Make sure Python and OR-Tools are installed.');
+    errorToast(err?.data?.message || err?.message || `Failed to generate ${day.toLowerCase()} teams. Make sure Python and OR-Tools are installed.`);
   } finally {
     loading.value = false;
   }
@@ -227,6 +265,18 @@ const getProjectTeamSize = (projectId: string) => {
   if (teamAssignments.value) {
     return teamAssignments.value[projectId]?.length ?? 0
   }
+}
+
+const getBaseProjectId = (teamId: string): string => (
+  generatedTeamMeta.value[teamId]?.projectId ?? teamId
+)
+
+const getTeamDisplayName = (teamId: string): string => {
+  const meta = generatedTeamMeta.value[teamId]
+  if (!meta) return teamId
+
+  const dayLabel = meta.meetingDay === 'WEDNESDAY' ? 'Wednesday' : 'Thursday'
+  return `${meta.projectName} (${dayLabel})`
 }
 
 const getStudentColor = (student: StudentWithChoices) => {

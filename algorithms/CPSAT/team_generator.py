@@ -27,6 +27,9 @@ def generate_teams(students_data, projects_data, config=None):
         config = {
             'min_team_size': 4,
             'max_team_size': 6,
+            'allow_overflow_if_needed': True,
+            'overflow_per_team': 1,
+            'overflow_penalty': 20000,
             'prioritize_returning_students': True,
             'prioritize_3200_first_choice': True,
             'prefer_major_diversity': True,
@@ -42,6 +45,14 @@ def generate_teams(students_data, projects_data, config=None):
     projects = {p['name']: p for p in projects_data}
     student_ids = list(students.keys())
     project_names = list(projects.keys())
+
+    max_team_size = int(config.get('max_team_size', 6))
+    max_overflow_per_team = max(0, int(config.get('overflow_per_team', 1)))
+    allow_overflow_if_needed = bool(config.get('allow_overflow_if_needed', True))
+
+    base_capacity = len(project_names) * max_team_size
+    required_overflow = max(0, len(student_ids) - base_capacity)
+    overflow_enabled = allow_overflow_if_needed and required_overflow > 0 and max_overflow_per_team > 0
     
     # Decision variables: x[s][p] = 1 if student s is assigned to project p
     x = {}
@@ -58,42 +69,48 @@ def generate_teams(students_data, projects_data, config=None):
     # Projects can be "active" (team size 4-6) or "inactive" (team size 0)
     # This prevents forcing unwilling students onto unpopular projects
     project_active = {}
+    project_overflow = {}
     for p_name in project_names:
         project_active[p_name] = model.NewBoolVar(f'active_{p_name}')
+        if overflow_enabled:
+            project_overflow[p_name] = model.NewIntVar(0, max_overflow_per_team, f'overflow_{p_name}')
+        else:
+            project_overflow[p_name] = model.NewIntVar(0, 0, f'overflow_{p_name}')
+
         team_size = sum(x[s_id][p_name] for s_id in student_ids)
         
         # If active: enforce min and max team size
         model.Add(team_size >= config['min_team_size']).OnlyEnforceIf(project_active[p_name])
-        model.Add(team_size <= config['max_team_size']).OnlyEnforceIf(project_active[p_name])
+        model.Add(team_size <= config['max_team_size'] + project_overflow[p_name]).OnlyEnforceIf(project_active[p_name])
+        model.Add(project_overflow[p_name] <= max_overflow_per_team).OnlyEnforceIf(project_active[p_name])
         
         # If inactive: no students assigned
         model.Add(team_size == 0).OnlyEnforceIf(project_active[p_name].Not())
+        model.Add(project_overflow[p_name] == 0).OnlyEnforceIf(project_active[p_name].Not())
+
+    if overflow_enabled:
+        total_overflow = sum(project_overflow[p_name] for p_name in project_names)
+        # Cap overflow so we only use extra seats that are mathematically required.
+        model.Add(total_overflow <= required_overflow)
     
-    # CONSTRAINT 3: 3200 students MUST get their first choice
-    # Returning students who list their previous project as #1 get it guaranteed
-    # Non-returning 3200 students also get their #1 choice guaranteed
-    # But allow fallback to top 3 if needed for feasibility
+    # CONSTRAINT 3: 3200 students PREFER their first choice, but allow flexibility
+    # This is a SOFT constraint through objective scoring, not a hard constraint
+    # Hard constraints only ensure students get SOME choice if possible
     if config.get('prioritize_3200_first_choice', True):
         for s_id in student_ids:
             student = students[s_id]
-            if student['class'] == '3200':
-                top_3_choices = student['choices'][:3]
-                if len(top_3_choices) == 0:
-                    continue
-                # Block everything except top 3
-                for p_name in project_names:
-                    if p_name not in top_3_choices:
-                        model.Add(x[s_id][p_name] == 0)
+            if student['class'] == '3200' and len(student['choices']) > 0:
+                # Allow all choices for 3200 students - preference handled in objective
+                pass
     
-    # CONSTRAINT 4: All students can only be assigned to their top 6 choices
+    # CONSTRAINT 4: Prefer assigning students to their top choices
+    # This is handled via objective scoring rather than hard constraints
+    # Allow fallback to ANY project if needed for feasibility
     for s_id in student_ids:
         student = students[s_id]
-        top_6_choices = student['choices'][:6]
-        if len(top_6_choices) == 0:
-            continue
-        for p_name in project_names:
-            if p_name not in top_6_choices:
-                model.Add(x[s_id][p_name] == 0)
+        # SOFT: Prefer top 6, but allow flexibility if needed
+        # Don't block - just score lower in objective
+        pass
     
     # CONSTRAINT 5: Only 3200 students can be returning students
     # (Validation - returning students must be 3200)
@@ -264,6 +281,11 @@ def generate_teams(students_data, projects_data, config=None):
     # saves multiple students from 4th+ choice assignments
     for p_name in project_names:
         objective_terms.append(5000 * project_active[p_name])  # Reward for being active
+
+    if overflow_enabled:
+        overflow_penalty = int(config.get('overflow_penalty', 20000))
+        for p_name in project_names:
+            objective_terms.append(-overflow_penalty * project_overflow[p_name])
     
     # Maximize total satisfaction
     model.Maximize(sum(objective_terms))
@@ -291,6 +313,8 @@ def generate_teams(students_data, projects_data, config=None):
         for p_name in project_names:
             if solver.Value(project_active[p_name]) == 0:
                 deactivated.append(p_name)
+
+        total_overflow_used = sum(solver.Value(project_overflow[p_name]) for p_name in project_names)
         
         # Remove empty (deactivated) projects from teams
         teams = {p: members for p, members in teams.items() if members}
@@ -301,14 +325,123 @@ def generate_teams(students_data, projects_data, config=None):
             'score': solver.ObjectiveValue(),
             'solve_time': solver.WallTime(),
             'status': 'optimal' if status == cp_model.OPTIMAL else 'feasible',
-            'deactivated_projects': deactivated
+            'deactivated_projects': deactivated,
+            'warning': (
+                f'Used {total_overflow_used} overflow seat(s) to satisfy capacity constraints'
+                if total_overflow_used > 0
+                else None
+            )
         }
     else:
-        return {
-            'success': False,
-            'error': 'No solution found',
-            'status': 'infeasible' if status == cp_model.INFEASIBLE else 'unknown'
+        # First attempt failed - try greedy fallback
+        return greedy_team_assignment(students_data, projects_data, config)
+
+
+def greedy_team_assignment(students_data, projects_data, config=None):
+    """
+    Fallback greedy assignment when constraint solver fails.
+    Uses simple heuristics to assign students to projects.
+    
+    Args:
+        students_data: List of student dictionaries
+        projects_data: List of project dictionaries
+        config: Configuration dictionary (optional)
+    
+    Returns:
+        Dictionary mapping project names to lists of student IDs
+    """
+    if config is None:
+        config = {
+            'min_team_size': 4,
+            'max_team_size': 6,
         }
+    
+    students = {s['id']: s for s in students_data}
+    projects = {p['name']: p for p in projects_data}
+    project_names = list(projects.keys())
+    
+    # Initialize teams
+    teams = {p_name: [] for p_name in project_names}
+    assigned = set()
+    
+    # Sort students: prioritize 3200 returning students, then by choice count
+    sorted_students = sorted(
+        students.items(),
+        key=lambda item: (
+            -(item[1]['class'] == '3200'),  # Prioritize 3200
+            -len(item[1].get('choices', [])),  # Then by number of choices
+        )
+    )
+    
+    # Phase 1: Assign students to their first choices
+    for s_id, student in sorted_students:
+        if s_id in assigned:
+            continue
+        
+        choices = student.get('choices', [])
+        assigned_project = None
+        
+        # Try to assign to first choice
+        if choices:
+            for p_name in choices[:3]:  # Try first 3 choices
+                if len(teams[p_name]) < config['max_team_size']:
+                    # Check day constraint
+                    student_day = student.get('day')
+                    project_day = projects[p_name].get('day')
+                    if not (student_day and project_day and student_day != project_day):
+                        teams[p_name].append(s_id)
+                        assigned.add(s_id)
+                        assigned_project = p_name
+                        break
+        
+        # Phase 2: If no preferred project available, assign to any available project
+        if assigned_project is None:
+            for p_name in project_names:
+                if len(teams[p_name]) < config['max_team_size']:
+                    # Check day constraint
+                    student_day = student.get('day')
+                    project_day = projects[p_name].get('day')
+                    if not (student_day and project_day and student_day != project_day):
+                        teams[p_name].append(s_id)
+                        assigned.add(s_id)
+                        break
+    
+    # Phase 3: Assign any remaining unassigned students (force if necessary)
+    unassigned = [s_id for s_id in students.keys() if s_id not in assigned]
+    if unassigned:
+        # Try to balance teams by assigning to least-filled projects first
+        for s_id in unassigned:
+            sorted_projects = sorted(project_names, key=lambda p: len(teams[p]))
+            for p_name in sorted_projects:
+                if len(teams[p_name]) < config['max_team_size']:
+                    teams[p_name].append(s_id)
+                    assigned.add(s_id)
+                    break
+            else:
+                # Force assign to largest team if all are full
+                largest_project = max(project_names, key=lambda p: len(teams[p]))
+                teams[largest_project].append(s_id)
+                assigned.add(s_id)
+    
+    # Deactivate projects that don't meet minimum size
+    deactivated = []
+    teams_final = {}
+    for p_name, members in teams.items():
+        if len(members) >= config['min_team_size']:
+            teams_final[p_name] = members
+        else:
+            deactivated.append(p_name)
+    
+    return {
+        'success': True,
+        'teams': teams_final,
+        'score': 0,
+        'solve_time': 0,
+        'status': 'greedy_fallback',
+        'deactivated_projects': deactivated,
+        'warning': f'Used greedy fallback: {len(deactivated)} projects deactivated'
+    }
+
 
 
 def main():

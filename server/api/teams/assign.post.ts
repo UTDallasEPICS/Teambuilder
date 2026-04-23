@@ -1,22 +1,21 @@
 /**
  * PUT /api/teams/assign
- * Updates the student members of a team identified by projectId + semesterId.
- * Body: { semesterId: string, projectId: string, studentIds: string[] }
+ * Updates the student members of a team identified by teamId.
+ * Body: { teamId: string, studentIds: string[] }
  */
 
 export default defineEventHandler(async (event) => {
-  const { semesterId, projectId, studentIds } = await readBody<{
-    semesterId: string
-    projectId: string
+  const { teamId, studentIds } = await readBody<{
+    teamId: string
     studentIds: string[]
   }>(event)
 
-  if (!semesterId || !projectId || !Array.isArray(studentIds)) {
-    throw createError({ statusCode: 400, message: 'semesterId, projectId, and studentIds are required.' })
+  if (!teamId || !Array.isArray(studentIds)) {
+    throw createError({ statusCode: 400, message: 'teamId and studentIds are required.' })
   }
 
   const updated = await event.context.client.team.update({
-    where: { projectId_semesterId: { projectId, semesterId } },
+    where: { id: teamId },
     data: {
       students: {
         set: studentIds.map(id => ({ id })),
