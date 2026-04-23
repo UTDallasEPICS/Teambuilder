@@ -2,11 +2,23 @@
   .overlay(v-if="selectedPartner" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Partners (Merge)" @dataParsed="handleParsed")
-        FileUploadButton(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
-        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
-        HelpIcon(:info="helpInfo")
+      .controls-row.flex.items-center.gap-2.self-start
+        span.text-xs.font-semibold.text-white Upload semester:
+        Dropdown.upload-semester-dropdown(
+          class="control-fixed"
+          v-model="selectedUploadSemester"
+          :options="semesters"
+          placeholder="Semester"
+        )
+          template(#option="slotProps") {{ displaySemester(slotProps.option) }}
+          template(#value="slotProps")
+            div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
+            span(v-else) {{ slotProps.placeholder }}
+
+        FileUploadButton.control-fill(title="Upload Partners (Merge)" @dataParsed="handleParsed")
+        FileUploadButton.control-fill(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
+        ClickableButton.control-fill(title="Clear Entire Database" type="danger" @click="resetDatabase")
+        HelpIcon.control-fixed(:info="helpInfo")
 
       .mt-20.project-title.embossed.drop-shadow-md Partners
       .text-2xl.mt-2 Partner count: {{ partnerCount }}
@@ -82,19 +94,29 @@
   <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
     import { FilterMatchMode } from '@primevue/core/api';
-    import type { Partner } from '@prisma/client';
+    import type { Partner, Semester } from '@prisma/client';
     import { useHead } from '@vueuse/head';
     import { XCircleIcon } from '@heroicons/vue/24/solid';
     import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
+    import { displaySemester } from '~/server/services/semesterService';
     
     useHead({ title: 'Partners' });
 
   const { successToast, errorToast } = usePrimeVueToast();
   const partners = ref<Partner[]>([]);
   const partnerCount = ref(0);
+  const semesters = ref<Semester[]>([]);
+  const selectedUploadSemester = ref<Semester | null>(null);
   
   onMounted(async () => {
-    partners.value = await $fetch<Partner[]>("api/partners");
+    const [partnersResponse, semestersResponse] = await Promise.all([
+      $fetch<Partner[]>('api/partners'),
+      $fetch<Semester[]>('api/semesters'),
+    ]);
+
+    partners.value = partnersResponse;
+    semesters.value = semestersResponse;
+    selectedUploadSemester.value = semesters.value[0] ?? null;
     partnerCount.value = partners.value.length;
   });
   
@@ -104,7 +126,10 @@
       // Save uploaded partners (API upserts by partner name)
       await $fetch('/api/partners', {
         method: 'POST',
-        body: uploadedPartners
+        body: {
+          partners: uploadedPartners,
+          semesterId: selectedUploadSemester.value?.id ?? null,
+        }
       });
       
       // Refresh from database to get the saved data
@@ -124,7 +149,10 @@
 
       await $fetch('/api/partners', {
         method: 'POST',
-        body: uploadedPartners
+        body: {
+          partners: uploadedPartners,
+          semesterId: selectedUploadSemester.value?.id ?? null,
+        }
       });
 
       partners.value = await $fetch<Partner[]>('/api/partners');
@@ -264,6 +292,39 @@
   .pill.bg-lightblue { background: var(--color-pill-complete) !important; color: #ffffff !important; }
   .pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
   .pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
+
+  .upload-semester-dropdown {
+    min-width: 160px;
+    max-width: 190px;
+    flex: 0 0 180px;
+  }
+
+  .control-fixed {
+    flex: 0 0 180px;
+    min-width: 0;
+  }
+
+  .control-fill {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .controls-row {
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .controls-row :deep(.front) {
+    width: 100%;
+    text-align: center;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(-4px);
+  }
 
   .centered-row.shaded-card { background: var(--color-utd-orange) !important; padding: 2rem !important; border-radius: 0.5rem; }
   .centered-row.shaded-card > .centered-col { background: transparent !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: none; width: 100%; }
