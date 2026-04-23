@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div.file-upload-trigger
   ClickableButton(:title="title" type="success" @click="handleClick")
   input(type="file" @change="handleFile" ref="fileInput" style={display: 'none'})
 </template>
@@ -76,3 +76,16 @@ const handleFile = (event: Event) => {
   }
 };
 </script>
+
+<style scoped>
+.file-upload-trigger {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.file-upload-trigger :deep(button.edge) {
+  width: 100%;
+  height: 100%;
+}
+</style>

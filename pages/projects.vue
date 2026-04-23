@@ -2,18 +2,30 @@
   .overlay(v-if="selectedProject" @click="closeModal")
   .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.flex-wrap.items-center.gap-2.self-start
+      .controls-row.flex.items-center.gap-2.self-start
+        span.text-xs.font-semibold.text-white Upload semester:
+        Dropdown.upload-semester-dropdown(
+          class="control-fixed"
+          v-model="selectedUploadSemester"
+          :options="semesters"
+          placeholder="Semester"
+        )
+          template(#option="slotProps") {{ displaySemester(slotProps.option) }}
+          template(#value="slotProps")
+            div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
+            span(v-else) {{ slotProps.placeholder }}
+
         template(v-if="selectedDayTab === 'ALL'")
-          FileUploadButton(title="Upload Projects (Merge)" @dataParsed="handleParsed")
-          FileUploadButton(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
+          FileUploadButton.control-fill(title="Upload Projects (Merge)" @dataParsed="handleParsed")
+          FileUploadButton.control-fill(title="Replace Projects with CSV" @dataParsed="handleParsedReplace")
         template(v-else-if="selectedDayTab === 'WEDNESDAY'")
-          FileUploadButton(title="Upload Wednesday Projects (Merge)" @dataParsed="handleParsedWednesday")
-          FileUploadButton(title="Replace Wednesday Projects with CSV" @dataParsed="handleParsedReplaceWednesday")
+          FileUploadButton.control-fill(title="Upload Wednesday Projects (Merge)" @dataParsed="handleParsedWednesday")
+          FileUploadButton.control-fill(title="Replace Wednesday Projects with CSV" @dataParsed="handleParsedReplaceWednesday")
         template(v-else)
-          FileUploadButton(title="Upload Thursday Projects (Merge)" @dataParsed="handleParsedThursday")
-          FileUploadButton(title="Replace Thursday Projects with CSV" @dataParsed="handleParsedReplaceThursday")
-        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
-        HelpIcon(:info="helpInfo")
+          FileUploadButton.control-fill(title="Upload Thursday Projects (Merge)" @dataParsed="handleParsedThursday")
+          FileUploadButton.control-fill(title="Replace Thursday Projects with CSV" @dataParsed="handleParsedReplaceThursday")
+        ClickableButton.control-fill(title="Clear Entire Database" type="danger" @click="resetDatabase")
+        HelpIcon.control-fixed(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Projects
       .text-2xl.mt-2 Project count ({{ activeTabLabel }}): {{ visibleProjects.length }}
@@ -140,12 +152,12 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import type { ProjectType } from '@prisma/client';
+import type { ProjectType, Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
-import { stringifySemesters } from '~/server/services/semesterService';
+import { displaySemester, stringifySemesters } from '~/server/services/semesterService';
 // import { faker } from '@faker-js/faker';
 import { useHead } from '@vueuse/head';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
@@ -154,6 +166,8 @@ useHead({ title: 'Projects' });
 
 const { successToast, errorToast } = usePrimeVueToast();
 const projects = ref<ProjectWithSemestersAndPartner[]>([]);
+const semesters = ref<Semester[]>([]);
+const selectedUploadSemester = ref<Semester | null>(null);
 
 type DayTab = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
 type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
@@ -165,7 +179,14 @@ const getMeetingDay = (project: ProjectWithSemestersAndPartner): MeetingDay | nu
 };
 
 onMounted(async () => {
-  projects.value = await $fetch<ProjectWithSemestersAndPartner[]>("api/projects");
+  const [projectsResponse, semestersResponse] = await Promise.all([
+    $fetch<ProjectWithSemestersAndPartner[]>('api/projects'),
+    $fetch<Semester[]>('api/semesters'),
+  ]);
+
+  projects.value = projectsResponse;
+  semesters.value = semestersResponse;
+  selectedUploadSemester.value = semesters.value[0] ?? null;
 });
 
 const visibleProjects = computed(() => {
@@ -292,7 +313,10 @@ const handleParsed = async (parsed: any, forcedDay?: 'WEDNESDAY' | 'THURSDAY') =
   try {
     await $fetch('/api/projects', {
       method: 'POST',
-      body: formattedProjects
+      body: {
+        projects: formattedProjects,
+        semesterId: selectedUploadSemester.value?.id ?? null,
+      }
     });
 
     await refreshProjects();
@@ -342,7 +366,10 @@ const handleParsedReplace = async (parsed: any, forcedDay?: 'WEDNESDAY' | 'THURS
 
     await $fetch('/api/projects', {
       method: 'POST',
-      body: formattedProjects
+      body: {
+        projects: formattedProjects,
+        semesterId: selectedUploadSemester.value?.id ?? null,
+      }
     });
 
     await refreshProjects();
@@ -504,6 +531,39 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
   background: var(--color-accent-utd-green);
   color: #ffffff;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) inset;
+}
+
+.upload-semester-dropdown {
+  min-width: 160px;
+  max-width: 190px;
+  flex: 0 0 180px;
+}
+
+.control-fixed {
+  flex: 0 0 180px;
+  min-width: 0;
+}
+
+.control-fill {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.controls-row {
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.controls-row :deep(.front) {
+  width: 100%;
+  text-align: center;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translateY(-4px);
 }
 
 /* make the whole shaded card area use the UTD orange and fill surrounding whitespace */

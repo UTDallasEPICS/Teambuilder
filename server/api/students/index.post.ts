@@ -1,7 +1,15 @@
-export default defineEventHandler(async (event) => {
-  const students = await readBody(event);
+import { sortSemesters } from '~/server/services/semesterService';
 
-  if (!Array.isArray(students)) {
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const students = Array.isArray(body)
+    ? body
+    : Array.isArray(body?.students)
+      ? body.students
+      : null;
+  const semesterId = Array.isArray(body) ? null : (body?.semesterId ?? null);
+
+  if (!students) {
     throw createError({
       statusCode: 400,
       message: 'Expected an array of students'
@@ -29,6 +37,46 @@ export default defineEventHandler(async (event) => {
     return null;
   };
 
+  const allSemesters = sortSemesters(await event.context.client.semester.findMany());
+  const latestSemesterId = allSemesters[0]?.id ?? null;
+
+  const uploadedNetIds = [...new Set(
+    students
+      .map((student: any) => String(student?.netID ?? '').trim())
+      .filter((netID: string) => !!netID)
+  )];
+
+  const latestSemesterStudents = latestSemesterId && uploadedNetIds.length > 0
+    ? await event.context.client.student.findMany({
+        where: {
+          netID: { in: uploadedNetIds },
+          teams: {
+            some: {
+              semesterId: latestSemesterId,
+            },
+          },
+        },
+        select: {
+          netID: true,
+        },
+      })
+    : [];
+
+  const latestSemesterNetIdSet = new Set(latestSemesterStudents.map((student: { netID: string }) => student.netID));
+
+  const deriveStatus = (student: any): 'ACTIVE' | 'INACTIVE' => {
+    if (!semesterId) {
+      return student?.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    }
+
+    if (!latestSemesterId || semesterId === latestSemesterId) {
+      return 'ACTIVE';
+    }
+
+    const netID = String(student?.netID ?? '').trim();
+    return latestSemesterNetIdSet.has(netID) ? 'ACTIVE' : 'INACTIVE';
+  };
+
   // Create all students in the database
   const createdStudents = await Promise.all(
     students.map((student: any) =>
@@ -44,7 +92,7 @@ export default defineEventHandler(async (event) => {
           year: student.year,
           class: student.class,
           meetingDay: normalizeMeetingDay(student.meetingDay ?? student.day ?? student.meeting_day),
-          status: student.status
+          status: deriveStatus(student)
         },
         create: {
           netID: student.netID,
@@ -57,7 +105,7 @@ export default defineEventHandler(async (event) => {
           year: student.year,
           class: student.class,
           meetingDay: normalizeMeetingDay(student.meetingDay ?? student.day ?? student.meeting_day),
-          status: student.status
+          status: deriveStatus(student)
         }
       })
     )
