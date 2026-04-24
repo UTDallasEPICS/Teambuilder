@@ -3,7 +3,7 @@ name: Build and Publish Docker Image
 on:
   push:
     branches:
-      - main
+      - deployment-testing
 
 jobs:
   build:
@@ -32,11 +32,11 @@ jobs:
       - name: Build and Push Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry}}
-          REPOSITORY: ${{ variables.REPOSITORY }}
+          REPOSITORY: ${{ vars.REPOSITORY }}
           IMAGE_TAG: ${{ github.sha}}
           DATABASE_URL: "file:./dev.db"
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
-          SERVICE_NAME: ${{ variables.REPOSITORY }}-stage-service
+          SERVICE_NAME: ${{ vars.REPOSITORY }}-stage-service
         run: |
           docker build --output type=image,push=true --platform linux/arm64 -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker build --output type=image,push=true --platform linux/arm64 -t $ECR_REGISTRY/$REPOSITORY:prod .
