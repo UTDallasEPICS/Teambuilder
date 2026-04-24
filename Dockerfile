@@ -1,41 +1,27 @@
-FROM node:20-bookworm-slim AS base
-
-ENV PNPM_HOME=/pnpm
-ENV PATH=$PNPM_HOME:$PATH
-
-RUN corepack enable
-
-WORKDIR /app
-
-FROM base AS deps
-
-COPY package.json pnpm-lock.yaml ./
-
-RUN pnpm install --frozen-lockfile
-
-FROM base AS build
-
-ENV NODE_ENV=production
-ENV PRISMA_DB_URL=file:/app/prisma/dev.db
-
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
+# Build container
+FROM node:current AS builder
+COPY . ./
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN npm i -g pnpm
+RUN pnpm i --frozen-lockfile
 RUN pnpm prisma generate
-RUN pnpm build
+RUN pnpm run build
 
-FROM base AS runtime
+# Deployment container
+FROM node:current AS deployment
 
-ENV NODE_ENV=production
-ENV PRISMA_DB_URL=file:/app/prisma/dev.db
+# Copy stuff from build container to ensure we have prisma and everything it needs
+COPY --from=builder /.output /
+COPY --from=builder /package.json /
+COPY --from=builder /pnpm-lock.yaml /
+COPY --from=builder /prisma /prisma
+COPY --from=builder /node_modules /node_modules
+RUN npm i -g pnpm
+COPY ./entrypoint.sh /entrypoint.sh
 
-WORKDIR /app
-
-COPY --from=build /app/.output ./.output
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/prisma ./prisma
-
+# Esnure we can actually run the entrypoint script
+RUN chmod +x /entrypoint.sh
 EXPOSE 3000
-
-CMD ["node", ".output/server/index.mjs"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["node", "./server/index.mjs"]

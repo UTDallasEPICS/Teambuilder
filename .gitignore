@@ -25,5 +25,5 @@ logs
 !.env.example
 
 # Database
-prisma/dev.db
+*.db
 prisma/dev.db-journal

@@ -179,7 +179,7 @@
 import { onMounted, ref, computed, watchEffect } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import Papa from 'papaparse';
 import type { Semester, Student, Year } from '@prisma/client';
 import { useHead } from '@vueuse/head';

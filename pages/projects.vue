@@ -154,7 +154,7 @@ import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import type { ProjectType, Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { displaySemester, stringifySemesters } from '~/server/services/semesterService';
