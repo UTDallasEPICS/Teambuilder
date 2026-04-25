@@ -20,7 +20,7 @@ COPY --from=builder /node_modules /node_modules
 RUN npm i -g pnpm
 COPY ./entrypoint.sh /entrypoint.sh
 
-# Esnure we can actually run the entrypoint script
+# Ensure we can actually run the entrypoint script
 RUN chmod +x /entrypoint.sh
 EXPOSE 3000
 ENTRYPOINT ["/entrypoint.sh"]
