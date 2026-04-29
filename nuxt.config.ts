@@ -102,7 +102,7 @@ export default defineNuxtConfig({
   components: [
     { path: '~/components', pathPrefix: false },
   ],
-  ssr: false,
+  ssr: true,
   compatibilityDate: '2024-09-19',
 })
 
