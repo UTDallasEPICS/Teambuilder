@@ -25,6 +25,7 @@
           FileUploadButton.control-fill(title="Upload Students (Merge)" @dataParsed="handleParsed")
           FileUploadButton.control-fill(title="Replace Students with CSV" @dataParsed="handleParsedReplace")
         ClickableButton.control-fill(v-if="studentsWithFullName.length > 0" title="Export Students to CSV" type="success" @click="exportStudentsToCSV")
+        ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
         ClickableButton.control-fill(title="Clear Students" type="danger" @click="handleClearAll")
         HelpIcon.control-fixed(:info="helpInfo")
 
@@ -616,6 +617,17 @@ const exportStudentsToCSV = () => {
     errorToast(error?.message || 'Failed to export students.');
   }
 }
+
+const downloadTemplate = () => {
+  const csv = 'netID,firstName,lastName,email,major,year,class,meetingDay,status,github,discord\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'students_template.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-specific student CSVs.`
 </script>

@@ -25,6 +25,7 @@
           FileUploadButton.control-fill(title="Upload Thursday Projects (Merge)" @dataParsed="handleParsedThursday")
           FileUploadButton.control-fill(title="Replace Thursday Projects with CSV" @dataParsed="handleParsedReplaceThursday")
         ClickableButton.control-fill(title="Clear Entire Database" type="danger" @click="resetDatabase")
+        ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
         HelpIcon.control-fixed(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Projects
@@ -483,6 +484,17 @@ const statusBgColor = (status: string) => ({
   'bg-gray': status === 'WITHDRAWN',
   'bg-red': status === 'HOLD'
 });
+
+const downloadTemplate = () => {
+  const csv = 'name,description,type,status,repoURL,partnerName,meetingDay\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'projects_template.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 const helpInfo = `Upload information for your projects here.
 Be sure to enter project name, project partner, target # of CS majors, and whether it is archived.`;
