@@ -33,15 +33,15 @@
       .day-tabs
         button.day-tab-btn(
           :class="{ active: selectedDayTab === 'ALL' }"
-          @click="selectedDayTab = 'ALL'"
+          @click="setDayTab('ALL')"
         ) All
         button.day-tab-btn(
           :class="{ active: selectedDayTab === 'WEDNESDAY' }"
-          @click="selectedDayTab = 'WEDNESDAY'"
+          @click="setDayTab('WEDNESDAY')"
         ) Wednesday
         button.day-tab-btn(
           :class="{ active: selectedDayTab === 'THURSDAY' }"
-          @click="selectedDayTab = 'THURSDAY'"
+          @click="setDayTab('THURSDAY')"
         ) Thursday
 
       DataTable.beige-card.overflow-hidden(
@@ -150,7 +150,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import type { ProjectType, Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
@@ -173,6 +173,17 @@ type DayTab = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
 type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
 const selectedDayTab = ref<DayTab>('ALL');
 
+const setDayTab = (tab: DayTab) => {
+  selectedDayTab.value = tab;
+  if (tab === 'ALL') {
+    filters.value.meetingDay.value = [];
+  } else if (tab === 'WEDNESDAY') {
+    filters.value.meetingDay.value = ['WEDNESDAY', 'BOTH'];
+  } else {
+    filters.value.meetingDay.value = ['THURSDAY', 'BOTH'];
+  }
+};
+  
 const getMeetingDay = (project: ProjectWithSemestersAndPartner): MeetingDay | null => {
   const day = project.meetingDay as MeetingDay | null | undefined;
   return day ?? null;
@@ -218,10 +229,22 @@ const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   description: { value: null, matchMode: FilterMatchMode.CONTAINS },
   type: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  meetingDay: { value: [], matchMode: FilterMatchMode.IN },
+  meetingDay: { value: [] as MeetingDay[], matchMode: FilterMatchMode.IN },
   status: { value: [], matchMode: FilterMatchMode.IN },
   semester: { value: [], matchMode: FilterMatchMode.IN },
   partnerName: { value: null, matchMode: FilterMatchMode.CONTAINS }
+});
+
+watch(() => filters.value.meetingDay.value, (val) => {
+  if (!val || val.length === 0) {
+    selectedDayTab.value = 'ALL';
+  } else if (val.includes('WEDNESDAY') && !val.includes('THURSDAY')) {
+    selectedDayTab.value = 'WEDNESDAY';
+  } else if (val.includes('THURSDAY') && !val.includes('WEDNESDAY')) {
+    selectedDayTab.value = 'THURSDAY';
+  } else {
+    selectedDayTab.value = 'ALL';
+  }
 });
 
 const formatTypesFilter = (types: ProjectType[] | undefined) => {
