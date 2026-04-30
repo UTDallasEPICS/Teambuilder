@@ -3,8 +3,8 @@
  * Imports a parsed UTDesign/EPICS bid-response CSV.
  *
  * Expected row shape (after PapaParse with header:true):
- *   row["Student Name"]  – first name (may be multi-word, e.g. "Maryam Fatima")
- *   row[""]              – last name  (empty-string header from the blank column in the CSV)
+ *   row["Student Name"]  – either full name ("Last, First") OR first name only
+ *   row[""]              – optional last-name column in older CSV layouts
  *   row["Student Email"] – email
  *   row["SSO ID"]        – netID (skip row if blank)
  *   row["Classification"]– Freshman | Sophomore | Junior | Senior
@@ -46,6 +46,50 @@ function extractClass(enrollment: string): '2200' | '3200' {
   const match = enrollment.match(/\d{4}/);
   const n = match?.[0];
   return n === '3200' ? '3200' : '2200';
+}
+
+function parseStudentName(row: Record<string, any>): { firstName: string; lastName: string } {
+  const rawName = String(
+    row['Student Name'] ??
+    row['Name'] ??
+    row['Full Name'] ??
+    row['Student'] ??
+    row['student name'] ??
+    row['name'] ??
+    ''
+  ).trim();
+  const rawLastNameColumn = String(row[''] ?? '').trim();
+
+  // New layout: full name is in a single column as "Last, First".
+  if (rawName.includes(',')) {
+    const [lastName = '', firstName = ''] = rawName.split(',').map((part) => part.trim());
+    return {
+      firstName,
+      lastName,
+    };
+  }
+
+  // Legacy layout: first name in the main name column and last name in empty-header column.
+  if (rawLastNameColumn) {
+    return {
+      firstName: rawName,
+      lastName: rawLastNameColumn,
+    };
+  }
+
+  // Fallback: if no comma, treat final token as last name.
+  const parts = rawName.split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) {
+    return {
+      firstName: rawName,
+      lastName: '',
+    };
+  }
+
+  return {
+    firstName: parts.slice(0, -1).join(' '),
+    lastName: parts[parts.length - 1],
+  };
 }
 
 /** Strip semester prefixes like "S26 - ", "F25 - ", "SP24 TH - " then trim */
@@ -219,8 +263,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // ── Build student record ─────────────────────────────────────────────────
-    const firstName = row['Student Name']?.trim() ?? '';
-    const lastName  = row['']?.trim() ?? '';           // empty-header column
+    const { firstName, lastName } = parseStudentName(row);
     const email     = row['Student Email']?.trim() || null;
     const yearRaw   = (row['Classification'] ?? '').trim().toLowerCase();
     const year: Year = YEAR_MAP[yearRaw] ?? 'FRESHMAN';
