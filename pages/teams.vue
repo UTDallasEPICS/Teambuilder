@@ -400,15 +400,6 @@ const destinationProjects = computed(() => {
     .map(row => ({ id: row.teamId, name: row.projectName }));
 });
 
-const persistAssignments = () => {
-  if (!process.client || !rawAssignments.value) return;
-  localStorage.setItem('lastTeamAssignments', JSON.stringify({
-    teamAssignments: rawAssignments.value,
-    projects: projects.value,
-    teamMeta: teamMeta.value,
-    semester: savedSemester.value,
-  }));
-};
 
 const loadSemesterAssignments = async (semesterId: string) => {
   const result = await $fetch<{
@@ -424,7 +415,6 @@ const loadSemesterAssignments = async (semesterId: string) => {
   teamMeta.value = result.teamMeta || {};
   selectedTeam.value = null;
   showMetrics.value = false;
-  persistAssignments();
 };
 
 const handleSemesterChange = async () => {
@@ -493,7 +483,6 @@ const moveMember = async (studentId: string) => {
   rawAssignments.value[destinationTeamId] = destinationStudents;
   rawAssignments.value[sourceTeamId] = sourceStudents;
 
-  persistAssignments();
   refreshSelectedTeam();
   moveTargets.value[studentId] = '';
 
@@ -518,7 +507,7 @@ const moveMember = async (studentId: string) => {
       ]);
       successToast('Member moved and saved successfully.');
     } catch (e) {
-      successToast('Member moved locally. Database save failed — changes are in localStorage only.');
+      errorToast('Member moved locally. Database save failed.');
     }
   } else {
     successToast('Member moved successfully.');
@@ -540,7 +529,6 @@ const removeMember = async (studentId: string) => {
   sourceStudents.splice(sourceIndex, 1);
   rawAssignments.value[sourceTeamId] = sourceStudents;
 
-  persistAssignments();
   refreshSelectedTeam();
   moveTargets.value[studentId] = '';
 
@@ -555,7 +543,7 @@ const removeMember = async (studentId: string) => {
       });
       successToast('Member removed and saved successfully.');
     } catch (e) {
-      successToast('Member removed locally. Database save failed — changes are in localStorage only.');
+      errorToast('Member removed locally. Database save failed.');
     }
   } else {
     successToast('Member removed successfully.');
@@ -856,8 +844,7 @@ const handleParsedReplaceTeams = async (parsedRows: any[]) => {
     );
 
     rawAssignments.value = replacedAssignments;
-    persistAssignments();
-    refreshSelectedTeam();
+      refreshSelectedTeam();
     successToast('Teams replaced from CSV successfully.');
   } catch (err: any) {
     errorToast(err?.data?.message || 'Failed to replace teams from CSV.');
@@ -865,22 +852,7 @@ const handleParsedReplaceTeams = async (parsedRows: any[]) => {
 };
 
 onMounted(async () => {
-  // First, restore semester/project metadata from localStorage
-  let localSemester: Semester | null = null;
-  try {
-    const raw = localStorage.getItem('lastTeamAssignments');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      rawAssignments.value = parsed.teamAssignments || null;
-      projects.value = parsed.projects || [];
-      teamMeta.value = parsed.teamMeta || {};
-      localSemester = parsed.semester || null;
-    }
-  } catch (e) {
-    rawAssignments.value = null;
-  }
-
-  // Next, fetch all semesters so users can browse historical archives.
+  // Fetch all semesters so users can browse historical archives.
   try {
     semesters.value = await $fetch<Semester[]>('/api/semesters');
   } catch (e) {
@@ -888,20 +860,13 @@ onMounted(async () => {
     return;
   }
 
-  const selectedFromLocal = localSemester?.id
-    ? semesters.value.find((semester) => semester.id === localSemester?.id) ?? null
-    : null;
-
-  savedSemester.value = selectedFromLocal ?? semesters.value[0] ?? null;
+  savedSemester.value = semesters.value[0] ?? null;
 
   if (savedSemester.value?.id) {
     try {
       await loadSemesterAssignments(savedSemester.value.id);
     } catch (e) {
-      // If DB fetch fails, keep any local data we already restored.
-      if (!rawAssignments.value) {
-        rawAssignments.value = {};
-      }
+      rawAssignments.value = {};
     }
   }
 });

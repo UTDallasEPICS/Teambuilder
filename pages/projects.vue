@@ -25,6 +25,7 @@
           FileUploadButton.control-fill(title="Upload Thursday Projects (Merge)" @dataParsed="handleParsedThursday")
           FileUploadButton.control-fill(title="Replace Thursday Projects with CSV" @dataParsed="handleParsedReplaceThursday")
         ClickableButton.control-fill(title="Clear Entire Database" type="danger" @click="resetDatabase")
+        ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
         HelpIcon.control-fixed(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Projects
@@ -33,27 +34,28 @@
       .day-tabs
         button.day-tab-btn(
           :class="{ active: selectedDayTab === 'ALL' }"
-          @click="selectedDayTab = 'ALL'"
+          @click="setDayTab('ALL')"
         ) All
         button.day-tab-btn(
           :class="{ active: selectedDayTab === 'WEDNESDAY' }"
-          @click="selectedDayTab = 'WEDNESDAY'"
+          @click="setDayTab('WEDNESDAY')"
         ) Wednesday
         button.day-tab-btn(
           :class="{ active: selectedDayTab === 'THURSDAY' }"
-          @click="selectedDayTab = 'THURSDAY'"
+          @click="setDayTab('THURSDAY')"
         ) Thursday
 
       DataTable.beige-card.overflow-hidden(
-        :value="visibleProjects"
+        :value="projects"
         v-model:filters="filters"
-        scrollable
-        scrollHeight="80vh"
-        class="w-full mt-2 md:mt-5"
-        dataKey="id"
-        filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedProject"
+        dataKey="id"
+        filterDisplay="row"
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[5,10, 20, 25]"
+        class
       )
         Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
@@ -146,11 +148,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import type { ProjectType, Semester } from '@prisma/client';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
 import { displaySemester, stringifySemesters } from '~/server/services/semesterService';
@@ -169,6 +171,17 @@ type DayTab = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
 type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
 const selectedDayTab = ref<DayTab>('ALL');
 
+const setDayTab = (tab: DayTab) => {
+  selectedDayTab.value = tab;
+  if (tab === 'ALL') {
+    filters.value.meetingDay.value = [];
+  } else if (tab === 'WEDNESDAY') {
+    filters.value.meetingDay.value = ['WEDNESDAY', 'BOTH'];
+  } else {
+    filters.value.meetingDay.value = ['THURSDAY', 'BOTH'];
+  }
+};
+  
 const getMeetingDay = (project: ProjectWithSemestersAndPartner): MeetingDay | null => {
   const day = project.meetingDay as MeetingDay | null | undefined;
   return day ?? null;
@@ -214,10 +227,22 @@ const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   description: { value: null, matchMode: FilterMatchMode.CONTAINS },
   type: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  meetingDay: { value: [], matchMode: FilterMatchMode.IN },
+  meetingDay: { value: [] as MeetingDay[], matchMode: FilterMatchMode.IN },
   status: { value: [], matchMode: FilterMatchMode.IN },
   semester: { value: [], matchMode: FilterMatchMode.IN },
   partnerName: { value: null, matchMode: FilterMatchMode.CONTAINS }
+});
+
+watch(() => filters.value.meetingDay.value, (val) => {
+  if (!val || val.length === 0) {
+    selectedDayTab.value = 'ALL';
+  } else if (val.includes('WEDNESDAY') && !val.includes('THURSDAY')) {
+    selectedDayTab.value = 'WEDNESDAY';
+  } else if (val.includes('THURSDAY') && !val.includes('WEDNESDAY')) {
+    selectedDayTab.value = 'THURSDAY';
+  } else {
+    selectedDayTab.value = 'ALL';
+  }
 });
 
 const formatTypesFilter = (types: ProjectType[] | undefined) => {
@@ -456,6 +481,17 @@ const statusBgColor = (status: string) => ({
   'bg-gray': status === 'WITHDRAWN',
   'bg-red': status === 'HOLD'
 });
+
+const downloadTemplate = () => {
+  const csv = 'name,description,type,status,repoURL,partnerName,meetingDay\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'projects_template.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 const helpInfo = `Upload information for your projects here.
 Be sure to enter project name, project partner, target # of CS majors, and whether it is archived.`;

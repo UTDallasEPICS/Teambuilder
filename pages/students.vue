@@ -25,6 +25,7 @@
           FileUploadButton.control-fill(title="Upload Students (Merge)" @dataParsed="handleParsed")
           FileUploadButton.control-fill(title="Replace Students with CSV" @dataParsed="handleParsedReplace")
         ClickableButton.control-fill(v-if="studentsWithFullName.length > 0" title="Export Students to CSV" type="success" @click="exportStudentsToCSV")
+        ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
         ClickableButton.control-fill(title="Clear Students" type="danger" @click="handleClearAll")
         HelpIcon.control-fixed(:info="helpInfo")
 
@@ -48,13 +49,14 @@
       DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="studentsWithFullName"
         v-model:filters="filters"
-        scrollable
-        scrollHeight="80vh"
-        class="w-full mt-2 md:mt-5"
-        dataKey="id"
-        filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedStudent"
+        dataKey="id"
+        filterDisplay="row"
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[5,10, 20, 25]"
+        class="w-full mt-2 md:mt-5"
       )
         Column(field="fullName" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
@@ -178,7 +180,7 @@
 import { onMounted, ref, computed, watchEffect } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import Papa from 'papaparse';
 import type { Semester, Student, Year } from '@prisma/client';
 import { useHead } from '@vueuse/head';
@@ -633,6 +635,17 @@ const exportStudentsToCSV = () => {
     errorToast(error?.message || 'Failed to export students.');
   }
 }
+
+const downloadTemplate = () => {
+  const csv = 'netID,firstName,lastName,email,major,year,class,meetingDay,status,github,discord\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'students_template.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-specific student CSVs.`
 </script>

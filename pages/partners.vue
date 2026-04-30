@@ -17,6 +17,7 @@
 
         FileUploadButton.control-fill(title="Upload Partners (Merge)" @dataParsed="handleParsed")
         FileUploadButton.control-fill(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
+        ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
         ClickableButton.control-fill(title="Clear Entire Database" type="danger" @click="resetDatabase")
         HelpIcon.control-fixed(:info="helpInfo")
 
@@ -26,13 +27,14 @@
       DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="partners"
         v-model:filters="filters"
-        scrollable
-        scrollHeight="80vh"
-        class="w-full mt-2 md:mt-5"
-        dataKey="id"
-        filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedPartner"
+        dataKey="id"
+        filterDisplay="row"
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[5,10, 20, 25]"
+        class="w-full mt-2 md:mt-5"
       )
 
         Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
@@ -264,6 +266,17 @@
     isEditing.value = false;
   };
   
+  const downloadTemplate = () => {
+    const csv = 'name,contactName,contactEmail\n';
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'partners_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const helpInfo = `Upload partner contact and organization information here.`;
   </script>
   
@@ -329,4 +342,3 @@
   .centered-row.shaded-card { background: var(--color-utd-orange) !important; padding: 2rem !important; border-radius: 0.5rem; }
   .centered-row.shaded-card > .centered-col { background: transparent !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: none; width: 100%; }
   </style>
-  
