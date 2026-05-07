@@ -12,6 +12,9 @@
   .centered-row.gap-20.w-full
     InputText.w-full(v-model="filterInactive" size="small" placeholder="Search for Project")
     InputText.w-full(v-model="filterActive" size="small" placeholder="Search for Project")
+  .centered-row.gap-4.w-full
+    ClickableButton.bulk-action-button(title="Activate All" type="success" compact @click="handleMoveAllToActive" :disabled="inactiveProjectCount === 0")
+    ClickableButton.bulk-action-button(title="Deactivate All" type="success" compact @click="handleMoveAllToInactive" :disabled="activeProjectCount === 0")
   PickList(
     v-model="pickListProjects"
     dataKey="id"
@@ -113,26 +116,15 @@ const activeProjectCount = computed(() => (
 ));
 
 const handleMoveToInactive = (event: PickListMoveToSourceEvent) => {
-  event.items.forEach((project: ProjectWithSemesters) => {
-    // account for if we moved a project and moved it back
-    const idxInIds = activateProjectsById.indexOf(project.id);
-
-    if (idxInIds === -1) {
-      deactivateProjectsById.push(project.id);
-    } else {
-      activateProjectsById.splice(idxInIds, 1);
-    }
-
-    // also move project from activeProjects to inactiveProjects
-    // so we can track project count and filter correctly
-    activeProjects.value = activeProjects.value.filter(inactiveProject => inactiveProject.id !== project.id);
-    inactiveProjects.value.push(project);
-  })
+  moveProjectsToInactive(event.items);
 }
 
 const handleMoveToActive = (event: PickListMoveToTargetEvent) => {
-  event.items.forEach((project: ProjectWithSemesters) => {
-    // account for if we moved a project and moved it back
+  moveProjectsToActive(event.items);
+}
+
+const moveProjectsToActive = (projectsToMove: ProjectWithSemesters[]) => {
+  projectsToMove.forEach((project: ProjectWithSemesters) => {
     const idxInIds = deactivateProjectsById.indexOf(project.id);
 
     if (idxInIds === -1) {
@@ -141,12 +133,35 @@ const handleMoveToActive = (event: PickListMoveToTargetEvent) => {
       deactivateProjectsById.splice(idxInIds, 1);
     }
 
-    // also move project from inactiveProjects to activeProjects
-    // so we can track project count and filter correctly
     inactiveProjects.value = inactiveProjects.value.filter(inactiveProject => inactiveProject.id !== project.id);
     activeProjects.value.push(project);
-  })
-}
+  });
+};
+
+const moveProjectsToInactive = (projectsToMove: ProjectWithSemesters[]) => {
+  projectsToMove.forEach((project: ProjectWithSemesters) => {
+    const idxInIds = activateProjectsById.indexOf(project.id);
+
+    if (idxInIds === -1) {
+      deactivateProjectsById.push(project.id);
+    } else {
+      activateProjectsById.splice(idxInIds, 1);
+    }
+
+    activeProjects.value = activeProjects.value.filter(activeProject => activeProject.id !== project.id);
+    inactiveProjects.value.push(project);
+  });
+};
+
+const handleMoveAllToActive = () => {
+  moveProjectsToActive([...inactiveProjects.value]);
+  pickListProjects.value = [[], [...activeProjects.value]];
+};
+
+const handleMoveAllToInactive = () => {
+  moveProjectsToInactive([...activeProjects.value]);
+  pickListProjects.value = [[...inactiveProjects.value], []];
+};
 
 const handleSaveProjects = async () => {
   const semesterId = selectedSemester.value?.id;
@@ -206,3 +221,15 @@ const handleSaveProjects = async () => {
   }
 }
 </script>
+
+<style scoped>
+.bulk-action-button {
+  flex: 0 0 auto;
+  min-width: 180px;
+}
+
+:deep(.bulk-action-button .front) {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+</style>

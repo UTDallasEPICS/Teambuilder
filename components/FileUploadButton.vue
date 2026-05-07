@@ -36,6 +36,53 @@ const sanitizeRow = (row: Record<string, any>) => {
 
 const normalizeHeader = (value: unknown) => String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
 
+// Map various column name variations to standard names
+const getColumnMapping = (headers: string[]): Record<string, string> => {
+  const mapping: Record<string, string> = {};
+  const normalized = headers.map(h => normalizeHeader(h));
+
+  // Mapping for standard column names
+  const columnAliases: Record<string, string[]> = {
+    'name': ['name', 'projectname', 'project', 'title', 'projecttitle'],
+    'description': ['description', 'desc', 'projectdescription', 'summary'],
+    'type': ['type', 'projecttype', 'category'],
+    'status': ['status', 'projectstatus', 'state'],
+    'repourl': ['repourl', 'repo', 'repository', 'githuburl', 'github'],
+    'partnername': ['partnername', 'partner', 'organization', 'org', 'company', 'sponsor', 'nonprofitpartner', 'nonprofit'],
+      'contactname': ['contactname', 'contact name', 'contactperson', 'contact'],
+      'contactemail': ['contactemail', 'contact email', 'contactpersonemail'],
+      'partnercontactname': ['partnercontactname', 'projectpartner', 'projectpartnername'],
+      'partnercontactemail': ['partnercontactemail', 'projectpartneremail', 'projectpartneremail1'],
+    'partnercontactname2': ['partnercontactname2', 'projectpartner2', 'projectpartnername2'],
+    'partnercontactemail2': ['partnercontactemail2', 'projectpartneremail2'],
+    'partnerphone': ['partnerphone', 'projectpartnerphone', 'phone'],
+    'partneraddress': ['partneraddress', 'projectpartneraddress', 'address'],
+    'mentorname': ['mentorname', 'mentor'],
+    'mentoremail': ['mentoremail'],
+    'semester': ['semester', 'sem'],
+    'year': ['year'],
+    'projectnumber': ['proj', 'projnum', 'projectnumber', 'projectid'],
+    'meetingday': ['meetingday', 'day', 'meeting', 'meetingtime', 'scheduledday'],
+    // Student columns (for backwards compatibility)
+    'ssoid': ['ssoid', 'sso'],
+    'studentemail': ['studentemail', 'email', 'studentemail'],
+    'netid': ['netid', 'id', 'studentid', 'uid'],
+    'firstname': ['firstname', 'first', 'fname'],
+    'lastname': ['lastname', 'last', 'lname'],
+  };
+
+  normalized.forEach((norm, idx) => {
+    for (const [standard, aliases] of Object.entries(columnAliases)) {
+      if (aliases.includes(norm)) {
+        mapping[headers[idx]] = standard;
+        break;
+      }
+    }
+  });
+
+  return mapping;
+};
+
 const scoreHeaders = (headers: string[]) => {
   let score = 0;
   if (headers.includes('ssoid')) score += 6;
@@ -46,6 +93,9 @@ const scoreHeaders = (headers: string[]) => {
   if (headers.includes('name')) score += 1;
   if (headers.includes('description')) score += 1;
   if (headers.includes('partnername')) score += 1;
+  if (headers.includes('partner')) score += 1;
+  if (headers.includes('meetingday')) score += 1;
+  if (headers.includes('type')) score += 1;
   if (headers.some((h) => h.startsWith('choice'))) score += 4;
   return score;
 };
@@ -81,10 +131,10 @@ const parseWorkbook = async (file: File) => {
   let bestHeaderRowIndex = 0;
   let bestScore = -1;
 
-  for (const sheetName of workbook.SheetNames) {
-    const sheet = workbook.Sheets[sheetName];
-    if (!sheet) continue;
-
+  // Prefer sheet name containing "project" if present to avoid helper sheets
+  const preferredByName = workbook.SheetNames.find((n) => /project/i.test(n));
+  if (preferredByName) {
+    const sheet = workbook.Sheets[preferredByName];
     const matrix = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
       header: 1,
       defval: '',
@@ -94,53 +144,86 @@ const parseWorkbook = async (file: File) => {
 
     const headerRowIndex = findHeaderRowIndex(matrix);
     const headerValues = (matrix[headerRowIndex] ?? []).map(normalizeHeader).filter(Boolean);
-    const score = scoreHeaders(headerValues);
+    bestSheetName = preferredByName;
+    bestHeaderRowIndex = headerRowIndex;
+    bestScore = scoreHeaders(headerValues);
+  } else {
+    for (const sheetName of workbook.SheetNames) {
+      const sheet = workbook.Sheets[sheetName];
+      if (!sheet) continue;
 
-    if (score > bestScore) {
-      bestScore = score;
-      bestSheetName = sheetName;
-      bestHeaderRowIndex = headerRowIndex;
+      const matrix = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
+        header: 1,
+        defval: '',
+        raw: false,
+        blankrows: false,
+      });
+
+      const headerRowIndex = findHeaderRowIndex(matrix);
+      const headerValues = (matrix[headerRowIndex] ?? []).map(normalizeHeader).filter(Boolean);
+      const score = scoreHeaders(headerValues);
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestSheetName = sheetName;
+        bestHeaderRowIndex = headerRowIndex;
+      }
     }
   }
 
   const bestSheet = workbook.Sheets[bestSheetName];
-  const parsed = XLSX.utils.sheet_to_json<Record<string, any>>(bestSheet, {
+  const rawParsed = XLSX.utils.sheet_to_json<Record<string, any>>(bestSheet, {
     range: bestHeaderRowIndex,
     defval: '',
     raw: false,
-  }).map((row) => sanitizeRow(row));
+  });
+
+  // Get the actual header row to build column mapping
+  const headerRow = XLSX.utils.sheet_to_json<unknown[]>(bestSheet, {
+    header: 1,
+    defval: '',
+    raw: false,
+    blankrows: false,
+  })[bestHeaderRowIndex] as string[];
+
+  const columnMapping = getColumnMapping(headerRow || []);
+
+  // Map columns using the mapping and sanitize
+  const parsed = rawParsed.map((row) => {
+    const remappedRow: Record<string, any> = {};
+    
+    for (const [originalKey, value] of Object.entries(row)) {
+      const mappedKey = columnMapping[originalKey] || originalKey;
+      remappedRow[mappedKey] = value;
+    }
+    
+    return sanitizeRow(remappedRow);
+  });
 
   emit('dataParsed', parsed);
   console.log(`Parsed Excel Data (${bestSheetName}):`, parsed);
+  console.log(`Column Mapping Used:`, columnMapping);
 };
 
 const parseCsv = (file: File) => {
   Papa.parse(file, {
     header: true,
     skipEmptyLines: true,
-    /*transform: function(value, header){
-      switch (header){
-        case "id":{
-          return value;
-          break;
-        }
-        case "name":{
-          return value;
-         /*let fullName = value.split(',') 
-          fullName[0] = fullName[0].trim(); //last name
-          fullName[1] = fullName[1].trim(); //first name
-          return fullName;
-          break;
-       }
-        default: {return value;
-          break;
-       }
-      }
-    },*/
     complete: (results) => {
-      const parsed = results.data.map((r: any) => sanitizeRow(r));
+      const columnMapping = getColumnMapping(results.meta.fields || []);
+      
+      const parsed = results.data.map((r: any) => {
+        const remappedRow: Record<string, any> = {};
+        for (const [originalKey, value] of Object.entries(r)) {
+          const mappedKey = columnMapping[originalKey] || originalKey;
+          remappedRow[mappedKey] = value;
+        }
+        return sanitizeRow(remappedRow);
+      });
+      
       emit('dataParsed', parsed);
       console.log('Parsed CSV Data:', parsed);
+      console.log('CSV Column Mapping Used:', columnMapping);
     },
     error: (error) => {
       console.error('Error parsing CSV:', error);

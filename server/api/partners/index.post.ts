@@ -60,19 +60,19 @@ export default defineEventHandler(async (event) => {
         ? await event.context.client.partner.update({
             where: { id: existingPartner.id },
             data: {
-              contactName: partner.contactName,
-              contactEmail: partner.contactEmail
+              contactName: partner.contactName || partner.contactname || 'N/A',
+              contactEmail: partner.contactEmail || partner.contactemail || 'default@example.com'
             }
           })
         : await event.context.client.partner.create({
             data: {
               name: partnerName,
-              contactName: partner.contactName,
-              contactEmail: partner.contactEmail
+              contactName: partner.contactName || partner.contactname || 'N/A',
+              contactEmail: partner.contactEmail || partner.contactemail || 'default@example.com'
             }
           });
 
-      const projectNames = parseProjectNames(partner.projectName ?? partner.projects);
+        const projectNames = parseProjectNames(partner.projectName ?? partner.projects ?? partner.Projects);
       for (const projectName of projectNames) {
         const normalized = normalizeProjectName(projectName);
         if (!normalized) continue;

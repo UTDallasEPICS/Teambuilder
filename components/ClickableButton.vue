@@ -1,12 +1,13 @@
 <template lang="pug">
-button.edge.rounded-xl.cursor-pointer.text-beige.max-w-full.shrink(:class="edgeClass")
-  .front.rounded-xl.embossed.whitespace-nowrap(:class="frontClass") {{ title }}
+button.edge.rounded-xl.cursor-pointer.text-beige.max-w-full.shrink(:class="[edgeClass, compact ? 'compactEdge' : '']")
+  .front.rounded-xl.embossed.whitespace-nowrap(:class="[frontClass, compact ? 'compactFront' : '']") {{ title }}
 </template>
     
 <script setup lang="ts">
 const props = defineProps<{ 
   title: string
   type?: 'success' | 'warning' | 'danger';
+  compact?: boolean;
 }>();
 
 const type = props.type || 'default';
@@ -54,6 +55,17 @@ const frontClass = type + 'Front';
 .successFront {
   background: #004500 !important;
   color: #ffffff !important;
+}
+.compactEdge {
+  width: auto;
+  min-height: 34px;
+  flex: 0 0 auto;
+}
+.compactFront {
+  min-height: 34px;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.8rem;
+  transform: translateY(-3px);
 }
 .dangerEdge {
   background: #7a2e2e !important;

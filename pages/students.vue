@@ -652,7 +652,9 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
 
 <style scoped>
 .cardRows {
-  @apply flex flex-col gap-5
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 .day-tabs {
   display: inline-flex;
@@ -714,14 +716,16 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;
-  @apply text-5xl drop-shadow-sm
+  font-size: 3rem;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 .cardSubTitle {
   text-shadow: 1px 1px 1px #0000008b;
-  @apply text-2xl mr-2
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
 }
 .cardText {
-  @apply text-xl
+  font-size: 1.25rem;
 }
 .overlay {
   position: fixed;
@@ -740,11 +744,17 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   z-index: 99;
 }
 .editBox {
-  @apply text-teal rounded-md bg-beige p-1
+  color: var(--color-teal);
+  border-radius: 0.375rem;
+  background-color: var(--color-beige);
+  padding: 0.25rem;
 }
 /* TODO: move this styling to primevue's tokens in nuxt.config.ts */
 select {
-  @apply bg-beige text-teal rounded-md p-1
+  background-color: var(--color-beige);
+  color: var(--color-teal);
+  border-radius: 0.375rem;
+  padding: 0.25rem;
 }
 
 /* Make DataTable wrapper scrollable horizontally */

@@ -109,6 +109,18 @@ function normalizeProjectKey(input: string): string {
   return normalizeProjectText(input).replace(/\s+/g, '');
 }
 
+function readFirstValue(row: Record<string, any>, keys: string[]): string {
+  for (const key of keys) {
+    const value = row[key];
+    if (value == null) continue;
+
+    const text = String(value).trim();
+    if (text) return text;
+  }
+
+  return '';
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default defineEventHandler(async (event) => {
@@ -121,6 +133,7 @@ export default defineEventHandler(async (event) => {
       : typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'THURSDAY'
         ? 'THURSDAY'
         : null;
+        const allowCreateProjects = getQuery(event).createProjects === 'true';
 
   if (!Array.isArray(rows) || rows.length === 0) {
     throw createError({ statusCode: 400, message: 'Expected a non-empty array of bid rows.' });
@@ -187,25 +200,9 @@ export default defineEventHandler(async (event) => {
     if (projectLookup.has(normalized)) {
       return projectLookup.get(normalized)!;
     }
-
-    // Create new project
-    try {
-      const created = await client.project.create({
-        data: {
-          name: projectName,
-          description: projectName,
-          type: 'SOFTWARE',
-          status: 'NEW',
-          repoURL: '',
-          partnerId: defaultPartner.id,
-        },
-      });
-      projectLookup.set(normalized, created.id);
-      return created.id;
-    } catch (err) {
-      console.error(`Failed to create project "${projectName}":`, err);
-      return null;
-    }
+    // Do NOT auto-create projects here. Return null so caller can
+    // record the unmatched choice and avoid creating spurious entries.
+    return null;
   };
 
   const aliasLookup = new Map<string, string>([
@@ -256,19 +253,19 @@ export default defineEventHandler(async (event) => {
   const unmatchedProjects: string[] = [];
 
   for (const row of rows) {
-    const netID = row['SSO ID']?.trim();
+    const netID = readFirstValue(row, ['SSO ID', 'ssoid', 'netID', 'netid', 'id']);
     if (!netID) {
-      skippedStudents.push(row['Student Name'] ?? '(no name)');
+      skippedStudents.push(readFirstValue(row, ['Student Name', 'student name', 'name', 'fullName']) || '(no name)');
       continue;
     }
 
     // ── Build student record ─────────────────────────────────────────────────
     const { firstName, lastName } = parseStudentName(row);
-    const email     = row['Student Email']?.trim() || null;
-    const yearRaw   = (row['Classification'] ?? '').trim().toLowerCase();
+    const email     = readFirstValue(row, ['Student Email', 'student email', 'studentemail']) || null;
+    const yearRaw   = readFirstValue(row, ['Classification', 'classification']).toLowerCase();
     const year: Year = YEAR_MAP[yearRaw] ?? 'FRESHMAN';
-    const cls       = extractClass(row['Enrollment'] ?? '');
-    const major     = extractMajor(row['School and Major'] ?? '');
+    const cls       = extractClass(readFirstValue(row, ['Enrollment', 'enrollment']));
+    const major     = extractMajor(readFirstValue(row, ['School and Major', 'school and major', 'major']));
     const status    = 'ACTIVE' as const;
 
     const updateData: any = { firstName, lastName, email, year, class: cls, major, status };
@@ -283,7 +280,7 @@ export default defineEventHandler(async (event) => {
       status,
       github: null,
       discord: null,
-      enrollment: row['Enrollment']?.trim() ?? null,
+      enrollment: readFirstValue(row, ['Enrollment', 'enrollment']) || null,
     };
 
     if (meetingDay) {
@@ -299,7 +296,7 @@ export default defineEventHandler(async (event) => {
     studentsImported++;
 
     // ── Process choices ──────────────────────────────────────────────────────
-    const choiceKeys = ['Choice 1','Choice 2','Choice 3','Choice 4','Choice 5','Choice 6'];
+    const choiceKeys = ['Choice 1','Choice 2','Choice 3','Choice 4','Choice 5','Choice 6', 'choice1', 'choice2', 'choice3', 'choice4', 'choice5', 'choice6'];
     const choicesToCreate: { rank: number; studentId: string; projectId: string }[] = [];
 
     // Re-fetch the student to get their id
@@ -313,7 +310,7 @@ export default defineEventHandler(async (event) => {
     }
 
     for (let i = 0; i < choiceKeys.length; i++) {
-      const raw = row[choiceKeys[i]]?.trim();
+      const raw = readFirstValue(row, [choiceKeys[i]]);
       if (!raw) continue;
 
       const projectId = await findOrCreateProjectId(raw);
