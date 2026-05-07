@@ -24,6 +24,18 @@
         template(v-else)
           FileUploadButton.control-fill(title="Upload Thursday Projects (Merge)" @dataParsed="handleParsedThursday")
           FileUploadButton.control-fill(title="Replace Thursday Projects with CSV" @dataParsed="handleParsedReplaceThursday")
+        // view by semester
+        span.text-xs.font-semibold.text-white View by:
+        Dropdown.view-semester-dropdown(
+          class="control-fixed"
+          v-model="selectedViewSemester"
+          :options="semesters"
+          placeholder="All semesters"
+        )
+          template(#option="slotProps") {{ displaySemester(slotProps.option) }}
+          template(#value="slotProps")
+            div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
+            span(v-else) {{ slotProps.placeholder }}
         ClickableButton.control-fill(title="Clear Entire Database" type="danger" @click="resetDatabase")
         ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
         HelpIcon.control-fixed(:info="helpInfo")
@@ -45,26 +57,47 @@
           @click="setDayTab('THURSDAY')"
         ) Thursday
 
+      .bulk-actions(v-if="selectedProjects.length > 0")
+        .flex.flex-wrap.items-center.gap-4.p-4.rounded.mb-4.orange-card
+          span.font-semibold.text-white {{ selectedProjects.length }} project(s) selected
+          Dropdown.w-40(
+            v-model="bulkMeetingDay"
+            :options="meetingDayOptions"
+            placeholder="Select day..."
+          )
+            template(#option="slotProps") {{ formatMeetingDay(slotProps.option) }}
+            template(#value="slotProps")
+              div(v-if="slotProps.value") {{ formatMeetingDay(slotProps.value) }}
+              span(v-else) Select day...
+          ClickableButton(title="Assign Day" type="success" @click="handleBulkAssignDay" :disabled="!bulkMeetingDay")
+          Dropdown.w-40(
+            v-model="bulkProjectType"
+            :options="types"
+            placeholder="Select type..."
+          )
+            template(#option="slotProps") {{ capitalizeFirst(slotProps.option) }}
+            template(#value="slotProps")
+              div(v-if="slotProps.value") {{ capitalizeFirst(slotProps.value) }}
+              span(v-else) Select type...
+          ClickableButton(title="Assign Type" type="success" @click="handleBulkAssignType" :disabled="!bulkProjectType")
+          ClickableButton(title="Clear Selection" type="secondary" @click="selectedProjects = []")
+
       DataTable.beige-card.overflow-hidden(
-        :value="projects"
+        :value="visibleProjects"
         v-model:filters="filters"
-        selectionMode="single"
-        v-model:selection="selectedProject"
         dataKey="id"
         filterDisplay="row"
         :paginator="true"
         :rows="10"
         :rowsPerPageOptions="[5,10, 20, 25]"
         class
+        :rowClass="rowClass"
+        @row-click="handleRowClick"
       )
         Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText.text-black(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by name" :showClear="true")
-        Column(field="description" header="Description" :showFilterMenu="false" :sortable="true")
-          template(#filter="{ filterModel, filterCallback }")
-            InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by description" :showClear="true")
-        // hide this column on small screens (partner is lower priority)
-        Column(field="partnerName" header="Partner" :showFilterMenu="false" class="hidden lg:table-cell" :sortable="true")
+        Column(field="partnerName" header="Partner" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
             InputText(v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Search by partner" :showClear="true")
         Column(field="meetingDay" header="Day" :showFilterMenu="false" :sortable="true" style="width: 160px")
@@ -93,10 +126,16 @@
 
         Column(header="Actions" :showFilterMenu="false" :sortable="false" style="width: 110px" headerStyle="white-space: nowrap; min-width: 110px;" bodyStyle="min-width: 110px;")
           template(#body="{ data }")
-            .flex.justify-center
+            .flex.justify-center.gap-2
+              Button.p-button-rounded.p-button-sm(
+                :icon="isProjectSelected(data) ? 'pi pi-check' : 'pi pi-square'"
+                :class="isProjectSelected(data) ? 'p-button-success' : 'p-button-secondary'"
+                @click.stop="handleToggleSelect(data)"
+                v-tooltip.top="isProjectSelected(data) ? 'Deselect' : 'Select for bulk'"
+              )
               Button.p-button-rounded.p-button-danger.p-button-sm(
                 icon="pi pi-trash" 
-                @click="handleDeleteProject(data)"
+                @click.stop="handleDeleteProject(data)"
                 v-tooltip.top="'Delete project'"
               )
 
@@ -174,6 +213,8 @@ type DayTab = 'ALL' | 'WEDNESDAY' | 'THURSDAY';
 type MeetingDay = 'WEDNESDAY' | 'THURSDAY' | 'BOTH';
 const selectedDayTab = ref<DayTab>('ALL');
 
+const selectedViewSemester = ref<Semester | null>(null);
+
 const setDayTab = (tab: DayTab) => {
   selectedDayTab.value = tab;
   if (tab === 'ALL') {
@@ -202,14 +243,19 @@ onMounted(async () => {
 });
 
 const visibleProjects = computed(() => {
-  if (selectedDayTab.value === 'ALL') return projects.value;
+  // start with projects filtered by selected semester (if any)
+  const base = selectedViewSemester.value
+    ? projects.value.filter(p => Array.isArray(p.semesters) && p.semesters.some(s => s.id === selectedViewSemester.value!.id))
+    : projects.value;
+
+  if (selectedDayTab.value === 'ALL') return base;
   if (selectedDayTab.value === 'THURSDAY') {
-    return projects.value.filter(project => {
+    return base.filter(project => {
       const day = getMeetingDay(project);
       return day === 'THURSDAY' || day === 'BOTH' || day == null;
     });
   }
-  return projects.value.filter(project => {
+  return base.filter(project => {
     const day = getMeetingDay(project);
     return day === 'WEDNESDAY' || day === 'BOTH';
   });
@@ -222,6 +268,9 @@ const activeTabLabel = computed(() => {
 });
 
 const selectedProject = ref<ProjectWithSemestersAndPartner | null>(null);
+const selectedProjects = ref<ProjectWithSemestersAndPartner[]>([]);
+const bulkMeetingDay = ref<MeetingDay | null>(null);
+const bulkProjectType = ref<ProjectType | null>(null);
 const selectedProjectSemesters = computed(() => stringifySemesters(selectedProject.value?.semesters));
 const editedProject = ref<ProjectWithSemestersAndPartner | null>(null);
 const isEditing = ref(false);
@@ -278,6 +327,26 @@ const normalizeMeetingDay = (rawValue: unknown, forcedDay?: 'WEDNESDAY' | 'THURS
   return null;
 };
 
+const normalizeSemesterSeason = (value: unknown): Semester['season'] | null => {
+  if (typeof value !== 'string') return null;
+  const cleaned = value.trim().toUpperCase().replace(/[^A-Z]/g, '');
+  if (!cleaned) return null;
+  if (cleaned === 'SPRING' || cleaned.startsWith('SP')) return 'SPRING';
+  if (cleaned === 'SUMMER' || cleaned.startsWith('SU')) return 'SUMMER';
+  if (cleaned === 'FALL' || cleaned.startsWith('FA') || cleaned === 'F') return 'FALL';
+  return null;
+};
+
+const inferSemesterFromRow = (row: Record<string, any>) => {
+  // FileUploadButton normalizes semester field names to 'semester' and 'year'
+  const season = normalizeSemesterSeason(row.semester);
+  const yearValue = Number.parseInt(String(row.year ?? '').trim(), 10);
+
+  if (!season || Number.isNaN(yearValue)) return null;
+
+  return semesters.value.find((semester) => semester.season === season && semester.year === yearValue) ?? null;
+};
+
 const formatMeetingDay = (day: MeetingDay | null | undefined) => {
   if (day === 'WEDNESDAY') return 'Wednesday';
   if (day === 'THURSDAY') return 'Thursday';
@@ -292,6 +361,26 @@ const formatMeetingDayFilter = (days: MeetingDay[] | undefined) => {
 };
 
 const selectProject = (project: ProjectWithSemestersAndPartner) => { selectedProject.value = project; };
+const handleViewProject = (project: ProjectWithSemestersAndPartner) => {
+  selectedProject.value = project;
+  editedProject.value = { ...project };
+};
+const handleRowClick = (event: any) => {
+  handleViewProject(event.data);
+};
+const isProjectSelected = (project: ProjectWithSemestersAndPartner): boolean => {
+  return selectedProjects.value.some(p => p.id === project.id);
+};
+const handleToggleSelect = (project: ProjectWithSemestersAndPartner) => {
+  if (isProjectSelected(project)) {
+    selectedProjects.value = selectedProjects.value.filter(p => p.id !== project.id);
+  } else {
+    selectedProjects.value = [...selectedProjects.value, project];
+  }
+};
+const rowClass = (data: ProjectWithSemestersAndPartner) => {
+  return isProjectSelected(data) ? 'selected-row' : '';
+};
 const closeModal = () => { selectedProject.value = null; isEditing.value = false; };
 
 const handleEdit = () => {
@@ -314,16 +403,117 @@ const handleSave = async () => {
   isEditing.value = false;
 };
 
+const handleBulkAssignDay = async () => {
+  if (!bulkMeetingDay.value || selectedProjects.value.length === 0) return;
+
+  try {
+    await Promise.all(
+      selectedProjects.value.map(project =>
+        $fetch(`/api/projects/${project.id}`, {
+          method: 'PUT',
+          body: {
+            ...project,
+            meetingDay: bulkMeetingDay.value,
+            semesters: undefined,
+            partnerName: undefined,
+          }
+        })
+      )
+    );
+
+    // Update local state
+    selectedProjects.value.forEach(selectedProj => {
+      const idx = projects.value.findIndex(p => p.id === selectedProj.id);
+      if (idx >= 0) {
+        projects.value[idx].meetingDay = bulkMeetingDay.value;
+      }
+    });
+
+    successToast(`Updated ${selectedProjects.value.length} project(s) to ${formatMeetingDay(bulkMeetingDay.value)}`);
+    selectedProjects.value = [];
+    bulkMeetingDay.value = null;
+  } catch (error) {
+    console.error('Error updating projects:', error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    errorToast(`Failed to update projects: ${errorMsg}`);
+  }
+};
+
+const handleBulkAssignType = async () => {
+  if (!bulkProjectType.value || selectedProjects.value.length === 0) return;
+  const nextType = bulkProjectType.value;
+
+  try {
+    await Promise.all(
+      selectedProjects.value.map(project =>
+        $fetch(`/api/projects/${project.id}`, {
+          method: 'PUT',
+          body: {
+            ...project,
+            type: nextType,
+            semesters: undefined,
+            partnerName: undefined,
+          }
+        })
+      )
+    );
+
+    selectedProjects.value.forEach(selectedProj => {
+      const idx = projects.value.findIndex(p => p.id === selectedProj.id);
+      if (idx >= 0) {
+        projects.value[idx].type = nextType;
+      }
+    });
+
+    successToast(`Updated ${selectedProjects.value.length} project(s) to ${capitalizeFirst(nextType)}`);
+    selectedProjects.value = [];
+    bulkProjectType.value = null;
+  } catch (error) {
+    console.error('Error updating project types:', error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    errorToast(`Failed to update project types: ${errorMsg}`);
+  }
+};
+
 const mapProjectsFromCsv = (parsed: any[], forcedDay?: 'WEDNESDAY' | 'THURSDAY') => (
-  parsed.map((proj: any) => ({
-    name: proj.name || '',
-    description: proj.description || '',
-    type: proj.type?.toUpperCase() || 'SOFTWARE',
-    status: proj.status?.toUpperCase() || 'NEW',
-    meetingDay: normalizeMeetingDay(proj.meetingDay ?? proj.day, forcedDay),
-    repoURL: proj.repoURL || '',
-    partnerName: proj.partnerName || ''
-  }))
+  parsed.map((proj: any) => {
+    // FileUploadButton normalizes column headers to standardized names
+    const partnerName = proj.partnername || '';
+    const partnerContactName = proj.partnercontactname || '';
+    const partnerContactEmail = proj.partnercontactemail || '';
+    const partnerContactName2 = proj.partnercontactname2 || '';
+    const partnerContactEmail2 = proj.partnercontactemail2 || '';
+    const partnerPhone = proj.partnerphone || '';
+    const partnerAddress = proj.partneraddress || '';
+    const mentorName = proj.mentorname || '';
+    const mentorEmail = proj.mentoremail || '';
+
+    const semester = inferSemesterFromRow(proj);
+
+    const mentorDetails = [
+      mentorName ? `Mentor: ${mentorName}` : '',
+      mentorEmail ? `Mentor Email: ${mentorEmail}` : '',
+    ].filter(Boolean);
+
+    return {
+      name: proj.name || proj.title || '',
+      description: proj.description || mentorDetails.join(' | '),
+      type: proj.type?.toUpperCase() || 'SOFTWARE',
+      status: proj.status?.toUpperCase() || 'NEW',
+      meetingDay: normalizeMeetingDay(proj.meetingDay ?? proj.day, forcedDay),
+      repoURL: proj.repoURL || '',
+      partnerName,
+      partnerContactName,
+      partnerContactEmail,
+      partnerContactName2,
+      partnerContactEmail2,
+      partnerPhone,
+      partnerAddress,
+      mentorName,
+      mentorEmail,
+      inferredSemesterId: semester?.id ?? null,
+    };
+  })
 );
 
 const refreshProjects = async () => {
@@ -333,23 +523,43 @@ const refreshProjects = async () => {
 const handleParsed = async (parsed: any, forcedDay?: 'WEDNESDAY' | 'THURSDAY') => {
   console.log('Parsed CSV:', parsed);
   const formattedProjects = mapProjectsFromCsv(parsed, forcedDay);
+  const inferredSemesterId = formattedProjects.find((project) => project.inferredSemesterId)?.inferredSemesterId ?? null;
+  const semesterId = selectedUploadSemester.value?.id ?? inferredSemesterId;
 
   try {
-    await $fetch('/api/projects', {
+    const response = await $fetch('/api/projects', {
       method: 'POST',
       body: {
         projects: formattedProjects,
-        semesterId: selectedUploadSemester.value?.id ?? null,
+        semesterId,
       }
     });
 
     await refreshProjects();
+    
+    // Handle new response format with successes and failures
+    if (response?.successful && response?.failed) {
+      const successCount = response.successful.length;
+      const failCount = response.failed.length;
+      
+      console.log(`Upload results: ${successCount} successful, ${failCount} failed`);
+      
+      if (failCount > 0) {
+        const failedNames = response.failed.map((f: any) => `• ${f.name}: ${f.error}`).join('\n');
+        errorToast(`Uploaded with errors: ${successCount} succeeded, ${failCount} failed.\n\n${failedNames}`);
+      } else {
+        successToast(`Projects uploaded successfully! (${successCount} projects)`);
+      }
+    } else {
+      successToast('Projects uploaded successfully.');
+    }
+    
     console.log('Projects saved to database successfully!');
     console.log('Projects table updated! Total projects:', projects.value.length);
-    successToast('Projects uploaded successfully.');
   } catch (error) {
     console.error('Error saving projects to database:', error);
-    errorToast('Failed to upload projects.');
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    errorToast(`Failed to upload projects: ${errorMsg}`);
   }
 };
 
@@ -357,6 +567,8 @@ const handleParsedReplace = async (parsed: any, forcedDay?: 'WEDNESDAY' | 'THURS
   console.log('Parsed CSV (replace):', parsed);
 
   const formattedProjects = mapProjectsFromCsv(parsed, forcedDay);
+  const inferredSemesterId = formattedProjects.find((project) => project.inferredSemesterId)?.inferredSemesterId ?? null;
+  const semesterId = selectedUploadSemester.value?.id ?? inferredSemesterId;
 
   try {
     if (forcedDay) {
@@ -388,20 +600,38 @@ const handleParsedReplace = async (parsed: any, forcedDay?: 'WEDNESDAY' | 'THURS
       });
     }
 
-    await $fetch('/api/projects', {
+    const response = await $fetch('/api/projects', {
       method: 'POST',
       body: {
         projects: formattedProjects,
-        semesterId: selectedUploadSemester.value?.id ?? null,
+        semesterId,
       }
     });
 
     await refreshProjects();
+    
+    // Handle new response format with successes and failures
+    if (response?.successful && response?.failed) {
+      const successCount = response.successful.length;
+      const failCount = response.failed.length;
+      
+      console.log(`Replace results: ${successCount} successful, ${failCount} failed`);
+      
+      if (failCount > 0) {
+        const failedNames = response.failed.map((f: any) => `• ${f.name}: ${f.error}`).join('\n');
+        errorToast(`Replaced with errors: ${successCount} succeeded, ${failCount} failed.\n\n${failedNames}`);
+      } else {
+        successToast(`Projects replaced successfully! (${successCount} projects)`);
+      }
+    } else {
+      successToast('Projects replaced successfully.');
+    }
+    
     console.log('Projects replaced successfully!');
-    successToast('Projects replaced successfully.');
   } catch (error) {
     console.error('Error replacing projects from CSV:', error);
-    errorToast('Failed to replace projects from CSV.');
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    errorToast(`Failed to replace projects: ${errorMsg}`);
   }
 };
 
@@ -615,5 +845,18 @@ select { background-color:#f5f5dc; color:#14b8a6; border-radius:0.375rem; paddin
   padding: 1.25rem !important; /* inner inset padding */
   box-shadow: none;
   width: 100%;
+}
+
+.bulk-actions {
+  background: var(--color-utd-orange) !important;
+}
+
+:deep(.selected-row) {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+  border-left: 4px solid rgba(34, 197, 94, 0.8);
+}
+
+:deep(.selected-row:hover) {
+  background-color: rgba(34, 197, 94, 0.25) !important;
 }
 </style>

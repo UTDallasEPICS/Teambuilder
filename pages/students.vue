@@ -255,9 +255,72 @@ onMounted(async () => { //adds dummy data, students.value is what holds frontend
   studentCount.value = students.value.length; 
 });
 
+const normalizeCsvKey = (key: string) => key.replace(/^\uFEFF/, '').trim().toLowerCase();
+
 const isBidResponseRow = (row: Record<string, any>) => {
-  const keys = Object.keys(row).map((key) => key.trim().toLowerCase());
-  return keys.includes('sso id') || keys.includes('student email') || keys.some((key) => key.startsWith('choice '));
+  const keys = Object.keys(row).map(normalizeCsvKey);
+  const hasSso = keys.some((key) => key.includes('sso id'));
+  const hasStudentEmail = keys.some((key) => key.includes('student email'));
+  const hasChoices = keys.some((key) => /^choice\s*\d+/.test(key));
+  return hasSso || hasStudentEmail || hasChoices;
+};
+
+const parseStudentName = (rawValue: unknown) => {
+  const value = String(rawValue ?? '').trim();
+  if (!value) return { firstName: '', lastName: '' };
+
+  // Thursday workbook stores names in one column as "Last, First".
+  if (value.includes(',')) {
+    const [lastName = '', firstName = ''] = value.split(',').map((part) => part.trim());
+    return { firstName, lastName };
+  }
+
+  const parts = value.split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) {
+    return { firstName: value, lastName: '' };
+  }
+
+  return {
+    firstName: parts.slice(1).join(' '),
+    lastName: parts[0],
+  };
+};
+
+const toStudentUploadRow = (stu: any, forcedDay?: TabMeetingDay) => {
+  // Handle both CSV formats:
+  // 1) Student roster: netID, firstName, lastName
+  // 2) Legacy roster: id, name ("lastName, firstName")
+  // 3) Bid response fallback: SSO ID, Student Name, blank last-name column
+  const netID = String(stu?.netID ?? stu?.id ?? stu?.['SSO ID'] ?? '').trim();
+
+  const nameCandidate =
+    stu?.firstName || stu?.lastName
+      ? ''
+      : stu?.name ?? stu?.['Student Name'] ?? stu?.Name ?? stu?.['Full Name'] ?? stu?.['Student'] ?? '';
+
+  const parsedName = parseStudentName(nameCandidate);
+
+  if (stu?.firstName || stu?.lastName) {
+    parsedName.firstName = String(stu?.firstName ?? '').trim();
+    parsedName.lastName = String(stu?.lastName ?? '').trim();
+  } else if (!parsedName.firstName && !parsedName.lastName && (stu?.['Student Name'] || stu?.[''])) {
+    parsedName.firstName = String(stu?.['Student Name'] ?? '').trim();
+    parsedName.lastName = String(stu?.[''] ?? '').trim();
+  }
+
+  return {
+    netID,
+    firstName: parsedName.firstName,
+    lastName: parsedName.lastName,
+    email: null,
+    github: null,
+    discord: null,
+    major: String(stu?.major ?? 'Other').trim() || 'Other',
+    year: stu?.year || stu?.seniority || 'FRESHMAN',
+    class: String(stu?.class ?? '2200').trim() || '2200',
+    meetingDay: normalizeMeetingDay(stu?.meetingDay ?? stu?.day ?? stu?.meeting_day, forcedDay),
+    status: stu?.status || null,
+  };
 };
 
 const uploadBidResponses = async (parsed: any, forcedDay?: TabMeetingDay) => {
@@ -294,44 +357,19 @@ const uploadBidResponses = async (parsed: any, forcedDay?: TabMeetingDay) => {
 };
 
 const handleParsed = async (parsed: any, forcedDay?: TabMeetingDay) => {
-  if (Array.isArray(parsed) && parsed.length > 0 && isBidResponseRow(parsed[0])) {
+  if (Array.isArray(parsed) && parsed.length > 0 && parsed.slice(0, 5).some((row) => isBidResponseRow(row))) {
     await uploadBidResponses(parsed, forcedDay);
     return;
   }
 
-  const formattedStudents = parsed.map((stu : any) =>{
-    // Handle both CSV formats:
-    // 1. New format: netID, firstName, lastName (separate fields)
-    // 2. Old format: id, name (comma-separated "lastName, firstName")
-    let firstName, lastName, netID;
-    
-    if (stu.firstName && stu.lastName) {
-      // New CSV format with separate first/last names
-      firstName = stu.firstName;
-      lastName = stu.lastName;
-      netID = stu.netID;
-    } else if (stu.name) {
-      // Old CSV format with combined name
-      const[parsedLastName, parsedFirstName] = stu.name.split(', ');
-      firstName = parsedFirstName;
-      lastName = parsedLastName;
-      netID = stu.id;
-    }
+  const formattedStudents = parsed
+    .map((stu: any) => toStudentUploadRow(stu, forcedDay))
+    .filter((student: any) => !!student.netID);
 
-    return{
-      netID : netID,
-      firstName : firstName,
-      lastName: lastName,
-      email: null,
-      github: null,
-      discord: null,
-      major: stu.major,
-      year: stu.year || stu.seniority, // Support both 'year' and 'seniority' fields
-      class: stu.class,
-      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
-      status: stu.status || null
-    }
-  });
+  if (formattedStudents.length === 0) {
+    errorToast('No valid students found in CSV. Expected netID (or SSO ID).');
+    return;
+  }
   
   // Merge students (API upserts by netID)
   try {
@@ -355,34 +393,14 @@ const handleParsed = async (parsed: any, forcedDay?: TabMeetingDay) => {
 };
 
 const handleParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
-  const formattedStudents = parsed.map((stu : any) => {
-    let firstName, lastName, netID;
+  const formattedStudents = parsed
+    .map((stu: any) => toStudentUploadRow(stu, forcedDay))
+    .filter((student: any) => !!student.netID);
 
-    if (stu.firstName && stu.lastName) {
-      firstName = stu.firstName;
-      lastName = stu.lastName;
-      netID = stu.netID;
-    } else if (stu.name) {
-      const [parsedLastName, parsedFirstName] = stu.name.split(', ');
-      firstName = parsedFirstName;
-      lastName = parsedLastName;
-      netID = stu.id;
-    }
-
-    return {
-      netID : netID,
-      firstName : firstName,
-      lastName: lastName,
-      email: null,
-      github: null,
-      discord: null,
-      major: stu.major,
-      year: stu.year || stu.seniority,
-      class: stu.class,
-      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
-      status: stu.status || null
-    }
-  });
+  if (formattedStudents.length === 0) {
+    errorToast('No valid students found in CSV. Expected netID (or SSO ID).');
+    return;
+  }
 
   try {
     await $fetch('/api/students', {
@@ -634,7 +652,9 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
 
 <style scoped>
 .cardRows {
-  @apply flex flex-col gap-5
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 .day-tabs {
   display: inline-flex;
@@ -696,14 +716,16 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;
-  @apply text-5xl drop-shadow-sm
+  font-size: 3rem;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 .cardSubTitle {
   text-shadow: 1px 1px 1px #0000008b;
-  @apply text-2xl mr-2
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
 }
 .cardText {
-  @apply text-xl
+  font-size: 1.25rem;
 }
 .overlay {
   position: fixed;
@@ -722,11 +744,17 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   z-index: 99;
 }
 .editBox {
-  @apply text-teal rounded-md bg-beige p-1
+  color: var(--color-teal);
+  border-radius: 0.375rem;
+  background-color: var(--color-beige);
+  padding: 0.25rem;
 }
 /* TODO: move this styling to primevue's tokens in nuxt.config.ts */
 select {
-  @apply bg-beige text-teal rounded-md p-1
+  background-color: var(--color-beige);
+  color: var(--color-teal);
+  border-radius: 0.375rem;
+  padding: 0.25rem;
 }
 
 /* Make DataTable wrapper scrollable horizontally */

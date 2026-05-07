@@ -105,14 +105,17 @@
     useHead({ title: 'Partners' });
 
   const { successToast, errorToast } = usePrimeVueToast();
-  const partners = ref<Partner[]>([]);
+  
+  type PartnerWithProjects = Partner & { projectName: string };
+  
+  const partners = ref<PartnerWithProjects[]>([]);
   const partnerCount = ref(0);
   const semesters = ref<Semester[]>([]);
   const selectedUploadSemester = ref<Semester | null>(null);
   
   onMounted(async () => {
     const [partnersResponse, semestersResponse] = await Promise.all([
-      $fetch<Partner[]>('api/partners'),
+      $fetch<PartnerWithProjects[]>('api/partners'),
       $fetch<Semester[]>('api/semesters'),
     ]);
 
@@ -122,7 +125,7 @@
     partnerCount.value = partners.value.length;
   });
   
-  const handleParsed = async (uploadedPartners: Partner[]) => {
+  const handleParsed = async (uploadedPartners: any[]) => {
     // Merge uploaded partners with existing records
     try {
       // Save uploaded partners (API upserts by partner name)
@@ -135,7 +138,7 @@
       });
       
       // Refresh from database to get the saved data
-      partners.value = await $fetch<Partner[]>('/api/partners');
+      partners.value = await $fetch<PartnerWithProjects[]>('/api/partners');
       partnerCount.value = partners.value.length;
       console.log('Partners saved to database successfully!');
     } catch (error) {
@@ -143,7 +146,7 @@
     }
   };
 
-  const handleParsedReplace = async (uploadedPartners: Partner[]) => {
+  const handleParsedReplace = async (uploadedPartners: any[]) => {
     try {
       await $fetch('/api/partners', {
         method: 'DELETE'
@@ -157,7 +160,7 @@
         }
       });
 
-      partners.value = await $fetch<Partner[]>('/api/partners');
+      partners.value = await $fetch<PartnerWithProjects[]>('/api/partners');
       partnerCount.value = partners.value.length;
       console.log('Partners replaced from CSV successfully!');
     } catch (error) {
@@ -230,8 +233,8 @@
     }
   };
   
-  const selectedPartner = ref<Partner | null>(null);
-  const editedPartner = ref<Partner | null>(null);
+  const selectedPartner = ref<PartnerWithProjects | null>(null);
+  const editedPartner = ref<PartnerWithProjects | null>(null);
   const isEditing = ref(false);
   
   const filters = ref({
