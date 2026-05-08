@@ -88,7 +88,7 @@ function buildTotalConfig(chartData, chartType) {
   } else if (chartType === 'Combined bar and line') {
     config.type = 'bar'
     config.data.datasets = [
-      ...datasets,
+      ...datasets.map(d => ({ ...d, order: 2 })),
       ...datasets.map(d => ({ ...d, type: 'line', borderWidth: 2, fill: false, tension: 0.4, order: 1 }))
     ]
   }
@@ -117,23 +117,37 @@ function buildCombinedCourseConfig(chartData, chartType, selectedCategories, isG
   const xValues = Object.keys(combinedData)
   const isPercentage = metricType === 'Percentages'
  
+  const baseDatasets = selectedCategories.map(cat => ({
+    label: cat,
+    data: xValues.map(key => {
+      const d = combinedData[key]
+      const val = (d.data2200[cat] || 0) + (d.data3200[cat] || 0)
+      const total = d.total2200 + d.total3200
+      return isPercentage ? (val / total) * 100 : val
+    }),
+    backgroundColor: getColor(cat, isGenderMode),
+    borderColor: getColor(cat, isGenderMode),
+    fill: false,
+    tension: chartType === 'Line' ? 0.4 : undefined
+  }))
+
+  let resolvedType = 'bar'
+  let resolvedDatasets = baseDatasets
+  if (chartType === 'Line') { resolvedType = 'line' }
+  else if (chartType === 'Pie') { resolvedType = 'pie' }
+  else if (chartType === 'Combined bar and line') {
+    resolvedType = 'bar'
+    resolvedDatasets = [
+      ...baseDatasets.map(d => ({ ...d, order: 2 })),
+      ...baseDatasets.map(d => ({ ...d, type: 'line', borderWidth: 2, fill: false, tension: 0.4, order: 1 }))
+    ]
+  }
+
   const config = {
-    type: chartType === 'Bar' ? 'bar' : chartType.toLowerCase(),
+    type: resolvedType,
     data: {
       labels: xValues,
-      datasets: selectedCategories.map(cat => ({
-        label: cat,
-        data: xValues.map(key => {
-          const d = combinedData[key]
-          const val = (d.data2200[cat] || 0) + (d.data3200[cat] || 0)
-          const total = d.total2200 + d.total3200
-          return isPercentage ? (val / total) * 100 : val
-        }),
-        backgroundColor: getColor(cat, isGenderMode),
-        borderColor: getColor(cat, isGenderMode),
-        fill: false,
-        tension: chartType === 'Line' ? 0.4 : undefined
-      }))
+      datasets: resolvedDatasets
     },
     options: {
       responsive: true,
@@ -180,20 +194,34 @@ function buildDemographicConfig(chartData, chartType, selectedCategories, isGend
   const isPercentage = metricType === 'Percentages'
   const xValues = chartData.map(i => `${i.Name}-${i.Course}`)
  
+  const baseDatasets = selectedCategories.map(cat => ({
+    label: cat,
+    data: chartData.map(item =>
+      isPercentage ? (item[cat] / item.Total) * 100 : item[cat]
+    ),
+    backgroundColor: getColor(cat, isGenderMode),
+    borderColor: getColor(cat, isGenderMode),
+    fill: false,
+    tension: chartType === 'Line' ? 0.4 : undefined
+  }))
+
+  let resolvedType = 'bar'
+  let resolvedDatasets = baseDatasets
+  if (chartType === 'Line') { resolvedType = 'line' }
+  else if (chartType === 'Pie') { resolvedType = 'pie' }
+  else if (chartType === 'Combined bar and line') {
+    resolvedType = 'bar'
+    resolvedDatasets = [
+      ...baseDatasets.map(d => ({ ...d, order: 2 })),
+      ...baseDatasets.map(d => ({ ...d, type: 'line', borderWidth: 2, fill: false, tension: 0.4, order: 1 }))
+    ]
+  }
+
   const config = {
-    type: chartType === 'Bar' ? 'bar' : chartType.toLowerCase(),
+    type: resolvedType,
     data: {
       labels: xValues,
-      datasets: selectedCategories.map(cat => ({
-        label: cat,
-        data: chartData.map(item =>
-          isPercentage ? (item[cat] / item.Total) * 100 : item[cat]
-        ),
-        backgroundColor: getColor(cat, isGenderMode),
-        borderColor: getColor(cat, isGenderMode),
-        fill: false,
-        tension: chartType === 'Line' ? 0.4 : undefined
-      }))
+      datasets: resolvedDatasets
     },
     options: {
       responsive: true,
@@ -267,7 +295,7 @@ export function useChart() {
     const isGenderMode = selectedGenders?.length > 0
     const selectedCategories = isGenderMode ? selectedGenders : selectedEthnicities
     const isTotalView = !selectedGenders?.length && !selectedEthnicities?.length
-    const isBothCourses = selectedCourses.includes('2200') && selectedCourses.includes('3200')
+    const isBothCourses = (selectedCourses ?? []).includes('2200') && (selectedCourses ?? []).includes('3200')
  
     let config
  
