@@ -17,7 +17,7 @@ services:
       - .env
     volumes:
       # Persist the SQLite database across container restarts
-      - db_data:/prisma
+      - db_data:/app/prisma
     restart: unless-stopped
 
 volumes:

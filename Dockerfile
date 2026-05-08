@@ -4,18 +4,20 @@ FROM node:20-slim AS builder
 # 1. Install OpenSSL (Required by Prisma for the build step)
 RUN apt-get update -y && apt-get install -y openssl
 
-COPY . ./
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV CI=true
-ENV PRISMA_DB_URL="file:./dev.db"
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm i -g pnpm
+
+WORKDIR /app
+COPY . ./
 RUN pnpm i --shamefully-hoist
 RUN rm -rf .prisma/node_modules/.prisma/node_modules/@prisma/engines || true
 RUN rm -rf node_modules/.prisma || true
 RUN mv tsconfig.json tsconfig.json.bak
 RUN pnpm prisma generate
+
 RUN mv tsconfig.json.bak tsconfig.json
 RUN pnpm run build
 
@@ -28,18 +30,30 @@ RUN apt-get update -y && \
     apt-get install -y openssl python3 python3-pip python-is-python3 && \
     pip3 install ortools --break-system-packages
 
-# Copy stuff from build container to ensure we have prisma and everything it needs
-COPY --from=builder /.output /
-COPY --from=builder /package.json /
-COPY --from=builder /pnpm-lock.yaml /
-COPY --from=builder /prisma /prisma
-COPY --from=builder /node_modules /node_modules
-COPY --from=builder /algorithms /algorithms
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN npm i -g pnpm
-COPY ./entrypoint.sh /entrypoint.sh
+
+WORKDIR /app
+
+# Copy stuff from build container to ensure we have prisma and everything it needs
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/algorithms ./algorithms
+COPY --from=builder /app/.output ./.output
+
+# Re-install prod dependencies fresh so pnpm symlinks are native (not broken copies)
+RUN pnpm i --shamefully-hoist
+
+# Copy Prisma generated client from builder (already generated, no need to re-run)
+# COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+COPY ./entrypoint.sh ./entrypoint.sh
 
 # Ensure we can actually run the entrypoint script
-RUN chmod +x /entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+RUN sed -i 's/\r//' ./entrypoint.sh
 EXPOSE 3000
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["node", "./server/index.mjs"]
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["node", "/app/.output/server/index.mjs"]
