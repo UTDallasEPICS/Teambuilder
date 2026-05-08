@@ -10,6 +10,76 @@ import { createRandomTeams } from "~/server/factories/team";
 const prisma = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL })
 
 const main = async () => {
+    // Ensure key users always exist
+    await prisma.user.upsert({
+        where: { email: 'sxt230118@utdallas.edu' },
+        update: {},
+        create: {
+            id: 'admin-001',
+            email: 'sxt230118@utdallas.edu',
+            name: 'Snigdha Tadi',
+            emailVerified: true,
+            role: 'admin',
+            whitelisted: true,
+            removed: false,
+        }
+    });
+
+    await prisma.user.upsert({
+        where: { email: 'amt101000@utdallas.edu' },
+        update: {},
+        create: {
+            id: 'admin-002',
+            email: 'amt101000@utdallas.edu',
+            name: 'Andrea Turcatti',
+            emailVerified: true,
+            role: 'admin',
+            whitelisted: true,
+            removed: false,
+        }
+    });
+
+    await prisma.user.upsert({
+        where: { email: 'bxt230017@utdallas.edu' },
+        update: {},
+        create: {
+            id: 'user-001',
+            email: 'bxt230017@utdallas.edu',
+            name: 'Bhuvi Thiriveedhi',
+            emailVerified: true,
+            role: 'user',
+            whitelisted: true,
+            removed: false,
+        }
+    });
+
+    await prisma.user.upsert({
+        where: { email: 'nxs230112@utdallas.edu' },
+        update: {},
+        create: {
+            id: 'user-002',
+            email: 'nxs230112@utdallas.edu',
+            name: 'Nishanth Srinivasan',
+            emailVerified: true,
+            role: 'user',
+            whitelisted: true,
+            removed: false,
+        }
+    });
+
+    await prisma.user.upsert({
+        where: { email: 'dal825784@utdallas.edu' },
+        update: {},
+        create: {
+            id: 'user-003',
+            email: 'dal825784@utdallas.edu',
+            name: 'Aditya Narayanan',
+            emailVerified: true,
+            role: 'user',
+            whitelisted: true,
+            removed: false,
+        }
+    });
     try {
         const semesters = createSemesters();
         const partners = createRandomPartners(50);

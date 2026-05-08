@@ -38,8 +38,8 @@ div(style="min-height: 100vh; display: flex; align-items: center; justify-conten
     div(v-else style="text-align: center;")
       div(style="margin-bottom: 1rem; padding: 1rem; blackbackground: var(--color-utd-orange); border: 1px solid #e5e7eb; border-radius: 8px;")
         p(style="color: #0f4c2a; font-size: 0.875rem;")
-          | Magic link sent! Check your inbox at
-          strong  {{ email }}
+          | Magic link sent! Check your inbox at 
+          strong {{ email }}
           |  and click the link to sign in.
       button(
         @click="sent = false"

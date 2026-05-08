@@ -39,6 +39,22 @@ export const auth = betterAuth({
   verification: {
     modelName: "baVerification",
   },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          return {
+            data: {
+              ...user,
+              role: "user",
+              whitelisted: false,
+              removed: false,
+            }
+          };
+        }
+      }
+    }
+  },
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
