@@ -1,0 +1,24 @@
+# docker-compose.yml
+# Used to run the Teambuilder application locally with Docker.
+# The app uses SQLite (via Prisma), so no separate database service is needed.
+# The database file is persisted via a named volume.
+
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: teambuilder
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      # Persist the SQLite database across container restarts
+      - db_data:/prisma
+    restart: unless-stopped
+
+volumes:
+  db_data:
