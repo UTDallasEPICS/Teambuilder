@@ -45,6 +45,19 @@ const closeOnMobile = () => {
     emit('close');
   }
 };
+
+const { clearUser } = useAuthState();
+
+const signOut = async () => {
+  await $fetch('/api/auth/sign-out', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({}),
+  });
+  clearUser();
+  window.location.href = '/login';
+};
 </script>
 
 <style scoped>

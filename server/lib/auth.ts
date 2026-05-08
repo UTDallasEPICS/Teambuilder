@@ -68,3 +68,22 @@ export const auth = betterAuth({
 });
 
 export type Session = typeof auth.$Infer.Session;
+
+// Ensure admin user exists on startup
+prisma.user.upsert({
+  where: { email: 'sxt230118@utdallas.edu' },
+  update: {},
+  create: {
+    id: 'admin-001',
+    email: 'sxt230118@utdallas.edu',
+    name: 'Snigdha Tadi',
+    emailVerified: true,
+    role: 'admin',
+    whitelisted: true,
+    removed: false,
+  }
+}).then(() => {
+  console.log('[Auth] Admin user ensured');
+}).catch((e) => {
+  console.error('[Auth] Failed to ensure admin user:', e);
+});
