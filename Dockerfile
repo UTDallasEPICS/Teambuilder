@@ -23,7 +23,10 @@ RUN pnpm run build
 FROM node:20-slim AS deployment
 
 # 2. Install OpenSSL in the runner too (Prisma needs it to execute queries at runtime)
-RUN apt-get update -y && apt-get install -y openssl
+# 3. Install Python & OR-Tools (Required for the team generation CP-SAT algorithm)
+RUN apt-get update -y && \
+    apt-get install -y openssl python3 python3-pip python-is-python3 && \
+    pip3 install ortools --break-system-packages
 
 # Copy stuff from build container to ensure we have prisma and everything it needs
 COPY --from=builder /.output /
