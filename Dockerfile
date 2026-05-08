@@ -1,5 +1,5 @@
 # Build container
-FROM node:current-slim AS builder
+FROM node:20-slim AS builder
 
 # 1. Install OpenSSL (Required by Prisma for the build step)
 RUN apt-get update -y && apt-get install -y openssl
@@ -18,7 +18,7 @@ RUN mv tsconfig.json.bak tsconfig.json
 RUN pnpm run build
 
 # Deployment container
-FROM node:current-slim AS deployment
+FROM node:20-slim AS deployment
 
 # 2. Install OpenSSL in the runner too (Prisma needs it to execute queries at runtime)
 RUN apt-get update -y && apt-get install -y openssl
