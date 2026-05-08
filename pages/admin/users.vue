@@ -167,7 +167,7 @@ import { useAuthState } from "~/composables/useAuthState";
 
 const { user: currentUser } = useAuthState();
 
-const { data: users, refresh } = await useFetch("/api/users/index.get", {
+const { data: users, refresh } = await useFetch("/api/users", {
   default: () => [],
 });
 

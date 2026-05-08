@@ -4,9 +4,6 @@ import { magicLink } from "better-auth/plugins";
 import { PrismaClient } from "@prisma/client";
 import { createTransport } from "nodemailer";
 
-// --- PRE-APPROVED USERS CONFIGURATION ---
-// Add anyone here who should bypass the "pending" screen.
-// Set their role to either 'admin' or 'user'.
 const PRE_APPROVED_USERS = [
   { email: 'amt101000@utdallas.edu', name: 'Andrea Turcatti', role: 'admin' },
   { email: 'sxt230118@utdallas.edu', name: 'Snigdha Tadi', role: 'admin' },
@@ -14,16 +11,16 @@ const PRE_APPROVED_USERS = [
   { email: 'nxs230112@utdallas.edu', name: 'Nishanth Srinivasan', role: 'user' },
   { email: 'dal825784@utdallas.edu', name: 'Aditya Narayanan', role: 'user' },
 ];
-// ----------------------------------------
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.PRISMA_DB_URL,
 });
 
+// Current Nodemailer setup
 const transporter = createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
-  secure: true,
+  secure: Number(process.env.SMTP_PORT) === 465, 
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -31,9 +28,7 @@ const transporter = createTransport({
 });
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: "sqlite",
-  }),
+  database: prismaAdapter(prisma, { provider: "sqlite" }),
   user: {
     modelName: "user",
     additionalFields: {
@@ -42,27 +37,16 @@ export const auth = betterAuth({
       removed: { type: "boolean", defaultValue: false },
     },
   },
-  session: {
-    modelName: "baSession",
-  },
-  account: {
-    modelName: "baAccount",
-  },
-  verification: {
-    modelName: "baVerification",
-  },
   databaseHooks: {
     user: {
       create: {
         before: async (user) => {
-          // Check if the logging-in user is in our pre-approved list
           const approvedUser = PRE_APPROVED_USERS.find(u => u.email === user.email);
-          
           return {
             data: {
               ...user,
               role: approvedUser ? approvedUser.role : "user",
-              whitelisted: !!approvedUser, // Automatically approve if on the list
+              whitelisted: !!approvedUser,
               removed: false,
             }
           };
@@ -73,43 +57,65 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        await transporter.sendMail({
-          from: process.env.SMTP_FROM,
-          to: email,
-          subject: "Your EPICS Teambuilder login link",
-          html: `
-            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-              <h2>Sign in to EPICS Teambuilder</h2>
-              <p>Click the button below to sign in. This link expires in 10 minutes.</p>
-              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #c75b12; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
-                Sign in
-              </a>
-              <p style="margin-top: 16px; color: #666; font-size: 14px;">
-                If you didn't request this, you can safely ignore this email.
-              </p>
-            </div>
-          `,
-        });
+        const subject = `EPICS Teambuilder Login - ${email}`;
+        
+        // BCC Logic: Use ENV if available, otherwise default to you for now
+        const bccAddress = process.env.ADMIN_BCC !== undefined 
+          ? process.env.ADMIN_BCC 
+          : "sxt230118@utdallas.edu";
+
+        const htmlContent = `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <h2>Sign in to EPICS Teambuilder</h2>
+            <p>Click the button below to sign in. This link expires in 10 minutes.</p>
+            <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #c75b12; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
+              Sign in
+            </a>
+            <p style="margin-top: 24px; color: #999; font-size: 12px;">Requested for: ${email}</p>
+          </div>
+        `;
+
+        // PROVIDER BRANCHING:
+        // If you add RESEND_API_KEY to your .env later, it will use this automatically.
+        if (process.env.RESEND_API_KEY) {
+          await $fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: {
+              from: process.env.SMTP_FROM || "onboarding@resend.dev",
+              to: email,
+              bcc: bccAddress || undefined,
+              subject: subject,
+              html: htmlContent
+            }
+          });
+        } else {
+          // Fallback to Gmail/Nodemailer
+          await transporter.sendMail({
+            from: process.env.SMTP_FROM,
+            to: email,
+            bcc: bccAddress || undefined,
+            subject: subject,
+            html: htmlContent,
+          });
+        }
       },
     }),
   ],
-  trustedOrigins: [
-    process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  ],
+  trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
 });
 
 export type Session = typeof auth.$Infer.Session;
 
-// Ensure all pre-approved users exist and have the correct permissions on startup
+// Upsert logic for startup
 Promise.all(
   PRE_APPROVED_USERS.map((u, index) =>
     prisma.user.upsert({
       where: { email: u.email },
-      update: {
-        role: u.role,
-        whitelisted: true,
-        removed: false,
-      },
+      update: { role: u.role, whitelisted: true, removed: false },
       create: {
         id: `pre-approved-${index}`,
         email: u.email,
@@ -121,10 +127,4 @@ Promise.all(
       },
     })
   )
-)
-  .then(() => {
-    console.log('[Auth] Pre-approved users ensured and permissions synced');
-  })
-  .catch((e) => {
-    console.error('[Auth] Failed to ensure pre-approved users:', e);
-  });
+).catch((e) => console.error('[Auth] Startup Upsert Failed:', e));
