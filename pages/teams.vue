@@ -4,9 +4,20 @@
   .centered-row.shaded-card.p-10.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
       .flex.flex-wrap.items-center.gap-2.self-start
+        Dropdown.archive-dropdown(
+          v-model="savedSemester"
+          :options="semesters"
+          placeholder="Select semester archive"
+          @change="handleSemesterChange"
+        )
+          template(#option="slotProps") {{ displaySemester(slotProps.option) }}
+          template(#value="slotProps")
+            div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
+            span(v-else) {{ slotProps.placeholder }}
+
         ClickableButton(v-if="rows.length > 0" title="Export Teams to CSV" type="success" @click="exportTeamsToCSV")
         FileUploadButton(
-          v-if="rows.length > 0"
+          v-if="savedSemester"
           title="Replace Teams from CSV"
           @dataParsed="handleParsedReplaceTeams"
         )
@@ -35,7 +46,7 @@
         ) Thursday
 
       template(v-if="rows.length === 0")
-        .beige-card.p-6.text-center.mt-4 No generated teams found. Generate teams on the Generate Teams page first.
+        .beige-card.p-6.text-center.mt-4 No teams found for this semester yet. Upload a CSV to bootstrap archive teams, or generate teams from the Generate Teams page.
 
       DataTable.beige-card.overflow-hidden(
         v-else
@@ -142,8 +153,10 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useHead } from 'nuxt/app';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
+import type { Semester } from '@prisma/client';
 import { getDisplayName } from '~/server/services/studentService';
 import { getProjectNameFromId } from '~/server/services/projectService';
+import { displaySemester } from '~/server/services/semesterService';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 
 declare const document: any;
@@ -194,7 +207,8 @@ const selectedDayFilter = ref<DayFilter>('ALL');
 const selectedMetricsDay = ref<DayFilter>('ALL');
 const isEditing = ref(false);
 const moveTargets = ref<Record<string, string>>({});
-const savedSemester = ref<any | null>(null);
+const savedSemester = ref<Semester | null>(null);
+const semesters = ref<Semester[]>([]);
 const showMetrics = ref(false);
 
 const formatYearLabel = (year: unknown): string => {
@@ -386,14 +400,36 @@ const destinationProjects = computed(() => {
     .map(row => ({ id: row.teamId, name: row.projectName }));
 });
 
-const persistAssignments = () => {
-  if (!process.client || !rawAssignments.value) return;
-  localStorage.setItem('lastTeamAssignments', JSON.stringify({
-    teamAssignments: rawAssignments.value,
-    projects: projects.value,
-    teamMeta: teamMeta.value,
-    semester: savedSemester.value,
-  }));
+
+const loadSemesterAssignments = async (semesterId: string) => {
+  const result = await $fetch<{
+    teamAssignments: Record<string, any[]>;
+    projects: any[];
+    teamMeta?: Record<string, { projectId: string; meetingDay: string; projectName: string }>;
+  }>(
+    `/api/teams?semesterId=${semesterId}`
+  );
+
+  rawAssignments.value = result.teamAssignments || {};
+  projects.value = result.projects || [];
+  teamMeta.value = result.teamMeta || {};
+  selectedTeam.value = null;
+  showMetrics.value = false;
+};
+
+const handleSemesterChange = async () => {
+  if (!savedSemester.value?.id) {
+    rawAssignments.value = null;
+    projects.value = [];
+    teamMeta.value = {};
+    return;
+  }
+
+  try {
+    await loadSemesterAssignments(savedSemester.value.id);
+  } catch (e) {
+    errorToast('Failed to load archive data for that semester.');
+  }
 };
 
 const refreshSelectedTeam = () => {
@@ -447,7 +483,6 @@ const moveMember = async (studentId: string) => {
   rawAssignments.value[destinationTeamId] = destinationStudents;
   rawAssignments.value[sourceTeamId] = sourceStudents;
 
-  persistAssignments();
   refreshSelectedTeam();
   moveTargets.value[studentId] = '';
 
@@ -472,7 +507,7 @@ const moveMember = async (studentId: string) => {
       ]);
       successToast('Member moved and saved successfully.');
     } catch (e) {
-      successToast('Member moved locally. Database save failed — changes are in localStorage only.');
+      errorToast('Member moved locally. Database save failed.');
     }
   } else {
     successToast('Member moved successfully.');
@@ -494,7 +529,6 @@ const removeMember = async (studentId: string) => {
   sourceStudents.splice(sourceIndex, 1);
   rawAssignments.value[sourceTeamId] = sourceStudents;
 
-  persistAssignments();
   refreshSelectedTeam();
   moveTargets.value[studentId] = '';
 
@@ -509,7 +543,7 @@ const removeMember = async (studentId: string) => {
       });
       successToast('Member removed and saved successfully.');
     } catch (e) {
-      successToast('Member removed locally. Database save failed — changes are in localStorage only.');
+      errorToast('Member removed locally. Database save failed.');
     }
   } else {
     successToast('Member removed successfully.');
@@ -570,17 +604,112 @@ const normalizeMemberName = (value: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const parseProjectLabel = (label: string): { baseName: string; meetingDay: 'WEDNESDAY' | 'THURSDAY' | null } => {
+  const trimmed = label.trim();
+  const match = trimmed.match(/\((Wednesday|Thursday)\)\s*$/i);
+  if (!match) {
+    return { baseName: trimmed, meetingDay: null };
+  }
+
+  const day = match[1].toLowerCase() === 'wednesday' ? 'WEDNESDAY' : 'THURSDAY';
+  const baseName = trimmed.replace(/\((Wednesday|Thursday)\)\s*$/i, '').trim();
+
+  return { baseName, meetingDay: day };
+};
+
+const bootstrapTeamsFromCsv = async (parsedRows: any[]) => {
+  if (!savedSemester.value?.id) return;
+
+  const labels = parsedRows
+    .map((row) => String(row.Project ?? row.project ?? '').trim())
+    .filter(Boolean);
+
+  if (labels.length === 0) {
+    throw new Error('Uploaded CSV does not include any project names.');
+  }
+
+  const parsedProjectLabels = labels.map(parseProjectLabel);
+  const normalizedBaseNames = [...new Set(parsedProjectLabels.map((item) => normalizeMemberName(item.baseName)))];
+
+  const allProjects = await $fetch<any[]>('/api/projects');
+  const projectsByNormalizedName = new Map<string, any[]>();
+
+  for (const project of allProjects) {
+    const key = normalizeMemberName(String(project?.name ?? ''));
+    if (!key) continue;
+    const list = projectsByNormalizedName.get(key) ?? [];
+    list.push(project);
+    projectsByNormalizedName.set(key, list);
+  }
+
+  const unknownProjects: string[] = [];
+  const ambiguousProjects: string[] = [];
+  const projectIdsToActivate = new Set<string>();
+
+  for (const normalizedBaseName of normalizedBaseNames) {
+    const matches = projectsByNormalizedName.get(normalizedBaseName) ?? [];
+
+    if (matches.length === 0) {
+      const original = parsedProjectLabels.find((item) => normalizeMemberName(item.baseName) === normalizedBaseName)?.baseName;
+      unknownProjects.push(original ?? normalizedBaseName);
+      continue;
+    }
+
+    if (matches.length > 1) {
+      const original = parsedProjectLabels.find((item) => normalizeMemberName(item.baseName) === normalizedBaseName)?.baseName;
+      ambiguousProjects.push(original ?? normalizedBaseName);
+      continue;
+    }
+
+    projectIdsToActivate.add(matches[0].id);
+  }
+
+  if (unknownProjects.length || ambiguousProjects.length) {
+    const issues = [
+      unknownProjects.length ? `Unknown projects: ${unknownProjects.slice(0, 3).join(', ')}` : null,
+      ambiguousProjects.length ? `Ambiguous project names: ${ambiguousProjects.slice(0, 3).join(', ')}` : null,
+    ].filter(Boolean).join(' | ');
+
+    throw new Error(issues || 'Unable to resolve CSV projects.');
+  }
+
+  if (projectIdsToActivate.size === 0) {
+    throw new Error('No valid projects found in CSV to create archive teams.');
+  }
+
+  await $fetch('/api/teams', {
+    method: 'POST',
+    body: {
+      semesterId: savedSemester.value.id,
+      projectIds: [...projectIdsToActivate],
+    },
+  });
+
+  await loadSemesterAssignments(savedSemester.value.id);
+};
+
 const handleParsedReplaceTeams = async (parsedRows: any[]) => {
   if (!savedSemester.value?.id) {
     errorToast('No semester selected. Generate or load teams before replacing.');
     return;
   }
-  if (!rawAssignments.value || Object.keys(rawAssignments.value).length === 0) {
-    errorToast('No current teams found to replace.');
-    return;
-  }
   if (!Array.isArray(parsedRows) || parsedRows.length === 0) {
     errorToast('Uploaded CSV is empty.');
+    return;
+  }
+
+  if (!rawAssignments.value || Object.keys(rawAssignments.value).length === 0) {
+    try {
+      await bootstrapTeamsFromCsv(parsedRows);
+      successToast('Created archive teams for this semester from CSV project names.');
+    } catch (error: any) {
+      errorToast(error?.message || 'No current teams found to replace, and bootstrap from CSV failed.');
+      return;
+    }
+  }
+
+  if (!rawAssignments.value || Object.keys(rawAssignments.value).length === 0) {
+    errorToast('No teams are available for replacement after bootstrap.');
     return;
   }
 
@@ -590,9 +719,18 @@ const handleParsedReplaceTeams = async (parsedRows: any[]) => {
 
   if (!confirmed) return;
 
-  const allStudents = Object.values(rawAssignments.value)
+  let allStudents = Object.values(rawAssignments.value)
     .flatMap((students) => students as any[])
     .filter((student, index, arr) => arr.findIndex((s) => s.id === student.id) === index);
+
+  if (allStudents.length === 0) {
+    try {
+      allStudents = await $fetch<any[]>('/api/students?choices=true');
+    } catch (error) {
+      errorToast('Could not load student roster needed for CSV replace.');
+      return;
+    }
+  }
 
   const studentById = new Map(allStudents.map((student: any) => [student.id, student] as const));
   const studentLookup = new Map<string, string[]>();
@@ -612,6 +750,15 @@ const handleParsedReplaceTeams = async (parsedRows: any[]) => {
   const teamIdByNormalizedLabel = new Map(
     rows.value.map((row) => [normalizeMemberName(row.projectName), row.teamId] as const)
   );
+  const teamIdsByBaseName = new Map<string, string[]>();
+
+  for (const row of rows.value) {
+    const { baseName } = parseProjectLabel(row.projectName);
+    const key = normalizeMemberName(baseName);
+    const ids = teamIdsByBaseName.get(key) ?? [];
+    ids.push(row.teamId);
+    teamIdsByBaseName.set(key, ids);
+  }
 
   const unknownProjects: string[] = [];
   const unknownMembers: string[] = [];
@@ -625,8 +772,20 @@ const handleParsedReplaceTeams = async (parsedRows: any[]) => {
     const projectLabel = String(row.Project ?? row.project ?? '').trim();
     if (!projectLabel) continue;
 
+    const { baseName, meetingDay } = parseProjectLabel(projectLabel);
+
     const exactTeamId = teamIdByLabel.get(projectLabel);
-    const teamId = exactTeamId ?? teamIdByNormalizedLabel.get(normalizeMemberName(projectLabel));
+    const normalizedTeamId = teamIdByNormalizedLabel.get(normalizeMemberName(projectLabel));
+    const candidateTeamIds = teamIdsByBaseName.get(normalizeMemberName(baseName)) ?? [];
+
+    let baseResolvedTeamId: string | undefined;
+    if (candidateTeamIds.length === 1) {
+      baseResolvedTeamId = candidateTeamIds[0];
+    } else if (candidateTeamIds.length > 1 && meetingDay) {
+      baseResolvedTeamId = candidateTeamIds.find((candidateTeamId) => getTeamContext(candidateTeamId).meetingDay === meetingDay);
+    }
+
+    const teamId = exactTeamId ?? normalizedTeamId ?? baseResolvedTeamId;
 
     if (!teamId) {
       unknownProjects.push(projectLabel);
@@ -685,8 +844,7 @@ const handleParsedReplaceTeams = async (parsedRows: any[]) => {
     );
 
     rawAssignments.value = replacedAssignments;
-    persistAssignments();
-    refreshSelectedTeam();
+      refreshSelectedTeam();
     successToast('Teams replaced from CSV successfully.');
   } catch (err: any) {
     errorToast(err?.data?.message || 'Failed to replace teams from CSV.');
@@ -694,40 +852,21 @@ const handleParsedReplaceTeams = async (parsedRows: any[]) => {
 };
 
 onMounted(async () => {
-  // First, restore semester/project metadata from localStorage
+  // Fetch all semesters so users can browse historical archives.
   try {
-    const raw = localStorage.getItem('lastTeamAssignments');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      rawAssignments.value = parsed.teamAssignments || null;
-      projects.value = parsed.projects || [];
-      teamMeta.value = parsed.teamMeta || {};
-      savedSemester.value = parsed.semester || null;
-    }
+    semesters.value = await $fetch<Semester[]>('/api/semesters');
   } catch (e) {
-    rawAssignments.value = null;
+    errorToast('Failed to load semester list for archive browsing.');
+    return;
   }
 
-  // Then, load authoritative assignments from the database
+  savedSemester.value = semesters.value[0] ?? null;
+
   if (savedSemester.value?.id) {
     try {
-      const result = await $fetch<{
-        teamAssignments: Record<string, any[]>;
-        projects: any[];
-        teamMeta?: Record<string, { projectId: string; meetingDay: string; projectName: string }>;
-      }>(
-        `/api/teams?semesterId=${savedSemester.value.id}`
-      );
-      // Only override if the DB actually has student assignments saved
-      const hasAssignments = Object.values(result.teamAssignments).some(s => s.length > 0);
-      if (hasAssignments) {
-        rawAssignments.value = result.teamAssignments;
-        projects.value = result.projects;
-        teamMeta.value = result.teamMeta || {};
-        persistAssignments();
-      }
+      await loadSemesterAssignments(savedSemester.value.id);
     } catch (e) {
-      // DB fetch failed — fall back to localStorage data already loaded above
+      rawAssignments.value = {};
     }
   }
 });
@@ -736,6 +875,9 @@ onMounted(async () => {
 <style scoped>
 .centered-row { display:flex; justify-content:center; }
 .centered-col { display:flex; flex-direction:column; max-width:1100px; width:100%; }
+.archive-dropdown {
+  min-width: 220px;
+}
 .cardRows {
   display: flex;
   flex-direction: column;

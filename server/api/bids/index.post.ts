@@ -3,8 +3,8 @@
  * Imports a parsed UTDesign/EPICS bid-response CSV.
  *
  * Expected row shape (after PapaParse with header:true):
- *   row["Student Name"]  – first name (may be multi-word, e.g. "Maryam Fatima")
- *   row[""]              – last name  (empty-string header from the blank column in the CSV)
+ *   row["Student Name"]  – either full name ("Last, First") OR first name only
+ *   row[""]              – optional last-name column in older CSV layouts
  *   row["Student Email"] – email
  *   row["SSO ID"]        – netID (skip row if blank)
  *   row["Classification"]– Freshman | Sophomore | Junior | Senior
@@ -48,6 +48,50 @@ function extractClass(enrollment: string): '2200' | '3200' {
   return n === '3200' ? '3200' : '2200';
 }
 
+function parseStudentName(row: Record<string, any>): { firstName: string; lastName: string } {
+  const rawName = String(
+    row['Student Name'] ??
+    row['Name'] ??
+    row['Full Name'] ??
+    row['Student'] ??
+    row['student name'] ??
+    row['name'] ??
+    ''
+  ).trim();
+  const rawLastNameColumn = String(row[''] ?? '').trim();
+
+  // New layout: full name is in a single column as "Last, First".
+  if (rawName.includes(',')) {
+    const [lastName = '', firstName = ''] = rawName.split(',').map((part) => part.trim());
+    return {
+      firstName,
+      lastName,
+    };
+  }
+
+  // Legacy layout: first name in the main name column and last name in empty-header column.
+  if (rawLastNameColumn) {
+    return {
+      firstName: rawName,
+      lastName: rawLastNameColumn,
+    };
+  }
+
+  // Fallback: if no comma, treat final token as last name.
+  const parts = rawName.split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) {
+    return {
+      firstName: rawName,
+      lastName: '',
+    };
+  }
+
+  return {
+    firstName: parts.slice(0, -1).join(' '),
+    lastName: parts[parts.length - 1],
+  };
+}
+
 /** Strip semester prefixes like "S26 - ", "F25 - ", "SP24 TH - " then trim */
 function stripSemesterPrefix(choice: string): string {
   return choice.replace(/^[SF]\d{2,4}(\s+\S+)?\s*-\s*/, '').trim();
@@ -65,6 +109,18 @@ function normalizeProjectKey(input: string): string {
   return normalizeProjectText(input).replace(/\s+/g, '');
 }
 
+function readFirstValue(row: Record<string, any>, keys: string[]): string {
+  for (const key of keys) {
+    const value = row[key];
+    if (value == null) continue;
+
+    const text = String(value).trim();
+    if (text) return text;
+  }
+
+  return '';
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default defineEventHandler(async (event) => {
@@ -77,6 +133,7 @@ export default defineEventHandler(async (event) => {
       : typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'THURSDAY'
         ? 'THURSDAY'
         : null;
+        const allowCreateProjects = getQuery(event).createProjects === 'true';
 
   if (!Array.isArray(rows) || rows.length === 0) {
     throw createError({ statusCode: 400, message: 'Expected a non-empty array of bid rows.' });
@@ -143,25 +200,9 @@ export default defineEventHandler(async (event) => {
     if (projectLookup.has(normalized)) {
       return projectLookup.get(normalized)!;
     }
-
-    // Create new project
-    try {
-      const created = await client.project.create({
-        data: {
-          name: projectName,
-          description: projectName,
-          type: 'SOFTWARE',
-          status: 'NEW',
-          repoURL: '',
-          partnerId: defaultPartner.id,
-        },
-      });
-      projectLookup.set(normalized, created.id);
-      return created.id;
-    } catch (err) {
-      console.error(`Failed to create project "${projectName}":`, err);
-      return null;
-    }
+    // Do NOT auto-create projects here. Return null so caller can
+    // record the unmatched choice and avoid creating spurious entries.
+    return null;
   };
 
   const aliasLookup = new Map<string, string>([
@@ -212,20 +253,19 @@ export default defineEventHandler(async (event) => {
   const unmatchedProjects: string[] = [];
 
   for (const row of rows) {
-    const netID = row['SSO ID']?.trim();
+    const netID = readFirstValue(row, ['SSO ID', 'ssoid', 'netID', 'netid', 'id']);
     if (!netID) {
-      skippedStudents.push(row['Student Name'] ?? '(no name)');
+      skippedStudents.push(readFirstValue(row, ['Student Name', 'student name', 'name', 'fullName']) || '(no name)');
       continue;
     }
 
     // ── Build student record ─────────────────────────────────────────────────
-    const firstName = row['Student Name']?.trim() ?? '';
-    const lastName  = row['']?.trim() ?? '';           // empty-header column
-    const email     = row['Student Email']?.trim() || null;
-    const yearRaw   = (row['Classification'] ?? '').trim().toLowerCase();
+    const { firstName, lastName } = parseStudentName(row);
+    const email     = readFirstValue(row, ['Student Email', 'student email', 'studentemail']) || null;
+    const yearRaw   = readFirstValue(row, ['Classification', 'classification']).toLowerCase();
     const year: Year = YEAR_MAP[yearRaw] ?? 'FRESHMAN';
-    const cls       = extractClass(row['Enrollment'] ?? '');
-    const major     = extractMajor(row['School and Major'] ?? '');
+    const cls       = extractClass(readFirstValue(row, ['Enrollment', 'enrollment']));
+    const major     = extractMajor(readFirstValue(row, ['School and Major', 'school and major', 'major']));
     const status    = 'ACTIVE' as const;
 
     const updateData: any = { firstName, lastName, email, year, class: cls, major, status };
@@ -240,7 +280,7 @@ export default defineEventHandler(async (event) => {
       status,
       github: null,
       discord: null,
-      enrollment: row['Enrollment']?.trim() ?? null,
+      enrollment: readFirstValue(row, ['Enrollment', 'enrollment']) || null,
     };
 
     if (meetingDay) {
@@ -256,7 +296,7 @@ export default defineEventHandler(async (event) => {
     studentsImported++;
 
     // ── Process choices ──────────────────────────────────────────────────────
-    const choiceKeys = ['Choice 1','Choice 2','Choice 3','Choice 4','Choice 5','Choice 6'];
+    const choiceKeys = ['Choice 1','Choice 2','Choice 3','Choice 4','Choice 5','Choice 6', 'choice1', 'choice2', 'choice3', 'choice4', 'choice5', 'choice6'];
     const choicesToCreate: { rank: number; studentId: string; projectId: string }[] = [];
 
     // Re-fetch the student to get their id
@@ -270,7 +310,7 @@ export default defineEventHandler(async (event) => {
     }
 
     for (let i = 0; i < choiceKeys.length; i++) {
-      const raw = row[choiceKeys[i]]?.trim();
+      const raw = readFirstValue(row, [choiceKeys[i]]);
       if (!raw) continue;
 
       const projectId = await findOrCreateProjectId(raw);

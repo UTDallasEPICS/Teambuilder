@@ -2,11 +2,24 @@
   .overlay(v-if="selectedPartner" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.flex-wrap.items-center.gap-2.self-start
-        FileUploadButton(title="Upload Partners (Merge)" @dataParsed="handleParsed")
-        FileUploadButton(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
-        ClickableButton(title="Clear Entire Database" type="danger" @click="resetDatabase")
-        HelpIcon(:info="helpInfo")
+      .controls-row.flex.items-center.gap-2.self-start
+        span.text-xs.font-semibold.text-white Upload semester:
+        Dropdown.upload-semester-dropdown(
+          class="control-fixed"
+          v-model="selectedUploadSemester"
+          :options="semesters"
+          placeholder="Semester"
+        )
+          template(#option="slotProps") {{ displaySemester(slotProps.option) }}
+          template(#value="slotProps")
+            div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
+            span(v-else) {{ slotProps.placeholder }}
+
+        FileUploadButton.control-fill(title="Upload Partners (Merge)" @dataParsed="handleParsed")
+        FileUploadButton.control-fill(title="Replace Partners with CSV" @dataParsed="handleParsedReplace")
+        ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
+        ClickableButton.control-fill(title="Clear Entire Database" type="danger" @click="resetDatabase")
+        HelpIcon.control-fixed(:info="helpInfo")
 
       .mt-20.project-title.embossed.drop-shadow-md Partners
       .text-2xl.mt-2 Partner count: {{ partnerCount }}
@@ -14,13 +27,14 @@
       DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="partners"
         v-model:filters="filters"
-        scrollable
-        scrollHeight="80vh"
-        class="w-full mt-2 md:mt-5"
-        dataKey="id"
-        filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedPartner"
+        dataKey="id"
+        filterDisplay="row"
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[5,10, 20, 25]"
+        class="w-full mt-2 md:mt-5"
       )
 
         Column(field="name" header="Name" :showFilterMenu="false" :sortable="true")
@@ -82,33 +96,49 @@
   <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
     import { FilterMatchMode } from '@primevue/core/api';
-    import type { Partner } from '@prisma/client';
+    import type { Partner, Semester } from '@prisma/client';
     import { useHead } from '@vueuse/head';
     import { XCircleIcon } from '@heroicons/vue/24/solid';
     import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
+    import { displaySemester } from '~/server/services/semesterService';
     
     useHead({ title: 'Partners' });
 
   const { successToast, errorToast } = usePrimeVueToast();
-  const partners = ref<Partner[]>([]);
+  
+  type PartnerWithProjects = Partner & { projectName: string };
+  
+  const partners = ref<PartnerWithProjects[]>([]);
   const partnerCount = ref(0);
+  const semesters = ref<Semester[]>([]);
+  const selectedUploadSemester = ref<Semester | null>(null);
   
   onMounted(async () => {
-    partners.value = await $fetch<Partner[]>("api/partners");
+    const [partnersResponse, semestersResponse] = await Promise.all([
+      $fetch<PartnerWithProjects[]>('api/partners'),
+      $fetch<Semester[]>('api/semesters'),
+    ]);
+
+    partners.value = partnersResponse;
+    semesters.value = semestersResponse;
+    selectedUploadSemester.value = semesters.value[0] ?? null;
     partnerCount.value = partners.value.length;
   });
   
-  const handleParsed = async (uploadedPartners: Partner[]) => {
+  const handleParsed = async (uploadedPartners: any[]) => {
     // Merge uploaded partners with existing records
     try {
       // Save uploaded partners (API upserts by partner name)
       await $fetch('/api/partners', {
         method: 'POST',
-        body: uploadedPartners
+        body: {
+          partners: uploadedPartners,
+          semesterId: selectedUploadSemester.value?.id ?? null,
+        }
       });
       
       // Refresh from database to get the saved data
-      partners.value = await $fetch<Partner[]>('/api/partners');
+      partners.value = await $fetch<PartnerWithProjects[]>('/api/partners');
       partnerCount.value = partners.value.length;
       console.log('Partners saved to database successfully!');
     } catch (error) {
@@ -116,7 +146,7 @@
     }
   };
 
-  const handleParsedReplace = async (uploadedPartners: Partner[]) => {
+  const handleParsedReplace = async (uploadedPartners: any[]) => {
     try {
       await $fetch('/api/partners', {
         method: 'DELETE'
@@ -124,10 +154,13 @@
 
       await $fetch('/api/partners', {
         method: 'POST',
-        body: uploadedPartners
+        body: {
+          partners: uploadedPartners,
+          semesterId: selectedUploadSemester.value?.id ?? null,
+        }
       });
 
-      partners.value = await $fetch<Partner[]>('/api/partners');
+      partners.value = await $fetch<PartnerWithProjects[]>('/api/partners');
       partnerCount.value = partners.value.length;
       console.log('Partners replaced from CSV successfully!');
     } catch (error) {
@@ -200,8 +233,8 @@
     }
   };
   
-  const selectedPartner = ref<Partner | null>(null);
-  const editedPartner = ref<Partner | null>(null);
+  const selectedPartner = ref<PartnerWithProjects | null>(null);
+  const editedPartner = ref<PartnerWithProjects | null>(null);
   const isEditing = ref(false);
   
   const filters = ref({
@@ -236,6 +269,17 @@
     isEditing.value = false;
   };
   
+  const downloadTemplate = () => {
+    const csv = 'name,contactName,contactEmail\n';
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'partners_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const helpInfo = `Upload partner contact and organization information here.`;
   </script>
   
@@ -265,7 +309,39 @@
   .pill.bg-gray { background: var(--color-pill-withdrawn) !important; color: #ffffff !important; }
   .pill.bg-red { background: var(--color-pill-hold) !important; color: #ffffff !important; }
 
+  .upload-semester-dropdown {
+    min-width: 160px;
+    max-width: 190px;
+    flex: 0 0 180px;
+  }
+
+  .control-fixed {
+    flex: 0 0 180px;
+    min-width: 0;
+  }
+
+  .control-fill {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .controls-row {
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .controls-row :deep(.front) {
+    width: 100%;
+    text-align: center;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(-4px);
+  }
+
   .centered-row.shaded-card { background: var(--color-utd-orange) !important; padding: 2rem !important; border-radius: 0.5rem; }
   .centered-row.shaded-card > .centered-col { background: transparent !important; border-radius: 0.75rem; padding: 1.25rem !important; box-shadow: none; width: 100%; }
   </style>
-  

@@ -2,16 +2,32 @@
   .overlay(v-if="selectedStudent" @click="closeModal")
   .centered-row.shaded-card.p-5.m-10.min-h-screen
     .centered-col.relative.h-full.gap-4
-      .flex.flex-wrap.items-center.gap-2.self-start
+      .controls-row.flex.items-center.gap-2.self-start
+        span.text-xs.font-semibold.text-white Upload semester:
+        Dropdown.upload-semester-dropdown(
+          class="control-fixed"
+          v-model="selectedUploadSemester"
+          :options="semesters"
+          placeholder="Semester"
+        )
+          template(#option="slotProps") {{ displaySemester(slotProps.option) }}
+          template(#value="slotProps")
+            div(v-if="slotProps.value") {{ displaySemester(slotProps.value) }}
+            span(v-else) {{ slotProps.placeholder }}
+
         template(v-if="selectedDayTab === 'WEDNESDAY'")
-          FileUploadButton(title="Upload Wednesday Bid Responses (Replace)" @dataParsed="handleBidsParsedReplaceWednesday")
-          FileUploadButton(title="Merge Wednesday Bid Responses" @dataParsed="handleBidsParsedMergeWednesday")
+          FileUploadButton.control-fill(title="Upload Wednesday Students (Merge)" @dataParsed="handleParsedWednesday")
+          FileUploadButton.control-fill(title="Replace Wednesday Students with CSV" @dataParsed="handleParsedReplaceWednesday")
         template(v-else-if="selectedDayTab === 'THURSDAY'")
-          FileUploadButton(title="Upload Thursday Bid Responses (Replace)" @dataParsed="handleBidsParsedReplaceThursday")
-          FileUploadButton(title="Merge Thursday Bid Responses" @dataParsed="handleBidsParsedMergeThursday")
-        ClickableButton(v-if="studentsWithFullName.length > 0" title="Export Students to CSV" type="success" @click="exportStudentsToCSV")
-        ClickableButton(title="Clear Students" type="danger" @click="handleClearAll")
-        HelpIcon(:info="helpInfo")
+          FileUploadButton.control-fill(title="Upload Thursday Students (Merge)" @dataParsed="handleParsedThursday")
+          FileUploadButton.control-fill(title="Replace Thursday Students with CSV" @dataParsed="handleParsedReplaceThursday")
+        template(v-else)
+          FileUploadButton.control-fill(title="Upload Students (Merge)" @dataParsed="handleParsed")
+          FileUploadButton.control-fill(title="Replace Students with CSV" @dataParsed="handleParsedReplace")
+        ClickableButton.control-fill(v-if="studentsWithFullName.length > 0" title="Export Students to CSV" type="success" @click="exportStudentsToCSV")
+        ClickableButton.control-fill(title="Download Template" type="success" @click="downloadTemplate")
+        ClickableButton.control-fill(title="Clear Students" type="danger" @click="handleClearAll")
+        HelpIcon.control-fixed(:info="helpInfo")
 
       .mt-4.project-title.w-full.text-center Students
       .text-2xl.mt-2 Student count ({{ activeTabLabel }}): {{ studentCount }}
@@ -33,13 +49,14 @@
       DataTable.beige-card.overflow-hidden.px-10.mt-5(
         :value="studentsWithFullName"
         v-model:filters="filters"
-        scrollable
-        scrollHeight="80vh"
-        class="w-full mt-2 md:mt-5"
-        dataKey="id"
-        filterDisplay="row"
         selectionMode="single"
         v-model:selection="selectedStudent"
+        dataKey="id"
+        filterDisplay="row"
+        :paginator="true"
+        :rows="10"
+        :rowsPerPageOptions="[5,10, 20, 25]"
+        class="w-full mt-2 md:mt-5"
       )
         Column(field="fullName" header="Name" :showFilterMenu="false" :sortable="true")
           template(#filter="{ filterModel, filterCallback }")
@@ -163,11 +180,12 @@
 import { onMounted, ref, computed, watchEffect } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import Papa from 'papaparse';
-import type { Student, Year } from '@prisma/client';
+import type { Semester, Student, Year } from '@prisma/client';
 import { useHead } from '@vueuse/head';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
+import { displaySemester } from '~/server/services/semesterService';
 
 declare const document: any;
 
@@ -181,6 +199,8 @@ type TabMeetingDay = 'WEDNESDAY' | 'THURSDAY';
 type StudentRow = Student & { meetingDay?: MeetingDay | null };
 
 const students = ref<StudentRow[]>([]);
+const semesters = ref<Semester[]>([]);
+const selectedUploadSemester = ref<Semester | null>(null);
 const studentCount = ref(0);
 const selectedDayTab = ref<DayTab>('ALL');
 const studentDays: TabMeetingDay[] = ['WEDNESDAY', 'THURSDAY'];
@@ -224,43 +244,88 @@ watchEffect(() => {
 });
 
 onMounted(async () => { //adds dummy data, students.value is what holds frontend table data
-  students.value = await $fetch<StudentRow[]>("api/students"); //loads in random starting data
+  const [studentsResponse, semestersResponse] = await Promise.all([
+    $fetch<StudentRow[]>('api/students'),
+    $fetch<Semester[]>('api/semesters'),
+  ]);
+
+  students.value = studentsResponse; //loads in random starting data
+  semesters.value = semestersResponse;
+  selectedUploadSemester.value = semesters.value[0] ?? null;
   studentCount.value = students.value.length; 
 });
 
-const handleBidsParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
-  if (!parsed?.length) return;
-  try {
-    const result = await $fetch<{
-      studentsImported: number;
-      choicesCreated: number;
-      skippedStudents: string[];
-      unmatchedProjects: string[];
-    }>('/api/bids', {
-      method: 'POST',
-      body: parsed,
-      query: {
-        merge: 'false',
-        ...(forcedDay ? { meetingDay: forcedDay } : {}),
-      },
-    });
+const normalizeCsvKey = (key: string) => key.replace(/^\uFEFF/, '').trim().toLowerCase();
 
-    students.value = await $fetch<StudentRow[]>('/api/students');
-    studentCount.value = students.value.length;
-
-    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices.`;
-    if (result.skippedStudents.length)
-      msg += ` Skipped ${result.skippedStudents.length} rows (no SSO ID).`;
-    if (result.unmatchedProjects.length)
-      msg += ` ${result.unmatchedProjects.length} project name(s) not found in DB: ${result.unmatchedProjects.join('; ')}.`;
-
-    result.unmatchedProjects.length ? infoToast(msg, 10000) : successToast(msg, 7000);
-  } catch (e: any) {
-    errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
-  }
+const isBidResponseRow = (row: Record<string, any>) => {
+  const keys = Object.keys(row).map(normalizeCsvKey);
+  const hasSso = keys.some((key) => key.includes('sso id'));
+  const hasStudentEmail = keys.some((key) => key.includes('student email'));
+  const hasChoices = keys.some((key) => /^choice\s*\d+/.test(key));
+  return hasSso || hasStudentEmail || hasChoices;
 };
-const handleBidsParsedMerge = async (parsed: any, forcedDay?: TabMeetingDay) => {
+
+const parseStudentName = (rawValue: unknown) => {
+  const value = String(rawValue ?? '').trim();
+  if (!value) return { firstName: '', lastName: '' };
+
+  // Thursday workbook stores names in one column as "Last, First".
+  if (value.includes(',')) {
+    const [lastName = '', firstName = ''] = value.split(',').map((part) => part.trim());
+    return { firstName, lastName };
+  }
+
+  const parts = value.split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) {
+    return { firstName: value, lastName: '' };
+  }
+
+  return {
+    firstName: parts.slice(1).join(' '),
+    lastName: parts[0],
+  };
+};
+
+const toStudentUploadRow = (stu: any, forcedDay?: TabMeetingDay) => {
+  // Handle both CSV formats:
+  // 1) Student roster: netID, firstName, lastName
+  // 2) Legacy roster: id, name ("lastName, firstName")
+  // 3) Bid response fallback: SSO ID, Student Name, blank last-name column
+  const netID = String(stu?.netID ?? stu?.id ?? stu?.['SSO ID'] ?? '').trim();
+
+  const nameCandidate =
+    stu?.firstName || stu?.lastName
+      ? ''
+      : stu?.name ?? stu?.['Student Name'] ?? stu?.Name ?? stu?.['Full Name'] ?? stu?.['Student'] ?? '';
+
+  const parsedName = parseStudentName(nameCandidate);
+
+  if (stu?.firstName || stu?.lastName) {
+    parsedName.firstName = String(stu?.firstName ?? '').trim();
+    parsedName.lastName = String(stu?.lastName ?? '').trim();
+  } else if (!parsedName.firstName && !parsedName.lastName && (stu?.['Student Name'] || stu?.[''])) {
+    parsedName.firstName = String(stu?.['Student Name'] ?? '').trim();
+    parsedName.lastName = String(stu?.[''] ?? '').trim();
+  }
+
+  return {
+    netID,
+    firstName: parsedName.firstName,
+    lastName: parsedName.lastName,
+    email: null,
+    github: null,
+    discord: null,
+    major: String(stu?.major ?? 'Other').trim() || 'Other',
+    year: stu?.year || stu?.seniority || 'FRESHMAN',
+    class: String(stu?.class ?? '2200').trim() || '2200',
+    meetingDay: normalizeMeetingDay(stu?.meetingDay ?? stu?.day ?? stu?.meeting_day, forcedDay),
+    status: stu?.status || null,
+  };
+};
+
+const uploadBidResponses = async (parsed: any, forcedDay?: TabMeetingDay) => {
   if (!parsed?.length) return;
+
   try {
     const result = await $fetch<{
       studentsImported: number;
@@ -279,7 +344,7 @@ const handleBidsParsedMerge = async (parsed: any, forcedDay?: TabMeetingDay) => 
     students.value = await $fetch<StudentRow[]>('/api/students');
     studentCount.value = students.value.length;
 
-    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices (merged).`;
+    let msg = `Imported ${result.studentsImported} students, ${result.choicesCreated} choices.`;
     if (result.skippedStudents.length)
       msg += ` Skipped ${result.skippedStudents.length} rows (no SSO ID).`;
     if (result.unmatchedProjects.length)
@@ -287,57 +352,33 @@ const handleBidsParsedMerge = async (parsed: any, forcedDay?: TabMeetingDay) => 
 
     result.unmatchedProjects.length ? infoToast(msg, 10000) : successToast(msg, 7000);
   } catch (e: any) {
-    errorToast(e?.data?.message ?? e?.message ?? 'Failed to merge bid responses.');
+    errorToast(e?.data?.message ?? e?.message ?? 'Failed to import bid responses.');
   }
 };
 
-const handleBidsParsedReplaceWednesday = async (parsed: any) => handleBidsParsedReplace(parsed, 'WEDNESDAY');
-const handleBidsParsedMergeWednesday = async (parsed: any) => handleBidsParsedMerge(parsed, 'WEDNESDAY');
-const handleBidsParsedReplaceThursday = async (parsed: any) => handleBidsParsedReplace(parsed, 'THURSDAY');
-const handleBidsParsedMergeThursday = async (parsed: any) => handleBidsParsedMerge(parsed, 'THURSDAY');
+const handleParsed = async (parsed: any, forcedDay?: TabMeetingDay) => {
+  if (Array.isArray(parsed) && parsed.length > 0 && parsed.slice(0, 5).some((row) => isBidResponseRow(row))) {
+    await uploadBidResponses(parsed, forcedDay);
+    return;
+  }
 
-const handleParsed = async (parsed: any, forcedDay?: TabMeetingDay) => { //when it reaches here it's already parsed through FileUploadButtonVue. 
-  // Merge uploaded students with existing records
-  
-  const formattedStudents = parsed.map((stu : any) =>{
-    // Handle both CSV formats:
-    // 1. New format: netID, firstName, lastName (separate fields)
-    // 2. Old format: id, name (comma-separated "lastName, firstName")
-    let firstName, lastName, netID;
-    
-    if (stu.firstName && stu.lastName) {
-      // New CSV format with separate first/last names
-      firstName = stu.firstName;
-      lastName = stu.lastName;
-      netID = stu.netID;
-    } else if (stu.name) {
-      // Old CSV format with combined name
-      const[parsedLastName, parsedFirstName] = stu.name.split(', ');
-      firstName = parsedFirstName;
-      lastName = parsedLastName;
-      netID = stu.id;
-    }
-    
-    return{
-      netID : netID,
-      firstName : firstName,
-      lastName: lastName,
-      email: null,
-      github: null,
-      discord: null,
-      major: stu.major,
-      year: stu.year || stu.seniority, // Support both 'year' and 'seniority' fields
-      class: stu.class,
-      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
-      status: stu.status || null
-    }
-  });
+  const formattedStudents = parsed
+    .map((stu: any) => toStudentUploadRow(stu, forcedDay))
+    .filter((student: any) => !!student.netID);
+
+  if (formattedStudents.length === 0) {
+    errorToast('No valid students found in CSV. Expected netID (or SSO ID).');
+    return;
+  }
   
   // Merge students (API upserts by netID)
   try {
     await $fetch('/api/students', {
       method: 'POST',
-      body: formattedStudents
+      body: {
+        students: formattedStudents,
+        semesterId: selectedUploadSemester.value?.id ?? null,
+      }
     });
     
     // Refresh from database to get the saved data
@@ -352,34 +393,14 @@ const handleParsed = async (parsed: any, forcedDay?: TabMeetingDay) => { //when 
 };
 
 const handleParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
-  const formattedStudents = parsed.map((stu : any) => {
-    let firstName, lastName, netID;
+  const formattedStudents = parsed
+    .map((stu: any) => toStudentUploadRow(stu, forcedDay))
+    .filter((student: any) => !!student.netID);
 
-    if (stu.firstName && stu.lastName) {
-      firstName = stu.firstName;
-      lastName = stu.lastName;
-      netID = stu.netID;
-    } else if (stu.name) {
-      const [parsedLastName, parsedFirstName] = stu.name.split(', ');
-      firstName = parsedFirstName;
-      lastName = parsedLastName;
-      netID = stu.id;
-    }
-
-    return {
-      netID : netID,
-      firstName : firstName,
-      lastName: lastName,
-      email: null,
-      github: null,
-      discord: null,
-      major: stu.major,
-      year: stu.year || stu.seniority,
-      class: stu.class,
-      meetingDay: normalizeMeetingDay(stu.meetingDay ?? stu.day ?? stu.meeting_day, forcedDay),
-      status: stu.status || null
-    }
-  });
+  if (formattedStudents.length === 0) {
+    errorToast('No valid students found in CSV. Expected netID (or SSO ID).');
+    return;
+  }
 
   try {
     await $fetch('/api/students', {
@@ -389,7 +410,10 @@ const handleParsedReplace = async (parsed: any, forcedDay?: TabMeetingDay) => {
 
     await $fetch('/api/students', {
       method: 'POST',
-      body: formattedStudents
+      body: {
+        students: formattedStudents,
+        semesterId: selectedUploadSemester.value?.id ?? null,
+      }
     });
 
     students.value = await $fetch<StudentRow[]>('/api/students');
@@ -612,12 +636,25 @@ const exportStudentsToCSV = () => {
   }
 }
 
+const downloadTemplate = () => {
+  const csv = 'netID,firstName,lastName,email,major,year,class,meetingDay,status,github,discord\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'students_template.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-specific student CSVs.`
 </script>
 
 <style scoped>
 .cardRows {
-  @apply flex flex-col gap-5
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 .day-tabs {
   display: inline-flex;
@@ -626,6 +663,39 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   background: rgba(255, 255, 255, 0.18);
   border-radius: 0.65rem;
   padding: 0.25rem;
+}
+
+.upload-semester-dropdown {
+  min-width: 160px;
+  max-width: 190px;
+  flex: 0 0 180px;
+}
+
+.control-fixed {
+  flex: 0 0 180px;
+  min-width: 0;
+}
+
+.control-fill {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.controls-row {
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.controls-row :deep(.front) {
+  width: 100%;
+  text-align: center;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translateY(-4px);
 }
 
 .day-tab-btn {
@@ -646,14 +716,16 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
 }
 .cardTitle {
   text-shadow: 1px 1px 1px #0000008b;
-  @apply text-5xl drop-shadow-sm
+  font-size: 3rem;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 .cardSubTitle {
   text-shadow: 1px 1px 1px #0000008b;
-  @apply text-2xl mr-2
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
 }
 .cardText {
-  @apply text-xl
+  font-size: 1.25rem;
 }
 .overlay {
   position: fixed;
@@ -672,11 +744,17 @@ const helpInfo = `Use the Wednesday and Thursday tabs to upload or replace day-s
   z-index: 99;
 }
 .editBox {
-  @apply text-teal rounded-md bg-beige p-1
+  color: var(--color-teal);
+  border-radius: 0.375rem;
+  background-color: var(--color-beige);
+  padding: 0.25rem;
 }
 /* TODO: move this styling to primevue's tokens in nuxt.config.ts */
 select {
-  @apply bg-beige text-teal rounded-md p-1
+  background-color: var(--color-beige);
+  color: var(--color-teal);
+  border-radius: 0.375rem;
+  padding: 0.25rem;
 }
 
 /* Make DataTable wrapper scrollable horizontally */

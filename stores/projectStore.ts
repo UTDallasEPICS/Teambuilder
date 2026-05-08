@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Project } from '../types'
+import type { Project } from '@prisma/client'
 import { createRandomProjects } from '../server/factories/project'
 
 export const useProjectStore = defineStore('projectStore', {

@@ -39,10 +39,8 @@ const MyPreset = definePreset(Aura, {
           activeColor: colors.beige
         }
       },
-      // DataTable colors
       content: {
         background: colors.beige,
-        // hoverBackground: colors.red, // row hover
       }
     }
   },
@@ -74,12 +72,20 @@ export default defineNuxtConfig({
       ]
     }
   },
-  devtools: { enabled: true },
+  devtools: { enabled: false },
+  vite: {
+    ssr: {
+      external: ["@vue/devtools-kit"]
+    }
+  },
   modules: [
     "@nuxtjs/tailwindcss", 
     "@pinia/nuxt",
     "@primevue/nuxt-module"
   ],
+  build: {
+    transpile: ['@primeuix/styles']
+  },
   primevue: {
     options: {
         theme: {
@@ -94,6 +100,15 @@ export default defineNuxtConfig({
   components: [
     { path: '~/components', pathPrefix: false },
   ],
+  ssr: true,
   compatibilityDate: '2024-09-19',
+  routeRules: {
+    '/api/auth/**': { ssr: true },
+  },
+  runtimeConfig: {
+    authSecret: process.env.BETTER_AUTH_SECRET,
+    public: {
+      authUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+    }
+  }
 })
-
