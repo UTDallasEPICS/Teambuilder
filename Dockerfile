@@ -9,8 +9,7 @@ RUN npm i -g pnpm
 RUN pnpm i --shamefully-hoist
 RUN rm -rf .prisma/node_modules/.prisma/node_modules/@prisma/engines || true
 RUN rm -rf node_modules/.prisma || true
-ARG NODE_OPTIONS="--max-old-space-size=8192"
-RUN NODE_OPTIONS="$NODE_OPTIONS" pnpm prisma generate
+RUN pnpm prisma generate
 RUN pnpm run build
 
 # Deployment container
