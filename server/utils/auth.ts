@@ -4,6 +4,18 @@ import { magicLink } from "better-auth/plugins";
 import { PrismaClient } from "@prisma/client";
 import { createTransport } from "nodemailer";
 
+// --- PRE-APPROVED USERS CONFIGURATION ---
+// Add anyone here who should bypass the "pending" screen.
+// Set their role to either 'admin' or 'user'.
+const PRE_APPROVED_USERS = [
+  { email: 'amt101000@utdallas.edu', name: 'Andrea Turcatti', role: 'admin' },
+  { email: 'sxt230118@utdallas.edu', name: 'Snigdha Tadi', role: 'admin' },
+  { email: 'bxt230017@utdallas.edu', name: 'Bhuvi Thiriveedhi', role: 'user' },
+  { email: 'nxs230112@utdallas.edu', name: 'Nishanth Srinivasan', role: 'user' },
+  { email: 'dal825784@utdallas.edu', name: 'Aditya Narayanan', role: 'user' },
+];
+// ----------------------------------------
+
 const prisma = new PrismaClient({
   datasourceUrl: process.env.PRISMA_DB_URL,
 });
@@ -43,11 +55,14 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
+          // Check if the logging-in user is in our pre-approved list
+          const approvedUser = PRE_APPROVED_USERS.find(u => u.email === user.email);
+          
           return {
             data: {
               ...user,
-              role: "user",
-              whitelisted: false,
+              role: approvedUser ? approvedUser.role : "user",
+              whitelisted: !!approvedUser, // Automatically approve if on the list
               removed: false,
             }
           };
@@ -85,21 +100,31 @@ export const auth = betterAuth({
 
 export type Session = typeof auth.$Infer.Session;
 
-// Ensure admin user exists on startup
-prisma.user.upsert({
-  where: { email: 'sxt230118@utdallas.edu' },
-  update: {},
-  create: {
-    id: 'admin-001',
-    email: 'sxt230118@utdallas.edu',
-    name: 'Snigdha Tadi',
-    emailVerified: true,
-    role: 'admin',
-    whitelisted: true,
-    removed: false,
-  }
-}).then(() => {
-  console.log('[Auth] Admin user ensured');
-}).catch((e) => {
-  console.error('[Auth] Failed to ensure admin user:', e);
-});
+// Ensure all pre-approved users exist and have the correct permissions on startup
+Promise.all(
+  PRE_APPROVED_USERS.map((u, index) =>
+    prisma.user.upsert({
+      where: { email: u.email },
+      update: {
+        role: u.role,
+        whitelisted: true,
+        removed: false,
+      },
+      create: {
+        id: `pre-approved-${index}`,
+        email: u.email,
+        name: u.name,
+        emailVerified: true,
+        role: u.role,
+        whitelisted: true,
+        removed: false,
+      },
+    })
+  )
+)
+  .then(() => {
+    console.log('[Auth] Pre-approved users ensured and permissions synced');
+  })
+  .catch((e) => {
+    console.error('[Auth] Failed to ensure pre-approved users:', e);
+  });
