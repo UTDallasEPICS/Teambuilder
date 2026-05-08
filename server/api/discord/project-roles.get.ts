@@ -1,9 +1,9 @@
-import { defineEventHandler, useQuery } from 'h3';
+import { defineEventHandler, getQuery } from 'h3';
 import { getClient as getDiscordClient } from '~/server/integrations/discordBot/src/utils/clientInstance';
 
 export default defineEventHandler(async (event) => {
   try {
-    const query = useQuery(event);
+    const query = getQuery(event);
     const semesterId = (query.semesterId as string) || undefined;
 
     // Resolve semester: if not provided, use latest
