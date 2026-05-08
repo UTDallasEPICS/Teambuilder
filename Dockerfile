@@ -1,5 +1,9 @@
 # Build container
-FROM node:current-alpine AS builder
+FROM node:current-slim AS builder
+
+# 1. Install OpenSSL (Required by Prisma for the build step)
+RUN apt-get update -y && apt-get install -y openssl
+
 COPY . ./
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -7,12 +11,16 @@ ENV CI=true
 ENV PRISMA_DB_URL="file:./dev.db"
 RUN npm i -g pnpm
 RUN pnpm i --shamefully-hoist
-ARG NODE_OPTIONS="--max-old-space-size=8192"
-RUN NODE_OPTIONS="$NODE_OPTIONS" pnpm prisma generate
+RUN rm -rf .prisma/node_modules/.prisma/node_modules/@prisma/engines || true
+RUN rm -rf node_modules/.prisma || true
+RUN pnpm prisma generate
 RUN pnpm run build
 
 # Deployment container
-FROM node:current-alpine AS deployment
+FROM node:current-slim AS deployment
+
+# 2. Install OpenSSL in the runner too (Prisma needs it to execute queries at runtime)
+RUN apt-get update -y && apt-get install -y openssl
 
 # Copy stuff from build container to ensure we have prisma and everything it needs
 COPY --from=builder /.output /
