@@ -22,7 +22,7 @@
 </template>
  
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, nextTick } from 'vue'
  
 // Composables
 import { useFilters } from '@/composables/demo-composables/useFilters'
@@ -96,6 +96,7 @@ async function handleSubmit() {
     )
  
     // Draw the chart on the next tick (canvas must be mounted)
+    await nextTick()
     const canvas = chartComponentRef.value?.canvasRef
     if (canvas) {
       plotChart(canvas, {

@@ -59,8 +59,9 @@ export function useFileUpload() {
   function createSemestersFrom2DArray(arr, courseName) {
     const otherIndexOffset = ['2200', '2100'].includes(courseName) ? 1 : 0
  
-    return arr.map(element => {
-      const constructedYear = Number('20' + element[0].substring(0, 2))
+    return arr.filter(element => element[0] != null && element[0] !== '').map(element => {
+      const name = String(element[0]).trim()
+      const constructedYear = Number('20' + name.substring(0, 2))
  
       let otherAmount
       if (['2200', '2100'].includes(courseName)) {
@@ -70,12 +71,12 @@ export function useFileUpload() {
       }
  
       let sem = 'Summer'
-      const thirdChar = element[0][2]
+      const thirdChar = name[2]
       if (thirdChar === 'S') sem = 'Spring'
       else if (thirdChar === 'F') sem = 'Fall'
  
       return {
-        Name: element[0],
+        Name: name,
         Course: courseName,
         Year: constructedYear,
         Sem: sem,
