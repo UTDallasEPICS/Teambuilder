@@ -1,5 +1,5 @@
 # Build container
-FROM node:current-alpine AS builder
+FROM node:current AS builder
 COPY . ./
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -13,7 +13,7 @@ RUN pnpm prisma generate
 RUN pnpm run build
 
 # Deployment container
-FROM node:current-alpine AS deployment
+FROM node:current AS deployment
 
 # Copy stuff from build container to ensure we have prisma and everything it needs
 COPY --from=builder /.output /
