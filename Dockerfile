@@ -9,10 +9,9 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV CI=true
 ENV PRISMA_DB_URL="file:./dev.db"
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm i -g pnpm
-RUN pnpm i --shamefully-hoist
-RUN rm -rf .prisma/node_modules/.prisma/node_modules/@prisma/engines || true
-RUN rm -rf node_modules/.prisma || true
+RUN pnpm i --config.node-linker=hoisted
 RUN pnpm prisma generate
 RUN pnpm run build
 
