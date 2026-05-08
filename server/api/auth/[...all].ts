@@ -1,4 +1,4 @@
-import { auth } from "~/server/lib/auth";
+import { auth } from "~/server/utils/auth";
 
 export default defineEventHandler(async (event) => {
   const url = getRequestURL(event);
