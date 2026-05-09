@@ -1,4 +1,3 @@
-// Adding comment to try and force rebuild
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink } from "better-auth/plugins";
