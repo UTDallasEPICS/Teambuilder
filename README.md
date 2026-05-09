@@ -1,190 +1,123 @@
-# EPICS Team Builder 
+# EPICS Team Builder
 
 ## Overview
+This project is an internal tool for the UTD EPICS program. Each semester, directors must assign hundreds of students to project teams based on student project preferences, major, class year, and meeting day availability. This application manages that entire process against a central database, storing students, partners, projects, semesters, and team assignments, and automates team generation using a constraint-programming algorithm.
 
-This project is for the EPICS program that helps the Directors to automatically create teams. 
-It works by sorting a list of students, available projects, and partners into one group based on an algorithm.
 The purpose of this project is to:
-
-- Steamline the team sorting and creation process
-- Keep track of the available projects and partners available
-
-In addition, the purpose of this project is to import demographic data in order to
-graphically display said demographic data. The demographics include Ethnicity (African American,
-Asian, Hispanic, White, International, and other) and Gender (Male Female), and the different way
-to display this data is based on the course, (2200/3200), semester(Spring, Summer, Fall), the year, 
-and finally by percentage, raw count, or total. The options of diplaying the data is by seperate Bar Graphs,
-a single pie chart, or a single line graph.
+- Automate and streamline the team assignment process using a CP-SAT constraint solver
+- Maintain a persistent database of students, partners, projects, semesters, and team rosters
+- Allow directors to import student bid data from UTDesign CSVs and manage records directly
+- Synchronize finalized teams with the EPICS Discord server and GitHub organization
+- Provide demographic data visualization as a secondary feature for program reporting
 
 ## Users/Roles
 
-#### User/Administration and Directors of EPICS
+#### Administration and Directors of EPICS
+- View all teams and projects 
+- Manage teams, projects, and partners 
+- Admin privileges such as adding/removing students from teams 
+- View data analytics and import/display demographic data
 
-- View all teams and projects
-- Manage teams, projects, partners
-- Admin privileges such as adding/removing students from teams
-- Look at data analytics
-- Import Demographic data
-- Display demographic data by Bar Graphs, Pie Charts, or Line Graphs
+#### User Access Flow
+- **Email Restriction**: Only `@utdallas.edu` emails are permitted.
+- **Initial Login**: First login creates a user record with `whitelisted: false` (pending approval).
+- **Admin Approval**: An Admin must navigate to `/admin/users` (this page is currently hidden from the navbar) and approve them.
+- **Persistent Access**: Approved users get `whitelisted: true` and can log in normally via magic link.
+- **Promotion**: Admins can remove users or promote them to the `admin` role from that page.
 
-### Summary
+#### Admin User Setup
+- A hardcoded admin user is automatically created/ensured on every server startup via an upsert in `server/utils/auth.ts`.
+- **Current Seeding**: Seeded with `sxt230118@utdallas.edu`. 
+- **Maintenance**: Future teams must update this email in the source code before deploying to ensure they maintain primary access.
 
-This app allows users to:
-- Select and filter demographic data by course, year, semester, and gender/ethnicity.
-- View the filtered data through dynamic bar, line, and pie charts.
-- Export the data in various formats like CSV or Excel.
-- Update the charts and data dynamically based on the selected filters.
-- Ensure that all data is properly validated and errors are handled gracefully.
-- Update the EPICS Discord server using the [S.C.I.P.E.](https://github.com/AlexQuigley/S.C.I.P.E) bot to automatically add missing channels and roles for projects. 
+## Functional Requirements (by Page)
 
-### Team Creation Functionality
+### Home (`/`)
+- Landing page introducing the application
 
-- The user shall be able to create teams based on the projects available and the student's preference
-- The user shall be able to update and modify the current teams 
+### Projects (`/projects`)
+- View all projects with type (Software / Hardware / Both), status, meeting day, and partner
+- Add, edit, or delete projects
+- Activate a project for a specific semester (creates a team slot)
+- View which semesters a project has been active
 
-### Team/Project Viewing Functionality
+### Partners (`/partners`)
+- View, add, edit, and delete community partner organizations
 
-- The page shall display the current created teams and available projects, students, and partners
+### Students (`/students`)
+- View student details (name, NetID, major, class year, meeting day, status) 
+- Import student data from UTDesign bid-response CSVs
+- Manually edit student details and set status (Active / Inactive)
 
+### Teams (`/teams`)
+- View generated teams grouped by project and semester 
+- Filter by semester and meeting day 
+- Run the team generation algorithm with configurable size constraints 
+- Preview and manually reassign students before saving 
+- Export finalized teams to Excel 
+### Generate Teams (`/generate-teams`)
+- Select semester/meeting day and trigger the CP-SAT algorithm 
+
+### Discord / S.C.I.P.E. (`/SCIPE`)
+- Manage the EPICS Discord bot status (Start/Stop)
+- Synchronize roles and channels with the project database
+- Run diagnostics for mismatches
+
+### GitHub (`/github`)
+- Connect via Personal Access Token and view organization repositories 
+- Automate creation of repositories for project teams
+
+### Demographics (`/Demographics`)
+- Import demographic spreadsheets and visualize data using charts
+
+### User Management (`/admin/users`)
+- Manage pending approvals, active users, and admin roles.
 
 ## Tech Stack
+This project uses **Nuxt 3** as a meta-framework, combining the frontend (Vue 3) and backend (Nitro server)
 
-Documentation linked:
-- Front End: [Vue](https://vuejs.org/guide/introduction.html), [Nuxt](https://nuxt.com/docs/getting-started/introduction)
-- Database: [SQLite](https://www.sqlite.org/docs.html)
-- Style/UI: [PrimeVue](https://primevue.org/)
-- Other packages: [Prisma](https://www.prisma.io/docs)
-- Other technologies: [Postman](https://learning.postman.com/docs/introduction/overview/), [Node.js](https://nodejs.org/docs/latest/api/), [Type Script Execute](https://tsx.is/getting-started), and [SheetJS](https://docs.sheetjs.com/docs/)
+- **Meta-framework**: Nuxt 3 / Vue 3 
+- **Database**: SQLite (via Prisma) 
+- **Authentication**: Better-Auth (Magic Link via Nodemailer)
+- **Styling/UI**: Tailwind CSS v3, PrimeVue 4
+- **Algorithm**: Python 3 + Google OR-Tools CP-SAT
+- **Package Manager**: pnpm 
 
-## Migration Scripts
-- If the database is not populated on your device, you will need a copy of the domain-specific demographic data Excel sheet, provided by the University.
-- After running the website, navigate to the Demographics page and import the demographics spreadsheet using the provided "Import File" button in the bottom left.
-- Then, click "Send Extracted Data" to populate the database using the Excel sheet.
-- (This assumes your Excel sheet will be of the same layout as those provided in prior years, which is a necessary assumption.)
-- If it is a new semester and you have a spreadsheet with the most recent data on it, simply import that file in the same manner as previously described. The database will be updated with the new data.
+## Third-Party Integrations
 
-## Setup
+### Authentication (Better-Auth)
+Uses a passwordless magic link system. Login links are sent via SMTP (Nodemailer).
 
-Make sure to install the dependencies:
+### Discord (discord.js)
+Connects to the EPICS Discord server to manage channels and roles. Requires `TOKEN`, `GUILD_ID`, and `BOT_ID`
 
-## INSTALLATION [9/2/25 and onward] 
+### GitHub (Octokit)
+Interacts with the GitHub API to automate repository creation. Requires `GITHUB_TOKEN`.
+
+### Google OR-Tools (CP-SAT solver)
+Runs as a Python subprocess to solve team assignment constraints.
+
+## Setup & Environment
+
+### Environment Variables (.env)
+Edit your `.env` file with the following:
+- `BETTER_AUTH_SECRET`: Random secret string (generate with `openssl rand -base64 32`)
+- `BETTER_AUTH_URL`: Full URL of the deployed app (e.g., `https://teambuilder-stage.npts.tech/`)
+- `SMTP_HOST` / `SMTP_PORT`: SMTP server hostname and port (use 465 for SSL)
+- `SMTP_USER` / `SMTP_PASS`: SMTP credentials (for Gmail, use an App Password)
+- `SMTP_FROM`: Outgoing display name and address
+- `PRISMA_DB_URL`: Path to SQLite file (e.g., `file:./dev.db`)
+- `ADMIN_BCC`: (Optional) Email to receive BCC copies of magic links for manual debugging
+
+### Development Setup
+1. **Install Dependencies**: `pnpm install`
+2. **Setup Database**: 
+   - `pnpm prisma generate` 
+   - `pnpm prisma migrate dev`
+   - `pnpm prisma db seed` 
+3. **Python Setup**: `pip install ortools`
+4. **Run Server**: `pnpm dev` 
+
+### Running with Docker
 ```bash
-# For Windows Machines, to setup environment run these commands in a git bash console in VS Code
-
-# Install [git](https://git-scm.com/install/windows) for windows.
-
-# Clone the [Teambuilder](https://github.com/utdallasEPICS/teambuilder) directory.
-
-# Install [nodejs](https://nodejs.org/en) for Windows
-
-# Sets up npm in the /Teambuilder directory
-- npm install
-- npm audit fix
-
-# Set up the database and prisma files 
-- npx prisma generate
-- npx prisma migrate dev
-*In some circumstances you may need to delete the dev.db if it already exists or if prima is throwing sync issues. 
-
-# Starts running an instance of the website
-npm run dev
-```
-## UI
-
-- Much of the app utilizes pre-made components from [PrimeVue](https://primevue.org/).
-- Colors for PrimeVue are defined in nuxt.config.ts, where an object with color settings is passed into PrimeVue's initialization (MyPreset).
-- It is strongly recommended to modify colors using [Semantic Tokens](https://primevue.org/theming/styled/), which can be used to target specific parts of components.
-- The specific shape of the color settings object can be a bit tricky to nail down at times, but are generally found under "Design Tokens" for a component's style page, e.g. [DataTable Design Tokens](https://primevue.org/datatable/#theming.tokens).
-
-## Endpoints
-<details close>
-<summary>Expand</summary>
-
-### Get projects with semesters
-```http
-GET /api/projects
-```
-
-<details close>
-<summary>Details</summary>
-<br>
-
-| Code | Description |
-| :--- | :--- |
-| 200 | `OK` |
-
-Example response:
-```json
-[
-  {
-    "id": "40c129a8-c4b6-4057-88d9-0c653b86f14d",
-    "name": "Handcrafted Aluminum Fish",
-    "description": "Calamitas defessus traho.",
-    "type": "SOFTWARE",
-    "status": "HOLD",
-    "repoURL": "https://finished-window.name/",
-    "partnerId": "eaf74e1a-ca69-4312-892b-a0d154edad8a",
-    "createdAt": "2025-04-17T23:56:36.138Z",
-    "updatedAt": "2025-04-17T23:56:36.138Z",
-    "semesters": [
-      {
-        "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
-        "year": 2023,
-        "season": "SUMMER",
-        "createdAt": "2025-04-17T23:56:36.135Z",
-        "updatedAt": "2025-04-17T23:56:36.135Z"
-      },
-      {
-        "id": "3d0ae042-42f7-41fc-adde-4789318a3b47",
-        "year": 2023,
-        "season": "FALL",
-        "createdAt": "2025-04-17T23:56:36.135Z",
-        "updatedAt": "2025-04-17T23:56:36.135Z"
-      },
-    ]
-  },
-  {
-    "id": "cd4274dd-20d9-4b40-bd0c-7949bb67fd0b",
-    "name": "Recycled Metal Chips",
-    "description": "Bos tendo carpo consectetur coma auctor beneficium avarus vetus.",
-    "type": "BOTH",
-    "status": "RETURNING",
-    "repoURL": "https://raw-marksman.biz",
-    "partnerId": "ee073720-87f6-4f98-9c7b-0de0cc1b0a44",
-    "createdAt": "2025-04-17T23:56:36.138Z",
-    "updatedAt": "2025-04-17T23:56:36.138Z",
-    "semesters": [
-      {
-        "id": "38eb5cba-1517-434c-a3ef-5e03cbabb0ec",
-        "year": 2024,
-        "season": "FALL",
-        "createdAt": "2025-04-17T23:56:36.135Z",
-        "updatedAt": "2025-04-17T23:56:36.135Z"
-      },
-      {
-        "id": "3b6776a9-7997-40fd-ad24-0d23a8ef1429",
-        "year": 2023,
-        "season": "SUMMER",
-        "createdAt": "2025-04-17T23:56:36.135Z",
-        "updatedAt": "2025-04-17T23:56:36.135Z"
-      },
-    ]
-  },
-]
-```
-</details>
-
-</details>
-
-
-## Possible Setup Bugs:
-
-It has been known that some errors may come up when developing this application on Apple machines, follow these install steps to fix any issues:
-
-```bash
-# Run the following commands one at a time:
-rm
-rm 
-npm install
-npm audit fix
-```
+docker compose up --build

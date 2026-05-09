@@ -59,6 +59,11 @@ div(class="min-h-screen px-6 py-10")
           ) Approve
 
           button(
+            @click="dismiss(user.id)"
+            style="padding: 0.25rem 0.75rem; background: #6b7280; color: white; font-size: 0.875rem; border-radius: 8px; border: none; cursor: pointer;"
+          ) Dismiss
+
+          button(
             @click="remove(user.id)"
             class="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:opacity-90"
             style="background: #555; color: #f5f5dc"
@@ -216,7 +221,13 @@ const remove = async (id: string) => {
 
   await refresh();
 };
-
+const dismiss = async (id: string) => {
+  await $fetch("/api/users", {
+    method: "DELETE",
+    query: { id },
+  });
+  await refresh();
+};
 const makeAdmin = async (id: string) => {
   await $fetch("/api/users", {
     method: "PUT",

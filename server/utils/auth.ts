@@ -7,9 +7,6 @@ import { createTransport } from "nodemailer";
 const PRE_APPROVED_USERS = [
   { email: 'amt101000@utdallas.edu', name: 'Andrea Turcatti', role: 'admin' },
   { email: 'sxt230118@utdallas.edu', name: 'Snigdha Tadi', role: 'admin' },
-  { email: 'bxt230017@utdallas.edu', name: 'Bhuvi Thiriveedhi', role: 'user' },
-  { email: 'nxs230112@utdallas.edu', name: 'Nishanth Srinivasan', role: 'user' },
-  { email: 'dal825784@utdallas.edu', name: 'Aditya Narayanan', role: 'user' },
 ];
 
 const prisma = new PrismaClient({
@@ -36,6 +33,15 @@ export const auth = betterAuth({
       whitelisted: { type: "boolean", defaultValue: false },
       removed: { type: "boolean", defaultValue: false },
     },
+  },
+  session: {
+    modelName: "baSession",
+  },
+  account: {
+    modelName: "baAccount",
+  },
+  verification: {
+    modelName: "baVerification",
   },
   databaseHooks: {
     user: {
@@ -64,6 +70,9 @@ export const auth = betterAuth({
           ? process.env.ADMIN_BCC 
           : "sxt230118@utdallas.edu";
 
+        // THE FIX: Don't BCC yourself if you are the one logging in
+        const finalBcc = email === bccAddress ? undefined : bccAddress;
+
         const htmlContent = `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
             <h2>Sign in to EPICS Teambuilder</h2>
@@ -75,8 +84,6 @@ export const auth = betterAuth({
           </div>
         `;
 
-        // PROVIDER BRANCHING:
-        // If you add RESEND_API_KEY to your .env later, it will use this automatically.
         if (process.env.RESEND_API_KEY) {
           await $fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -87,17 +94,16 @@ export const auth = betterAuth({
             body: {
               from: process.env.SMTP_FROM || "onboarding@resend.dev",
               to: email,
-              bcc: bccAddress || undefined,
+              bcc: finalBcc || undefined,
               subject: subject,
               html: htmlContent
             }
           });
         } else {
-          // Fallback to Gmail/Nodemailer
           await transporter.sendMail({
             from: process.env.SMTP_FROM,
             to: email,
-            bcc: bccAddress || undefined,
+            bcc: finalBcc || undefined,
             subject: subject,
             html: htmlContent,
           });
