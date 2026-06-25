@@ -1,0 +1,19 @@
+diff --git a/dist/index.js b/dist/index.js
+index 05ecbea799e859919adc6c25d2a8508a7385695b..3a9df53757296ffff2bff9cd2ca74a1520fb47fc 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,3 +1,14 @@
++if (typeof globalThis.localStorage === 'undefined') {
++  const store = {};
++  globalThis.localStorage = {
++    getItem: (key) => store[key] ?? null,
++    setItem: (key, value) => { store[key] = value; },
++    removeItem: (key) => { delete store[key]; },
++    clear: () => { Object.keys(store).forEach(key => delete store[key]); },
++    key: (index) => Object.keys(store)[index] ?? null,
++    get length() { return Object.keys(store).length; }
++  };
++}
+ var __create = Object.create;
+ var __defProp = Object.defineProperty;
+ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;

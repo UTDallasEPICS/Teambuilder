@@ -1,0 +1,13 @@
+diff --git a/dist/index.js b/dist/index.js
+index 967e88b598386ef73bc44768a3445d62b3d79502..0b3b6b46762da4082864f3e91d26e1244b06c8fb 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -236,7 +236,7 @@ var BROADCAST_CHANNEL_NAME = "__vue-devtools-broadcast-channel__";
+ 
+ // src/env.ts
+ init_esm_shims();
+-var isBrowser = typeof navigator !== "undefined";
++var isBrowser = false;
+ var target = typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : typeof global !== "undefined" ? global : {};
+ var isInChromePanel = typeof target.chrome !== "undefined" && !!target.chrome.devtools;
+ var isInIframe = isBrowser && target.self !== target.top;

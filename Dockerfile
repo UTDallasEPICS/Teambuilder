@@ -39,6 +39,8 @@ WORKDIR /app
 # Copy stuff from build container to ensure we have prisma and everything it needs
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/patches ./patches
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/algorithms ./algorithms
 COPY --from=builder /app/.output ./.output

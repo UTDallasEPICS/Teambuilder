@@ -4,3 +4,7 @@ allowBuilds:
   '@prisma/engines': true
   esbuild: true
   prisma: true
+
+patchedDependencies:
+  '@vue/devtools-kit@7.7.7': patches/@vue__devtools-kit@7.7.7.patch
+  '@vue/devtools-shared@7.7.7': patches/@vue__devtools-shared@7.7.7.patch
