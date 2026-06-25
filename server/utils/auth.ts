@@ -17,7 +17,7 @@ const prisma = new PrismaClient({
 const transporter = createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
-  secure: Number(process.env.SMTP_PORT) === 465, 
+  secure: Number(process.env.SMTP_PORT) === 465,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -64,10 +64,10 @@ export const auth = betterAuth({
     magicLink({
       sendMagicLink: async ({ email, url }) => {
         const subject = `EPICS Teambuilder Login - ${email}`;
-        
+
         // BCC Logic: Use ENV if available, otherwise default to you for now
-        const bccAddress = process.env.ADMIN_BCC !== undefined 
-          ? process.env.ADMIN_BCC 
+        const bccAddress = process.env.ADMIN_BCC !== undefined
+          ? process.env.ADMIN_BCC
           : "sxt230118@utdallas.edu";
 
         // THE FIX: Don't BCC yourself if you are the one logging in
@@ -83,6 +83,8 @@ export const auth = betterAuth({
             <p style="margin-top: 24px; color: #999; font-size: 12px;">Requested for: ${email}</p>
           </div>
         `;
+
+        console.log({url});
 
         if (process.env.RESEND_API_KEY) {
           await $fetch('https://api.resend.com/emails', {
