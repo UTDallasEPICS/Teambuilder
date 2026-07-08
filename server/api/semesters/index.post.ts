@@ -1,22 +1,8 @@
-import { PrismaClient, Season } from "@prisma/client"
+import type {SemesterCreate} from "~/server/services/semesterService";
+import semesterService from "~/server/services/semesterService";
 
 export default defineEventHandler(async (event) => {
-  const client: PrismaClient = event.context.client;
-
-  try {
-    const { season, year } = await readBody<SemesterPostBody>(event);
-    const createdSemester = await client.semester.create({
-      data: { season, year }
-    })
-  
-    return { status: 201, data: createdSemester }
-  } catch (error) {
-    console.error(error);
-    return { status: 500, message: 'Internal Server Error' };
-  }
-})
-
-interface SemesterPostBody {
-  season: Season;
-  year: number;
-}
+  const data = await readBody<SemesterCreate>(event);
+  setResponseStatus(event, 201);
+  return await semesterService.createSemester(data);
+});

@@ -1,3 +1,4 @@
+import type {PartnerUpdate} from "~/server/services/partnerService";
 import partnerService from "~/server/services/partnerService";
 
 export default defineEventHandler(async (event) => {
@@ -6,10 +7,6 @@ export default defineEventHandler(async (event) => {
     throw createError({statusCode: 400, statusMessage: 'Missing id parameter'});
   }
 
-  const partner = await partnerService.getPartnerById(id);
-  if (!partner) {
-    throw createError({statusCode: 404, statusMessage: 'Partner not found'});
-  }
-
-  return partner;
+  const data = await readBody<PartnerUpdate>(event);
+  return await partnerService.updatePartner(id, data);
 });

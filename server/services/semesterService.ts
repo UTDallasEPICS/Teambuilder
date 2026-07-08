@@ -1,22 +1,64 @@
-import type { Semester } from "@prisma/client";
-import { capitalizeFirst } from "~/utils";
+import type {Season} from "~/prisma/generated";
+import {prisma} from "~/server/utils/db";
 
-// Returns a string that is an ordered, comma-delimited list of semester display names
-export const stringifySemesters = (semesters: Semester[] | undefined) => (
-  semesters ? sortSemesters(semesters).map(displaySemester).join(', ') : ''
-)
-
-// Sorts semesters in reverse chronological order
-export const sortSemesters = (semesters: Semester[]) => {
-  const seasonsOrder = {
-    'SPRING': 1,
-    'SUMMER': 2,
-    'FALL': 3
-  }
-  return semesters.sort((a, b) => b.year - a.year || seasonsOrder[b.season] - seasonsOrder[a.season]);
+export interface SemesterRead {
+  id: string;
+  year: number;
+  season: Season;
 }
 
-// Returns a string for the given semester in the format "Spring 2025"
-export const displaySemester = (semester: Semester) => {
-  return capitalizeFirst(semester.season) + ' ' + semester.year;
+export interface SemesterCreate {
+  year: number;
+  season: Season;
 }
+
+export interface SemesterUpdate {
+  year?: number;
+  season?: Season;
+}
+
+const getAllSemesters = async (): Promise<SemesterRead[]> => {
+  const semesters = await prisma.semester.findMany({
+    orderBy: [
+      {year: 'desc'},
+      {season: 'desc'},
+    ],
+  });
+  return semesters;
+}
+
+const getSemesterById = async (id: string): Promise<SemesterRead | null> => {
+  const semester = await prisma.semester.findUnique({
+    where: { id: id },
+  })
+  return semester;
+}
+
+const createSemester = async (data: SemesterCreate): Promise<SemesterRead> => {
+  const semester = await prisma.semester.create({
+    data
+  })
+  return semester;
+}
+
+const updateSemester = async (id: string, data: SemesterUpdate): Promise<SemesterRead> => {
+  const semester = await prisma.semester.update({
+    where: { id },
+    data,
+  });
+  return semester;
+}
+
+const deleteSemester = async (id: string) : Promise<void> => {
+  await prisma.semester.delete({ where: { id } });
+}
+
+const semesterService = {
+  getAllSemesters,
+  getSemesterById,
+  createSemester,
+  updateSemester,
+  deleteSemester,
+};
+
+export default semesterService;
