@@ -40,6 +40,20 @@ const main = async () => {
     });
 
     await prisma.user.upsert({
+        where: { email: 'trp210003@utdallas.edu' },
+        update: {},
+        create: {
+            id: 'admin-003',
+            email: 'trp210003@utdallas.edu',
+            name: 'Teerth Patel',
+            emailVerified: true,
+            role: 'admin',
+            whitelisted: true,
+            removed: false,
+        }
+    });
+
+    await prisma.user.upsert({
         where: { email: 'bxt230017@utdallas.edu' },
         update: {},
         create: {
@@ -80,6 +94,7 @@ const main = async () => {
             removed: false,
         }
     });
+
     try {
         const semesters = createSemesters();
         const partners = createRandomPartners(50);

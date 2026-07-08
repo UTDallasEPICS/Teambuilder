@@ -27,3 +27,4 @@ logs
 # Database
 *.db
 prisma/dev.db-journal
+prisma/generated
