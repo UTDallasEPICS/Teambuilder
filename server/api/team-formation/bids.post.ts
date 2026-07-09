@@ -14,7 +14,8 @@
  *   row["Choice 1"] … row["Choice 6"] – "S26 - OrgName: ProjectTitle" (blank if none)
  */
 
-import type { Year } from '@prisma/client';
+import type { Year } from '~/prisma/generated';
+import { prisma } from '~/server/utils/db';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -139,7 +140,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Expected a non-empty array of bid rows.' });
   }
 
-  const client = event.context.client;
+  const client = prisma;
 
   // Extract semester from choice format (e.g., "S26" from "S26 - ProjectName")
   let semesterCode = '';

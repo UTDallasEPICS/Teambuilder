@@ -8,7 +8,8 @@
 import { generateTeamsORTools } from '~/algorithms/CPSAT/ortools'
 import type { Student as CPSATStudent, Project as CPSATProject } from '~/algorithms/CPSAT/ortools'
 import type { CPSATConfig } from '~/algorithms/CPSAT/ortools'
-import type { Year, ProjectType, Student, Choice, Project } from '@prisma/client'
+import type { Year, ProjectType, Student, Choice, Project } from '~/prisma/generated'
+import { prisma } from '~/server/utils/db'
 
 type StudentWithChoices = Student & { choices: Choice[] }
 type MeetingDay = 'WEDNESDAY' | 'THURSDAY'
@@ -63,7 +64,7 @@ export default defineEventHandler(async (event) => {
     : {}
 
   // Fetch active students with their choices
-  const students: StudentWithChoices[] = await event.context.client.student.findMany({
+  const students: StudentWithChoices[] = await prisma.student.findMany({
     where: {
       status: 'ACTIVE',
       ...studentDayWhere,
@@ -72,7 +73,7 @@ export default defineEventHandler(async (event) => {
   })
 
   // Fetch active projects for this semester (those with a team in this semester)
-  const teamsForRun = await event.context.client.team.findMany({
+  const teamsForRun = await prisma.team.findMany({
     where: {
       semesterId,
       meetingDay: day,
@@ -291,7 +292,7 @@ export default defineEventHandler(async (event) => {
       const teamId = projectIdToTeamId.get(projectId)
       if (!teamId) return
 
-      await event.context.client.team.update({
+      await prisma.team.update({
         where: { id: teamId },
         data: {
           students: {

@@ -18,7 +18,7 @@ import {
     VoiceChannel,
 } from "discord.js";
 import { getClient } from "../utils/clientInstance";
-import { Project } from "@prisma/client";
+import {ProjectRead} from "~/server/services/projectService";
 
 /**
  * Creates a project category, associated text and voice channels, and roles in a Discord server.
@@ -31,7 +31,7 @@ import { Project } from "@prisma/client";
  * 
  * @throws {Error} If the GUILD_ID environment variable is not defined or if an error occurs while creating the category or channels.
  */
-const createProjectDiscord = async (project: Project) => {
+const createProjectDiscord = async (project: ProjectRead) => {
     const client = getClient();
     const guildId = process.env.GUILD_ID;
     if (!guildId) {
@@ -130,7 +130,7 @@ const createProjectDiscord = async (project: Project) => {
                         allow: [PermissionFlagsBits.ViewChannel],
                     },
                 ],
-            }) as TextChannel;
+            });
             console.log(`Created text channel: ${formattedChannelName}`);
         } catch (error) {
             console.error(`Error creating text channel ${formattedChannelName}:`, error);
@@ -163,7 +163,7 @@ const createProjectDiscord = async (project: Project) => {
                         allow: [PermissionFlagsBits.ViewChannel],
                     },
                 ],
-            }) as VoiceChannel;
+            });
             console.log(`Created voice channel: ${formattedChannelName}`);
         } catch (error) {
             console.error(`Error creating voice channel ${formattedChannelName}:`, error);

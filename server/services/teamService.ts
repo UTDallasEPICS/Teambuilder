@@ -1,5 +1,6 @@
 import type {ProjectMeetingDay} from "~/prisma/generated";
 import type {MembershipCreate, MembershipRead} from "~/server/services/membershipService";
+import type {SemesterRead} from "~/server/services/semesterService";
 import {prisma} from "~/server/utils/db";
 
 export interface TeamRead {
@@ -8,6 +9,7 @@ export interface TeamRead {
   semesterId: string;
   meetingDay: ProjectMeetingDay;
   Memberships: MembershipRead[];
+  Semester: SemesterRead;
 }
 
 export interface TeamCreate {
@@ -25,7 +27,7 @@ export interface TeamUpdate {
 const getAllTeams = async (): Promise<TeamRead[]> => {
   const teams = await prisma.team.findMany({
     orderBy: {createdAt: 'asc'},
-    include: {Memberships: true},
+    include: {Memberships: true, Semester: true},
   });
   return teams;
 }
@@ -33,7 +35,7 @@ const getAllTeams = async (): Promise<TeamRead[]> => {
 const getTeamById = async (id: string): Promise<TeamRead | null> => {
   const team = await prisma.team.findUnique({
     where: {id},
-    include: {Memberships: true},
+    include: {Memberships: true, Semester: true},
   })
   return team;
 }
@@ -45,7 +47,7 @@ const createTeam = async (data: TeamCreate): Promise<TeamRead> => {
       ...rest,
       Memberships: Memberships ? {create: Memberships} : undefined,
     },
-    include: {Memberships: true},
+    include: {Memberships: true, Semester: true},
   })
   return team;
 }
@@ -54,7 +56,7 @@ const updateTeam = async (id: string, data: TeamUpdate): Promise<TeamRead> => {
   const team = await prisma.team.update({
     where: {id},
     data,
-    include: {Memberships: true},
+    include: {Memberships: true, Semester: true},
   });
   return team;
 }

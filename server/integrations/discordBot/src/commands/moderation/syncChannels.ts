@@ -1,25 +1,19 @@
-import fs from "fs";
-import path from "path";
 import {
   Client,
   ChatInputCommandInteraction,
-  ApplicationCommandOptionType,
   PermissionFlagsBits,
-  CategoryChannel,
-  TextChannel,
 } from "discord.js";
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import projectService from "~/server/services/projectService";
 
 const syncChannelsCommand = {
   name: 'sync-projects',
-  description: 'Sync project names from data.json with Discord text channels.',
+  description: 'Sync project names from the database with Discord text channels.',
   options: [],
   permissionsRequired: [PermissionFlagsBits.ManageChannels],
   botPermissions: [PermissionFlagsBits.ManageChannels],
 
   /**
-   * Syncs project names from data.json with Discord text channels.
+   * Syncs project names from the database with Discord text channels.
    * @param {Client} client - The Discord client.
    * @param {Interaction} interaction - The interaction object from the slash command.
    */
@@ -33,20 +27,8 @@ const syncChannelsCommand = {
         return;
       }
 
-      // Convert import.meta.url to __dirname equivalent
-      const __filename = fileURLToPath(import.meta.url);
-      const __dirname = dirname(__filename);
-
-      // Define the path to the data.json file
-      const filePath = join(__dirname, "..", "..", "..", "data.json");
-
-      // Read and parse the data.json file
-      const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-      // Extract project names from the data
-      const projectNames = data.partners.flatMap((partner: { projects: { name: string }[] }) =>
-        partner.projects.map((project) => project.name)
-      );
+      const projects = await projectService.getAllProjects();
+      const projectNames = projects.map((project) => project.name);
 
       // Get the list of existing channels in the guild
       const existingChannels = interaction.guild?.channels.cache;

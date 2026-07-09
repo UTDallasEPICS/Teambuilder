@@ -3,10 +3,11 @@
  * POST /api/discord/update-channels
  */
 import createProjectDiscord from '~/server/integrations/discordBot/src/teambuilderFunc/createProjectDiscord';
+import projectService from '~/server/services/projectService';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   try {
-    const projects = await event.context.client.project.findMany();
+    const projects = await projectService.getAllProjects();
     let created = 0;
     let errors: string[] = [];
     for (const project of projects) {

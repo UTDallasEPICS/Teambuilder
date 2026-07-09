@@ -34,7 +34,7 @@ export interface ProjectUpdate {
 const getAllProjects = async (): Promise<ProjectRead[]> => {
   const projects = await prisma.project.findMany({
     orderBy: {name: 'asc'},
-    include: {Teams: {include: {Memberships: true}}},
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
   });
   return projects;
 }
@@ -42,7 +42,7 @@ const getAllProjects = async (): Promise<ProjectRead[]> => {
 const getProjectById = async (id: string): Promise<ProjectRead | null> => {
   const project = await prisma.project.findUnique({
     where: {id},
-    include: {Teams: {include: {Memberships: true}}},
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
   })
   return project;
 }
@@ -59,7 +59,7 @@ const createProject = async (data: ProjectCreate): Promise<ProjectRead> => {
         })),
       } : undefined,
     },
-    include: {Teams: {include: {Memberships: true}}},
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
   })
   return project;
 }
@@ -68,7 +68,7 @@ const updateProject = async (id: string, data: ProjectUpdate): Promise<ProjectRe
   const project = await prisma.project.update({
     where: {id},
     data,
-    include: {Teams: {include: {Memberships: true}}},
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
   });
   return project;
 }

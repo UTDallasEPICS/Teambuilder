@@ -119,7 +119,7 @@ model Team {
   Project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   Memberships Membership[]
 
-  @@unique([projectId, semesterId, meetingDay])
+  @@unique([projectId, semesterId])
 }
 
 // An assignment of a student/mentor to a team for a particular semester.

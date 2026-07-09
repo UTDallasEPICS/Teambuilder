@@ -27,6 +27,16 @@ const getAllSemesters = async (): Promise<SemesterRead[]> => {
   return semesters;
 }
 
+const getRecentSemester = async (): Promise<SemesterRead | null> => {
+  const semester = await prisma.semester.findFirst({
+    orderBy: [
+      {year: 'desc'},
+      {season: 'desc'},
+    ],
+  })
+  return semester;
+}
+
 const getSemesterById = async (id: string): Promise<SemesterRead | null> => {
   const semester = await prisma.semester.findUnique({
     where: { id: id },
@@ -54,6 +64,7 @@ const deleteSemester = async (id: string) : Promise<void> => {
 }
 
 const semesterService = {
+  getRecentSemester,
   getAllSemesters,
   getSemesterById,
   createSemester,
