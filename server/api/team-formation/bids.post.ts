@@ -14,25 +14,26 @@
  *   row["Choice 1"] … row["Choice 6"] – "S26 - OrgName: ProjectTitle" (blank if none)
  */
 
-import type { Year } from '~/prisma/generated';
-import { prisma } from '~/server/utils/db';
+import {Year, Class, Gender, ProjectMeetingDay} from '~/prisma/generated';
+import {prisma} from '~/server/utils/db';
+import projectService from "~/server/services/projectService";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 const YEAR_MAP: Record<string, Year> = {
-  freshman:  'FRESHMAN',
+  freshman: 'FRESHMAN',
   sophomore: 'SOPHOMORE',
-  junior:    'JUNIOR',
-  senior:    'SENIOR',
+  junior: 'JUNIOR',
+  senior: 'SENIOR',
 };
 
 const MAJOR_MAP: Record<string, string> = {
-  'computer science':    'CS',
+  'computer science': 'CS',
   'software engineering': 'SE',
   'electrical engineering': 'EE',
   'mechanical engineering': 'ME',
   'biomedical engineering': 'BME',
-  'data science':        'DS',
+  'data science': 'DS',
   'computer engineering': 'CE',
   'systems engineering': 'Systems',
 };
@@ -43,21 +44,32 @@ function extractMajor(schoolAndMajor: string): string {
   return MAJOR_MAP[raw] ?? (parts[1]?.trim() ?? 'Other');
 }
 
-function extractClass(enrollment: string): '2200' | '3200' {
+function extractClass(enrollment: string): 'EPCS_2200' | 'EPCS_3200' {
   const match = enrollment.match(/\d{4}/);
   const n = match?.[0];
-  return n === '3200' ? '3200' : '2200';
+  return n === '3200' ? 'EPCS_3200' : 'EPCS_2200';
+}
+
+function extractGender(gender: string): Gender {
+  switch (gender.trim().toLowerCase()) {
+    case 'male':
+      return 'MALE'
+    case 'female':
+      return 'FEMALE'
+    default:
+      return 'OTHER'
+  }
 }
 
 function parseStudentName(row: Record<string, any>): { firstName: string; lastName: string } {
   const rawName = String(
-    row['Student Name'] ??
-    row['Name'] ??
-    row['Full Name'] ??
-    row['Student'] ??
-    row['student name'] ??
-    row['name'] ??
-    ''
+      row['Student Name'] ??
+      row['Name'] ??
+      row['Full Name'] ??
+      row['Student'] ??
+      row['student name'] ??
+      row['name'] ??
+      ''
   ).trim();
   const rawLastNameColumn = String(row[''] ?? '').trim();
 
@@ -100,10 +112,10 @@ function stripSemesterPrefix(choice: string): string {
 
 function normalizeProjectText(input: string): string {
   return input
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 }
 
 function normalizeProjectKey(input: string): string {
@@ -122,81 +134,92 @@ function readFirstValue(row: Record<string, any>, keys: string[]): string {
   return '';
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+interface BidRecord {
+  firstName: string,
+  lastName: string,
+  email?: string,
+  netID: string,
+  year: Year,
+  class: Class,
+  gender: Gender,
+  major: string,
+  choices: string[]
+}
+
+async function processBidRecord(semesterId: string, meetingDay: ProjectMeetingDay, record: BidRecord): Promise<void> {
+  // create student record
+  const studentInfo = {
+    firstName: record.firstName,
+    lastName: record.lastName,
+    email: record.email,
+  }
+  const student = await prisma.student.upsert({
+    where: {netID: record.netID},
+    update: studentInfo,
+    create: {...studentInfo, netID: record.netID},
+  })
+  // create enrollment record
+  const enrollmentInfo = {
+    meetingDay,
+    gender: record.gender,
+    major: record.major,
+    year: record.year,
+    class: record.class,
+  }
+  await prisma.enrollment.upsert({
+    where: {studentId_semesterId: {studentId: student.id, semesterId}},
+    update: enrollmentInfo,
+    create: {...enrollmentInfo, studentId: student.id, semesterId},
+  });
+  // replace choices for student for that semester
+  await prisma.choice.deleteMany({
+    where: {
+      studentId: student.id,
+      semesterId,
+    }
+  });
+  await prisma.choice.createMany({
+    data: record.choices.map((choice, i) => ({
+      studentId: student.id,
+      semesterId,
+      projectId: choice,
+      rank: i + 1,
+    }))
+  })
+}
+
 
 export default defineEventHandler(async (event) => {
   const rows: any[] = await readBody(event);
-  const merge = getQuery(event).merge === 'true'; // If true, keep existing choices; if false (default), replace
+  const semesterId = getQuery(event).semesterId as string;
   const rawMeetingDay = getQuery(event).meetingDay;
   const meetingDay =
-    typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'WEDNESDAY'
-      ? 'WEDNESDAY'
-      : typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'THURSDAY'
-        ? 'THURSDAY'
-        : null;
-        const allowCreateProjects = getQuery(event).createProjects === 'true';
+      typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'WEDNESDAY'
+          ? 'WEDNESDAY'
+          : typeof rawMeetingDay === 'string' && rawMeetingDay.toUpperCase() === 'THURSDAY'
+              ? 'THURSDAY'
+              : null;
+  if (!meetingDay) {
+    throw createError({statusCode: 400, message: 'Expected a meeting day (Wednesday/Thursday)'});
+  }
 
   if (!Array.isArray(rows) || rows.length === 0) {
-    throw createError({ statusCode: 400, message: 'Expected a non-empty array of bid rows.' });
-  }
-
-  const client = prisma;
-
-  // Extract semester from choice format (e.g., "S26" from "S26 - ProjectName")
-  let semesterCode = '';
-  for (const row of rows) {
-    for (let i = 1; i <= 6; i++) {
-      const choice = row[`Choice ${i}`]?.trim();
-      if (choice) {
-        const match = choice.match(/^([SF]\d{2,4})/);
-        if (match) {
-          semesterCode = match[1];
-          break;
-        }
-      }
-    }
-    if (semesterCode) break;
-  }
-
-  // Parse semester code (S26 = Spring 2026, F25 = Fall 2025)
-  let semesterId = '';
-  if (semesterCode) {
-    const season = semesterCode[0] === 'S' ? 'SPRING' : 'FALL';
-    const year = 2000 + parseInt(semesterCode.slice(1), 10);
-
-    const semester = await client.semester.upsert({
-      where: { year_season: { year, season: season as any } },
-      update: {},
-      create: { year, season: season as any },
-    });
-    semesterId = semester.id;
-  }
-
-  // Create default partner if needed
-  let defaultPartner = await client.partner.findFirst();
-  if (!defaultPartner) {
-    defaultPartner = await client.partner.create({
-      data: {
-        name: 'UTDesign EPICS',
-        contactName: 'EPICS',
-        contactEmail: 'epics@utdallas.edu',
-      },
-    });
+    throw createError({statusCode: 400, message: 'Expected a non-empty array of bid rows.'});
   }
 
   // Fetch all projects once so we can match by name
-  let allProjects = await client.project.findMany({ select: { id: true, name: true } });
+  let allProjects = await projectService.getAllProjects();
 
   // Build a normalized name → id lookup for fast matching
   let projectLookup = new Map<string, string>(
-    allProjects.map((p: { id: string; name: string }) => [normalizeProjectKey(p.name), p.id])
+      allProjects.map((p: { id: string; name: string }) => [normalizeProjectKey(p.name), p.id])
   );
 
   // Helper to get or create project
   const getOrCreateProject = async (projectName: string): Promise<string | null> => {
     if (!projectName) return null;
     const normalized = normalizeProjectKey(projectName);
-    
+
     // Check in existing lookup
     if (projectLookup.has(normalized)) {
       return projectLookup.get(normalized)!;
@@ -230,8 +253,8 @@ export default defineEventHandler(async (event) => {
     const projectPart = aliasLookup.get(projectPartRaw) ?? projectPartRaw;
 
     const candidates = [normalizedFull, orgPart, projectPart]
-      .map(c => normalizeProjectKey(c))
-      .filter(Boolean);
+        .map(c => normalizeProjectKey(c))
+        .filter(Boolean);
 
     // Check existing projects first
     for (const candidate of candidates) {
@@ -249,8 +272,8 @@ export default defineEventHandler(async (event) => {
   };
 
   let studentsImported = 0;
-  let choicesCreated  = 0;
-  const skippedStudents: string[]   = [];
+  let choicesCreated = 0;
+  const skippedStudents: string[] = [];
   const unmatchedProjects: string[] = [];
 
   for (const row of rows) {
@@ -261,55 +284,19 @@ export default defineEventHandler(async (event) => {
     }
 
     // ── Build student record ─────────────────────────────────────────────────
-    const { firstName, lastName } = parseStudentName(row);
-    const email     = readFirstValue(row, ['Student Email', 'student email', 'studentemail']) || null;
-    const yearRaw   = readFirstValue(row, ['Classification', 'classification']).toLowerCase();
+    const {firstName, lastName} = parseStudentName(row);
+    const email = readFirstValue(row, ['Student Email', 'student email', 'studentemail']) || null;
+    const yearRaw = readFirstValue(row, ['Classification', 'classification']).toLowerCase();
     const year: Year = YEAR_MAP[yearRaw] ?? 'FRESHMAN';
-    const cls       = extractClass(readFirstValue(row, ['Enrollment', 'enrollment']));
-    const major     = extractMajor(readFirstValue(row, ['School and Major', 'school and major', 'major']));
-    const status    = 'ACTIVE' as const;
-
-    const updateData: any = { firstName, lastName, email, year, class: cls, major, status };
-    const createData: any = {
-      netID,
-      firstName,
-      lastName,
-      email,
-      year,
-      class: cls,
-      major,
-      status,
-      github: null,
-      discord: null,
-      enrollment: readFirstValue(row, ['Enrollment', 'enrollment']) || null,
-    };
-
-    if (meetingDay) {
-      updateData.meetingDay = meetingDay;
-      createData.meetingDay = meetingDay;
-    }
-
-    await client.student.upsert({
-      where: { netID },
-      update: updateData,
-      create: createData,
-    });
-    studentsImported++;
+    const cls = extractClass(readFirstValue(row, ['Enrollment', 'enrollment']));
+    const major = extractMajor(readFirstValue(row, ['School and Major', 'school and major', 'major']));
+    const gender = extractGender(readFirstValue(row, ['Gender', 'gender']));
 
     // ── Process choices ──────────────────────────────────────────────────────
-    const choiceKeys = ['Choice 1','Choice 2','Choice 3','Choice 4','Choice 5','Choice 6', 'choice1', 'choice2', 'choice3', 'choice4', 'choice5', 'choice6'];
-    const choicesToCreate: { rank: number; studentId: string; projectId: string }[] = [];
 
-    // Re-fetch the student to get their id
-    const student = await client.student.findUnique({ where: { netID }, select: { id: true } });
-    if (!student) continue;
+    const chosenProjectIds = []
 
-    // Delete previous choices for this student only in replace mode.
-    // In merge mode, keep existing choices and add new ones.
-    if (!merge) {
-      await client.choice.deleteMany({ where: { studentId: student.id } });
-    }
-
+    const choiceKeys = ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6', 'choice1', 'choice2', 'choice3', 'choice4', 'choice5', 'choice6'];
     for (let i = 0; i < choiceKeys.length; i++) {
       const raw = readFirstValue(row, [choiceKeys[i]]);
       if (!raw) continue;
@@ -321,14 +308,24 @@ export default defineEventHandler(async (event) => {
         continue;
       }
 
-      choicesToCreate.push({ rank: i + 1, studentId: student.id, projectId });
+      chosenProjectIds.push(projectId);
     }
 
-    if (choicesToCreate.length > 0) {
-      await client.choice.createMany({ data: choicesToCreate });
-      choicesCreated += choicesToCreate.length;
+    const record = {
+      firstName,
+      lastName,
+      netID,
+      email: email ?? undefined,
+      year,
+      class: cls,
+      gender,
+      major,
+      choices: chosenProjectIds,
     }
+    await processBidRecord(semesterId, meetingDay, record);
+    studentsImported++;
+    choicesCreated += chosenProjectIds.length;
   }
 
-  return { studentsImported, choicesCreated, skippedStudents, unmatchedProjects };
+  return {studentsImported, choicesCreated, skippedStudents, unmatchedProjects};
 });
