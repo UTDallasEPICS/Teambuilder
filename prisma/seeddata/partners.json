@@ -1,0 +1,268 @@
+[
+  {
+    "id": "07ebdb4f-1e6b-4053-8a8a-122f5441f8df",
+    "name": "Comet Cupboard",
+    "Contacts": [
+      {
+        "name": "Bel Khuu",
+        "email": "bel.khuu@utdallas.edu"
+      }
+    ]
+  },
+  {
+    "id": "167274c3-d281-4a20-9149-c4357ad06798",
+    "name": "Kids-U",
+    "Contacts": [
+      {
+        "name": "Diana Baker",
+        "email": "diana@kids-u.org"
+      },
+      {
+        "name": "Lauryn Sweet",
+        "email": "lauryn@kids-u.org"
+      }
+    ]
+  },
+  {
+    "id": "573781a7-18ed-438b-878e-e5db8fa4cce0",
+    "name": "Friends of MLK",
+    "Contacts": [
+      {
+        "name": "Rae Phillips",
+        "email": "rae@readinghuddle.com"
+      }
+    ]
+  },
+  {
+    "id": "0d9a1b9a-4076-4cb5-b294-fcf5d4ae2315",
+    "name": "Hope Restored Missions",
+    "Contacts": [
+      {
+        "name": "Jim Alexander",
+        "email": "jimalex8115@gmail.com"
+      }
+    ]
+  },
+  {
+    "id": "b5fec128-83e8-452a-a0e9-0d4eab44408c",
+    "name": "UTDesign",
+    "Contacts": [
+      {
+        "name": "Andrea Turcatti",
+        "email": "turcatti@utdallas.edu"
+      }
+    ]
+  },
+  {
+    "id": "bc1417fd-e901-4535-a07c-7f1ff742d9fb",
+    "name": "Fundacion Manos Unidas Por Autismo",
+    "Contacts": [
+      {
+        "name": "Melida Mock",
+        "email": "mercadeo@manosunidasporautismo.org"
+      }
+    ]
+  },
+  {
+    "id": "5c189c91-f263-4b7b-be32-fccf21b80c98",
+    "name": "NAF",
+    "Contacts": [
+      {
+        "name": "Keisha Taylor",
+        "email": "ktaylor@naf.org"
+      }
+    ]
+  },
+  {
+    "id": "89613e99-3a9a-47ef-9ad4-58e9d7cd40a7",
+    "name": "Samaritan Inn",
+    "Contacts": [
+      {
+        "name": "Stacy Bergman",
+        "email": "sbergman@saminn.org"
+      },
+      {
+        "name": "Ashley House",
+        "email": "ahouse@saminn.org"
+      }
+    ]
+  },
+  {
+    "id": "9864a43c-781b-493f-8265-bb494b0e89eb",
+    "name": "McKinney Public Library Foundation",
+    "Contacts": [
+      {
+        "name": "Roben Closs",
+        "email": "robenc@gmail.com"
+      }
+    ]
+  },
+  {
+    "id": "884eec13-8883-48e5-b693-a8ad0a5e22a7",
+    "name": "Tejiendo Alianzas",
+    "Contacts": [
+      {
+        "name": "Richard Hanson",
+        "email": "info@tejiendoalianzas.org"
+      }
+    ]
+  },
+  {
+    "id": "993f8981-a356-4426-b3fc-aac8c3fab145",
+    "name": "TLT - Tomorrow's Leaders Today",
+    "Contacts": [
+      {
+        "name": "Elaine Smith-Poyourow",
+        "email": "info@tltleaders.org"
+      }
+    ]
+  },
+  {
+    "id": "426886d3-a322-44d3-b7e6-acbc55db7dcf",
+    "name": "BrainCharge",
+    "Contacts": [
+      {
+        "name": "Vidya Ayyr",
+        "email": "brainchargecaregivers@gmail.com"
+      }
+    ]
+  },
+  {
+    "id": "792c5451-c144-426c-9d4b-6779f21118b1",
+    "name": "The Kellermann Foundation",
+    "Contacts": [
+      {
+        "name": "Penny Lalanne",
+        "email": "penny@kellermannfoundation.org"
+      },
+      {
+        "name": "Turner Doggett",
+        "email": "turner.doggett@yahoo.com"
+      }
+    ]
+  },
+  {
+    "id": "ca8e87aa-92c1-4f3d-928f-9abaf868e58f",
+    "name": "Play with Me Program",
+    "Contacts": [
+      {
+        "name": "Adriana Baird",
+        "email": "adriana.baird@utdallas.edu"
+      }
+    ]
+  },
+  {
+    "id": "0c53095a-9daa-4041-97ed-d904d963dc03",
+    "name": "Sci-Tech Discovery Center",
+    "Contacts": [
+      {
+        "name": "Jaice Hood",
+        "email": "jacie.hood@scitechdiscovery.org"
+      }
+    ]
+  },
+  {
+    "id": "b3bb04db-803a-4599-b6ef-1036e274d9ec",
+    "name": "WalkWithMe.global",
+    "Contacts": [
+      {
+        "name": "Melissa Mitchell",
+        "email": "mmitchell@walkwithme.global"
+      }
+    ]
+  },
+  {
+    "id": "4a05971f-dab9-49ff-b871-b4b18bd4c999",
+    "name": "Abide Women Health Services",
+    "Contacts": [
+      {
+        "name": "Gia Thompson",
+        "email": "gia@abidewomen.org"
+      }
+    ]
+  },
+  {
+    "id": "00d5f37d-e856-48e9-939d-66eefc222b09",
+    "name": "BVRIT",
+    "Contacts": [
+      {
+        "name": "Rohith Sirpa",
+        "email": "rohith.s@bvrit.ac.in"
+      }
+    ]
+  },
+  {
+    "id": "ad2d1280-b659-4be3-a336-736ab03d31ff",
+    "name": "TheLab.ms",
+    "Contacts": [
+      {
+        "name": "Doug Emes",
+        "email": "doug@thelab.ms"
+      }
+    ]
+  },
+  {
+    "id": "3cf31d91-9b68-4772-8664-141a437b289b",
+    "name": "BioDesign Center",
+    "Contacts": [
+      {
+        "name": "Michael Kraft",
+        "email": "michael.kraft@utsouthwestern.edu"
+      }
+    ]
+  },
+  {
+    "id": "dd9bfbf1-df32-4acd-b8bc-3e221b7b55f5",
+    "name": "HopeBoard",
+    "Contacts": [
+      {
+        "name": "Tien Dinh",
+        "email": "tiendinh@gse.harvard.edu"
+      }
+    ]
+  },
+  {
+    "id": "104ce285-d9bc-4645-af73-6e94e757364b",
+    "name": "The Giving Garden",
+    "Contacts": [
+      {
+        "name": "Jim Ballestro",
+        "email": "jim.ballestro@gmail.com"
+      },
+      {
+        "name": "Cindy Telisak",
+        "email": "ctelisak@gmail.com"
+      }
+    ]
+  },
+  {
+    "id": "e32acccc-0292-416f-bbda-87d96edf1c25",
+    "name": "Center for Children and Families",
+    "Contacts": [
+      {
+        "name": "Jingyi Xu",
+        "email": "jingyi.xu@utdallas.edu"
+      }
+    ]
+  },
+  {
+    "id": "768bb99d-4d6d-44c5-a87a-c9ee7dbd38a0",
+    "name": "Hope.Cope.Heal",
+    "Contacts": [
+      {
+        "name": "Adriana Lewin",
+        "email": "info@hopecopeheal.org"
+      }
+    ]
+  },
+  {
+    "id": "c47b19c3-0120-44a6-9c76-6822d1969470",
+    "name": "The Shaken Baby Alliance",
+    "Contacts": [
+      {
+        "name": "Adriana Rey",
+        "email": "arey@shakenbaby.org"
+      }
+    ]
+  }
+]

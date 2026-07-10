@@ -1,0 +1,263 @@
+[
+  {
+    "id": "95907706-451c-45bc-96e2-121d3d63b6d1",
+    "name": "Inventory Tracking",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "07ebdb4f-1e6b-4053-8a8a-122f5441f8df"
+  },
+  {
+    "id": "0ceec172-e794-4d27-bbe2-66edea5544c6",
+    "name": "Donation/Grant and Volunteer Database",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "167274c3-d281-4a20-9149-c4357ad06798"
+  },
+  {
+    "id": "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+    "name": "Reading Huddle App",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "573781a7-18ed-438b-878e-e5db8fa4cce0"
+  },
+  {
+    "id": "6c6d7e97-188e-407d-97a4-abd267eec658",
+    "name": "Inventory Tracking",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "0d9a1b9a-4076-4cb5-b294-fcf5d4ae2315"
+  },
+  {
+    "id": "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+    "name": "EPICS Team Formation",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "b5fec128-83e8-452a-a0e9-0d4eab44408c"
+  },
+  {
+    "id": "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+    "name": "Connected Care, A Comprehensive Therapy Management Platform",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "bc1417fd-e901-4535-a07c-7f1ff742d9fb"
+  },
+  {
+    "id": "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+    "name": "Alumni Tracking System",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "5c189c91-f263-4b7b-be32-fccf21b80c98"
+  },
+  {
+    "id": "29725901-c417-48f4-8b08-d33adb35e290",
+    "name": "Class Scheduling App",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "89613e99-3a9a-47ef-9ad4-58e9d7cd40a7"
+  },
+  {
+    "id": "55963b46-b94c-4539-ae8e-c6415948c40c",
+    "name": "Donor and Grant Tracker",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "9864a43c-781b-493f-8265-bb494b0e89eb"
+  },
+  {
+    "id": "278ff369-0658-47f0-93c3-9ab0a3461d53",
+    "name": "Inventory and Production Tracking",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "884eec13-8883-48e5-b693-a8ad0a5e22a7"
+  },
+  {
+    "id": "9abd9a26-df24-4194-bad0-c2b91b990518",
+    "name": "Grant / Funding Application Manager",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "993f8981-a356-4426-b3fc-aac8c3fab145"
+  },
+  {
+    "id": "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+    "name": "Caregiver Compassion Bot",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "426886d3-a322-44d3-b7e6-acbc55db7dcf"
+  },
+  {
+    "id": "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+    "name": "Water Quality Measurement Instrument",
+    "description": "",
+    "type": "HARDWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "792c5451-c144-426c-9d4b-6779f21118b1"
+  },
+  {
+    "id": "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+    "name": "Participant and Intern Attendance Tracking",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "ca8e87aa-92c1-4f3d-928f-9abaf868e58f"
+  },
+  {
+    "id": "b1d436fa-b1be-4602-ac6c-82933514cec7",
+    "name": "Interactive Signage",
+    "description": "",
+    "type": "BOTH",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "0c53095a-9daa-4041-97ed-d904d963dc03"
+  },
+  {
+    "id": "211d36f4-e219-433c-b647-d1771ecba499",
+    "name": "Leather Tumbler Automation",
+    "description": "",
+    "type": "HARDWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "884eec13-8883-48e5-b693-a8ad0a5e22a7"
+  },
+  {
+    "id": "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+    "name": "ImpactCRM",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "b3bb04db-803a-4599-b6ef-1036e274d9ec"
+  },
+  {
+    "id": "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+    "name": "Abide Connect",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "4a05971f-dab9-49ff-b871-b4b18bd4c999"
+  },
+  {
+    "id": "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+    "name": "GuidePoint",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "RETURNING",
+    "repoURL": "",
+    "partnerId": "00d5f37d-e856-48e9-939d-66eefc222b09"
+  },
+  {
+    "id": "93efa8a5-f196-4d37-8192-e25989bcf986",
+    "name": "Dust Capture",
+    "description": "",
+    "type": "HARDWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "ad2d1280-b659-4be3-a336-736ab03d31ff"
+  },
+  {
+    "id": "73fdac02-c7db-407d-9f56-a2d35a98988b",
+    "name": "Machine-Usage Tracking System",
+    "description": "",
+    "type": "HARDWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "ad2d1280-b659-4be3-a336-736ab03d31ff"
+  },
+  {
+    "id": "3771d073-7ed8-4311-b0b5-3f96b7087575",
+    "name": "IoT Network",
+    "description": "",
+    "type": "BOTH",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "3cf31d91-9b68-4772-8664-141a437b289b"
+  },
+  {
+    "id": "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+    "name": "HopeBoard",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "dd9bfbf1-df32-4acd-b8bc-3e221b7b55f5"
+  },
+  {
+    "id": "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+    "name": "Chicken Tractor Mobile Watering System",
+    "description": "",
+    "type": "HARDWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "104ce285-d9bc-4645-af73-6e94e757364b"
+  },
+  {
+    "id": "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+    "name": "Automated Desiccant Recharging System",
+    "description": "",
+    "type": "HARDWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "ad2d1280-b659-4be3-a336-736ab03d31ff"
+  },
+  {
+    "id": "086058fd-b62b-4bc5-9e95-6a0ebd08d614",
+    "name": "Leather Dryer Device",
+    "description": "",
+    "type": "HARDWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "884eec13-8883-48e5-b693-a8ad0a5e22a7"
+  },
+  {
+    "id": "5af27476-9a20-433f-b787-df930cf4e2d7",
+    "name": "Automation and Analysis of Speech Screening Scores",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "e32acccc-0292-416f-bbda-87d96edf1c25"
+  },
+  {
+    "id": "acff0174-6616-4466-8e46-7c1249d1b781",
+    "name": "Electronic Health Record System",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "768bb99d-4d6d-44c5-a87a-c9ee7dbd38a0"
+  },
+  {
+    "id": "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+    "name": "COPE Text Support",
+    "description": "",
+    "type": "SOFTWARE",
+    "status": "NEW",
+    "repoURL": "",
+    "partnerId": "c47b19c3-0120-44a6-9c76-6822d1969470"
+  }
+]

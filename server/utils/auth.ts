@@ -6,7 +6,8 @@ import { createTransport } from "nodemailer";
 
 const PRE_APPROVED_USERS = [
   { email: 'amt101000@utdallas.edu', name: 'Andrea Turcatti', role: 'admin' },
-  { email: 'sxt230118@utdallas.edu', name: 'Snigdha Tadi', role: 'admin' },
+  { email: 'trp210003@utdallas.edu', name: 'Teerth', role: 'admin' },
+  { email: 'bxt230017@utdallas.edu', name: 'Bhuvi', role: 'admin' },
 ];
 
 const prisma = new PrismaClient({

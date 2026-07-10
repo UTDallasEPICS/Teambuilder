@@ -1,0 +1,2657 @@
+[
+  {
+    "netID": "dal845422",
+    "firstName": "Laith",
+    "lastName": "Abusailik",
+    "email": "dal845422@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53"
+    ]
+  },
+  {
+    "netID": "mfa230006",
+    "firstName": "Maryam Fatima",
+    "lastName": "Ahmed",
+    "email": "mfa230006@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580"
+    ]
+  },
+  {
+    "netID": "exa230030",
+    "firstName": "Efrain",
+    "lastName": "Arevalo",
+    "email": "exa230030@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "rxa230079",
+    "firstName": "Ritikha",
+    "lastName": "Ashok",
+    "email": "rxa230079@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2"
+    ]
+  },
+  {
+    "netID": "jaa210020",
+    "firstName": "Jada Anne-Talia Awahsuh",
+    "lastName": "Atchu Yudom",
+    "email": "jaa210020@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Engineering",
+    "year": "SENIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "lxb230028",
+    "firstName": "Lavanya",
+    "lastName": "Bansal",
+    "email": "lxb230028@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4"
+    ]
+  },
+  {
+    "netID": "tlb210005",
+    "firstName": "Taylor Reese",
+    "lastName": "Beers",
+    "email": "tlb210005@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Engineering",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be"
+    ]
+  },
+  {
+    "netID": "dal417097",
+    "firstName": "Cody D",
+    "lastName": "Bui",
+    "email": "dal417097@utdallas.edu",
+    "gender": "MALE",
+    "major": "Data Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b"
+    ]
+  },
+  {
+    "netID": "asb220016",
+    "firstName": "Abhiram S",
+    "lastName": "Bulusu",
+    "email": "asb220016@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec"
+    ]
+  },
+  {
+    "netID": "csb200005",
+    "firstName": "Camden Scott",
+    "lastName": "Byington",
+    "email": "csb200005@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be"
+    ]
+  },
+  {
+    "netID": "yxc230030",
+    "firstName": "Yagnika",
+    "lastName": "Choppadandi",
+    "email": "yxc230030@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be"
+    ]
+  },
+  {
+    "netID": "dal008009",
+    "firstName": "Sana",
+    "lastName": "Dantulwar",
+    "email": "dal008009@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Biomedical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "txd220035",
+    "firstName": "Trung",
+    "lastName": "Dinh",
+    "email": "txd220035@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7"
+    ]
+  },
+  {
+    "netID": "dxd230006",
+    "firstName": "Diep N",
+    "lastName": "Doan",
+    "email": "dxd230006@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7"
+    ]
+  },
+  {
+    "netID": "dal347015",
+    "firstName": "Jonathan",
+    "lastName": "Ebenezer",
+    "email": "dal347015@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "poe210000",
+    "firstName": "Payson O",
+    "lastName": "Eberz",
+    "email": "poe210000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4"
+    ]
+  },
+  {
+    "netID": "gxe220006",
+    "firstName": "Guillermo",
+    "lastName": "Esquivel",
+    "email": "gxe220006@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f"
+    ]
+  },
+  {
+    "netID": "dal393128",
+    "firstName": "Kaitlyn M",
+    "lastName": "Ferguson",
+    "email": "dal393128@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be"
+    ]
+  },
+  {
+    "netID": "sig220001",
+    "firstName": "Sixto Ismael",
+    "lastName": "Gallegos",
+    "email": "sig220001@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd"
+    ]
+  },
+  {
+    "netID": "mxg240031",
+    "firstName": "Mario",
+    "lastName": "Garcia-Perez",
+    "email": "mxg240031@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f"
+    ]
+  },
+  {
+    "netID": "anh230003",
+    "firstName": "Amaiyah Nicole",
+    "lastName": "Harrison",
+    "email": "anh230003@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53"
+    ]
+  },
+  {
+    "netID": "mxh240043",
+    "firstName": "Mia",
+    "lastName": "Hernandez",
+    "email": "mxh240043@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "dal467474",
+    "firstName": "Beckham",
+    "lastName": "Hiatt",
+    "email": "dal467474@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "axi230018",
+    "firstName": "Afra",
+    "lastName": "Ibnat",
+    "email": "axi230018@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53"
+    ]
+  },
+  {
+    "netID": "mci230001",
+    "firstName": "Mateo Carlos",
+    "lastName": "Irizarry",
+    "email": "mci230001@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "55963b46-b94c-4539-ae8e-c6415948c40c"
+    ]
+  },
+  {
+    "netID": "psj230000",
+    "firstName": "Palak",
+    "lastName": "Jagdale",
+    "email": "psj230000@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Data Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580"
+    ]
+  },
+  {
+    "netID": "dxj230013",
+    "firstName": "Deethya",
+    "lastName": "Janjanam",
+    "email": "dxj230013@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2"
+    ]
+  },
+  {
+    "netID": "dal334479",
+    "firstName": "Lakshmi S",
+    "lastName": "Jinkala",
+    "email": "dal334479@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "acff0174-6616-4466-8e46-7c1249d1b781"
+    ]
+  },
+  {
+    "netID": "dal473094",
+    "firstName": "Swaroop",
+    "lastName": "Kamble",
+    "email": "dal473094@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Engineering",
+    "year": "SENIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b"
+    ]
+  },
+  {
+    "netID": "cxk230036",
+    "firstName": "Charvisree",
+    "lastName": "Koripella",
+    "email": "cxk230036@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "jal220004",
+    "firstName": "Jason A",
+    "lastName": "Laporte",
+    "email": "jal220004@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b"
+    ]
+  },
+  {
+    "netID": "asl230001",
+    "firstName": "Aidan S",
+    "lastName": "Loran",
+    "email": "asl230001@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "dal777538",
+    "firstName": "Derek",
+    "lastName": "Lowrance",
+    "email": "dal777538@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "dal824459",
+    "firstName": "Alya",
+    "lastName": "Mansoor",
+    "email": "dal824459@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Electrical Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "acff0174-6616-4466-8e46-7c1249d1b781"
+    ]
+  },
+  {
+    "netID": "jxm230082",
+    "firstName": "Jack",
+    "lastName": "Matthews",
+    "email": "jxm230082@utdallas.edu",
+    "gender": "OTHER",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f"
+    ]
+  },
+  {
+    "netID": "nxm230004",
+    "firstName": "Neha",
+    "lastName": "Midatana",
+    "email": "nxm230004@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Biomedical Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580"
+    ]
+  },
+  {
+    "netID": "dal501460",
+    "firstName": "Taylor Reese",
+    "lastName": "Mitchell",
+    "email": "dal501460@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4"
+    ]
+  },
+  {
+    "netID": "ufm230000",
+    "firstName": "Umar F",
+    "lastName": "Mohammed",
+    "email": "ufm230000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b"
+    ]
+  },
+  {
+    "netID": "sxm230048",
+    "firstName": "Shresta",
+    "lastName": "Munikuntla",
+    "email": "sxm230048@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53"
+    ]
+  },
+  {
+    "netID": "axm230204",
+    "firstName": "Akshaya",
+    "lastName": "Muthusamy",
+    "email": "axm230204@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53"
+    ]
+  },
+  {
+    "netID": "dal665765",
+    "firstName": "Aditya",
+    "lastName": "Narayan",
+    "email": "dal665765@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580"
+    ]
+  },
+  {
+    "netID": "dal814214",
+    "firstName": "Bradley",
+    "lastName": "Nguyen",
+    "email": "dal814214@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "dal770341",
+    "firstName": "Thomas D",
+    "lastName": "Nguyen",
+    "email": "dal770341@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b"
+    ]
+  },
+  {
+    "netID": "dal908373",
+    "firstName": "Luke",
+    "lastName": "Nichols",
+    "email": "dal908373@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "55963b46-b94c-4539-ae8e-c6415948c40c"
+    ]
+  },
+  {
+    "netID": "nxp210060",
+    "firstName": "Nandan",
+    "lastName": "Pabolu",
+    "email": "nxp210060@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "pxg220067",
+    "firstName": "FNU",
+    "lastName": "Pankhuri",
+    "email": "pxg220067@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "6c6d7e97-188e-407d-97a4-abd267eec658"
+    ]
+  },
+  {
+    "netID": "adp230010",
+    "firstName": "Ashutosh D",
+    "lastName": "Patankar",
+    "email": "adp230010@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7"
+    ]
+  },
+  {
+    "netID": "dal814430",
+    "firstName": "Shreya",
+    "lastName": "Pejavar",
+    "email": "dal814430@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "55963b46-b94c-4539-ae8e-c6415948c40c"
+    ]
+  },
+  {
+    "netID": "nmp220006",
+    "firstName": "Nguyen Minh Ngoc",
+    "lastName": "Pham",
+    "email": "nmp220006@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be"
+    ]
+  },
+  {
+    "netID": "lmp150430",
+    "firstName": "Lynette Mae",
+    "lastName": "Piggott",
+    "email": "lmp150430@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4"
+    ]
+  },
+  {
+    "netID": "jjq200000",
+    "firstName": "Jorge Jose",
+    "lastName": "Quintero",
+    "email": "jjq200000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Software Engineering",
+    "year": "SENIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be"
+    ]
+  },
+  {
+    "netID": "hxr240011",
+    "firstName": "Hamza A",
+    "lastName": "Rafeeq",
+    "email": "hxr240011@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b"
+    ]
+  },
+  {
+    "netID": "sxr230101",
+    "firstName": "Swaminathan",
+    "lastName": "Ramanathan",
+    "email": "sxr230101@utdallas.edu",
+    "gender": "MALE",
+    "major": "Software Engineering",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53"
+    ]
+  },
+  {
+    "netID": "axr220242",
+    "firstName": "Amulya Prasad",
+    "lastName": "Rayabhagi",
+    "email": "axr220242@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "55963b46-b94c-4539-ae8e-c6415948c40c"
+    ]
+  },
+  {
+    "netID": "sxr230133",
+    "firstName": "Samuel",
+    "lastName": "Rodriguez",
+    "email": "sxr230133@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "55963b46-b94c-4539-ae8e-c6415948c40c"
+    ]
+  },
+  {
+    "netID": "sxs230337",
+    "firstName": "Santosh",
+    "lastName": "Sahoo",
+    "email": "sxs230337@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "axs220427",
+    "firstName": "Azlaan",
+    "lastName": "Shafi",
+    "email": "axs220427@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "nxs220082",
+    "firstName": "Nevin",
+    "lastName": "Shiju",
+    "email": "nxs220082@utdallas.edu",
+    "gender": "MALE",
+    "major": "Software Engineering",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "acff0174-6616-4466-8e46-7c1249d1b781"
+    ]
+  },
+  {
+    "netID": "nxs230112",
+    "firstName": "Nishanth",
+    "lastName": "Srinivasan",
+    "email": "nxs230112@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "sxs230440",
+    "firstName": "Sivaranjani",
+    "lastName": "Subramanian",
+    "email": "sxs230440@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Biomedical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "mxs230179",
+    "firstName": "Madhav",
+    "lastName": "Suri",
+    "email": "mxs230179@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "e6248c5a-7ab1-47ed-b88c-49fb546620be",
+      "acff0174-6616-4466-8e46-7c1249d1b781"
+    ]
+  },
+  {
+    "netID": "sxt230118",
+    "firstName": "Snigdha",
+    "lastName": "Tadi",
+    "email": "sxt230118@utdallas.edu",
+    "gender": "OTHER",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "6c6d7e97-188e-407d-97a4-abd267eec658",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575"
+    ]
+  },
+  {
+    "netID": "dal514521",
+    "firstName": "CJ",
+    "lastName": "Terrell",
+    "email": "dal514521@utdallas.edu",
+    "gender": "OTHER",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "6c6d7e97-188e-407d-97a4-abd267eec658"
+    ]
+  },
+  {
+    "netID": "sxt220150",
+    "firstName": "Sathwika",
+    "lastName": "Thatiparthi",
+    "email": "sxt220150@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "55963b46-b94c-4539-ae8e-c6415948c40c"
+    ]
+  },
+  {
+    "netID": "sxt230102",
+    "firstName": "Sadwitha Rao",
+    "lastName": "Thopucharla",
+    "email": "sxt230102@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580"
+    ]
+  },
+  {
+    "netID": "mst220002",
+    "firstName": "Mihir S",
+    "lastName": "Tirumalasetti",
+    "email": "mst220002@utdallas.edu",
+    "gender": "MALE",
+    "major": "Data Science",
+    "year": "SENIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "3771d073-7ed8-4311-b0b5-3f96b7087575",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b"
+    ]
+  },
+  {
+    "netID": "ppt230000",
+    "firstName": "Phuc Phan Thien",
+    "lastName": "Trinh",
+    "email": "ppt230000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f"
+    ]
+  },
+  {
+    "netID": "dal761959",
+    "firstName": "Owen Stephen",
+    "lastName": "Unger",
+    "email": "dal761959@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "1a632f6d-66d8-4f8a-8b2f-314da9f0bdec",
+      "3d4c7189-c54a-42f3-a26a-e1b172a4ffb2",
+      "40d2ceae-a0f9-40b5-91cc-08a37c0580ef",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "b1d436fa-b1be-4602-ac6c-82933514cec7",
+      "502243f0-2fc3-4ecb-9d9d-de09e1133580"
+    ]
+  },
+  {
+    "netID": "dal719338",
+    "firstName": "Diego",
+    "lastName": "Valle",
+    "email": "dal719338@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "278ff369-0658-47f0-93c3-9ab0a3461d53",
+      "55963b46-b94c-4539-ae8e-c6415948c40c",
+      "5af27476-9a20-433f-b787-df930cf4e2d7"
+    ]
+  },
+  {
+    "netID": "dxv230030",
+    "firstName": "Devika",
+    "lastName": "Viju",
+    "email": "dxv230030@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "THURSDAY",
+    "choiceProjectIds": [
+      "acff0174-6616-4466-8e46-7c1249d1b781",
+      "f301f3ca-fc59-46bd-b4e5-0f705eba959f",
+      "5af27476-9a20-433f-b787-df930cf4e2d7",
+      "c167f811-a4d6-4f5d-b408-09ce71a9b14b",
+      "0a182bb2-cc60-4d32-9703-0e977f2494fd",
+      "2af271a7-7c85-453a-b3bb-6e91ce554db4"
+    ]
+  },
+  {
+    "netID": "fxa220048",
+    "firstName": "Fayyed Quazi",
+    "lastName": "Ahmed",
+    "email": "fxa220048@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "caa230006",
+    "firstName": "Caidin A",
+    "lastName": "Albury",
+    "email": "caa230006@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "sxa230121",
+    "firstName": "Sreeja",
+    "lastName": "Amaresam",
+    "email": "sxa230121@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6"
+    ]
+  },
+  {
+    "netID": "dal199373",
+    "firstName": "Moaiz",
+    "lastName": "Attiq",
+    "email": "dal199373@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "dal684041",
+    "firstName": "Pearl Rose",
+    "lastName": "Bailey",
+    "email": "dal684041@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "sxb230213",
+    "firstName": "Siddhaarth",
+    "lastName": "Balamuthaiya",
+    "email": "sxb230213@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "osb230000",
+    "firstName": "Omar Samer",
+    "lastName": "Barakat",
+    "email": "osb230000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b"
+    ]
+  },
+  {
+    "netID": "dal057863",
+    "firstName": "Abdirahman Mustafa",
+    "lastName": "Bashir",
+    "email": "dal057863@utdallas.edu",
+    "gender": "MALE",
+    "major": "Electrical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "dal523782",
+    "firstName": "Abigail",
+    "lastName": "Bazyn",
+    "email": "dal523782@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Biomedical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f"
+    ]
+  },
+  {
+    "netID": "dxb230055",
+    "firstName": "Diya",
+    "lastName": "Bhattarai",
+    "email": "dxb230055@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f"
+    ]
+  },
+  {
+    "netID": "dal548980",
+    "firstName": "Ameera Azeem",
+    "lastName": "Bhatti",
+    "email": "dal548980@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "khb220000",
+    "firstName": "Kawan Henrique",
+    "lastName": "Borba",
+    "email": "khb220000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5"
+    ]
+  },
+  {
+    "netID": "dal481757",
+    "firstName": "Juan Sebastian",
+    "lastName": "Camelo",
+    "email": "dal481757@utdallas.edu",
+    "gender": "MALE",
+    "major": "Systems Engineering and Management",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f"
+    ]
+  },
+  {
+    "netID": "iac230002",
+    "firstName": "Isaac",
+    "lastName": "Chacko",
+    "email": "iac230002@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "9abd9a26-df24-4194-bad0-c2b91b990518"
+    ]
+  },
+  {
+    "netID": "asc230016",
+    "firstName": "Ahmed",
+    "lastName": "Chowdhury",
+    "email": "asc230016@utdallas.edu",
+    "gender": "MALE",
+    "major": "Electrical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "apd220002",
+    "firstName": "Aaron Peter",
+    "lastName": "D'cunha",
+    "email": "apd220002@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5"
+    ]
+  },
+  {
+    "netID": "cxd230035",
+    "firstName": "Charles",
+    "lastName": "Doan",
+    "email": "cxd230035@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "amd230009",
+    "firstName": "Alexander M",
+    "lastName": "Dohogne",
+    "email": "amd230009@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f"
+    ]
+  },
+  {
+    "netID": "axe240000",
+    "firstName": "Abigail",
+    "lastName": "Escudero Nunez",
+    "email": "axe240000@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "rxg220093",
+    "firstName": "Ridwan",
+    "lastName": "Galib",
+    "email": "rxg220093@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "ssg220005",
+    "firstName": "Subrahmanya",
+    "lastName": "Ghanta",
+    "email": "ssg220005@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f"
+    ]
+  },
+  {
+    "netID": "cxg230016",
+    "firstName": "Chase",
+    "lastName": "Gibson",
+    "email": "cxg230016@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "hxh230036",
+    "firstName": "Hien Long",
+    "lastName": "Ha",
+    "email": "hxh230036@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5"
+    ]
+  },
+  {
+    "netID": "dal557979",
+    "firstName": "Dameion",
+    "lastName": "Hannible",
+    "email": "dal557979@utdallas.edu",
+    "gender": "MALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b"
+    ]
+  },
+  {
+    "netID": "axh230045",
+    "firstName": "Aylin",
+    "lastName": "Hernandez",
+    "email": "axh230045@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f"
+    ]
+  },
+  {
+    "netID": "aah230016",
+    "firstName": "Andrea Alexa",
+    "lastName": "Houle",
+    "email": "aah230016@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "dal780429",
+    "firstName": "Shelley",
+    "lastName": "Hua",
+    "email": "dal780429@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "hfi230000",
+    "firstName": "Hamiz F",
+    "lastName": "Iqbal",
+    "email": "hfi230000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b"
+    ]
+  },
+  {
+    "netID": "dal345924",
+    "firstName": "Saran Anjali",
+    "lastName": "Jacob",
+    "email": "dal345924@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "hxj230020",
+    "firstName": "Hayat",
+    "lastName": "Jama",
+    "email": "hxj230020@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "nxj230035",
+    "firstName": "Noel",
+    "lastName": "Jeju",
+    "email": "nxj230035@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6"
+    ]
+  },
+  {
+    "netID": "sxk230361",
+    "firstName": "Shriya",
+    "lastName": "Kalyan",
+    "email": "sxk230361@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "dal246867",
+    "firstName": "Timo N",
+    "lastName": "Kamgang",
+    "email": "dal246867@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f"
+    ]
+  },
+  {
+    "netID": "uxk230008",
+    "firstName": "Unice",
+    "lastName": "Kim",
+    "email": "uxk230008@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Electrical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "211d36f4-e219-433c-b647-d1771ecba499"
+    ]
+  },
+  {
+    "netID": "adk240001",
+    "firstName": "Andrew David",
+    "lastName": "Klundt",
+    "email": "adk240001@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "jtl220004",
+    "firstName": "Jaden Tuan Tien",
+    "lastName": "Le",
+    "email": "jtl220004@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Engineering",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5"
+    ]
+  },
+  {
+    "netID": "dal762038",
+    "firstName": "Lam N",
+    "lastName": "Le",
+    "email": "dal762038@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5"
+    ]
+  },
+  {
+    "netID": "hxl230028",
+    "firstName": "Himanshu Singh",
+    "lastName": "Lour",
+    "email": "hxl230028@utdallas.edu",
+    "gender": "MALE",
+    "major": "Finance",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "txl240008",
+    "firstName": "Thien",
+    "lastName": "Luu",
+    "email": "txl240008@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "dal781710",
+    "firstName": "Abhinav Subhash",
+    "lastName": "Mahajan",
+    "email": "dal781710@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6"
+    ]
+  },
+  {
+    "netID": "dal267662",
+    "firstName": "Harshitha",
+    "lastName": "Mahesh",
+    "email": "dal267662@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "dal760777",
+    "firstName": "Jessica",
+    "lastName": "Mak",
+    "email": "dal760777@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "dal816899",
+    "firstName": "Sanjey",
+    "lastName": "Manian",
+    "email": "dal816899@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "dal104022",
+    "firstName": "Isaac Ray Lyou Zhong Xin",
+    "lastName": "Mantle",
+    "email": "dal104022@utdallas.edu",
+    "gender": "MALE",
+    "major": "Electrical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5"
+    ]
+  },
+  {
+    "netID": "dal945364",
+    "firstName": "Parth",
+    "lastName": "Modi",
+    "email": "dal945364@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "211d36f4-e219-433c-b647-d1771ecba499"
+    ]
+  },
+  {
+    "netID": "dal145801",
+    "firstName": "Luis",
+    "lastName": "Moreira",
+    "email": "dal145801@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "mxm240093",
+    "firstName": "Manjit",
+    "lastName": "Mungara",
+    "email": "mxm240093@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "dal678148",
+    "firstName": "Evan",
+    "lastName": "Nguyen",
+    "email": "dal678148@utdallas.edu",
+    "gender": "OTHER",
+    "major": "Electrical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f"
+    ]
+  },
+  {
+    "netID": "dal664231",
+    "firstName": "Trung Nguyen",
+    "lastName": "Nguyen",
+    "email": "dal664231@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b"
+    ]
+  },
+  {
+    "netID": "sxp230110",
+    "firstName": "Seoyeon",
+    "lastName": "Park",
+    "email": "sxp230110@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "mcp230000",
+    "firstName": "Manideep Chowdary",
+    "lastName": "Pendyala",
+    "email": "mcp230000@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6"
+    ]
+  },
+  {
+    "netID": "pmp230004",
+    "firstName": "Phuong M",
+    "lastName": "Pham",
+    "email": "pmp230004@utdallas.edu",
+    "gender": "OTHER",
+    "major": "Electrical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "211d36f4-e219-433c-b647-d1771ecba499"
+    ]
+  },
+  {
+    "netID": "dal266796",
+    "firstName": "Quoc Dung",
+    "lastName": "Pham",
+    "email": "dal266796@utdallas.edu",
+    "gender": "MALE",
+    "major": "Data Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "211d36f4-e219-433c-b647-d1771ecba499"
+    ]
+  },
+  {
+    "netID": "mxq220004",
+    "firstName": "Mai Hoang Phuc",
+    "lastName": "Quan",
+    "email": "mxq220004@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f"
+    ]
+  },
+  {
+    "netID": "srr240001",
+    "firstName": "Soumith Ram",
+    "lastName": "Reddy",
+    "email": "srr240001@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "blr220002",
+    "firstName": "Baylor L",
+    "lastName": "Resnick",
+    "email": "blr220002@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "ass240005",
+    "firstName": "Anmol",
+    "lastName": "Sahota",
+    "email": "ass240005@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f"
+    ]
+  },
+  {
+    "netID": "dal223181",
+    "firstName": "Christopher J",
+    "lastName": "Salazar",
+    "email": "dal223181@utdallas.edu",
+    "gender": "MALE",
+    "major": "Electrical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "axs230500",
+    "firstName": "Ansh",
+    "lastName": "Sharma",
+    "email": "axs230500@utdallas.edu",
+    "gender": "MALE",
+    "major": "Software Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d"
+    ]
+  },
+  {
+    "netID": "axs220438",
+    "firstName": "Aditya",
+    "lastName": "Shivapooja",
+    "email": "axs220438@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SENIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "ars230009",
+    "firstName": "Aditya Raj",
+    "lastName": "Singh",
+    "email": "ars230009@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_3200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "95907706-451c-45bc-96e2-121d3d63b6d1"
+    ]
+  },
+  {
+    "netID": "jxs220111",
+    "firstName": "Jashanpreet",
+    "lastName": "Singh",
+    "email": "jxs220111@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "29725901-c417-48f4-8b08-d33adb35e290",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "211d36f4-e219-433c-b647-d1771ecba499"
+    ]
+  },
+  {
+    "netID": "dal763070",
+    "firstName": "Tanush Prabhu",
+    "lastName": "Teki",
+    "email": "dal763070@utdallas.edu",
+    "gender": "MALE",
+    "major": "Biomedical Engineering",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f"
+    ]
+  },
+  {
+    "netID": "dal120100",
+    "firstName": "Melvin Renjit",
+    "lastName": "Thalakotoor",
+    "email": "dal120100@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "ssv230005",
+    "firstName": "Srikar Chowdary Sai",
+    "lastName": "Vaddela",
+    "email": "ssv230005@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6"
+    ]
+  },
+  {
+    "netID": "axv230137",
+    "firstName": "Angela",
+    "lastName": "Vazquez",
+    "email": "axv230137@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Mechanical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f"
+    ]
+  },
+  {
+    "netID": "nxv240011",
+    "firstName": "Naavya",
+    "lastName": "Vig",
+    "email": "nxv240011@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "FRESHMAN",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "0ceec172-e794-4d27-bbe2-66edea5544c6",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "kxy220014",
+    "firstName": "Khaja",
+    "lastName": "Yazdaan",
+    "email": "kxy220014@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  },
+  {
+    "netID": "vsy240000",
+    "firstName": "Vidhya Santoshi",
+    "lastName": "Yemparala",
+    "email": "vsy240000@utdallas.edu",
+    "gender": "FEMALE",
+    "major": "Biomedical Engineering",
+    "year": "SOPHOMORE",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "b8bf6e5a-9821-458d-a920-539f0c960ed5",
+      "93efa8a5-f196-4d37-8192-e25989bcf986",
+      "2710f95e-e1b6-4587-b2ae-196eca4bf24f",
+      "73fdac02-c7db-407d-9f56-a2d35a98988b",
+      "211d36f4-e219-433c-b647-d1771ecba499",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2"
+    ]
+  },
+  {
+    "netID": "axz230005",
+    "firstName": "Azzam",
+    "lastName": "Zahid",
+    "email": "axz230005@utdallas.edu",
+    "gender": "MALE",
+    "major": "Computer Science",
+    "year": "JUNIOR",
+    "class": "EPCS_2200",
+    "meetingDay": "WEDNESDAY",
+    "choiceProjectIds": [
+      "9abd9a26-df24-4194-bad0-c2b91b990518",
+      "1455ec9e-06d7-42b1-b4d1-66da060c491d",
+      "95907706-451c-45bc-96e2-121d3d63b6d1",
+      "b6507a0c-134e-49c6-ab47-a790de1d4b2f",
+      "8064958c-a9cc-433a-b7b1-6f7955332ff2",
+      "29725901-c417-48f4-8b08-d33adb35e290"
+    ]
+  }
+]
