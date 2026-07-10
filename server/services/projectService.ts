@@ -1,42 +1,88 @@
-import type { Project, Semester } from "@prisma/client"
-import type { ProjectWithSemesters } from "../api/projects/index.get"
-import type { TeamAssignments } from "~/algorithms/S25"
+import type {ProjectType, ProjectStatus} from "~/prisma/generated";
+import type {TeamCreate, TeamRead} from "~/server/services/teamService";
+import {prisma} from "~/server/utils/db";
 
-// Filter an array of projects by name
-export const filterProjectsByName = (projects: ProjectWithSemesters[], filter: string) => (
-  projects.filter(project => project.name.toLowerCase().includes(filter.toLowerCase()))
-)
+export interface ProjectRead {
+  id: string;
+  name: string;
+  description: string;
+  type: ProjectType;
+  status: ProjectStatus;
+  repoURL: string;
+  partnerId: string;
+  Teams: TeamRead[];
+}
 
-// Given an array of projects and a semester, get projects active for that semester
-// Returns empty array if semester is null
-export const getActiveProjects = (projects: ProjectWithSemesters[], semester: Semester | null) => (
-  semester ? projects.filter(project => isProjectActive(project, semester)) : []
-)
+export interface ProjectCreate {
+  name: string;
+  description: string;
+  type: ProjectType;
+  status: ProjectStatus;
+  repoURL: string;
+  partnerId: string;
+  Teams?: Omit<TeamCreate, 'projectId'>[];
+}
 
-// Given an array of projects and a semester, get projects inactive for that semester
-// Returns empty array if semester is null
-export const getInactiveProjects = (projects: ProjectWithSemesters[], semester: Semester | null) => (
-  semester ? projects.filter(project => !isProjectActive(project, semester)) : []
-)
+export interface ProjectUpdate {
+  name?: string;
+  description?: string;
+  type?: ProjectType;
+  status?: ProjectStatus;
+  repoURL?: string;
+}
 
-// Given an array of projects, get inactive projects with status of NEW or RETURNING
-// Should eventually be added in to cut down on projects on the generate teams page as
-// PickList may have performance issues when the number of projects balloons.
-// Leaving out for now because I'm not sure how to handle modifying past semesters.  
-// Projects for the current semester should all be NEW or RETURNING, but projects 
-// from past semesters can have any status, so removing, say, a WITHDRAWN 
-// project from a past semester would make it disappear from the page entirely,
-// which is very confusing.
-export const getAvailableProjects = (projects: ProjectWithSemesters[], semester: Semester | null) => (
-  getInactiveProjects(projects, semester).filter(project => project.status === 'NEW' || project.status === 'RETURNING')
-)
+const getAllProjects = async (): Promise<ProjectRead[]> => {
+  const projects = await prisma.project.findMany({
+    orderBy: {name: 'asc'},
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
+  });
+  return projects;
+}
 
-// Determines if project is active in a given semester
-export const isProjectActive = (project: ProjectWithSemesters, semester: Semester) => (
-  project.semesters.some(projectSemester => projectSemester.id === semester.id)
-)
+const getProjectById = async (id: string): Promise<ProjectRead | null> => {
+  const project = await prisma.project.findUnique({
+    where: {id},
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
+  })
+  return project;
+}
 
-// Get the name of a project by projectId from a projects array
-export const getProjectNameFromId = (projectId: string, projects: Project[]) => (
-  projects.find(project => project.id === projectId)?.name || 'Project not found'
-)
+const createProject = async (data: ProjectCreate): Promise<ProjectRead> => {
+  const {Teams, ...rest} = data;
+  const project = await prisma.project.create({
+    data: {
+      ...rest,
+      Teams: Teams ? {
+        create: Teams.map(({Memberships, ...team}) => ({
+          ...team,
+          Memberships: Memberships ? {create: Memberships} : undefined,
+        })),
+      } : undefined,
+    },
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
+  })
+  return project;
+}
+
+const updateProject = async (id: string, data: ProjectUpdate): Promise<ProjectRead> => {
+  const project = await prisma.project.update({
+    where: {id},
+    data,
+    include: {Teams: {include: {Memberships: true, Semester: true}}},
+  });
+  return project;
+}
+
+const deleteProject = async (id: string): Promise<void> => {
+  await prisma.project.delete({where: {id}});
+}
+
+const projectService = {
+  getAllProjects,
+  getProjectById,
+  createProject,
+  updateProject,
+  deleteProject,
+};
+
+export default projectService;

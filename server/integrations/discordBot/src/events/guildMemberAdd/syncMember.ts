@@ -1,7 +1,7 @@
 import { Client, GuildMember } from "discord.js";
-import { PrismaClient } from '@prisma/client'
+import { prisma} from "~/server/utils/db";
 
-interface TeamToStudent {
+interface Membership {
   Team: {
     Project: {
       name: string;
@@ -9,10 +9,8 @@ interface TeamToStudent {
   };
 }
 
-const prisma = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL })
-
 /**
- * On guild member add, syncs the mesmber's role and nickname with the data.json file.
+ * On guild member add, syncs the member's roles and nickname with their project data in the database.
  * Depends that role names are already created in the format "Project Name - Current".
  * 
  * @param {Client} client - The Discord client.
@@ -24,10 +22,10 @@ const syncMember = async (client: Client, member: GuildMember) => {
     // Extract the student's project name based on the new member's Discord username
     const student = await prisma.student.findUnique({
       where: {
-        discordUser: member.user.username,
+        discord: member.user.username,
       },
       include: {
-        TeamToStudent: {
+        Memberships: {
           include: {
             Team: {
               include: {
@@ -43,7 +41,7 @@ const syncMember = async (client: Client, member: GuildMember) => {
       throw new Error(`Student with discordUser ${member.user.username} not found`);
     }
 
-    const projects = student.TeamToStudent.map((ts: TeamToStudent) => ts.Team.Project);
+    const projects = student.Memberships.map((membership: Membership) => membership.Team.Project);
     for (const project of projects) {
       const projectName = project.name;
       const roleName = `${projectName} - Current`;

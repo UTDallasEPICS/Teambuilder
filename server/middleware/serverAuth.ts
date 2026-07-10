@@ -1,11 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { auth } from "~/server/utils/auth";
 
-const client = new PrismaClient({ datasourceUrl: process.env.PRISMA_DB_URL });
-
 export default defineEventHandler(async (event) => {
-  event.context.client = client;
-
   const path = getRequestURL(event).pathname;
   if (path.startsWith("/api/auth")) return;
   if (!path.startsWith("/api/")) return;

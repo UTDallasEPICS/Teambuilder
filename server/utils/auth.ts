@@ -63,6 +63,8 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
+        // FOR QUICK TESTING ONLY
+        console.log(`Magic Link: ${url}`)
         const subject = `EPICS Teambuilder Login - ${email}`;
 
         // BCC Logic: Use ENV if available, otherwise default to you for now

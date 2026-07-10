@@ -1,3 +1,5 @@
+import {prisma} from "~/server/utils/db";
+
 export default defineEventHandler(async (event) => {
   // SECURITY CHECK: Ensure the person making this request is actually an admin
   const currentUser = event.context.user;
@@ -11,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   const { id, whitelisted, removed, role } = await readBody(event);
   
-  return await event.context.client.user.update({
+  return await prisma.user.update({
     where: { id },
     data: {
       ...(whitelisted !== undefined && { whitelisted }),

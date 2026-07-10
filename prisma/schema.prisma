@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated"
 }
 
 datasource db {
@@ -8,22 +9,20 @@ datasource db {
 }
 
 model User {
-  id            String      @id
+  id            String  @id
   name          String
-  email         String      @unique
-  emailVerified Boolean     @default(false)
+  email         String  @unique
+  emailVerified Boolean @default(false)
   image         String?
-  role          String      @default("user")
-  whitelisted   Boolean     @default(false)
-  removed       Boolean     @default(false)
+  role          String  @default("user")
+  whitelisted   Boolean @default(false)
+  removed       Boolean @default(false)
 
-  sessions      BaSession[]
-  accounts      BaAccount[]
+  sessions BaSession[]
+  accounts BaAccount[]
 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@map("users")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model BaSession {
@@ -37,8 +36,6 @@ model BaSession {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("ba_sessions")
 }
 
 model BaAccount {
@@ -57,112 +54,154 @@ model BaAccount {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("ba_accounts")
 }
 
 model BaVerification {
-  id         String    @id
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("ba_verifications")
 }
 
+// An organization that proposes projects.
 model Partner {
-  id           String    @id @default(uuid())
-  name         String
-  contactName  String    @map("contact_name")
-  contactEmail String    @map("contact_email")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  projects     Project[]
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("partners")
+  Projects Project[]
+  Contacts Contact[]
 }
 
+// A contact person at a partner organization.
+model Contact {
+  id        String   @id @default(uuid())
+  partnerId String
+  name      String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+}
+
+// A potenial multi-semester project.
 model Project {
-  id          String             @id @default(uuid())
+  id          String        @id @default(uuid())
   name        String
   description String
   type        ProjectType
   status      ProjectStatus
-  repoURL     String             @map("repo_url")
-  partnerId   String             @map("partner_id")
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  meetingDay  ProjectMeetingDay? @map("meeting_day")
-  choices     Choice[]
-  partner     Partner            @relation(fields: [partnerId], references: [id])
-  teams       Team[]
+  repoURL     String
+  partnerId   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  @@map("projects")
+  Partner Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  Teams   Team[]
+  Choices Choice[]
 }
 
+// A team working on a project during a particular semester, meeting on a certain day.
 model Team {
   id         String            @id @default(uuid())
-  projectId  String            @map("project_id")
-  semesterId String            @map("semester_id")
-  meetingDay ProjectMeetingDay @default(THURSDAY) @map("meeting_day")
+  projectId  String
+  semesterId String
+  meetingDay ProjectMeetingDay
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
-  semester   Semester          @relation(fields: [semesterId], references: [id])
-  project    Project           @relation(fields: [projectId], references: [id])
-  students   Student[]         @relation("StudentToTeam")
 
-  @@unique([projectId, semesterId, meetingDay])
-  @@map("teams")
+  Semester    Semester     @relation(fields: [semesterId], references: [id])
+  Project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Memberships Membership[]
+
+  @@unique([projectId, semesterId])
+}
+
+// An assignment of a student/mentor to a team for a particular semester.
+model Membership {
+  id        String   @id @default(uuid())
+  teamId    String
+  studentId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Team    Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  Student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, studentId])
 }
 
 model Student {
-  id         String             @id @default(uuid())
-  github     String?            @unique
-  discord    String?            @unique
-  email      String?            @unique
-  netID      String             @unique @map("net_id")
-  firstName  String             @map("first_name")
-  lastName   String             @map("last_name")
-  major      String
-  year       Year
-  class      String
-  enrollment String?
-  status     StudentStatus
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
-  meetingDay ProjectMeetingDay? @map("meeting_day")
-  choices    Choice[]
-  teams      Team[]             @relation("StudentToTeam")
-
-  @@map("students")
-}
-
-model Choice {
   id        String   @id @default(uuid())
-  rank      Int
-  studentId String   @map("student_id")
-  projectId String   @map("project_id")
+  github    String?  @unique
+  discord   String?  @unique
+  email     String?  @unique
+  netID     String   @unique
+  firstName String
+  lastName  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  project   Project  @relation(fields: [projectId], references: [id])
-  student   Student  @relation(fields: [studentId], references: [id])
 
-  @@map("choices")
+  Choices     Choice[]
+  Enrollments Enrollment[]
+  Memberships Membership[]
 }
 
+// An enrollment of a student in a particular semester, with potential time-varying information
+// like year/class/major/gender/meeting day.
+model Enrollment {
+  id         String            @id @default(uuid())
+  studentId  String
+  semesterId String
+  gender     Gender
+  major      String
+  year       Year
+  class      Class
+  meetingDay ProjectMeetingDay
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  Student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  Semester Semester @relation(fields: [semesterId], references: [id])
+
+  @@unique([studentId, semesterId])
+}
+
+// A ranking of a project by a student for a particular semester.
+model Choice {
+  id         String   @id @default(uuid())
+  rank       Int
+  studentId  String
+  projectId  String
+  semesterId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  Semester Semester @relation(fields: [semesterId], references: [id])
+
+  @@unique([studentId, projectId, semesterId])
+}
+
+// A combination of year and season, e.g. "Fall 2024".
 model Semester {
   id        String   @id @default(uuid())
   year      Int
   season    Season
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  teams     Team[]
+
+  Teams       Team[]
+  Enrollments Enrollment[]
+  Choices     Choice[]
 
   @@unique([year, season])
-  @@map("semesters")
 }
 
 enum Year {
@@ -170,6 +209,17 @@ enum Year {
   SOPHOMORE
   JUNIOR
   SENIOR
+}
+
+enum Class {
+  EPCS_2200
+  EPCS_3200
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
 
 enum Season {
@@ -192,13 +242,8 @@ enum ProjectStatus {
   HOLD
 }
 
+// Day that a team meets on, or the day which a student has lab on.
 enum ProjectMeetingDay {
   WEDNESDAY
   THURSDAY
-  BOTH
-}
-
-enum StudentStatus {
-  ACTIVE
-  INACTIVE
 }

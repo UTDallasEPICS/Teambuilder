@@ -1,5 +1,8 @@
 import { defineEventHandler, readBody } from 'h3';
 import { getClient } from '~/server/integrations/discordBot/src/utils/clientInstance';
+import semesterService from '~/server/services/semesterService';
+import projectService from '~/server/services/projectService';
+import studentService from '~/server/services/studentService';
 
 type Body = {
   semesterId?: string;
@@ -13,24 +16,30 @@ export default defineEventHandler(async (event) => {
 
     let semesterId = body?.semesterId;
     if (!semesterId) {
-      const latestSemester = await event.context.client.semester.findFirst({
-        orderBy: { createdAt: 'desc' },
-      });
-      if (!latestSemester) {
+      const semester = await semesterService.getRecentSemester();
+      if (!semester) {
         return { success: false, message: 'No semesters found in database.' };
       }
-      semesterId = latestSemester.id;
+      semesterId = semester.id;
     }
 
-    const teams = await event.context.client.team.findMany({
-      where: { semesterId },
-      include: {
-        project: { select: { name: true } },
-        students: { select: { firstName: true, lastName: true, discord: true } },
-      },
-    });
+    const [projects, students] = await Promise.all([
+      projectService.getAllProjects(),
+      studentService.getAllStudents(),
+    ]);
+    const studentsById = new Map(students.map((s) => [s.id, s]));
 
-    if (teams.length === 0) {
+    const projectTeams = projects.flatMap((project) =>
+      project.Teams
+        .filter((team) => team.semesterId === semesterId)
+        .map((team) => ({
+          projectName: project.name,
+          students: team.Memberships
+            .map((membership) => studentsById.get(membership.studentId)!),
+        }))
+    );
+
+    if (projectTeams.length === 0) {
       return { success: false, message: 'No teams found for selected semester.' };
     }
 
@@ -46,12 +55,12 @@ export default defineEventHandler(async (event) => {
     const assigned: Array<{ student: string; role: string }> = [];
     const errors: string[] = [];
 
-    for (const team of teams) {
-      const roleName = `${team.project.name} - Current`;
+    for (const team of projectTeams) {
+      const roleName = `${team.projectName} - Current`;
       const role = guild.roles.cache.find(r => r.name === roleName);
 
       if (!role) {
-        errors.push(`${team.project.name}: role '${roleName}' does not exist. Run channel/role creation first.`);
+        errors.push(`${team.projectName}: role '${roleName}' does not exist. Run channel/role creation first.`);
         continue;
       }
 

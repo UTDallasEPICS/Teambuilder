@@ -1,19 +1,15 @@
-// for dynamic fetching
+import partnerService from "~/server/services/partnerService";
+
 export default defineEventHandler(async (event) => {
-    const { id } = getRouterParams(event);
-  
-    const partner = await event.context.client.partner.findUnique({
-      where: { id },
-      include: {
-        projects: {
-          select: { name: true },
-        },
-      },
-    });
-  
-    return {
-      ...partner,
-      projectName: partner?.projects?.map(p => p.name).join(', ') || 'None',
-    };
-  });
-  
+  const id = getRouterParam(event, 'id');
+  if (!id) {
+    throw createError({statusCode: 400, statusMessage: 'Missing id parameter'});
+  }
+
+  const partner = await partnerService.getPartnerById(id);
+  if (!partner) {
+    throw createError({statusCode: 404, statusMessage: 'Partner not found'});
+  }
+
+  return partner;
+});
