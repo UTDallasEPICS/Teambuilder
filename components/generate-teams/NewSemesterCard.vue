@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Season, Semester } from '@prisma/client';
+import type { Season, Semester } from '~/prisma/generated';
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 

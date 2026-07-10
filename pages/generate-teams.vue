@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useHead } from 'nuxt/app';
-import type { Semester } from '@prisma/client';
+import type { Semester } from '~/prisma/generated';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import type { StudentWithChoices } from '~/server/api/students/index.get';
 

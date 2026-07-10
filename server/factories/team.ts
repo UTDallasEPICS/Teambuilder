@@ -1,4 +1,4 @@
-import type { Project, Semester, Team } from "@prisma/client";
+import type { Project, Semester, Team } from "~/prisma/generated";
 
 export const createRandomTeams = (projects: Project[], semesters: Semester[]): Team[] => {
   return semesters.flatMap((semester) => {

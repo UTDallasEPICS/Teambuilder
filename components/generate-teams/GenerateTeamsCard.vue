@@ -92,11 +92,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import type { Project, Semester } from '@prisma/client';
+import type { Project, Semester } from '~/prisma/generated';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import type { StudentWithChoices } from '~/server/api/students/index.get';
-import { displaySemester } from '~/server/services/semesterService';
-import { getDisplayName, getProjectRankForStudent } from '~/server/services/studentService';
+import { displaySemester } from '~/utils/semester';
+import { getDisplayName, getProjectRankForStudent } from '~/utils/student';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 import { computed } from 'vue';
 

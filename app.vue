@@ -1,5 +1,6 @@
 <template lang="pug">
   Toast
+  ConfirmDialog
   .flex.flex-row.min-h-screen.w-full.items-start
     button.fixed.top-4.left-4.z-50.px-3.py-2.rounded-md(
       class="md:border md:border-gray-200"

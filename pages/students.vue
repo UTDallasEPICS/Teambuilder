@@ -182,10 +182,10 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash-es';
 import Papa from 'papaparse';
-import type { Semester, Student, Year } from '@prisma/client';
+import type { Semester, Student, Year } from '~/prisma/generated';
 import { useHead } from '@vueuse/head';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
-import { displaySemester } from '~/server/services/semesterService';
+import { displaySemester } from '~/utils/semester';
 
 declare const document: any;
 

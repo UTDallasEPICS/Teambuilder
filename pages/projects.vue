@@ -192,12 +192,12 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed, watch } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import type { ProjectType, Semester } from '@prisma/client';
+import type { ProjectType, Semester } from '~/prisma/generated';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
 import { isEqual } from 'lodash-es';
 import { capitalizeFirst } from '@/utils/index';
 import type { ProjectWithSemestersAndPartner } from '~/server/api/projects/index.get';
-import { displaySemester, stringifySemesters } from '~/server/services/semesterService';
+import { displaySemester, stringifySemesters } from '~/utils/semester';
 // import { faker } from '@faker-js/faker';
 import { useHead } from '@vueuse/head';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';

@@ -1,4 +1,4 @@
-import type { Season, Semester } from "@prisma/client";
+import type { Season, Semester } from "~/prisma/generated";
 
 export const createSemesters = (): Semester[] => {
   const years = [2023, 2024, 2025, 2026];

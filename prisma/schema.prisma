@@ -83,6 +83,7 @@ model Contact {
   partnerId String
   name      String
   email     String
+  phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -127,6 +128,7 @@ model Membership {
   id        String   @id @default(uuid())
   teamId    String
   studentId String
+  isMentor  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -144,6 +146,7 @@ model Student {
   netID     String   @unique
   firstName String
   lastName  String
+  isMentor  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

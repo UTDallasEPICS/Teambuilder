@@ -5,17 +5,20 @@ export interface ContactRead {
   partnerId: string;
   name: string;
   email: string;
+  phone: string | null;
 }
 
 export interface ContactCreate {
   partnerId: string;
   name: string;
   email: string;
+  phone?: string;
 }
 
 export interface ContactUpdate {
   name?: string;
   email?: string;
+  phone?: string;
 }
 
 const getAllContacts = async (): Promise<ContactRead[]> => {

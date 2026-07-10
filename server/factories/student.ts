@@ -1,5 +1,5 @@
 import { getRandomElement } from './helpers';
-import type { Student, StudentStatus } from '@prisma/client';
+import type { Student, StudentStatus } from '~/prisma/generated';
 
 const FIRST_NAMES = ['Alex','Jordan','Taylor','Morgan','Casey','Drew','Riley','Avery','Quinn','Peyton','Blake','Reese','Skyler','Cameron','Logan'];
 const LAST_NAMES = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Wilson','Moore','Anderson','Thomas','Jackson','White','Harris'];

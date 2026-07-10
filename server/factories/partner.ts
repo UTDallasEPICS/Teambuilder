@@ -1,4 +1,4 @@
-import type { Partner } from "@prisma/client";
+import type { Partner } from "~/prisma/generated";
 
 const COMPANY_NAMES = ['Acme Corp','Blue Horizon','Catalyst Labs','Delta Systems','Evergreen Tech','Frontier Solutions','Global Ventures','Horizon Group','Innovate Inc','Jade Technologies'];
 const CONTACT_FIRST = ['Alice','Bob','Carol','David','Eva','Frank','Grace','Henry','Iris','James'];

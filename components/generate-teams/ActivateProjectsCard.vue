@@ -36,13 +36,13 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import type { Semester } from '@prisma/client';
+import type { Semester } from '~/prisma/generated';
 import type { ProjectWithSemesters } from '~/server/api/projects/index.get';
 import Dropdown from 'primevue/dropdown';
 import { useToast } from 'primevue/usetoast';
 import type { PickListMoveToSourceEvent, PickListMoveToTargetEvent } from 'primevue/picklist';
-import { filterProjectsByName, getActiveProjects, getInactiveProjects } from '~/server/services/projectService';
-import { displaySemester } from '~/server/services/semesterService';
+import { filterProjectsByName, getActiveProjects, getInactiveProjects } from '~/utils/project';
+import { displaySemester } from '~/utils/semester';
 
 const { projects, semesters } = defineProps<{
   projects: ProjectWithSemesters[]

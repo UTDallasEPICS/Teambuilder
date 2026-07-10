@@ -1,4 +1,4 @@
-import type { Semester, Student, Team } from "@prisma/client";
+import type { Semester, Student, Team } from "~/prisma/generated";
 
 export const createChoicesForSemester = (students: Student[], teams: Team[], semester: Semester) => {
   const now = new Date();

@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink } from "better-auth/plugins";
-import { PrismaClient } from "@prisma/client";
+import {prisma} from "~/server/utils/db"
 import { createTransport } from "nodemailer";
 
 const PRE_APPROVED_USERS = [
@@ -9,10 +9,6 @@ const PRE_APPROVED_USERS = [
   { email: 'trp210003@utdallas.edu', name: 'Teerth', role: 'admin' },
   { email: 'bxt230017@utdallas.edu', name: 'Bhuvi', role: 'admin' },
 ];
-
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.PRISMA_DB_URL,
-});
 
 // Current Nodemailer setup
 const transporter = createTransport({

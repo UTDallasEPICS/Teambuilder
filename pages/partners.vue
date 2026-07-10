@@ -96,11 +96,11 @@
   <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
     import { FilterMatchMode } from '@primevue/core/api';
-    import type { Partner, Semester } from '@prisma/client';
+    import type { Partner, Semester } from '~/prisma/generated';
     import { useHead } from '@vueuse/head';
     import { XCircleIcon } from '@heroicons/vue/24/solid';
     import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
-    import { displaySemester } from '~/server/services/semesterService';
+    import { displaySemester } from '~/utils/semester';
     
     useHead({ title: 'Partners' });
 

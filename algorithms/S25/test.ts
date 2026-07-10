@@ -17,7 +17,7 @@ import { createRandomStudents } from "~/server/factories/student";
 import { createRandomTeams } from "~/server/factories/team";
 import { createChoicesForSemester } from "~/server/factories/choice";
 import type { StudentWithChoices } from "~/server/api/students/index.get";
-import type { Choice } from "@prisma/client";
+import type { Choice } from "~/prisma/generated";
 import type { TeamAssignments } from "../S25";
 
 const testGenerateTeamAssignments = () => {

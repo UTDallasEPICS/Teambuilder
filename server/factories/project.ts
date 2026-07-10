@@ -1,5 +1,5 @@
 import { getRandomElement } from './helpers';
-import type { Partner, Project, ProjectStatus } from '@prisma/client';
+import type { Partner, Project, ProjectStatus } from '~/prisma/generated';
 
 const PROJECT_NAMES = ['Smart Scheduler','Campus Navigator','Data Dashboard','Resource Tracker','Event Planner','Inventory Manager','Survey Tool','Alert System','Budget Analyzer','Lab Monitor'];
 const DESCRIPTIONS = ['A tool to help manage and organize resources efficiently.','An application for tracking and visualizing key metrics.','A platform to streamline communication and collaboration.','A system to automate repetitive tasks and improve workflow.','A solution for monitoring and reporting on important data.'];

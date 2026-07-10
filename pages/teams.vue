@@ -153,10 +153,10 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useHead } from 'nuxt/app';
 import { FilterMatchMode } from '@primevue/core/api';
 import { XCircleIcon } from '@heroicons/vue/24/solid';
-import type { Semester } from '@prisma/client';
-import { getDisplayName } from '~/server/services/studentService';
-import { getProjectNameFromId } from '~/server/services/projectService';
-import { displaySemester } from '~/server/services/semesterService';
+import type { Semester } from '~/prisma/generated';
+import { getDisplayName } from '~/utils/student';
+import { getProjectNameFromId } from '~/utils/project';
+import { displaySemester } from '~/utils/semester';
 import { usePrimeVueToast } from '~/composables/usePrimeVueToast';
 
 declare const document: any;

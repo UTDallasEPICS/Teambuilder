@@ -33,7 +33,7 @@
 
 import type { StudentWithChoices } from "~/server/api/students/index.get";
 import { minWeightAssign, type AssignResult } from 'munkres-algorithm';
-import type { Project, Semester } from "@prisma/client";
+import type { Project, Semester } from "~/prisma/generated";
 
 export interface TeamAssignments {
   [key: string]: StudentWithChoices[],
