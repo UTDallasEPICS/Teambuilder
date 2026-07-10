@@ -11,6 +11,7 @@ export interface StudentRead {
   netID: string;
   firstName: string;
   lastName: string;
+  isMentor: boolean;
   Enrollments: EnrollmentRead[];
   Memberships: MembershipRead[];
   Choices: ChoiceRead[];
@@ -23,6 +24,7 @@ export interface StudentCreate {
   netID: string;
   firstName: string;
   lastName: string;
+  isMentor?: boolean;
   Enrollments?: Omit<EnrollmentCreate, 'studentId'>[];
   Memberships?: Omit<MembershipCreate, 'studentId'>[];
   Choices?: Omit<ChoiceCreate, 'studentId'>[];
@@ -35,6 +37,7 @@ export interface StudentUpdate {
   netID?: string;
   firstName?: string;
   lastName?: string;
+  isMentor?: boolean;
 }
 
 const getAllStudents = async (): Promise<StudentRead[]> => {

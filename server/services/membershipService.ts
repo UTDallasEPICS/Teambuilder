@@ -4,11 +4,13 @@ export interface MembershipRead {
   id: string;
   teamId: string;
   studentId: string;
+  isMentor: boolean;
 }
 
 export interface MembershipCreate {
   teamId: string;
   studentId: string;
+  isMentor?: boolean;
 }
 
 const getAllMemberships = async (): Promise<MembershipRead[]> => {

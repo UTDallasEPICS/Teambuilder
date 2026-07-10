@@ -59,9 +59,10 @@ export default defineEventHandler(async (event) => {
     email: string | null,
   }
 
-  // Fetch students enrolled in that semester and day with their choices
+  // Fetch non-mentor students enrolled in that semester and day with their choices
   const students = await prisma.student.findMany({
     where: {
+      isMentor: false,
       Enrollments: {some: {semesterId, meetingDay: day}}
     },
     include: {
