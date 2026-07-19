@@ -1,5 +1,5 @@
 <template>
-  <section class="max-w-3xl mx-auto px-6 py-12 text-black-600">
+  <section class="max-w-3xl mx-auto px-6 py-12 text-slate-900">
     <h1 class="text-2xl font-bold mb-4">Welcome to EPICS Teambuilder</h1>
 
     <!-- section links mirror the top-bar dropdown, per the wireframe -->
@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLocations } from '~/composables/useLocations'
+definePageMeta({
+  layout: 'default'
+})
 const { locations } = useLocations()
 </script>
